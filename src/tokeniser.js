@@ -27,6 +27,14 @@ export const tokens = {
       throw new TypeError(`Not all arguments for (+) are numbers.`)
     return operands.reduce((a, b) => a + b)
   },
+  ['...']: (args, env) => {
+    if (args.length !== 1)
+      throw new RangeError('Invalid number of arguments for (...) (1 required)')
+    const iterable = evaluate(args[0], env)
+    if (typeof iterable[Symbol.iterator] !== 'function')
+      throw new TypeError('Argument is not iterable for (...).')
+    return [...iterable]
+  },
   ['..']: (args, env) => {
     if (args.length !== 1)
       throw new RangeError('Invalid number of arguments for (..) (1 required)')
@@ -47,7 +55,7 @@ export const tokens = {
         'Invalid number of arguments for ([]) (>= 1 required)'
       )
     return args.length === 1
-      ? new Array(evaluate(args[0], env))
+      ? new Array(evaluate(args[0], env)).fill(0)
       : args.map((x) => evaluate(x, env))
   },
   ['.']: (args, env) => {
@@ -56,27 +64,33 @@ export const tokens = {
     const array = evaluate(args[0], env)
     if (!Array.isArray(array))
       throw new TypeError('First argument of (.) must be an ([]).')
+    if (array.length === 0)
+      throw new RangeError(`First argument of (.) is an empty ([]).`)
     const index = evaluate(args[1], env)
-    if (!Number.isInteger(index) || index < 0)
-      throw new TypeError('Second argument of (.) must be a positive integer.')
+    if (!Number.isInteger(index))
+      throw new TypeError(
+        `Second argument of (.) must be an integer (${index}).`
+      )
     if (index > array.length - 1)
       throw new RangeError(
-        'Second argument of (.) is outside of the ([]) bounds.'
+        `Second argument of (.) is outside of the ([]) bounds (${index}).`
       )
-    return array[index]
+    return array.at(index)
   },
   ['.=']: (args, env) => {
     if (args.length !== 3)
       throw new RangeError('Invalid number of arguments for (.=) (3 required)')
     const array = evaluate(args[0], env)
     if (!Array.isArray(array))
-      throw new TypeError('First argument of (.=) must be an ([]).')
+      throw new TypeError(`First argument of (.=) must be an ([]).`)
     const index = evaluate(args[1], env)
     if (!Number.isInteger(index) || index < 0)
-      throw new TypeError('Second argument of (.=) must be a positive integer.')
+      throw new TypeError(
+        `Second argument of (.=) must be a positive integer (${index}).`
+      )
     if (index > array.length)
       throw new RangeError(
-        'Second argument of (.=) is outside of the ([]) bounds.'
+        `Second argument of (.=) is outside of the ([]) bounds (${index}).`
       )
     const value = evaluate(args[2], env)
     array[index] = value
@@ -97,7 +111,11 @@ export const tokens = {
     const body = args.at(-1)
     return (props, env) => {
       if (props.length !== params.length)
-        throw new RangeError('Not all arguments for (->) are provided.')
+        throw new RangeError(
+          `Not all arguments for (-> ${params
+            .map((x) => x.value)
+            .join(' ')}) are provided.`
+        )
       const localEnv = Object.create(env)
       for (let i = 0; i < props.length; ++i)
         localEnv[params[i].value] = evaluate(props[i], localEnv)
@@ -143,6 +161,16 @@ export const tokens = {
     throw new ReferenceError(
       `Tried setting an undefined variable: ${entityName} using (=)`
     )
+  },
+  ['`']: (args, env) => {
+    if (args.length !== 1)
+      throw new RangeError(
+        `Invalid number of arguments for (\`) ${args.length}`
+      )
+    const value = evaluate(args[0], env)
+    if (typeof value === 'string' || value == undefined) return Number(value)
+    else if (typeof value === 'number') return value.toString()
+    else throw new TypeError('Can only cast number or string at (`)')
   },
   ['bit']: (args, env) => {
     if (args.length !== 1)
@@ -202,4 +230,5 @@ export const tokens = {
     const operands = args.map((a) => evaluate(a, env))
     return operands.reduce((acc, x) => acc >>> x)
   },
+  ['esc']: (args, env) => ({ n: '\n' }[evaluate(args[0], env)]),
 }

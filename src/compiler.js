@@ -80,15 +80,17 @@ const compile = (tree, Locals) => {
       }
       case '[]':
         return Arguments.length === 1
-          ? `new Array(${compile(Arguments[0])})`
+          ? `(new Array(${compile(Arguments[0])}).fill(0))`
           : `[${parseArgs(Arguments, Locals)}];`
+      case '...':
+        return `[...${compile(Arguments[0], Locals)}];`
       case '..':
         return `${compile(Arguments[0], Locals)}.length`
       case '.':
-        return `${compile(Arguments[0], Locals)}[${compile(
+        return `${compile(Arguments[0], Locals)}.at(${compile(
           Arguments[1],
           Locals
-        )}];`
+        )});`
       case '.=':
         helpers.set.has = true
         return `_set(${parseArgs(Arguments, Locals)});`
@@ -163,6 +165,15 @@ const compile = (tree, Locals) => {
         return `_cast(${compile(Arguments[0], Locals)})`
       case '|>':
         return ''
+      case 'esc': {
+        const char = compile(Arguments[0], Locals)
+        switch (char) {
+          case '`n`':
+            return '_NL'
+          default:
+            return '\\'
+        }
+      }
       default:
         undefined: {
           if (Arguments.length)
@@ -171,7 +182,7 @@ const compile = (tree, Locals) => {
         }
     }
   } else if (first.type === 'value')
-    return typeof first.value === 'string' ? `"${first.value}"` : first.value
+    return typeof first.value === 'string' ? `\`${first.value}\`` : first.value
 }
 
 export const compileToJs = (AST) => {
@@ -186,6 +197,8 @@ export const compileToJs = (AST) => {
   const top = `${Object.values(helpers)
     .filter((x) => x.has)
     .map((x) => x.source)
-    .join(',')};\n${vars.size ? `var ${[...vars].join(',')};` : ''}`
+    .join(',')};\nvar _NL = "\\n";\n${
+    vars.size ? `var ${[...vars].join(',')};` : ''
+  }`
   return { top, program }
 }

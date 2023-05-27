@@ -19,6 +19,8 @@ export const evaluate = (expression, env) => {
     case 'value':
       if (rest.length) throw new TypeError(`Values can't have arguments.`)
       return first.value
+    default:
+      throw new TypeError(`Trying to call non existing binding.`)
   }
 }
 export const run = (tree) => {
