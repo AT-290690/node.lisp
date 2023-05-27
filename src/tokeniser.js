@@ -231,4 +231,10 @@ export const tokens = {
     return operands.reduce((acc, x) => acc >>> x)
   },
   ['esc']: (args, env) => ({ n: '\n' }[evaluate(args[0], env)]),
+  ['|>']: (args, env) => {
+    let inp = args[0]
+    for (let i = 1; i < args.length; ++i)
+      inp = [args[i].shift(), inp, ...args[i]]
+    return evaluate(inp, env)
+  },
 }

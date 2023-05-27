@@ -163,8 +163,13 @@ const compile = (tree, Locals) => {
       case '`':
         helpers.cast.has = true
         return `_cast(${compile(Arguments[0], Locals)})`
-      case '|>':
-        return ''
+      case '|>': {
+        let inp = Arguments[0]
+        for (let i = 1; i < Arguments.length; ++i)
+          inp = [Arguments[i].shift(), inp, ...Arguments[i]]
+        return compile(inp, Locals)
+      }
+
       case 'esc': {
         const char = compile(Arguments[0], Locals)
         switch (char) {

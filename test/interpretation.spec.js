@@ -39,14 +39,19 @@ it('interpretation should work', () => {
     )))
   (loop 0 (- (.. array) 1)))))
   
-  (reduce (
-      map (
-        filter ([] 1 2 3 4 5 6 7) 
-        (-> x i (== (% x 2) 1))) 
-      (-> x i (* x 1))) 
-    (-> a x i (+ a x)) 0)
+
+  (:= is_odd (-> x i (== (% x 2) 1)))
+  (:= mult_2 (-> x i (* x 2)))
+  (:= sum (-> a x i (+ a x)))
+  
+  (|> 
+  ([] 1 2 3 4 5 6 7 101) 
+  (filter is_odd)
+  (map mult_2)
+  (reduce sum 0))
+  
   `),
-    16
+    234
   )
 
   deepStrictEqual(
@@ -94,5 +99,13 @@ it('interpretation should work', () => {
         (-> x i (- 2020 x)))
   `),
     [299, 1041, 1654, 1721, 1345, 564]
+  )
+
+  strictEqual(
+    runFromInterpreted(`(|> 1 
+    (+ 2) 
+      (* 3 4)
+       (- 3 2))`),
+    31
   )
 })
