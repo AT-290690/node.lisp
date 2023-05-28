@@ -1,4 +1,6 @@
 const CAST_BOOLEAN_TO_NUMBER = true
+const Imports = new Set()
+let Functions = []
 const helpers = {
   log: {
     source: `var log = (msg) => console.log(msg), msg`,
@@ -13,14 +15,10 @@ const helpers = {
     has: false,
   },
   tco: {
-    source: `_tco = function (fn) { 
-      return function () {
-        let result = fn(...arguments)
-        while (typeof result === 'function') result = result()
-        return result
-      }
-    }
-  `,
+    source: `_tco = function (fn) { return function () {
+let result = fn(...arguments)
+while (typeof result === 'function') result = result()
+return result }}`,
     has: false,
   },
 }
@@ -56,7 +54,7 @@ const compile = (tree, Locals) => {
   if (first.type === 'word') {
     const token = first.value
     switch (token) {
-      case ':': {
+      case 'block': {
         if (Arguments.length > 1) {
           return `(${Arguments.map((x) =>
             compile(x, Locals).toString().trimStart()
@@ -88,34 +86,44 @@ const compile = (tree, Locals) => {
         const arg = Arguments[0]
         if (arg.type === 'word') return `((${arg.value}=${res}),${arg.value});`
       }
-      case '[?]':
-        return `Array.isArray(${compile(Arguments[0], Locals)});`
-      case '[]':
+      case 'Stringp':
+        return handleBoolean(
+          `(typeof(${compile(Arguments[0], Locals)})==='string');`
+        )
+      case 'Numberp':
+        return handleBoolean(
+          `(typeof(${compile(Arguments[0], Locals)})==='number');`
+        )
+      case 'Arrayp':
+        return `(Array.isArray(${compile(Arguments[0], Locals)}));`
+      case 'Array':
         return Arguments.length === 1
           ? `(new Array(${compile(Arguments[0], Locals)}).fill(0))`
           : `[${parseArgs(Arguments, Locals)}];`
+      case "'":
+        return `[${parseArgs(Arguments, Locals)}];`
       case '...':
         return `[...${compile(Arguments[0], Locals)}];`
-      case '..':
+      case 'length':
         return `${compile(Arguments[0], Locals)}.length`
-      case '.':
+      case 'get':
         return `${compile(Arguments[0], Locals)}.at(${compile(
           Arguments[1],
           Locals
         )});`
-      case '.=':
+      case 'set':
         helpers.set.has = true
         return `_set(${parseArgs(Arguments, Locals)});`
-      case '->': {
+      case 'lambda': {
         const body = Arguments.pop()
         const localVars = new Set()
         const evaluatedBody = compile(body, localVars)
         const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
-        return `(${parseArgs(Arguments, Locals)}) => {${vars} ${
+        return `(${parseArgs(Arguments, Locals)})=>{${vars} ${
           Array.isArray(body) ? 'return' : ' '
         } ${evaluatedBody.toString().trimStart()}};`
       }
-      case '~=': {
+      case 'loop': {
         helpers.tco.has = true
         let name,
           out = '(('
@@ -129,7 +137,7 @@ const compile = (tree, Locals) => {
         const evaluatedBody = compile(body, localVars)
         const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
 
-        out += `${name}=_tco(function ${name} (${parseArgs(
+        out += `${name}=_tco(function ${name}(${parseArgs(
           functionArgs,
           Locals
         )}) {${vars} ${Array.isArray(body) ? 'return' : ' '} ${evaluatedBody
@@ -138,12 +146,37 @@ const compile = (tree, Locals) => {
         out += `), ${name});`
         return out
       }
+      case 'import': {
+        Arguments.map((x) => x.value).forEach((x) => Imports.add(x))
+        return ''
+      }
+      case 'function': {
+        let name,
+          out = '(('
+        const arg = Arguments[0]
+        name = arg.value
+        Locals.add(name)
+        const functionArgs = Arguments.slice(1)
+        const body = functionArgs.pop()
+        const localVars = new Set()
+        const evaluatedBody = compile(body, localVars)
+        const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
+
+        out += `${name}=(${parseArgs(functionArgs, Locals)})=>{${vars}${
+          Array.isArray(body) ? 'return' : ' '
+        } ${evaluatedBody.toString().trimStart()}};`
+        out += `), ${name});`
+        Functions.push({ name, source: out })
+        return ''
+      }
+      case 'and':
+        return `(${parseArgs(Arguments, Locals, '&&')});`
+      case 'or':
+        return `(${parseArgs(Arguments, Locals, '||')});`
       case '++':
         return '(' + parseArgs(Arguments, Locals, '+') + ');'
-      case '==':
+      case 'eq':
         return handleBoolean(`(${parseArgs(Arguments, Locals, '===')});`)
-      case '!=':
-        return handleBoolean(`(${parseArgs(Arguments, Locals, '!==')});`)
       case '>=':
       case '<=':
       case '>':
@@ -161,7 +194,7 @@ const compile = (tree, Locals) => {
       case '>>>':
       case '&':
         return `(${parseArgs(Arguments, Locals, token)});`
-      case '%':
+      case 'mod':
         return `(${compile(Arguments[0], Locals)}%${compile(
           Arguments[1],
           Locals
@@ -182,9 +215,9 @@ const compile = (tree, Locals) => {
         return `\`\${${compile(Arguments[0], Locals) >>> 0}}\`.toString(2)`
       case '~':
         return `~${compile(Arguments[0], Locals)}`
-      case '!':
+      case 'not':
         return handleBoolean(`!${compile(Arguments[0], Locals)}`)
-      case '?': {
+      case 'if': {
         const conditionStack = []
         Arguments.map((x) => compile(x, Locals)).forEach((x, i) =>
           i % 2 === 0
@@ -198,7 +231,7 @@ const compile = (tree, Locals) => {
       case '`':
         helpers.cast.has = true
         return `_cast(${compile(Arguments[0], Locals)})`
-      case '|>': {
+      case 'do': {
         let inp = Arguments[0]
         for (let i = 1; i < Arguments.length; ++i)
           inp = [Arguments[i].shift(), inp, ...Arguments[i]]
@@ -226,7 +259,11 @@ const compile = (tree, Locals) => {
 
 export const compileToJs = (AST) => {
   const vars = new Set()
-  const raw = AST.map((x) => compile(x, vars)).join('\n')
+  const compiled = AST.map((x) => compile(x, vars)).filter(Boolean)
+  const raw = Functions.filter(({ name }) => Imports.has(name))
+    .map(({ source }) => source)
+    .concat(compiled)
+    .join('\n')
   let program = ''
   for (let i = 0; i < raw.length; ++i) {
     const current = raw[i]

@@ -36,7 +36,10 @@ export const parse = (source) => {
               value: token.substring(1, token.length - 1),
             })
           else if (token.match(/^-?[0-9]\d*(\.\d+)?$/))
-            head.push({ type: 'value', value: Number(token) })
+            head.push({
+              type: 'value',
+              value: Number(token),
+            })
           else head.push({ type: 'word', value: token })
         }
         if (cursor === ')') head = stack.pop()

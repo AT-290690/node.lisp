@@ -1,63 +1,86 @@
-(:= max (-> a b (? (> a b) a b)))
-(:= min (-> a b (? (< a b) a b)))
-(:= is_odd (-> x i (== (% x 2) 1)))
-(:= is_even (-> x i (== (% x 2) 0)))
-(:= sum (-> a x i (+ a x)))
-(:= push (-> array value (.= array (.. array) value)))
-(:= euclidean_mod (-> a b (% (+ (% a b) b) b)))
-
-(:= concat (-> array1 array2 (:
-  (~= loop i bounds (:
-  (push array1 (. array2 i))
-  (? (< i bounds) 
-    (loop (+ i 1) bounds)
+;; max
+(function max a b (if (> a b) a b))
+;; min
+(function min a b (if (< a b) a b))
+;; is_odd
+(function is_odd x i (eq (mod x 2) 1))
+;; is_even
+(function is_even x i (eq (mod x 2) 0))
+;; sum
+(function sum a x i (+ a x))
+;; push
+(function push array value (set array (length array) value))
+;; euclidean_mod
+(function euclidean_mod a b (mod (+ (mod a b) b) b))
+;; concat
+(function concat array1 array2 (block
+  (loop iterate i bounds (block
+  (push array1 (get array2 i))
+  (if (< i bounds) 
+    (iterate (+ i 1) bounds)
   array1
   )))
-(loop 0 (- (.. array2) 1)))))
-
-(:= range (-> start end (: 
-  (:= array ([] 0))
-  (~= loop i bounds (:
+(iterate 0 (- (length array2) 1))))
+;; merge
+(function merge array1 array2 (block
+  (loop iterate i bounds (block
+  (push array1 (get array2 i))
+  (if (< i bounds) 
+    (iterate (+ i 1) bounds)
+  array1
+  )))
+(iterate 0 (- (length array2) 1))))
+;; range
+(function range start end (block
+  (:= array (Array 0))
+  (loop iterate i bounds (block
     (push array (+ i start))
-    (? (< i bounds) (loop (+ i 1) bounds) array)))
-  (loop 0 (- end start)))))
-
-
-(:= map (-> array callback (: 
-  (:= new_array ([] 0))
+    (if (< i bounds) (iterate (+ i 1) bounds) array)))
+  (iterate 0 (- end start))))
+;; map
+(function map array callback (block 
+  (:= new_array (Array 0))
   (:= i 0)
-  (~= loop i bounds (:
-    (.= new_array i (callback (. array i) i))
-    (? (< i bounds) (loop (+ i 1) bounds) new_array)))
-  (loop 0 (- (.. array) 1)))))
-
-(:= for_each (-> array callback (: 
-  (~= loop i bounds (:
-    (callback (. array i) i)
-    (? (< i bounds) (loop (+ i 1) bounds) array)))
-  (loop 0 (- (.. array) 1)))))
-
-
-(:= filter (-> array callback (: 
-  (:= new_array ([] 0))
+  (loop iterate i bounds (block
+    (set new_array i (callback (get array i) i))
+    (if (< i bounds) (iterate (+ i 1) bounds) new_array)))
+  (iterate 0 (- (length array) 1))))
+;; for_each
+(function for_each array callback (block
+  (loop iterate i bounds (block
+    (callback (get array i) i)
+    (if (< i bounds) (iterate (+ i 1) bounds) array)))
+  (iterate 0 (- (length array) 1))))
+;; filter
+(function filter array callback (block
+  (:= new_array (Array 0))
   (:= i 0)
-  (~= loop i bounds (:
-    (:= current (. array i))
-    (? (callback current i) 
+  (loop iterate i bounds (block
+    (:= current (get array i))
+    (if (callback current i) 
       (push new_array current))
-    (? (< i bounds) (loop (+ i 1) bounds) new_array)))
-  (loop 0 (- (.. array) 1)))))
-
-(:= reduce (-> array callback initial (:
-  (~= loop i bounds (:
-    (= initial (callback initial (. array i) i))
-    (? (< i bounds) (loop (+ i 1) bounds) initial)))
-  (loop 0 (- (.. array) 1)))))
-
-(:= deep_flat (-> arr (: 
-  (:= new_array ([] 0)) 
-  (~= flatten item (? ([?] item) (for_each item (-> x _ (flatten x))) 
+    (if (< i bounds) (iterate (+ i 1) bounds) new_array)))
+  (iterate 0 (- (length array) 1))))
+;; reduce
+(function reduce array callback initial (block
+  (loop iterate i bounds (block
+    (= initial (callback initial (get array i) i))
+    (if (< i bounds) (iterate (+ i 1) bounds) initial)))
+  (iterate 0 (- (length array) 1))))
+;; deep_flat
+(function deep_flat arr (block 
+  (:= new_array (Array 0)) 
+  (loop flatten item (if (Arrayp item) (for_each item (lambda x _ (flatten x))) 
   (push new_array item)))
   (flatten arr) 
   new_array
-)))
+))
+;; find
+(function find array callback (block
+  (loop iterate i bounds (block
+    (:= current (get array i))
+    (if (and (not (callback current i)) (< i bounds))
+      (iterate (+ i 1) bounds) 
+      current)))
+      (iterate 0 (- (length array) 1))))
+;; std of wisp

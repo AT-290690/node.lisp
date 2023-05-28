@@ -11,7 +11,7 @@ export const evaluate = (expression, env) => {
         throw new TypeError(`Undefined variable ${first.value}.`)
       if (rest.length) {
         if (typeof word !== 'function')
-          throw new TypeError(`${first.value} is not a (->).`)
+          throw new TypeError(`${first.value} is not a (function).`)
         return word(rest, env)
       }
       return word
@@ -20,12 +20,12 @@ export const evaluate = (expression, env) => {
       if (rest.length) throw new TypeError(`Values can't have arguments.`)
       return first.value
     default:
-      throw new TypeError(`Trying to call non existing binding.`)
+      throw new TypeError(`Trying to access a null pointer.`)
   }
 }
 export const run = (tree) => {
   try {
-    if (Array.isArray(tree)) return tokens[':'](tree, tokens)
+    if (Array.isArray(tree)) return tokens['block'](tree, tokens)
   } catch (err) {
     // console.log(err)
     logError(err.message)
