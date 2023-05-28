@@ -97,11 +97,11 @@
         (push right_arr current))
     (if (< i bounds) (iterate (+ i 1) bounds))))
     (iterate 1 (- (length arr) 1))
-(if (and (length left_arr) (length right_arr)))
-(:= left (sort left_arr))
-(:= right (sort right_arr))
-(concat (push left pivot) right)))))
-
+(do 
+  left_arr (sort) 
+  (push pivot) 
+  (concat (sort right_arr)))))))
+  
 ;; reverse 
 (function reverse array (block
   (:= len (length array))

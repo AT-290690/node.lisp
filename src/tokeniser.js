@@ -335,7 +335,9 @@ export const tokens = {
         throw new TypeError(
           `Argument at position (${i}) of (do) is not a (function).`
         )
-      inp = [args[i].shift(), inp, ...args[i]]
+      const [first, ...rest] = args[i]
+      const arr = [first, inp, ...rest]
+      inp = arr
     }
     return evaluate(inp, env)
   },

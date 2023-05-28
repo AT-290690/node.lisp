@@ -12,22 +12,23 @@ it('compilation should work', () =>
     )))
     (iterate 0 (- (length array2) 1))))
     (function sort arr (block
-    (if (<= (length arr) 1) arr
-    (block
-      (:= pivot (get arr 0))
-      (:= left_arr (Array 0))
-      (:= right_arr (Array 0))
+      (if (<= (length arr) 1) arr
+      (block
+        (:= pivot (get arr 0))
+        (:= left_arr (Array 0))
+        (:= right_arr (Array 0))
     (loop iterate i bounds (block
-      (:= current (get arr i))
-      (if (< current pivot) 
-          (push left_arr current)
-          (push right_arr current))
-      (if (< i bounds) (iterate (+ i 1) bounds))))
-      (iterate 1 (- (length arr) 1))
-    (if (and (length left_arr) (length right_arr)))
-    (:= left (sort left_arr))
-    (:= right (sort right_arr))
-    (concat (push left pivot) right)))))
+        (:= current (get arr i))
+        (if (< current pivot) 
+            (push left_arr current)
+            (push right_arr current))
+        (if (< i bounds) (iterate (+ i 1) bounds))))
+        (iterate 1 (- (length arr) 1))
+    (do 
+      left_arr (sort) 
+      (push pivot) 
+      (concat (sort right_arr)))
+    ))))
     
     (function reverse array (block
     (:= len (length array))

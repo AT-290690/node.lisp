@@ -20,6 +20,7 @@ export const evaluate = (expression, env) => {
       if (rest.length) throw new TypeError(`Values can't have arguments.`)
       return first.value
     default:
+      // console.log(first, rest[0][1])
       throw new TypeError(`Trying to access a null pointer.`)
   }
 }
