@@ -1,11 +1,10 @@
-(:= mult_by_index (-> x i (* x i)))
-
-(|>
- (range 1 50) 
- (filter is_even)
- (map mult_by_index)
- (reduce sum 0)
- (log)
+(:= arr (
+  [] 
+  ([] 1 2) 
+  ([] 1 2) 
+  ([] 1 3) 
+  ([] 1 ([] 4 4 ([] "x" "y"))) 
+  ([] 1 2))
 )
 
-(log (euclidean_mod -1 100))
+(log (deep_flat arr) arr)

@@ -1,6 +1,32 @@
 import { deepStrictEqual, strictEqual } from 'assert'
 import { runFromInterpreted } from '../src/utils.js'
 it('interpretation should work', () => {
+  deepStrictEqual(
+    runFromInterpreted(`
+    (:= push (-> array value (.= array (.. array) value)))
+    (:= for_each (-> array callback (: 
+      (~= loop i bounds (:
+        (callback (. array i) i)
+        (? (< i bounds) (loop (+ i 1) bounds) array)))
+      (loop 0 (- (.. array) 1)))))
+    (:= deep_flat (-> arr (: 
+      (:= new_array ([] 0)) 
+      (~= flatten item (? ([?] item) (for_each item (-> x _ (flatten x))) 
+      (push new_array item)))
+      (flatten arr) 
+      new_array
+    )))
+    (:= arr (
+    [] 
+    ([] 1 2) 
+    ([] 1 2) 
+    ([] 1 3) 
+    ([] 1 ([] 4 4 ([] "x" "y"))) 
+    ([] 1 2))
+  )
+  (deep_flat arr)`),
+    [1, 2, 1, 2, 1, 3, 1, 4, 4, 'x', 'y', 1, 2]
+  )
   strictEqual(
     runFromInterpreted(`(~= loop i (? (< i 100) 
   (loop (+ i 1)) i))

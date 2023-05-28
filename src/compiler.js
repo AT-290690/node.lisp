@@ -13,10 +13,12 @@ const helpers = {
     has: false,
   },
   tco: {
-    source: `_tco = (fn) => (...args) => {
-      let result = fn(...args)
-      while (typeof result === 'function') result = result()
-      return result
+    source: `_tco = function (fn) { 
+      return function () {
+        let result = fn(...arguments)
+        while (typeof result === 'function') result = result()
+        return result
+      }
     }
   `,
     has: false,
@@ -50,7 +52,6 @@ const parseArgs = (Arguments, Locals, separator = ',') =>
   parse(Arguments, Locals).join(separator)
 const compile = (tree, Locals) => {
   if (!tree) return ''
-  // if (Array.isArray(tree)) return tree.map((x) => compile(x, Locals)).join('\n')
   const [first, ...Arguments] = Array.isArray(tree) ? tree : [tree]
   if (first.type === 'word') {
     const token = first.value
@@ -87,9 +88,11 @@ const compile = (tree, Locals) => {
         const arg = Arguments[0]
         if (arg.type === 'word') return `((${arg.value}=${res}),${arg.value});`
       }
+      case '[?]':
+        return `Array.isArray(${compile(Arguments[0], Locals)});`
       case '[]':
         return Arguments.length === 1
-          ? `(new Array(${compile(Arguments[0])}).fill(0))`
+          ? `(new Array(${compile(Arguments[0], Locals)}).fill(0))`
           : `[${parseArgs(Arguments, Locals)}];`
       case '...':
         return `[...${compile(Arguments[0], Locals)}];`
@@ -211,12 +214,11 @@ const compile = (tree, Locals) => {
             return '\\'
         }
       }
-      default:
-        undefined: {
-          if (Arguments.length)
-            return `${token}(${parseArgs(Arguments, Locals)});`
-          else return token
-        }
+      default: {
+        if (Arguments.length)
+          return `${token}(${parseArgs(Arguments, Locals)});`
+        else return token
+      }
     }
   } else if (first.type === 'value')
     return typeof first.value === 'string' ? `\`${first.value}\`` : first.value

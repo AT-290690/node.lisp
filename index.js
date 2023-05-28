@@ -6,7 +6,6 @@ import { readFileSync, writeFileSync } from 'fs'
 
 const [, , ...argv] = process.argv
 let file = '',
-  std = false,
   destination
 while (argv.length) {
   const flag = argv.shift()?.toLowerCase()

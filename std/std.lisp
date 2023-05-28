@@ -31,6 +31,12 @@
     (? (< i bounds) (loop (+ i 1) bounds) new_array)))
   (loop 0 (- (.. array) 1)))))
 
+(:= for_each (-> array callback (: 
+  (~= loop i bounds (:
+    (callback (. array i) i)
+    (? (< i bounds) (loop (+ i 1) bounds) array)))
+  (loop 0 (- (.. array) 1)))))
+
 
 (:= filter (-> array callback (: 
   (:= new_array ([] 0))
@@ -48,3 +54,10 @@
     (? (< i bounds) (loop (+ i 1) bounds) initial)))
   (loop 0 (- (.. array) 1)))))
 
+(:= deep_flat (-> arr (: 
+  (:= new_array ([] 0)) 
+  (~= flatten item (? ([?] item) (for_each item (-> x _ (flatten x))) 
+  (push new_array item)))
+  (flatten arr) 
+  new_array
+)))

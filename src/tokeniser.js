@@ -44,6 +44,12 @@ export const tokens = {
       throw new TypeError('First argument of (..) must be an ([]).')
     return array.length
   },
+  ['[?]']: (args, env) => {
+    if (args.length !== 1)
+      throw new RangeError('Invalid number of arguments for ([?]) (1 required)')
+    const array = evaluate(args[0], env)
+    return +Array.isArray(array)
+  },
   ['*']: (args, env) =>
     args.map((x) => evaluate(x, env)).reduce((a, b) => a * b),
   ['-']: (args, env) =>
@@ -267,8 +273,13 @@ export const tokens = {
   ['esc']: (args, env) => ({ n: '\n' }[evaluate(args[0], env)]),
   ['|>']: (args, env) => {
     let inp = args[0]
-    for (let i = 1; i < args.length; ++i)
+    for (let i = 1; i < args.length; ++i) {
+      if (!Array.isArray(args[i]))
+        throw new TypeError(
+          `Argument at position (${i}) of (|>) is not a (->).`
+        )
       inp = [args[i].shift(), inp, ...args[i]]
+    }
     return evaluate(inp, env)
   },
 }
