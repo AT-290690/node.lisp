@@ -7,6 +7,40 @@ Lisp for web
 (log (++ hello "!!!"))
 ```
 
+```lisp
+;; Define reusable modules
+(function sort arr (block
+  (if (<= (length arr) 1) arr
+  (block
+    (:= pivot (get arr 0))
+    (:= left_arr (Array 0))
+    (:= right_arr (Array 0))
+(loop iterate i bounds (block
+    (:= current (get arr i))
+    (if (< current pivot)
+        (push left_arr current)
+        (push right_arr current))
+    (if (< i bounds) (iterate (+ i 1) bounds))))
+    (iterate 1 (- (length arr) 1))
+(do
+  left_arr (sort)
+  (push pivot)
+  (concat (sort right_arr)))))))
+```
+
+```lisp
+(:= is_odd (lambda x i (eq (mod x 2) 1)))
+(:= mult_2 (lambda x i (* x 2)))
+(:= sum (lambda a x i (+ a x)))
+;; Pipe the first to a series of composed functions
+;; (arg (arg .. ) (arg .. ) (ar . . . . ))
+(do
+  (Array 1 2 3 4 5 6 7 101)
+  (filter is_odd)
+  (map mult_2)
+  (reduce sum 0))
+```
+
 interpred
 
 ```

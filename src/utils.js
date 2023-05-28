@@ -21,17 +21,17 @@ export const handleUnbalancedParens = (source) => {
     )
   return source
 }
-export const runFromCompiled = (source) => {
+export const runFromCompiled = (source, Extensions = {}, helpers = {}) => {
   const tree = parse(source)
   if (Array.isArray(tree)) {
-    const compiled = compileToJs(tree)
+    const compiled = compileToJs(tree, Extensions, helpers)
     const JavaScript = `${compiled.top}\n${compiled.program}`
     return eval(JavaScript)
   }
 }
-export const runFromInterpreted = (source) => {
+export const runFromInterpreted = (source, env) => {
   const tree = parse(source)
-  if (Array.isArray(tree)) return run(tree)
+  if (Array.isArray(tree)) return run(tree, env)
 }
 export const renameNode = (arg, name) => {
   if (Array.isArray(arg)) arg.forEach(dfs)

@@ -24,9 +24,9 @@ export const evaluate = (expression, env) => {
       throw new TypeError(`Trying to access a null pointer.`)
   }
 }
-export const run = (tree) => {
+export const run = (tree, env = {}) => {
   try {
-    if (Array.isArray(tree)) return tokens['block'](tree, tokens)
+    return tokens['block'](tree, { ...tokens, ...env })
   } catch (err) {
     // console.log(err)
     logError(err.message)

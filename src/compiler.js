@@ -1,5 +1,6 @@
 const CAST_BOOLEAN_TO_NUMBER = true
-const helpers = {
+const Extensions = {}
+const Helpers = {
   log: {
     source: `var log = (msg) => console.log(msg), msg`,
     has: true,
@@ -110,7 +111,7 @@ const compile = (tree, Locals) => {
           Locals
         )});`
       case 'set':
-        helpers.set.has = true
+        Helpers.set.has = true
         return `_set(${parseArgs(Arguments, Locals)});`
       case 'lambda': {
         const body = Arguments.pop()
@@ -122,7 +123,7 @@ const compile = (tree, Locals) => {
         } ${evaluatedBody.toString().trimStart()}};`
       }
       case 'loop': {
-        helpers.tco.has = true
+        Helpers.tco.has = true
         let name,
           out = '(('
         const arg = Arguments[0]
@@ -222,7 +223,7 @@ const compile = (tree, Locals) => {
         return `(${conditionStack.join('')});`
       }
       case '`':
-        helpers.cast.has = true
+        Helpers.cast.has = true
         return `_cast(${compile(Arguments[0], Locals)})`
       case 'do': {
         let inp = Arguments[0]
@@ -241,7 +242,9 @@ const compile = (tree, Locals) => {
         }
       }
       default: {
-        if (Arguments.length)
+        if (token in Extensions)
+          return `${Extensions[token](parseArgs(Arguments, Locals))}`
+        else if (Arguments.length)
           return `${token}(${parseArgs(Arguments, Locals)});`
         else return token
       }
@@ -250,7 +253,9 @@ const compile = (tree, Locals) => {
     return typeof first.value === 'string' ? `\`${first.value}\`` : first.value
 }
 
-export const compileToJs = (AST) => {
+export const compileToJs = (AST, extensions = {}, helpers = {}, tops = []) => {
+  for (const ext in extensions) Extensions[ext] = extensions[ext]
+  for (const hlp in helpers) Helpers[hlp] = helpers[hlp]
   const vars = new Set()
   const raw = AST.map((x) => compile(x, vars))
     .filter(Boolean)
@@ -261,7 +266,7 @@ export const compileToJs = (AST) => {
     const next = raw[i + 1]
     if (!semiColumnEdgeCases.has(current + next)) program += current
   }
-  const top = `${Object.values(helpers)
+  const top = `${tops.join('\n')}${Object.values(Helpers)
     .filter((x) => x.has)
     .map((x) => x.source)
     .join(',')};\nvar _NL = "\\n";\n${
