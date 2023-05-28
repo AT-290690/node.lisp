@@ -31,7 +31,8 @@ while (argv.length) {
         const tree = parse(file)
         if (Array.isArray(tree)) {
           const compiled = compileToJs(tree)
-          console.log(`${compiled.top}${compiled.program}`)
+          const JavaScript = `${compiled.top}\n${compiled.program}`
+          console.log(JavaScript)
         }
       }
       break
@@ -40,10 +41,8 @@ while (argv.length) {
         const tree = parse(file)
         if (Array.isArray(tree)) {
           const compiled = compileToJs(tree)
-          writeFileSync(
-            destination ?? './playground/dist/main.js',
-            `${compiled.top}\n${compiled.program}`
-          )
+          const JavaScript = `${compiled.top}\n${compiled.program}`
+          writeFileSync(destination ?? './playground/dist/main.js', JavaScript)
         }
       }
       break

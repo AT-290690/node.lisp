@@ -1,6 +1,4 @@
 const CAST_BOOLEAN_TO_NUMBER = true
-const Imports = new Set()
-let Functions = []
 const helpers = {
   log: {
     source: `var log = (msg) => console.log(msg), msg`,
@@ -146,10 +144,6 @@ const compile = (tree, Locals) => {
         out += `), ${name});`
         return out
       }
-      case 'import': {
-        Arguments.map((x) => x.value).forEach((x) => Imports.add(x))
-        return ''
-      }
       case 'function': {
         let name,
           out = '(('
@@ -166,8 +160,7 @@ const compile = (tree, Locals) => {
           Array.isArray(body) ? 'return' : ' '
         } ${evaluatedBody.toString().trimStart()}};`
         out += `), ${name});`
-        Functions.push({ name, source: out })
-        return ''
+        return out
       }
       case 'and':
         return `(${parseArgs(Arguments, Locals, '&&')});`
@@ -259,10 +252,8 @@ const compile = (tree, Locals) => {
 
 export const compileToJs = (AST) => {
   const vars = new Set()
-  const compiled = AST.map((x) => compile(x, vars)).filter(Boolean)
-  const raw = Functions.filter(({ name }) => Imports.has(name))
-    .map(({ source }) => source)
-    .concat(compiled)
+  const raw = AST.map((x) => compile(x, vars))
+    .filter(Boolean)
     .join('\n')
   let program = ''
   for (let i = 0; i < raw.length; ++i) {

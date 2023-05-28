@@ -328,18 +328,6 @@ export const tokens = {
     return operands.reduce((acc, x) => acc >>> x)
   },
   ['esc']: (args, env) => ({ n: '\n' }[evaluate(args[0], env)]),
-  ['import']: (args, env) =>
-    args
-      .map((x) => evaluate(x, env))
-      .map((x) => {
-        if (typeof x !== 'string')
-          throw new TypeError(`Not all function are strings at (import)`)
-        else if (!(x in env))
-          throw new ReferenceError(
-            `Attempting to import non existing function (${x}) at (import)`
-          )
-        return x
-      }),
   ['do']: (args, env) => {
     let inp = args[0]
     for (let i = 1; i < args.length; ++i) {

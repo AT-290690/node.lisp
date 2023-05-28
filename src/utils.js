@@ -21,12 +21,12 @@ export const handleUnbalancedParens = (source) => {
     )
   return source
 }
-
 export const runFromCompiled = (source) => {
   const tree = parse(source)
   if (Array.isArray(tree)) {
     const compiled = compileToJs(tree)
-    return eval(`${compiled.top}${compiled.program}`)
+    const JavaScript = `${compiled.top}\n${compiled.program}`
+    return eval(JavaScript)
   }
 }
 export const runFromInterpreted = (source) => {
