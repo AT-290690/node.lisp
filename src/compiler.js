@@ -12,6 +12,15 @@ const helpers = {
     source: `_cast = (value) => typeof value === 'number' ? String(value) : Number(value)`,
     has: false,
   },
+  tco: {
+    source: `_tco = (fn) => (...args) => {
+      let result = fn(...args)
+      while (typeof result === 'function') result = result()
+      return result
+    }
+  `,
+    has: false,
+  },
 }
 const handleBoolean = (source) =>
   CAST_BOOLEAN_TO_NUMBER ? `+${source}` : source
@@ -102,6 +111,29 @@ const compile = (tree, Locals) => {
         return `(${parseArgs(Arguments, Locals)}) => {${vars} ${
           Array.isArray(body) ? 'return' : ' '
         } ${evaluatedBody.toString().trimStart()}};`
+      }
+      case '~=': {
+        helpers.tco.has = true
+        let name,
+          out = '(('
+        const arg = Arguments[0]
+        name = arg.value
+        Locals.add(name)
+
+        const functionArgs = Arguments.slice(1)
+        const body = functionArgs.pop()
+        const localVars = new Set()
+        const evaluatedBody = compile(body, localVars)
+        const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
+
+        out += `${name}=_tco(function ${name} (${parseArgs(
+          functionArgs,
+          Locals
+        )}) {${vars} ${Array.isArray(body) ? 'return' : ' '} ${evaluatedBody
+          .toString()
+          .trimStart()}});`
+        out += `), ${name});`
+        return out
       }
       case '++':
         return '(' + parseArgs(Arguments, Locals, '+') + ');'

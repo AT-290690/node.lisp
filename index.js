@@ -6,6 +6,7 @@ import { readFileSync, writeFileSync } from 'fs'
 
 const [, , ...argv] = process.argv
 let file = '',
+  std = false,
   destination
 while (argv.length) {
   const flag = argv.shift()?.toLowerCase()
@@ -22,6 +23,9 @@ while (argv.length) {
     case '-source':
     case '-s':
       file = readFileSync(value, 'utf-8')
+      break
+    case '-dep':
+      file = `${readFileSync(value, 'utf-8')}\n${file}`
       break
     case '-js':
       {
@@ -60,22 +64,23 @@ while (argv.length) {
     case '-help':
     default:
       console.log(`
-  ------------------------------------
-  | help                              |
-  ------------------------------------
-  | file    |   prepare a file        |
-   ------------------------------------
-  | js      |   log javascript output |
-  ------------------------------------
-  | compile |   compile to js         |
-  ------------------------------------
-  | dist    |   file to compile js    |
-  ------------------------------------
-  | run     |   interpret and run     |
-  ------------------------------------
-  | log     |   interpret and log     |
-  ------------------------------------
-
-        `)
+  -------------------------------------
+   -help
+  -------------------------------------
+   -file                prepare a file
+  -------------------------------------
+   -dep           include dependencies
+  -------------------------------------
+   -js           log javascript output
+  -------------------------------------
+   -compile              compile to js
+  -------------------------------------
+   -dist            file to compile js
+  -------------------------------------
+   -run              interpret and run
+  -------------------------------------
+   -log              interpret and log
+  -------------------------------------
+`)
   }
 }

@@ -2,6 +2,33 @@ import { deepStrictEqual, strictEqual } from 'assert'
 import { runFromInterpreted } from '../src/utils.js'
 it('interpretation should work', () => {
   strictEqual(
+    runFromInterpreted(`(~= loop i (? (< i 100) 
+  (loop (+ i 1)) i))
+(loop 0)
+`),
+    100
+  )
+  deepStrictEqual(
+    runFromInterpreted(`(:= push (-> array value (.= array (.. array) value)))
+  (:= concat (-> array1 array2 (:
+    (:= loop (-> i bounds (:
+    (push array1 (. array2 i))
+    (? (< i bounds) 
+      (loop (+ i 1) bounds)
+    array1
+    ))))
+  (loop 0 (- (.. array2) 1)))))
+
+  (|>
+    ([] 1 2 3)
+    (push -1)
+    (concat (... "abc"))
+    (concat ([] 1 2 3 4))
+    (concat ([] 5 6 7))
+  )`),
+    [1, 2, 3, -1, 'a', 'b', 'c', 1, 2, 3, 4, 5, 6, 7]
+  )
+  strictEqual(
     runFromInterpreted(`(:= range (-> start end (: 
   (:= array ([] 0))
   (:= loop (-> i bounds (:

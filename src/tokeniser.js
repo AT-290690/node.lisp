@@ -1,4 +1,5 @@
 import { evaluate } from './interpreter.js'
+const maxCallstackLimitInterpretation = 256
 export const tokens = {
   ['++']: (args, env) => {
     if (args.length < 2)
@@ -161,6 +162,39 @@ export const tokens = {
     throw new ReferenceError(
       `Tried setting an undefined variable: ${entityName} using (=)`
     )
+  },
+  ['~=']: (args, env) => {
+    if (args.length < 2)
+      throw new RangeError('Invalid number of arguments to ~= [2 required]')
+
+    const params = args.slice(1, -1)
+    if (!params.length)
+      throw new RangeError(
+        'Invalid number of arguments for (~=) (>= 1 required)'
+      )
+    const body = args.at(-1)
+    const name = args[0].value
+    let count = -1
+    const fn = (props, env) => {
+      if (count > maxCallstackLimitInterpretation)
+        throw new RangeError(
+          `Recursive (~=) reached maximum ${maxCallstackLimitInterpretation} calls.\n For calls (> ${maxCallstackLimitInterpretation}), compile instead.`
+        )
+      if (props.length !== params.length)
+        throw new RangeError(
+          `Not all arguments for (-> ${params
+            .map((x) => x.value)
+            .join(' ')}) are provided.`
+        )
+      const localEnv = Object.create(env)
+
+      for (let i = 0; i < props.length; ++i)
+        localEnv[params[i].value] = evaluate(props[i], localEnv)
+      ++count
+      return evaluate(body, localEnv)
+    }
+    env[name] = fn
+    return fn
   },
   ['`']: (args, env) => {
     if (args.length !== 1)

@@ -33,3 +33,7 @@ export const runFromInterpreted = (source) => {
   const tree = parse(source)
   if (Array.isArray(tree)) return run(tree)
 }
+export const renameNode = (arg, name) => {
+  if (Array.isArray(arg)) arg.forEach(dfs)
+  else if (arg.type === 'word' && arg.value === name) arg.value = name
+}
