@@ -3,7 +3,7 @@
 Lisp for web
 
 ```lisp
-(:= hello "Hello World")
+(let hello "Hello World")
 (log (++ hello "!!!"))
 ```
 
@@ -12,11 +12,11 @@ Lisp for web
 (function sort arr (block
   (if (<= (length arr) 1) arr
   (block
-    (:= pivot (get arr 0))
-    (:= left_arr (Array 0))
-    (:= right_arr (Array 0))
+    (let pivot (get arr 0))
+    (let left_arr (Array 0))
+    (let right_arr (Array 0))
 (loop iterate i bounds (block
-    (:= current (get arr i))
+    (let current (get arr i))
     (if (< current pivot)
         (push left_arr current)
         (push right_arr current))
@@ -29,9 +29,9 @@ Lisp for web
 ```
 
 ```lisp
-(:= is_odd (lambda x i (eq (mod x 2) 1)))
-(:= mult_2 (lambda x i (* x 2)))
-(:= sum (lambda a x i (+ a x)))
+(let is_odd (lambda x i (eq (mod x 2) 1)))
+(let mult_2 (lambda x i (* x 2)))
+(let sum (lambda a x i (+ a x)))
 ;; Pipe the first to a series of composed functions
 ;; (arg (arg .. ) (arg .. ) (ar . . . . ))
 (do

@@ -3,7 +3,7 @@ export const parse = (source) => {
   try {
     source = handleUnbalancedParens(
       source
-        .replace(/;;.+/g, '')
+        .replace(/;.+/g, '')
         .replace(/[\s\s]+(?=[^"]*(?:"[^"]*"[^"]*)*$)/g, ' ')
         .trim()
     )

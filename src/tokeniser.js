@@ -18,6 +18,16 @@ export const tokens = {
       throw new TypeError(`Not all arguments for (mod) are numbers.`)
     return a % b
   },
+  ['/']: (args, env) => {
+    if (args.length !== 1)
+      throw new RangeError(
+        `Invalid number of arguments for (/), expected 1 but got ${args.length}.`
+      )
+    const number = evaluate(args[0], env)
+    if (typeof number !== 'number')
+      throw new TypeError(`Arguments of (/) is not a number.`)
+    return 1 / number
+  },
   ['+']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
@@ -113,24 +123,44 @@ export const tokens = {
     return array.at(index)
   },
   ['set']: (args, env) => {
-    if (args.length !== 3)
-      throw new RangeError('Invalid number of arguments for (set) (3 required)')
+    if (args.length !== 2 && args.length !== 3)
+      throw new RangeError(
+        'Invalid number of arguments for (set) (2 or 3 required)'
+      )
     const array = evaluate(args[0], env)
     if (!Array.isArray(array))
       throw new TypeError(`First argument of (set) must be an (Array).`)
     const index = evaluate(args[1], env)
-    if (!Number.isInteger(index) || index < 0)
+    if (!Number.isInteger(index))
       throw new TypeError(
-        `Second argument of (set) must be a positive integer (${index}).`
+        `Second argument of (set) must be an integer (${index}).`
       )
     if (index > array.length)
       throw new RangeError(
-        `Second argument of (set) is outside of the (Array) bounds (${index}).`
+        `Second argument of (set) is outside of the (Array) bounds (index ${index} bounds ${array.length}).`
       )
-    const value = evaluate(args[2], env)
-    if (value == undefined)
-      throw new RangeError(`Trying to set a null value in (Array) at (set).`)
-    array[index] = value
+    if (index < 0) {
+      if (args.length !== 2)
+        throw new RangeError(
+          'Invalid number of arguments for (set) (if index is < 0 then 2 required)'
+        )
+      if (index * -1 > array.length)
+        throw new RangeError(
+          `Second argument of (set) is outside of the (Array) bounds (index ${index} bounds ${array.length})`
+        )
+      const target = array.length + index
+      while (array.length !== target) array.pop()
+    } else {
+      if (args.length !== 3)
+        throw new RangeError(
+          'Invalid number of arguments for (set) (if index is >= 0 then 3 required)'
+        )
+      const value = evaluate(args[2], env)
+      if (value == undefined)
+        throw new RangeError(`Trying to set a null value in (Array) at (set).`)
+      array[index] = value
+    }
+
     return array
   },
   ['log']: (args, env) => {
@@ -152,11 +182,20 @@ export const tokens = {
     const body = args.at(-1)
     const name = args[0].value
     const fn = (props, env) => {
+      if (props.length > params.length) {
+        throw new RangeError(
+          `More arguments for (function ${params
+            .map((x) => x.value)
+            .join(' ')
+            .trim()}) are provided.`
+        )
+      }
       if (props.length !== params.length)
         throw new RangeError(
           `Not all arguments for (function ${params
             .map((x) => x.value)
-            .join(' ')}) are provided.`
+            .join(' ')
+            .trim()}) are provided.`
         )
       const localEnv = Object.create(env)
       for (let i = 0; i < props.length; ++i)
@@ -204,9 +243,9 @@ export const tokens = {
       else continue
     return evaluate(args.at(-1), env)
   },
-  [':=']: (args, env) => {
+  ['let']: (args, env) => {
     if (args.length !== 2)
-      throw new RangeError('Invalid number of arguments to := [2 required]')
+      throw new RangeError('Invalid number of arguments to let [2 required]')
     const name = args[0].value
     const value = evaluate(args[1], env)
     env[name] = value
@@ -229,7 +268,6 @@ export const tokens = {
   ['loop']: (args, env) => {
     if (args.length < 2)
       throw new RangeError('Invalid number of arguments to (loop) [2 required]')
-
     const params = args.slice(1, -1)
     if (!params.length)
       throw new RangeError(
@@ -301,7 +339,7 @@ export const tokens = {
         'Invalid number of arguments to (^) (>= 2 required).'
       )
     const operands = args.map((a) => evaluate(a, env))
-    return operands.reduce((acc, x) => acc | x)
+    return operands.reduce((acc, x) => acc ^ x)
   },
   ['<<']: (args, env) => {
     if (args.length < 2)

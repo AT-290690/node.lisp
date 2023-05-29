@@ -1,6 +1,14 @@
 import { deepStrictEqual, strictEqual } from 'assert'
 import { runFromInterpreted } from '../src/utils.js'
 it('interpretation should work', () => {
+  strictEqual(
+    runFromInterpreted(`
+  (let array (Array 5))
+  (set array -5)
+  (length array)
+`),
+    0
+  )
   deepStrictEqual(
     runFromInterpreted(`
 (function push array value (set array (length array) value))
@@ -15,24 +23,24 @@ it('interpretation should work', () => {
 (function sort arr (block
   (if (<= (length arr) 1) arr
   (block
-    (:= pivot (get arr 0))
-    (:= left_arr (Array 0))
-    (:= right_arr (Array 0))
+    (let pivot (get arr 0))
+    (let left_arr (Array 0))
+    (let right_arr (Array 0))
 (loop iterate i bounds (block
-    (:= current (get arr i))
+    (let current (get arr i))
     (if (< current pivot) 
         (push left_arr current)
         (push right_arr current))
     (if (< i bounds) (iterate (+ i 1) bounds))))
     (iterate 1 (- (length arr) 1))
 (if (and (length left_arr) (length right_arr)))
-(:= left (sort left_arr))
-(:= right (sort right_arr))
+(let left (sort left_arr))
+(let right (sort right_arr))
 (concat (push left pivot) right)))))
 (function reverse array (block
-  (:= len (length array))
-  (:= reversed (Array len))
-  (:= offset (- len 1))
+  (let len (length array))
+  (let reversed (Array len))
+  (let offset (- len 1))
   (loop iterate i bounds (block
     (set reversed (- offset i) (get array i))
     (if (< i bounds) (iterate (+ i 1) bounds) reversed)))
@@ -47,9 +55,9 @@ it('interpretation should work', () => {
     [8, 3, 1, 0, -2]
   )
   strictEqual(
-    runFromInterpreted(`(:= find (lambda array callback (block
+    runFromInterpreted(`(let find (lambda array callback (block
       (loop iterate i bounds (block
-        (:= current (get array i))
+        (let current (get array i))
         (if (and (not (callback current i)) (< i bounds))
           (iterate (+ i 1) bounds) 
           current)))
@@ -59,20 +67,20 @@ it('interpretation should work', () => {
   )
   deepStrictEqual(
     runFromInterpreted(`
-    (:= push (lambda array value (set array (length array) value)))
-    (:= for_each (lambda array callback (block
+    (let push (lambda array value (set array (length array) value)))
+    (let for_each (lambda array callback (block
       (loop iterate i bounds (block
         (callback (get array i) i)
         (if (< i bounds) (iterate (+ i 1) bounds) array)))
       (iterate 0 (- (length array) 1)))))
-    (:= deep_flat (lambda arr (block 
-      (:= new_array (Array 0)) 
+    (let deep_flat (lambda arr (block 
+      (let new_array (Array 0)) 
       (loop flatten item (if (Arrayp item) (for_each item (lambda x _ (flatten x))) 
       (push new_array item)))
       (flatten arr) 
       new_array
     )))
-    (:= arr (
+    (let arr (
     Array 
     (Array 1 2) 
     (Array 1 2) 
@@ -91,9 +99,9 @@ it('interpretation should work', () => {
     100
   )
   deepStrictEqual(
-    runFromInterpreted(`(:= push (lambda array value (set array (length array) value)))
-  (:= concat (lambda array1 array2 (block
-    (:= iterate (lambda i bounds (block
+    runFromInterpreted(`(let push (lambda array value (set array (length array) value)))
+  (let concat (lambda array1 array2 (block
+    (let iterate (lambda i bounds (block
     (push array1 (get array2 i))
     (if (< i bounds) 
       (iterate (+ i 1) bounds)
@@ -111,47 +119,47 @@ it('interpretation should work', () => {
     [1, 2, 3, -1, 'a', 'b', 'c', 1, 2, 3, 4, 5, 6, 7]
   )
   strictEqual(
-    runFromInterpreted(`(:= range (lambda start end (block 
-  (:= array (Array 0))
-  (:= iterate (lambda i bounds (block
+    runFromInterpreted(`(let range (lambda start end (block 
+  (let array (Array 0))
+  (let iterate (lambda i bounds (block
     (set array i (+ i start))
     (if (< i bounds) (iterate (+ i 1) bounds) array)
   )))
   (iterate 0 (- end start)))))
   
   
-  (:= map (lambda array callback (block 
-  (:= new_array (Array 0))
-  (:= i 0)
-  (:= iterate (lambda i bounds (block
+  (let map (lambda array callback (block 
+  (let new_array (Array 0))
+  (let i 0)
+  (let iterate (lambda i bounds (block
     (set new_array i (callback (get array i) i))
     (if (< i bounds) (iterate (+ i 1) bounds) new_array)
   )))
   (iterate 0 (- (length array) 1)))))
   
   
-  (:= filter (lambda array callback (block 
-  (:= new_array (Array 0))
-  (:= i 0)
-  (:= iterate (lambda i bounds (block
-    (:= current (get array i))
+  (let filter (lambda array callback (block 
+  (let new_array (Array 0))
+  (let i 0)
+  (let iterate (lambda i bounds (block
+    (let current (get array i))
     (if (callback current i) 
       (set new_array (length new_array) current))
     (if (< i bounds) (iterate (+ i 1) bounds) new_array)
   )))
   (iterate 0 (- (length array) 1)))))
   
-  (:= reduce (lambda array callback initial (block
-    (:= iterate (lambda i bounds (block
+  (let reduce (lambda array callback initial (block
+    (let iterate (lambda i bounds (block
       (= initial (callback initial (get array i) i))
       (if (< i bounds) (iterate (+ i 1) bounds) initial)
     )))
   (iterate 0 (- (length array) 1)))))
   
 
-  (:= is_odd (lambda x i (eq (mod x 2) 1)))
-  (:= mult_2 (lambda x i (* x 2)))
-  (:= sum (lambda a x i (+ a x)))
+  (let is_odd (lambda x i (eq (mod x 2) 1)))
+  (let mult_2 (lambda x i (* x 2)))
+  (let sum (lambda a x i (+ a x)))
   
   (do 
   (Array 1 2 3 4 5 6 7 101) 
@@ -165,7 +173,7 @@ it('interpretation should work', () => {
 
   deepStrictEqual(
     runFromInterpreted(`
-  (:= sample 
+  (let sample 
     "1721
     979
     366
@@ -173,34 +181,34 @@ it('interpretation should work', () => {
     675
     1456")
     
-    (:= push (lambda array value (set array (length array) value)))
+    (let push (lambda array value (set array (length array) value)))
     
-    (:= max (lambda a b (if (> a b) a b)))
-    (:= min (lambda a b (if (< a b) a b)))
+    (let max (lambda a b (if (> a b) a b)))
+    (let min (lambda a b (if (< a b) a b)))
     
-    (:= map (lambda array callback (block 
-    (:= new_array (Array 0))
-    (:= i 0)
-    (:= iterate (lambda i bounds (block
+    (let map (lambda array callback (block 
+    (let new_array (Array 0))
+    (let i 0)
+    (let iterate (lambda i bounds (block
       (set new_array i (callback (get array i) i))
       (if (< i bounds) (iterate (+ i 1) bounds) new_array)
     )))
     (iterate 0 (- (length array) 1)))))
     
-    (:= reduce (lambda array callback initial (block
-      (:= iterate (lambda i bounds (block
+    (let reduce (lambda array callback initial (block
+      (let iterate (lambda i bounds (block
         (= initial (callback initial (get array i) i))
         (if (< i bounds) (iterate (+ i 1) bounds) initial))))
     (iterate 0 (- (length array) 1)))))
-    (:= join (lambda array delim (reduce array (lambda a x i (++ a delim x)) "")))
-    (:= string_to_array (lambda string delim 
+    (let join (lambda array delim (reduce array (lambda a x i (++ a delim x)) "")))
+    (let string_to_array (lambda string delim 
     (reduce (... string) (lambda a x i (block
         (if (eq x delim) 
           (push a (Array 0)) 
           (block (push (get a -1) x) a)
         )))(push (Array 0) (Array 0)))))
     
-     (:= split_by_lines (lambda string (map (string_to_array string (esc "n")) (lambda x i (join x "")))))
+     (let split_by_lines (lambda string (map (string_to_array string (esc "n")) (lambda x i (join x "")))))
      
      (map (map 
       (split_by_lines sample) 

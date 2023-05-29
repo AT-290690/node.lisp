@@ -6,7 +6,13 @@ const Helpers = {
     has: true,
   },
   set: {
-    source: `_set = (array, index, value) => { array[index] = value; return array }`,
+    source: `_set = (array, index, value) => { 
+      if (index < 0) {
+       const target = array.length + index
+       while (array.length !== target) array.pop()
+      } else array[index] = value; 
+      return array 
+  }`,
     has: false,
   },
   cast: {
@@ -65,7 +71,7 @@ const compile = (tree, Locals) => {
           return res !== undefined ? res.toString().trim() : ''
         }
       }
-      case ':=': {
+      case 'let': {
         let name,
           out = '(('
         for (let i = 0, len = Arguments.length; i < len; ++i) {
@@ -193,6 +199,8 @@ const compile = (tree, Locals) => {
           Arguments[1],
           Locals
         )});`
+      case '/':
+        return `(1/${compile(Arguments[0], Locals)});`
       case '+=':
         return `(${compile(Arguments[0], Locals)}+=${
           Arguments[1] != undefined ? compile(Arguments[1], Locals) : 1
