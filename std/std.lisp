@@ -8,6 +8,10 @@
 (function is_even x i (eq (mod x 2) 0))
 ;; push
 (function push array value (set array (length array) value))
+;; pop
+(function pop array value (set array -1))
+;; is_in_bounds
+(function is_in_bounds array index (or (< index (length array) (>= index 0))))
 ;; abs
 (function abs n (- (^ n (>> n 31)) (>> n 31)))
 ;; floor
@@ -21,7 +25,7 @@
                     (let q (* a (/ b)))
                     (if (< (mod a b) 0) (if (> b 0) (- q 1) (+ q 1)) q)))
 ;; join
-(function join array delim (reduce array (lambda a x i o (++ a delim x)) ""))
+(function join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
 ;; string_to_array
 (function string_to_array string delim 
                       (reduce (... string) 
@@ -101,7 +105,7 @@
 (function find array callback (block
   (loop iterate i bounds (block
     (let current (get array i))
-    (if (and (not (callback current i)) (< i bounds))
+    (if (and (not (callback current i array)) (< i bounds))
       (iterate (+ i 1) bounds) 
       current)))
       (iterate 0 (- (length array) 1))))
@@ -133,21 +137,6 @@
     (if (< i bounds) (iterate (+ i 1) bounds) reversed)))
   (iterate 0 offset)))
 ;; binary_search
-;; (function binary_search 
-;;         arr target by greather start end
-;;   (loop search 
-;;         arr target start end (block
-;;     (if (<= start end) 
-;;       (block 
-;;         (let index (floor (* (+ start end) 0.5)))
-;;         (let current (get arr index))
-;;         (let identity (by current))
-;;         (if (eq current target) 
-;;           current
-;;           (if (eq (greather current)) 
-;;             (search arr target start (- index 1))
-;;             (search arr target (+ index 1) end))))))))
-
 (function binary_search 
         array target (block
   (loop search 
@@ -162,4 +151,31 @@
             (search arr target (+ index 1) end)
             )))))) 
    (search array target 0 (length array))))
+;; hash_table_index
+(function hash_table_index table key (block
+  (let total 0)
+  (let prime_num 31)
+  (= key (... key))
+  (loop find_hash_index i bounds (block 
+    (let letter (get key i))
+    (let value (- (char letter 0) 96))
+    (= total (mod (+ (* total prime_num) value) (length table)))
+    (if (< i bounds) (find_hash_index (+ i 1) bounds) total)))
+  (find_hash_index 0 (min (- (length key) 1) 100))))
+;; hash_table_set
+(function hash_table_set table key value (block
+  (let idx (hash_table_index table key))
+  (if (not (is_in_bounds table idx)) (set table idx (Array 0)))
+  (do table (get idx) (push (Array key value)))
+  (table)))
+;; hash_table_get
+(function hash_table_get table key (block
+  (let idx (hash_table_index table key))
+  (if (is_in_bounds table idx) 
+    (block
+      (let current (get table idx))
+      (do current
+        (find (lambda x i o (eq key 
+                (do x (get 0)))))
+        (get 1))))))
 ;; std of wisp

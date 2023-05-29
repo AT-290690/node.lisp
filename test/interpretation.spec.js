@@ -200,7 +200,7 @@ it('interpretation should work', () => {
         (= initial (callback initial (get array i) i))
         (if (< i bounds) (iterate (+ i 1) bounds) initial))))
     (iterate 0 (- (length array) 1)))))
-    (let join (lambda array delim (reduce array (lambda a x i (++ a delim x)) "")))
+    (let join (lambda array delim (reduce array (lambda a x i (concatenate a delim x)) "")))
     (let string_to_array (lambda string delim 
     (reduce (... string) (lambda a x i (block
         (if (eq x delim) 

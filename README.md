@@ -4,7 +4,7 @@ Lisp for web
 
 ```lisp
 (let hello "Hello World")
-(log (++ hello "!!!"))
+(log (concatenate hello "!!!"))
 ```
 
 ```lisp

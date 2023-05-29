@@ -2,7 +2,7 @@ const CAST_BOOLEAN_TO_NUMBER = true
 const Extensions = {}
 const Helpers = {
   log: {
-    source: `var log = (msg) => console.log(msg), msg`,
+    source: `var log = (msg) => { console.log(msg), msg }`,
     has: true,
   },
   set: {
@@ -91,6 +91,11 @@ const compile = (tree, Locals) => {
         const arg = Arguments[0]
         if (arg.type === 'word') return `((${arg.value}=${res}),${arg.value});`
       }
+      case 'char':
+        return `((${compile(Arguments[0], Locals)}).charCodeAt(${compile(
+          Arguments[1],
+          Locals
+        )}));`
       case 'Stringp':
         return handleBoolean(
           `(typeof(${compile(Arguments[0], Locals)})==='string');`
@@ -110,7 +115,7 @@ const compile = (tree, Locals) => {
       case '...':
         return `[...${compile(Arguments[0], Locals)}];`
       case 'length':
-        return `${compile(Arguments[0], Locals)}.length`
+        return `(${compile(Arguments[0], Locals)}).length`
       case 'get':
         return `${compile(Arguments[0], Locals)}.at(${compile(
           Arguments[1],
@@ -173,7 +178,7 @@ const compile = (tree, Locals) => {
         return `(${parseArgs(Arguments, Locals, '&&')});`
       case 'or':
         return `(${parseArgs(Arguments, Locals, '||')});`
-      case '++':
+      case 'concatenate':
         return '(' + parseArgs(Arguments, Locals, '+') + ');'
       case 'eq':
         return handleBoolean(`(${parseArgs(Arguments, Locals, '===')});`)

@@ -1,10 +1,10 @@
 import { evaluate } from './interpreter.js'
 const maxCallstackLimitInterpretation = 256
 export const tokens = {
-  ['++']: (args, env) => {
+  ['concatenate']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        `Invalid number of arguments for (++), expected > 1 but got ${args.length}.`
+        `Invalid number of arguments for (concatenate), expected > 1 but got ${args.length}.`
       )
     return args.map((x) => evaluate(x, env)).reduce((a, b) => a + b, '')
   },
@@ -77,6 +77,19 @@ export const tokens = {
         'Invalid number of arguments for (Stringp) (1 required)'
       )
     return +(typeof evaluate(args[0], env) === 'string')
+  },
+  ['char']: (args, env) => {
+    if (args.length !== 2)
+      throw new RangeError(
+        'Invalid number of arguments for (char) (2 required)'
+      )
+    const string = evaluate(args[0], env)
+    if (typeof string !== 'string')
+      throw new TypeError('First argument of (char) must be an (String).')
+    const index = evaluate(args[1], env)
+    if (!Number.isInteger(index) || index < 0)
+      throw new TypeError('Second argument of (char) must be an (+ Integer).')
+    return string.charCodeAt(index)
   },
   ['*']: (args, env) =>
     args.map((x) => evaluate(x, env)).reduce((a, b) => a * b),
