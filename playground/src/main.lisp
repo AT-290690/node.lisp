@@ -39,10 +39,27 @@
                 (do x (get 0)))))
         (get 1))))))
 
-(do 
-  (' (Array 0) (Array 0) (Array 0) (Array 0) (Array 0))
-  (hash_table_set "x" 10)
-    (hash_table_set "m" 210)
-    (hash_table_get "m")
-  (log)
-)
+; (do 
+;   (' (Array 0) (Array 0) (Array 0) (Array 0) (Array 0))
+;   (hash_table_set "x" 10)
+;     (hash_table_set "m" 210)
+;     (hash_table_get "m")
+;   (log)
+; )
+
+(function duplicates string (block
+  (let array (...string))
+  (let bitmask 0)
+  (let zero (char "a" 0))
+  (let count 0)
+  (loop interate  
+    (block
+      (let code (do array (get i) (- zero)))
+      (let mask (<< 1 code))
+      (if (not (eq (& bitmask mask) 0)) 
+          (= count (+ count 1))
+          (= bitmask (| bitmask mask))
+      )
+      (if (< i bounds)) (iterate (+ i 1) bounds) bitmask
+    ))
+    (iterate 0 (- (length array) 1))))

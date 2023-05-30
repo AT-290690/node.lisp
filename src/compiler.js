@@ -5,6 +5,13 @@ const Helpers = {
     source: `var log = (msg) => { console.log(msg), msg }`,
     has: true,
   },
+  regexp: {
+    source: `_regexp = (string, regex) => {
+      const match = string.match(new RegExp(regex, 'g'))
+      return match == undefined ? [] : [...match]
+    }`,
+    has: false,
+  },
   set: {
     source: `_set = (array, index, value) => { 
       if (index < 0) {
@@ -96,6 +103,14 @@ const compile = (tree, Locals) => {
           Arguments[1],
           Locals
         )}));`
+      case 'format':
+        return `((${compile(Arguments[0], Locals)}).split(${compile(
+          Arguments[1],
+          Locals
+        )}));`
+      case 'regex_match':
+        Helpers.regexp.has = true
+        return `_regexp(${parseArgs(Arguments, Locals)});`
       case 'Stringp':
         return handleBoolean(
           `(typeof(${compile(Arguments[0], Locals)})==='string');`
@@ -282,7 +297,7 @@ export const compileToJs = (AST, extensions = {}, helpers = {}, tops = []) => {
   const top = `${tops.join('\n')}${Object.values(Helpers)
     .filter((x) => x.has)
     .map((x) => x.source)
-    .join(',')};\nvar _NL = "\\n";\n${
+    .join(',')};\nvar _NL="\\n";\n${
     vars.size ? `var ${[...vars].join(',')};` : ''
   }`
   return { top, program }

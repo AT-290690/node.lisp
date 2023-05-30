@@ -33,7 +33,7 @@
                                   (if (eq x delim) (push a (Array 0)) (block 
                                     (push (get a -1) x) a))))(push (Array 0) (Array 0))))
 ;; split_by_lines
-(function split_by_lines string (map (string_to_array string (esc "n")) (lambda x i (join x ""))))
+(function split_by_lines string (map (string_to_array string (esc "n")) (lambda x i o (join x ""))))
 ;; concat
 (function concat array1 array2 (block
   (loop iterate i bounds (block
@@ -64,7 +64,7 @@
   (let new_array (Array 0))
   (let i 0)
   (loop iterate i bounds (block
-    (set new_array i (callback (get array i) i))
+    (set new_array i (callback (get array i) i array))
     (if (< i bounds) (iterate (+ i 1) bounds) new_array)))
   (iterate 0 (- (length array) 1))))
 ;; for_each
@@ -96,7 +96,7 @@
 ;; deep_flat
 (function deep_flat arr (block 
   (let new_array (Array 0)) 
-  (loop flatten item (if (Arrayp item) (for_each item (lambda x _ (flatten x))) 
+  (loop flatten item (if (Arrayp item) (for_each item (lambda x _ o (flatten x))) 
   (push new_array item)))
   (flatten arr) 
   new_array

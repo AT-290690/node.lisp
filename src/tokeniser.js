@@ -278,6 +278,38 @@ export const tokens = {
       `Tried setting an undefined variable: ${entityName} using (=)`
     )
   },
+  ['regex_match']: (args, env) => {
+    if (args.length < 2)
+      throw new RangeError(
+        'Invalid number of arguments to (regex_match) [2 required]'
+      )
+    const string = evaluate(args[0], env)
+    if (typeof string !== 'string')
+      throw new TypeError(
+        'First argument of (regex_match) has to be a (string)'
+      )
+    const regex = evaluate(args[1], env)
+    if (typeof regex !== 'string')
+      throw new TypeError(
+        'Second argument of (regex_match) has to be a (string)'
+      )
+    const match = string.match(new RegExp(regex, 'g'))
+    return match == undefined ? [] : [...match]
+  },
+  ['format']: (args, env) => {
+    if (args.length < 2)
+      throw new RangeError(
+        'Invalid number of arguments to (format) [2 required]'
+      )
+    const string = evaluate(args[0], env)
+    if (typeof string !== 'string')
+      throw new TypeError('First argument of (format) has to be a (string)')
+    const delim = evaluate(args[1], env)
+    if (typeof delim !== 'string')
+      throw new TypeError('Second argument of (format) has to be a (string)')
+
+    return string.split(delim)
+  },
   ['loop']: (args, env) => {
     if (args.length < 2)
       throw new RangeError('Invalid number of arguments to (loop) [2 required]')
