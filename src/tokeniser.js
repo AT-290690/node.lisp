@@ -173,7 +173,6 @@ export const tokens = {
         throw new RangeError(`Trying to set a null value in (Array) at (set).`)
       array[index] = value
     }
-
     return array
   },
   ['log']: (args, env) => {
@@ -194,7 +193,7 @@ export const tokens = {
       )
     const body = args.at(-1)
     const name = args[0].value
-    const fn = (props, env) => {
+    const fn = (props, scope) => {
       if (props.length > params.length) {
         throw new RangeError(
           `More arguments for (function ${params
@@ -212,20 +211,20 @@ export const tokens = {
         )
       const localEnv = Object.create(env)
       for (let i = 0; i < props.length; ++i)
-        localEnv[params[i].value] = evaluate(props[i], localEnv)
+        localEnv[params[i].value] = evaluate(props[i], scope)
       return evaluate(body, localEnv)
     }
     env[name] = fn
     return fn
   },
-  ['lambda']: (args) => {
+  ['lambda']: (args, env) => {
     const params = args.slice(0, -1)
     if (!params.length)
       throw new RangeError(
         'Invalid number of arguments for (lambda) (>= 1 required)'
       )
     const body = args.at(-1)
-    return (props, env) => {
+    return (props, scope) => {
       if (props.length !== params.length)
         throw new RangeError(
           `Not all arguments for (lambda ${params
@@ -234,7 +233,7 @@ export const tokens = {
         )
       const localEnv = Object.create(env)
       for (let i = 0; i < props.length; ++i)
-        localEnv[params[i].value] = evaluate(props[i], localEnv)
+        localEnv[params[i].value] = evaluate(props[i], scope)
       return evaluate(body, localEnv)
     }
   },
@@ -333,7 +332,6 @@ export const tokens = {
             .join(' ')}) are provided.`
         )
       const localEnv = Object.create(env)
-
       for (let i = 0; i < props.length; ++i)
         localEnv[params[i].value] = evaluate(props[i], localEnv)
       ++count
