@@ -3,9 +3,9 @@
 ;; min
 (function min a b (if (< a b) a b))
 ;; is_odd
-(function is_odd x i (eq (mod x 2) 1))
+(function is_odd x i (= (mod x 2) 1))
 ;; is_even
-(function is_even x i (eq (mod x 2) 0))
+(function is_even x i (= (mod x 2) 0))
 ;; push
 (function push array value (set array (length array) value))
 ;; pop
@@ -30,7 +30,7 @@
 (function string_to_array string delim 
                       (reduce (... string) 
                         (lambda a x i o (block
-                                  (if (eq x delim) (push a (Array 0)) (block 
+                                  (if (= x delim) (push a (Array 0)) (block 
                                     (push (get a -1) x) a))))(push (Array 0) (Array 0))))
 ;; split_by_lines
 (function split_by_lines string (map (string_to_array string (esc "n")) (lambda x i o (join x ""))))
@@ -86,7 +86,7 @@
 ;; reduce
 (function reduce array callback initial (block
   (loop iterate i bounds (block
-    (= initial (callback initial (get array i) i array))
+    (let* initial (callback initial (get array i) i array))
     (if (< i bounds) (iterate (+ i 1) bounds) initial)))
   (iterate 0 (- (length array) 1))))
 ;; sum_array
@@ -145,7 +145,7 @@
     (if (<= start end) (block 
         (let index (floor (* (+ start end) 0.5)))
         (let current (get arr index))
-        (if (eq target current) target
+        (if (= target current) target
           (if (> current target) 
             (search arr target start (- index 1))
             (search arr target (+ index 1) end)
@@ -155,11 +155,11 @@
 (function hash_table_index table key (block
   (let total 0)
   (let prime_num 31)
-  (= key (... key))
+  (let* key (... key))
   (loop find_hash_index i bounds (block 
     (let letter (get key i))
     (let value (- (char letter 0) 96))
-    (= total (mod (+ (* total prime_num) value) (length table)))
+    (let* total (mod (+ (* total prime_num) value) (length table)))
     (if (< i bounds) (find_hash_index (+ i 1) bounds) total)))
   (find_hash_index 0 (min (- (length key) 1) 100))))
 ;; hash_table_set
@@ -175,7 +175,7 @@
     (block
       (let current (get table idx))
       (do current
-        (find (lambda x i o (eq key 
+        (find (lambda x i o (= key 
                 (do x (get 0)))))
         (get 1))))))
 ;; std of wisp

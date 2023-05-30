@@ -11,7 +11,7 @@ it('interpretation should work', () => {
 (function string_to_array string delim 
                       (reduce (... string) 
                         (lambda a x i o (block
-                                  (if (eq x delim) (push a (Array 0)) (block 
+                                  (if (= x delim) (push a (Array 0)) (block 
                                     (push (get a -1) x) a))))(push (Array 0) (Array 0))))
 (function join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
 
@@ -33,7 +33,7 @@ it('interpretation should work', () => {
 
 (function reduce array callback initial (block
   (loop iterate i bounds (block
-    (= initial (callback initial (get array i) i array))
+    (let* initial (callback initial (get array i) i array))
     (if (< i bounds) (iterate (+ i 1) bounds) initial)))
   (iterate 0 (- (length array) 1))))
 
@@ -62,7 +62,7 @@ it('interpretation should work', () => {
     (if (<= start end) (block 
         (let index (floor (* (+ start end) 0.5)))
         (let current (get arr index))
-        (if (eq target current) target
+        (if (= target current) target
           (if (> current target) 
             (search arr target start (- index 1))
             (search arr target (+ index 1) end))))))) 
@@ -136,7 +136,7 @@ it('interpretation should work', () => {
   (iterate 0 (- (length array) 1))))
 (function reduce array callback initial (block
   (loop iterate i bounds (block
-    (= initial (callback initial (get array i) i array))
+    (let* initial (callback initial (get array i) i array))
     (if (< i bounds) (iterate (+ i 1) bounds) initial)))
   (iterate 0 (- (length array) 1))))
 
@@ -159,10 +159,10 @@ it('interpretation should work', () => {
       (let ch (get array i))
       (let code (- (char ch 0) zero))
       (let mask (<< 1 code))
-      (if (and (if (eq ch letter) (= has_at_least_one 1))
-          (not (eq (& bitmask mask) 0))) 
-          (= count (+ count 1))
-          (= bitmask (| bitmask mask)))
+      (if (and (if (= ch letter) (let* has_at_least_one 1))
+          (not (= (& bitmask mask) 0))) 
+          (let* count (+ count 1))
+          (let* bitmask (| bitmask mask)))
       (if (< i bounds) (iterate (+ i 1) bounds) 
       (+ count has_at_least_one))))
       (iterate 0 (- (length array) 1))))
@@ -170,8 +170,8 @@ it('interpretation should work', () => {
 (function solve2 array letter x y (block 
 (let a (get array (- x 1)))
 (let b (get array (- y 1)))
-(let left (eq letter a))
-(let right (eq letter b))
+(let left (= letter a))
+(let right (= letter b))
 (and (not (and left right)) (or left right))
 ))
 
@@ -264,7 +264,7 @@ it('interpretation should work', () => {
           (iterate (+ i 1) bounds) 
           current)))
           (iterate 0 (- (length array) 1)))))
-    (find (' 1 2 3 4 5 6) (lambda x i (eq i 2)))`),
+    (find (' 1 2 3 4 5 6) (lambda x i (= i 2)))`),
     3
   )
   deepStrictEqual(
@@ -353,13 +353,13 @@ it('interpretation should work', () => {
   
   (let reduce (lambda array callback initial (block
     (let iterate (lambda i bounds (block
-      (= initial (callback initial (get array i) i))
+      (let* initial (callback initial (get array i) i))
       (if (< i bounds) (iterate (+ i 1) bounds) initial)
     )))
   (iterate 0 (- (length array) 1)))))
   
 
-  (let is_odd (lambda x i (eq (mod x 2) 1)))
+  (let is_odd (lambda x i (= (mod x 2) 1)))
   (let mult_2 (lambda x i (* x 2)))
   (let sum (lambda a x i (+ a x)))
   
@@ -399,13 +399,13 @@ it('interpretation should work', () => {
     
     (let reduce (lambda array callback initial (block
       (let iterate (lambda i bounds (block
-        (= initial (callback initial (get array i) i))
+        (let* initial (callback initial (get array i) i))
         (if (< i bounds) (iterate (+ i 1) bounds) initial))))
     (iterate 0 (- (length array) 1)))))
     (let join (lambda array delim (reduce array (lambda a x i (concatenate a delim x)) "")))
     (let string_to_array (lambda string delim 
     (reduce (... string) (lambda a x i (block
-        (if (eq x delim) 
+        (if (= x delim) 
           (push a (Array 0)) 
           (block (push (get a -1) x) a)
         )))(push (Array 0) (Array 0)))))

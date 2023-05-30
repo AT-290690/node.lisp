@@ -238,6 +238,20 @@ export const tokens = {
     }
   },
   ['not']: (args, env) => +!evaluate(args[0], env),
+  ['=']: (args, env) => {
+    const a = evaluate(args[0], env)
+    const b = evaluate(args[1], env)
+    if (
+      Array.isArray(a) ||
+      Array.isArray(b) ||
+      typeof a === 'function' ||
+      typeof b === 'function'
+    )
+      throw new TypeError(
+        'Invalid use of (=), some arguments are not primitive'
+      )
+    return +(a === b)
+  },
   ['eq']: (args, env) => +(evaluate(args[0], env) === evaluate(args[1], env)),
   ['<']: (args, env) => +(evaluate(args[0], env) < evaluate(args[1], env)),
   ['>']: (args, env) => +(evaluate(args[0], env) > evaluate(args[1], env)),
@@ -263,7 +277,7 @@ export const tokens = {
     env[name] = value
     return value
   },
-  ['=']: (args, env) => {
+  ['let*']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError('Invalid number of arguments to = [2 required]')
     const entityName = args[0].value
@@ -274,7 +288,7 @@ export const tokens = {
         return value
       }
     throw new ReferenceError(
-      `Tried setting an undefined variable: ${entityName} using (=)`
+      `Tried setting an undefined variable: ${entityName} using (let*)`
     )
   },
   ['regex_match']: (args, env) => {
@@ -346,8 +360,14 @@ export const tokens = {
         `Invalid number of arguments for (\`) ${args.length}`
       )
     const value = evaluate(args[0], env)
-    if (typeof value === 'string' || value == undefined) return Number(value)
-    else if (typeof value === 'number') return value.toString()
+    if (typeof value === 'string' || value == undefined) {
+      const num = Number(value)
+      if (isNaN(num))
+        throw new TypeError(
+          `Attempting to convert Not a Number ("${value}") to a Number at (\`)`
+        )
+      return num
+    } else if (typeof value === 'number') return value.toString()
     else throw new TypeError('Can only cast number or string at (`)')
   },
   ['bit']: (args, env) => {

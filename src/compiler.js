@@ -79,21 +79,11 @@ const compile = (tree, Locals) => {
         }
       }
       case 'let': {
-        let name,
-          out = '(('
-        for (let i = 0, len = Arguments.length; i < len; ++i) {
-          const arg = Arguments[i]
-          if (i % 2 === 0 && arg.type === 'word') {
-            name = arg.value
-            Locals.add(name)
-          } else {
-            out += `${name}=${compile(arg, Locals)}${i !== len - 1 ? ',' : ''}`
-          }
-        }
-        out += `), ${name});`
-        return out
+        let name = Arguments[0].value
+        Locals.add(name)
+        return `((${name}=${compile(Arguments[1], Locals)}), ${name});`
       }
-      case '=': {
+      case 'let*': {
         const res = compile(Arguments[1], Locals)
         const arg = Arguments[0]
         if (arg.type === 'word') return `((${arg.value}=${res}),${arg.value});`
@@ -196,6 +186,7 @@ const compile = (tree, Locals) => {
       case 'concatenate':
         return '(' + parseArgs(Arguments, Locals, '+') + ');'
       case 'eq':
+      case '=':
         return handleBoolean(`(${parseArgs(Arguments, Locals, '===')});`)
       case '>=':
       case '<=':
