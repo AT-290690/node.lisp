@@ -23,7 +23,18 @@ const Helpers = {
     has: false,
   },
   cast: {
-    source: `_cast = (value) => typeof value === 'number' ? String(value) : Number(value)`,
+    source: `_cast = (type, value) => {
+      switch (type){
+       case 'String':
+         return value.toString()
+       case 'Number':
+         return Number(value)
+       case 'Array':
+         return [value]
+       default:
+         return 0
+      }
+    }`,
     has: false,
   },
   tco: {
@@ -241,9 +252,12 @@ const compile = (tree, Locals) => {
         if (conditionStack.length === 3) conditionStack.push(':', 0, ';')
         return `(${conditionStack.join('')});`
       }
-      case '`':
+      case 'type':
         Helpers.cast.has = true
-        return `_cast(${compile(Arguments[0], Locals)})`
+        return `_cast("${Arguments[0].value}", ${compile(
+          Arguments[1],
+          Locals
+        )})`
       case 'do': {
         let inp = Arguments[0]
         for (let i = 1; i < Arguments.length; ++i)

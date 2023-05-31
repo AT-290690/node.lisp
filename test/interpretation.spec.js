@@ -5,7 +5,7 @@ it('interpretation should work', () => {
     runFromInterpreted(`
     (function floor n (| n 0))
 (function push array value (set array (length array) value))
-(function array_to_numbers array (map array (lambda x i (\` (x)))))
+(function array_to_numbers array (map array (lambda x i (type Number (x)))))
 (function product_array array (reduce array (lambda a b i o (* a b)) 1))
 (function split_by_lines string (format string (esc "n")))
 (function string_to_array string delim 
@@ -180,7 +180,7 @@ it('interpretation should work', () => {
   (map (lambda x i o
               (do x
                 (format "-") 
-                (map (lambda y i o (\` y))))))
+                (map (lambda y i o (type Number y))))))
    (map (lambda x i o (do x 
             (push (get policy i)) 
             (push (get inputs i))
@@ -191,7 +191,7 @@ it('interpretation should work', () => {
   (reduce (lambda a x i o (+ a (get x -1))) 0)
 )
 (do occ
-  (map (lambda x i o (do x (format "-") (map (lambda y i o (\` y))))))
+  (map (lambda x i o (do x (format "-") (map (lambda y i o (type Number y))))))
    (map (lambda x i o (do x 
             (push (get policy i)) 
             (push (get inputs i)))))
@@ -414,7 +414,7 @@ it('interpretation should work', () => {
      
      (map (map 
       (split_by_lines sample) 
-        (lambda x i (\` (x)))) 
+        (lambda x i (type Number (x)))) 
         (lambda x i (- 2020 x)))
   `),
     [299, 1041, 1654, 1721, 1345, 564]

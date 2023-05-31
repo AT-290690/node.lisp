@@ -354,21 +354,27 @@ export const tokens = {
     env[name] = fn
     return fn
   },
-  ['`']: (args, env) => {
-    if (args.length !== 1)
+  ['String']: () => '',
+  ['Number']: () => 0,
+  ['type']: (args, env) => {
+    if (args.length !== 2)
       throw new RangeError(
-        `Invalid number of arguments for (\`) ${args.length}`
+        `Invalid number of arguments for (type) ${args.length}`
       )
-    const value = evaluate(args[0], env)
-    if (typeof value === 'string' || value == undefined) {
+    const type = args[0]
+    const value = evaluate(args[1], env)
+    if (value == undefined)
+      throw ReferenceError('Trying to access undefined value at (type)')
+    if (type.value === 'Number') {
       const num = Number(value)
       if (isNaN(num))
         throw new TypeError(
-          `Attempting to convert Not a Number ("${value}") to a Number at (\`)`
+          `Attempting to convert Not a Number ("${value}") to a Number at (type)`
         )
       return num
-    } else if (typeof value === 'number') return value.toString()
-    else throw new TypeError('Can only cast number or string at (`)')
+    } else if (type.value === 'String') return value.toString()
+    else if (type.value === 'Array') return [value]
+    else throw new TypeError('Can only cast number or string at (type)')
   },
   ['bit']: (args, env) => {
     if (args.length !== 1)
