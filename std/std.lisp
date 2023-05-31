@@ -141,7 +141,6 @@
         array target (block
   (loop search 
         arr target start end (block
-        (log start end)
     (if (<= start end) (block 
         (let index (floor (* (+ start end) 0.5)))
         (let current (get arr index))

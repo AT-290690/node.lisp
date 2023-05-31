@@ -26,17 +26,11 @@ export const tokens = {
     const number = evaluate(args[0], env)
     if (typeof number !== 'number')
       throw new TypeError(`Arguments of (/) is not a number.`)
-    return 1 / number
-  },
-  ['+']: (args, env) => {
-    if (args.length < 2)
-      throw new RangeError(
-        `Invalid number of arguments for (+), expected > 1 but got ${args.length}.`
+    if (number === 0)
+      throw new TypeError(
+        `Argument of (/) can't be a (0) (devision by 0 is not allowed).`
       )
-    const operands = args.map((x) => evaluate(x, env))
-    if (!operands.every((x) => typeof x === 'number'))
-      throw new TypeError(`Not all arguments for (+) are numbers.`)
-    return operands.reduce((a, b) => a + b)
+    return 1 / number
   },
   ['...']: (args, env) => {
     if (args.length !== 1)
@@ -91,12 +85,45 @@ export const tokens = {
       throw new TypeError('Second argument of (char) must be an (+ Integer).')
     return string.charCodeAt(index)
   },
-  ['*']: (args, env) =>
-    args.map((x) => evaluate(x, env)).reduce((a, b) => a * b),
-  ['-']: (args, env) =>
-    args.map((x) => evaluate(x, env)).reduce((a, b) => a - b),
-  ['if']: (args, env) =>
-    evaluate(args[0], env) ? evaluate(args[1], env) : evaluate(args[2], env),
+  ['+']: (args, env) => {
+    if (args.length < 2)
+      throw new RangeError(
+        `Invalid number of arguments for (+), expected > 1 but got ${args.length}.`
+      )
+    const operands = args.map((x) => evaluate(x, env))
+    if (!operands.every((x) => typeof x === 'number'))
+      throw new TypeError(`Not all arguments for (+) are numbers.`)
+    return operands.reduce((a, b) => a + b)
+  },
+  ['*']: (args, env) => {
+    if (args.length < 2)
+      throw new RangeError(
+        `Invalid number of arguments for (*), expected > 1 but got ${args.length}.`
+      )
+    const operands = args.map((x) => evaluate(x, env))
+    if (!operands.every((x) => typeof x === 'number'))
+      throw new TypeError(`Not all arguments for (*) are numbers.`)
+    return operands.reduce((a, b) => a * b)
+  },
+  ['-']: (args, env) => {
+    if (args.length < 2)
+      throw new RangeError(
+        `Invalid number of arguments for (-), expected > 1 but got ${args.length}.`
+      )
+    const operands = args.map((x) => evaluate(x, env))
+    if (!operands.every((x) => typeof x === 'number'))
+      throw new TypeError(`Not all arguments for (-) are numbers.`)
+    return operands.reduce((a, b) => a - b)
+  },
+  ['if']: (args, env) => {
+    if (args.length < 2 || args.length > 3)
+      throw new RangeError(
+        `Invalid number of arguments for (if), expected 2 or 3 but got ${args.length}.`
+      )
+    return evaluate(args[0], env)
+      ? evaluate(args[1], env)
+      : evaluate(args[2], env)
+  },
   ['Array']: (args, env) => {
     if (!args.length)
       throw new RangeError(
@@ -176,15 +203,25 @@ export const tokens = {
     return array
   },
   ['log']: (args, env) => {
+    if (!args.length)
+      throw new RangeError(
+        'Invalid number of arguments to (log) [>= 1 required]'
+      )
     const expressions = args.map((x) => evaluate(x, env))
     console.log(...expressions)
     return expressions.at(-1)
   },
-  ['block']: (args, env) => args.reduce((_, x) => evaluate(x, env), 0),
+  ['block']: (args, env) => {
+    if (!args.length)
+      throw new RangeError(
+        'Invalid number of arguments to (block) [>= 1 required]'
+      )
+    return args.reduce((_, x) => evaluate(x, env), 0)
+  },
   ['function']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        'Invalid number of arguments to function [2 required]'
+        'Invalid number of arguments to (function) [2 required]'
       )
     const params = args.slice(1, -1)
     if (!params.length)
@@ -239,6 +276,8 @@ export const tokens = {
   },
   ['not']: (args, env) => +!evaluate(args[0], env),
   ['=']: (args, env) => {
+    if (args.length !== 2)
+      throw new RangeError('Invalid number of arguments for (=) (2 required)')
     const a = evaluate(args[0], env)
     const b = evaluate(args[1], env)
     if (
@@ -252,18 +291,42 @@ export const tokens = {
       )
     return +(a === b)
   },
-  ['eq']: (args, env) => +(evaluate(args[0], env) === evaluate(args[1], env)),
-  ['<']: (args, env) => +(evaluate(args[0], env) < evaluate(args[1], env)),
-  ['>']: (args, env) => +(evaluate(args[0], env) > evaluate(args[1], env)),
-  ['>=']: (args, env) => +(evaluate(args[0], env) >= evaluate(args[1], env)),
-  ['<=']: (args, env) => +(evaluate(args[0], env) <= evaluate(args[1], env)),
+  ['eq']: (args, env) => {
+    if (args.length !== 2)
+      throw new RangeError('Invalid number of arguments for (eq) (2 required)')
+    return +(evaluate(args[0], env) === evaluate(args[1], env))
+  },
+  ['<']: (args, env) => {
+    if (args.length !== 2)
+      throw new RangeError('Invalid number of arguments for (<) (2 required)')
+    return +(evaluate(args[0], env) < evaluate(args[1], env))
+  },
+  ['>']: (args, env) => {
+    if (args.length !== 2)
+      throw new RangeError('Invalid number of arguments for (>) (2 required)')
+    return +(evaluate(args[0], env) > evaluate(args[1], env))
+  },
+  ['>=']: (args, env) => {
+    if (args.length !== 2)
+      throw new RangeError('Invalid number of arguments for (>=) (2 required)')
+    return +(evaluate(args[0], env) >= evaluate(args[1], env))
+  },
+  ['<=']: (args, env) => {
+    if (args.length !== 2)
+      throw new RangeError('Invalid number of arguments for (<=) (2 required)')
+    return +(evaluate(args[0], env) <= evaluate(args[1], env))
+  },
   ['and']: (args, env) => {
+    if (args.length !== 2)
+      throw new RangeError('Invalid number of arguments for (and) (2 required)')
     for (let i = 0; i < args.length - 1; ++i)
       if (evaluate(args[i], env)) continue
       else return evaluate(args[i], env)
     return evaluate(args.at(-1), env)
   },
   ['or']: (args, env) => {
+    if (args.length !== 2)
+      throw new RangeError('Invalid number of arguments for (or) (2 required)')
     for (let i = 0; i < args.length - 1; ++i)
       if (evaluate(args[i], env)) return evaluate(args[i], env)
       else continue
@@ -292,7 +355,7 @@ export const tokens = {
     )
   },
   ['regex_match']: (args, env) => {
-    if (args.length < 2)
+    if (args.length !== 2)
       throw new RangeError(
         'Invalid number of arguments to (regex_match) [2 required]'
       )
@@ -436,6 +499,10 @@ export const tokens = {
   },
   ['esc']: (args, env) => ({ n: '\n' }[evaluate(args[0], env)]),
   ['do']: (args, env) => {
+    if (args.length < 2)
+      throw new RangeError(
+        'Invalid number of arguments to (do) (>= 2 required).'
+      )
     let inp = args[0]
     for (let i = 1; i < args.length; ++i) {
       if (!Array.isArray(args[i]))

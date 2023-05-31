@@ -9,23 +9,19 @@ Lisp for web
 
 ```lisp
 ;; Define reusable modules
-(function sort arr (block
-  (if (<= (length arr) 1) arr
-  (block
-    (let pivot (get arr 0))
-    (let left_arr (Array 0))
-    (let right_arr (Array 0))
-(loop iterate i bounds (block
-    (let current (get arr i))
-    (if (< current pivot)
-        (push left_arr current)
-        (push right_arr current))
-    (if (< i bounds) (iterate (+ i 1) bounds))))
-    (iterate 1 (- (length arr) 1))
-(do
-  left_arr (sort)
-  (push pivot)
-  (concat (sort right_arr)))))))
+(function binary_search
+        array target (block
+  (loop search
+        arr target start end (block
+    (if (<= start end) (block
+        (let index (floor (* (+ start end) 0.5)))
+        (let current (get arr index))
+        (if (= target current) target
+          (if (> current target)
+            (search arr target start (- index 1))
+            (search arr target (+ index 1) end)
+            ))))))
+   (search array target 0 (length array))))
 ```
 
 ```lisp

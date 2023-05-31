@@ -213,46 +213,46 @@ it('interpretation should work', () => {
   )
   deepStrictEqual(
     runFromInterpreted(`
-(function push array value (set array (length array) value))
-(function concat array1 array2 (block
-  (loop iterate i bounds (block
-  (if (< i (length array2)) (push array1 (get array2 i)))
-  (if (< i bounds) 
-    (iterate (+ i 1) bounds)
-  array1
-  )))
-(iterate 0 (- (length array2) 1))))
-(function sort arr (block
-  (if (<= (length arr) 1) arr
-  (block
-    (let pivot (get arr 0))
-    (let left_arr (Array 0))
-    (let right_arr (Array 0))
-(loop iterate i bounds (block
-    (let current (get arr i))
-    (if (< current pivot) 
-        (push left_arr current)
-        (push right_arr current))
-    (if (< i bounds) (iterate (+ i 1) bounds))))
-    (iterate 1 (- (length arr) 1))
-(if (and (length left_arr) (length right_arr)))
-(let left (sort left_arr))
-(let right (sort right_arr))
-(concat (push left pivot) right)))))
-(function reverse array (block
-  (let len (length array))
-  (let reversed (Array len))
-  (let offset (- len 1))
-  (loop iterate i bounds (block
-    (set reversed (- offset i) (get array i))
-    (if (< i bounds) (iterate (+ i 1) bounds) reversed)))
-  (iterate 0 offset)
-  ))
-
-  (do
-    (' 1 0 8 -2 3)
-    (sort)
-    (reverse))
+    (function push array value (set array (length array) value))
+    (function concat array1 array2 (block
+      (loop iterate i bounds (block
+      (if (< i (length array2)) (push array1 (get array2 i)))
+      (if (< i bounds) 
+        (iterate (+ i 1) bounds)
+      array1
+      )))
+    (iterate 0 (- (length array2) 1))))
+    (function quick_sort arr (block
+      (if (<= (length arr) 1) arr
+      (block
+        (let pivot (get arr 0))
+        (let left_arr (Array 0))
+        (let right_arr (Array 0))
+    (loop iterate i bounds (block
+        (let current (get arr i))
+        (if (< current pivot) 
+            (push left_arr current)
+            (push right_arr current))
+        (if (< i bounds) (iterate (+ i 1) bounds))))
+        (iterate 1 (- (length arr) 1))
+    (do 
+      left_arr (quick_sort) 
+      (push pivot) 
+      (concat (quick_sort right_arr)))))))
+    (function reverse array (block
+      (let len (length array))
+      (let reversed (Array len))
+      (let offset (- len 1))
+      (loop iterate i bounds (block
+        (set reversed (- offset i) (get array i))
+        (if (< i bounds) (iterate (+ i 1) bounds) reversed)))
+      (iterate 0 offset)
+      ))
+    
+      (do
+        (' 1 0 8 -2 3)
+        (quick_sort)
+        (reverse))
     `),
     [8, 3, 1, 0, -2]
   )
