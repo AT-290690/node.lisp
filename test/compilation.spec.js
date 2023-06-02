@@ -93,7 +93,7 @@ left_arr (quick_sort)
       accumulator)))
       (iterate i (- (length array) 1)))) 
    (Array 0)))
-('
+(Array
 (do input
 (split_by_lines)
 (array_to_numbers)
@@ -168,7 +168,7 @@ left_arr (quick_sort)
     ))
     
     
-    (' (do occ
+    (Array (do occ
       (map (lambda x i o
                   (do x
                     (format "-") 
@@ -239,7 +239,7 @@ left_arr (quick_sort)
       (if (< i bounds) (iterate (+ i 1) bounds) reversed)))
     (iterate 0 offset)))
     (do
-      (' 1 0 8 -2 3)
+      (Array 1 0 8 -2 3)
       (sort)
       (reverse))`,
 
@@ -250,7 +250,7 @@ left_arr (quick_sort)
         (interate (+ i 1) bounds) 
         current)))
         (interate 0 (- (length array) 1)))))
-  (find (' 1 2 3 4 5 6) (lambda x i (= i 2)))`,
+  (find (Array 1 2 3 4 5 6) (lambda x i (= i 2)))`,
     `(let push (lambda array value (set array (length array) value)))
   (let for_each (lambda array callback (block 
     (loop interate i bounds (block

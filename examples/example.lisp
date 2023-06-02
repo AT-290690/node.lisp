@@ -5,3 +5,4 @@
   (map (lambda x i (* x 2)))
   (sum_array)
 )
+

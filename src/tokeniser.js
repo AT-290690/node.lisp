@@ -133,13 +133,6 @@ export const tokens = {
       ? new Array(evaluate(args[0], env)).fill(0)
       : args.map((x) => evaluate(x, env))
   },
-  ["'"]: (args, env) => {
-    if (!args.length)
-      throw new RangeError(
-        "Invalid number of arguments for (') (>= 1 required)"
-      )
-    return args.map((x) => evaluate(x, env))
-  },
   ['get']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError('Invalid number of arguments for (get) (2 required)')
@@ -236,7 +229,9 @@ export const tokens = {
           `More arguments for (function ${params
             .map((x) => x.value)
             .join(' ')
-            .trim()}) are provided.`
+            .trim()}) are provided. (expects ${params.length} but got ${
+            props.length
+          })`
         )
       }
       if (props.length !== params.length)
@@ -244,7 +239,9 @@ export const tokens = {
           `Not all arguments for (function ${params
             .map((x) => x.value)
             .join(' ')
-            .trim()}) are provided.`
+            .trim()}) are provided. (expects ${params.length} but got ${
+            props.length
+          })`
         )
       const localEnv = Object.create(env)
       for (let i = 0; i < props.length; ++i)
@@ -266,7 +263,9 @@ export const tokens = {
         throw new RangeError(
           `Not all arguments for (lambda ${params
             .map((x) => x.value)
-            .join(' ')}) are provided.`
+            .join(' ')}) are provided. (expects ${params.length} but got ${
+            props.length
+          })`
         )
       const localEnv = Object.create(env)
       for (let i = 0; i < props.length; ++i)

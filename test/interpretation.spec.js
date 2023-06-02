@@ -96,7 +96,7 @@ it('interpretation should work', () => {
      (Array 0)))
 
 
-('
+(Array
   (do input
   (split_by_lines)
   (array_to_numbers)
@@ -176,7 +176,7 @@ it('interpretation should work', () => {
 ))
 
 
-(' (do occ
+(Array (do occ
   (map (lambda x i o
               (do x
                 (format "-") 
@@ -250,7 +250,7 @@ it('interpretation should work', () => {
       ))
     
       (do
-        (' 1 0 8 -2 3)
+        (Array 1 0 8 -2 3)
         (quick_sort)
         (reverse))
     `),
@@ -264,7 +264,7 @@ it('interpretation should work', () => {
           (iterate (+ i 1) bounds) 
           current)))
           (iterate 0 (- (length array) 1)))))
-    (find (' 1 2 3 4 5 6) (lambda x i (= i 2)))`),
+    (find (Array 1 2 3 4 5 6) (lambda x i (= i 2)))`),
     3
   )
   deepStrictEqual(

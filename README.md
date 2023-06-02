@@ -8,6 +8,17 @@ Lisp for web
 ```
 
 ```lisp
+(function fibonacci n
+  (if (< n 2)
+      n
+      (+ (fibonacci (- n 1))
+         (fibonacci (- n 2)))))
+
+(fibonacci 10)
+; 55
+```
+
+```lisp
 ;; Define reusable modules
 (function binary_search
         array target (block
@@ -19,8 +30,7 @@ Lisp for web
         (if (= target current) target
           (if (> current target)
             (search arr target start (- index 1))
-            (search arr target (+ index 1) end)
-            ))))))
+            (search arr target (+ index 1) end)))))))
    (search array target 0 (length array))))
 ```
 
