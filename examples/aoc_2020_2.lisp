@@ -43,7 +43,7 @@
   (map (lambda x i o
               (do x
                 (format "-") 
-                (map (lambda y i o (` y))))))
+                (map (lambda y i o (type Number y))))))
    (map (lambda x i o (do x 
             (push (get policy i)) 
             (push (get inputs i))

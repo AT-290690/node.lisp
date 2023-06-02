@@ -2,7 +2,7 @@ const CAST_BOOLEAN_TO_NUMBER = true
 const Extensions = {}
 const Helpers = {
   log: {
-    source: `var log = (msg) => { console.log(msg), msg }`,
+    source: `var log = (msg) => { console.log(msg); return msg }`,
     has: true,
   },
   regexp: {

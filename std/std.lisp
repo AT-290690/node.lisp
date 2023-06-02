@@ -1,4 +1,5 @@
 ; (std lib)
+; (function std_lib (block 
 ; max
 (function max a b (if (> a b) a b))
 ; min
@@ -284,4 +285,31 @@
       (if (< i len) (add (+ i 1)) table)))
       (add 0)))
 ; (/ Hash Set)
+
+; (Binary Tree)
+; binary_tree_node
+(function binary_tree_node 
+        value (Array 
+                (Array "value" value)
+                (Array "left"  (Array 0))
+                (Array "right" (Array 0))))
+; binary_tree_get_left
+(function binary_tree_get_left 
+                node (get node 1))
+; binary_tree_get_right
+(function binary_tree_get_right 
+                node (get node 2))
+; binary_tree_set_left
+(function binary_tree_set_left 
+                tree node (set tree 1 node))
+; binary_tree_set_right
+(function binary_tree_set_right 
+                tree node (set tree 2 node)) 
+; binary_tree_get_value
+(function binary_tree_get_value
+                node (get node 0))  
+
+; (/ Binary Tree)
+; (Array "min" min "max" max "is_odd" is_odd "is_even" is_even)
+; ))
 ; (/ std lib)

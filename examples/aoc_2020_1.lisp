@@ -1,6 +1,6 @@
 (function floor n (| n 0))
 (function push array value (set array (length array) value))
-(function array_to_numbers array (map array (lambda x i (` (x)))))
+(function array_to_numbers array (map array (lambda x i (type Number x))))
 (function product_array array (reduce array (lambda a b i o (* a b)) 1))
 (function split_by_lines string (format string (esc "n")))
 (function string_to_array string delim 
