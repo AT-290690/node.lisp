@@ -12,7 +12,7 @@
 ; pop
 (function pop array value (set array -1))
 ; is_in_bounds
-(function is_in_bounds array index (and (< index (length array)) (> index 0)))
+(function is_in_bounds array index (and (< index (length array)) (>= index 0)))
 ; abs
 (function abs n (- (^ n (>> n 31)) (>> n 31)))
 ; floor
@@ -110,6 +110,16 @@
       (iterate (+ i 1) bounds) 
       current)))
       (iterate 0 (- (length array) 1))))
+; find_index
+(function find_index array callback (block
+  (let idx -1)
+  (loop iterate i bounds (block
+    (let current (get array i))
+    (if (and (not (callback current i array)) (< i bounds))
+      (iterate (+ i 1) bounds) 
+      (let* idx (- i 1)))))
+      (iterate 0 (- (length array) 1))
+      idx))
 ; quick_sort
 (function quick_sort arr (block
   (if (<= (length arr) 1) arr
@@ -170,7 +180,7 @@
       (loop find_hash_index i bounds (block 
         (let letter (get key i))
         (let value (- (char letter 0) 96))
-        (let* total (mod (+ (* total prime_num) value) (length table)))
+        (let* total (euclidean_mod (+ (* total prime_num) value) (length table)))
         (if (< i bounds) (find_hash_index (+ i 1) bounds) total)))
       (find_hash_index 0 (min (- (length key) 1) 100))))
   ; hash_table_set
@@ -179,11 +189,18 @@
     (block
       (let idx (hash_table_index table key))
       (if (not (is_in_bounds table idx)) (set table idx (Array 0)))
-      (do table (get idx) (push (Array key value)))
+      (let current (get table idx))
+      (let len (length current))
+      (let index (if len (find_index current (lambda x i o (= (get x 0) key))) -1))
+      (let entry (Array key value))
+      (if (= index -1)
+        (push current entry)
+        (set current index entry)
+      )
       (table)))
 ; hash table_has 
 (function hash_table_has table key 
-  (is_in_bounds table (hash_table_index table key)))
+  (and (is_in_bounds table (let idx (hash_table_index table key))) (length (get table idx))))
 ; hash_table_get
 (function hash_table_get
   table key 
@@ -212,5 +229,59 @@
       (if (< i len) (add (+ i 1)) table)))
       (add 0)))
 ; (/ Hash Table)
+; (Hash Set)
+; (do
+;   (hash_set_make (Array "A" "B" "C"))
+;   (hash_set_set "A")
+;   (hash_set_set "D")
+;   (log)
+; )
 
+(function hash_set_index 
+  table key 
+    (block
+      (let total 0)
+      (let prime_num 31)
+      (let* key (... (type String key)))
+      (loop find_hash_index i bounds (block 
+        (let letter (get key i))
+        (let value (- (char letter 0) 96))
+        (let* total (euclidean_mod (+ (* total prime_num) value) (length table)))
+        (if (< i bounds) (find_hash_index (+ i 1) bounds) total)))
+      (find_hash_index 0 (min (- (length key) 1) 100))))
+  ; hash_set_set
+(function hash_set_set 
+  table key 
+    (block
+      (let idx (hash_set_index table key))
+      (if (not (is_in_bounds table idx)) (set table idx (Array 0)))
+      (if (not (length (let current (do table (get idx))))) 
+        (push current key))
+      (table)))
+; hash table_has 
+(function hash_set_has table key 
+  (and (is_in_bounds table (let idx (hash_set_index table key))) (length (get table idx))))
+; hash_set_get
+(function hash_set_get
+  table key 
+    (block
+      (let idx (hash_set_index table key))
+      (if (is_in_bounds table idx) 
+        key)))
+; hash_set
+(function hash_set 
+  size 
+    (map (Array size) (lambda x i o (Array 0))))
+; hash_set_make
+(function hash_set_make 
+  items 
+    (block
+      (let len (- (length items) 1))
+      (let table (hash_set (* len len)))
+      (loop add i (block
+        (let item (get items i))
+        (hash_set_set table item)
+      (if (< i len) (add (+ i 1)) table)))
+      (add 0)))
+; (/ Hash Set)
 ; (/ std lib)

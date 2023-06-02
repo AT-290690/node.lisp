@@ -175,7 +175,6 @@ it('interpretation should work', () => {
 (and (not (and left right)) (or left right))
 ))
 
-
 (Array (do occ
   (map (lambda x i o
               (do x

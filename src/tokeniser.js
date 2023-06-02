@@ -514,4 +514,14 @@ export const tokens = {
     }
     return evaluate(inp, env)
   },
+  ['error']: (args, env) => {
+    if (!args.length)
+      throw new RangeError(
+        'Invalid number of arguments to (error) (1 required).'
+      )
+    const string = evaluate(args[0], env)
+    if (typeof string !== 'string')
+      throw new TypeError('First argument of (error) must be an (String).')
+    throw new Error(string)
+  },
 }

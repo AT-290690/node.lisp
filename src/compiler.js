@@ -22,6 +22,12 @@ const Helpers = {
   }`,
     has: false,
   },
+  error: {
+    source: `_error = (error) => { 
+      throw new Error(error)
+  }`,
+    has: false,
+  },
   cast: {
     source: `_cast = (type, value) => {
       switch (type){
@@ -263,6 +269,10 @@ const compile = (tree, Locals) => {
         for (let i = 1; i < Arguments.length; ++i)
           inp = [Arguments[i].shift(), inp, ...Arguments[i]]
         return compile(inp, Locals)
+      }
+      case 'error': {
+        Helpers.error.has = true
+        return `_error(${compile(Arguments[0], Locals)})`
       }
 
       case 'esc': {
