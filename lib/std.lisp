@@ -11,7 +11,7 @@
   ; push
   (function push array value (set array (length array) value))
   ; pop
-  (function pop array value (set array -1))
+  (function pop array (set array -1))
   ; is_in_bounds
   (function is_in_bounds array index (and (< index (length array)) (>= index 0)))
   ; abs
@@ -37,7 +37,7 @@
   ; split_by_lines
   (function split_by_lines string (map (string_to_array string (esc "n")) (lambda x i o (join x ""))))
   ; array_to_numbers
-  (function array_to_numbers array (map array (lambda x i o (type Number x))))
+  (function array_to_numbers array (map array (lambda x i o (type x Number))))
   ; concat
   (function concat array1 array2 (block
     (loop iterate i bounds (block
@@ -180,7 +180,7 @@
       (block
         (let total 0)
         (let prime_num 31)
-        (let* key (... (type String key)))
+        (let* key (... (type key String)))
         (loop find_hash_index i bounds (block 
           (let letter (get key i))
           (let value (- (char letter 0) 96))
@@ -246,7 +246,7 @@
       (block
         (let total 0)
         (let prime_num 31)
-        (let* key (... (type String key)))
+        (let* key (... (type key String)))
         (loop find_hash_index i bounds (block 
           (let letter (get key i))
           (let value (- (char letter 0) 96))
@@ -324,8 +324,6 @@
   (function binary_tree_get_value
                   node (get node 0))  
   ; (/ Binary Tree)
-
-
 
   (Array 
     (Array "max" min)

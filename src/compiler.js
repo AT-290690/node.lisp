@@ -257,8 +257,8 @@ const compile = (tree, Locals) => {
         return `(${conditionStack.join('')});`
       }
       case 'type':
-        return `_cast("${Arguments[0].value}", ${compile(
-          Arguments[1],
+        return `_cast("${Arguments[1].value}", ${compile(
+          Arguments[0],
           Locals
         )})`
       case 'do': {

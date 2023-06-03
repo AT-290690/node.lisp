@@ -448,8 +448,8 @@ export const tokens = {
       throw new RangeError(
         `Invalid number of arguments for (type) ${args.length}`
       )
-    const type = args[0]
-    const value = evaluate(args[1], env)
+    const type = args[1]
+    const value = evaluate(args[0], env)
     if (value == undefined)
       throw ReferenceError('Trying to access undefined value at (type)')
     if (type.value === 'Number') {

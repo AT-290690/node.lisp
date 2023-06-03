@@ -3,6 +3,7 @@ import { evaluate, run } from './src/interpreter.js'
 import { parse } from './src/parser.js'
 
 import { readFileSync, writeFileSync } from 'fs'
+import { logError } from './src/utils.js'
 
 const [, , ...argv] = process.argv
 let file = '',
@@ -119,7 +120,11 @@ while (argv.length) {
       break
     case '-r':
       {
-        run(parse(`${readFileSync('./lib/std.lisp', 'utf-8')}\n${file}`), env)
+        try {
+          run(parse(`${readFileSync('./lib/std.lisp', 'utf-8')}\n${file}`), env)
+        } catch (err) {
+          logError(err.message)
+        }
       }
       break
     case '-help':
