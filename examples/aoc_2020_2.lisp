@@ -1,22 +1,12 @@
-(function push array value (set array (length array) value))
-(function map array callback (block 
-  (let new_array (Array 0))
-  (let i 0)
-  (loop iterate i bounds (block
-    (set new_array i (callback (get array i) i array))
-    (if (< i bounds) (iterate (+ i 1) bounds) new_array)))
-  (iterate 0 (- (length array) 1))))
-(function reduce array callback initial (block
-  (loop iterate i bounds (block
-    (let* initial (callback initial (get array i) i array))
-    (if (< i bounds) (iterate (+ i 1) bounds) initial)))
-  (iterate 0 (- (length array) 1))))
+(import std "push" "map" "reduce")
 
 (let sample "1-3 a: abcde
 1-3 b: cdefg
 2-9 c: ccccccccc")
-
+; (let sample "3-4 b: jbmb")
+; (let sample "2-3 f: fvwc")
 (let input sample)
+; (let input (open "./playground/src/aoc_2020/2/input.txt"))
 
 (let occ (regex_match input "([0-9]{1,2}-[0-9]{1,2})"))
 (let policy (regex_match input "[a-z](?=:)"))
@@ -64,7 +54,7 @@
 (and (not (and left right)) (or left right))))
 
 (do occ
-  (map (lambda x i o (do x (format "-") (map (lambda y i o (` y))))))
+  (map (lambda x i o (do x (format "-") (map (lambda y i o (type Number y))))))
    (map (lambda x i o (do x 
             (push (get policy i)) 
             (push (get inputs i)))))
@@ -74,3 +64,4 @@
   (log)
   ; (map (lambda x i o (log x)))
 )
+

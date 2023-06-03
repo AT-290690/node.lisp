@@ -36,6 +36,8 @@
                                       (push (get a -1) x) a))))(push (Array 0) (Array 0))))
   ; split_by_lines
   (function split_by_lines string (map (string_to_array string (esc "n")) (lambda x i o (join x ""))))
+  ; array_to_numbers
+  (function array_to_numbers array (map array (lambda x i o (type Number x))))
   ; concat
   (function concat array1 array2 (block
     (loop iterate i bounds (block
@@ -94,7 +96,7 @@
   ; sum_array
   (function sum_array array (reduce array (lambda a b i o (+ a b)) 0))
   ; product_array
-  (function product_array array (reduce array (lambda a b i o (* a b)) 0))
+  (function product_array array (reduce array (lambda a b i o (* a b)) 1))
   ; deep_flat
   (function deep_flat arr (block 
     (let new_array (Array 0)) 
@@ -341,6 +343,7 @@
     (Array "join" join)
     (Array "string_to_array" string_to_array)
     (Array "split_by_lines" split_by_lines)
+    (Array "array_to_numbers" array_to_numbers)
     (Array "concat" concat)
     (Array "merge" merge)
     (Array "range" range)

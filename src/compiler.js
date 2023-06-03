@@ -11,7 +11,7 @@ const Helpers = {
       const match = string.match(new RegExp(regex, 'g'))
       return match == undefined ? [] : [...match]
     }`,
-    has: false,
+    has: true,
   },
   set: {
     source: `_set = (array, index, value) => { 
@@ -27,7 +27,7 @@ const Helpers = {
     source: `_error = (error) => { 
       throw new Error(error)
   }`,
-    has: false,
+    has: true,
   },
   cast: {
     source: `_cast = (type, value) => {
@@ -42,14 +42,14 @@ const Helpers = {
          return 0
       }
     }`,
-    has: false,
+    has: true,
   },
   tco: {
     source: `_tco = function (fn) { return function () {
 let result = fn(...arguments)
 while (typeof result === 'function') result = result()
 return result }}`,
-    has: false,
+    has: true,
   },
 }
 const handleBoolean = (source) =>
@@ -117,7 +117,6 @@ const compile = (tree, Locals) => {
           Locals
         )}));`
       case 'regex_match':
-        Helpers.regexp.has = true
         return `_regexp(${parseArgs(Arguments, Locals)});`
       case 'Stringp':
         return handleBoolean(
@@ -156,7 +155,6 @@ const compile = (tree, Locals) => {
         } ${evaluatedBody.toString().trimStart()}};`
       }
       case 'loop': {
-        Helpers.tco.has = true
         let name,
           out = '(('
         const arg = Arguments[0]
@@ -259,7 +257,6 @@ const compile = (tree, Locals) => {
         return `(${conditionStack.join('')});`
       }
       case 'type':
-        Helpers.cast.has = true
         return `_cast("${Arguments[0].value}", ${compile(
           Arguments[1],
           Locals
@@ -271,7 +268,6 @@ const compile = (tree, Locals) => {
         return compile(inp, Locals)
       }
       case 'error': {
-        Helpers.error.has = true
         return `_error(${compile(Arguments[0], Locals)})`
       }
       case 'import':
