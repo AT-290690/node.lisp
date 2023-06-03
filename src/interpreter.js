@@ -9,13 +9,13 @@ export const evaluate = (expression, env) => {
       const word = env[first.value]
       if (word == undefined)
         throw new TypeError(`Undefined variable ${first.value}.`)
-      if (rest.length) {
-        if (typeof word !== 'function')
-          throw new TypeError(`${first.value} is not a (function).`)
-        return word(rest, env)
-      }
       return word
     }
+    case 'apply':
+      const apply = env[first.value]
+      if (typeof apply !== 'function')
+        throw new TypeError(`${first.value} is not a (function).`)
+      return apply(rest, env)
     case 'value':
       if (rest.length) throw new TypeError(`Values can't have arguments.`)
       return first.value

@@ -30,7 +30,8 @@ export const parse = (source) => {
         let token = acc
         acc = ''
         if (token) {
-          if (token.match(/^"([^"]*)"/))
+          if (!head.length) head.push({ type: 'apply', value: token })
+          else if (token.match(/^"([^"]*)"/))
             head.push({
               type: 'value',
               value: token.substring(1, token.length - 1),

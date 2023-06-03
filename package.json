@@ -9,7 +9,7 @@
   },
   "scripts": {
     "aoc:i": "yarn wisp -s playground/src/aoc_2020/2/main.lisp -env fs -run",
-    "aoc:c": "yarn wisp -s playground/src/aoc_2020/2/main.lisp -d playground/src/aoc_2020/1/main.js -env fs -compile && node playground/src/aoc_2020/2/main.js",
+    "aoc:c": "yarn wisp -s playground/src/aoc_2020/2/main.lisp -d playground/src/aoc_2020/2/main.js -env fs -compile && node playground/src/aoc_2020/2/main.js",
     "wisp": "node index.js",
     "test": "mocha",
     "doctest": "node jsdoc.js"

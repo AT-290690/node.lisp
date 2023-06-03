@@ -80,8 +80,8 @@ const parseArgs = (Arguments, Locals, separator = ',') =>
 const compile = (tree, Locals) => {
   if (!tree) return ''
   const [first, ...Arguments] = Array.isArray(tree) ? tree : [tree]
-  if (first.type === 'word') {
-    const token = first.value
+  const token = first.value
+  if (first.type === 'apply') {
     switch (token) {
       case 'block': {
         if (Arguments.length > 1) {
@@ -287,13 +287,12 @@ const compile = (tree, Locals) => {
       default: {
         if (token in Extensions)
           return `${Extensions[token](parseArgs(Arguments, Locals))}`
-        else if (Arguments.length)
-          return `${token}(${parseArgs(Arguments, Locals)});`
-        else return token
+        else return `${token}(${parseArgs(Arguments, Locals)});`
       }
     }
   } else if (first.type === 'value')
     return typeof first.value === 'string' ? `\`${first.value}\`` : first.value
+  else if (first.type === 'word') return token
 }
 
 export const compileToJs = (AST, extensions = {}, helpers = {}, tops = []) => {

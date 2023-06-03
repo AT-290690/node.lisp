@@ -3,9 +3,55 @@ import { runFromInterpreted } from '../src/utils.js'
 it('interpretation should work', () => {
   deepStrictEqual(
     runFromInterpreted(`
+    (function binary_tree_node 
+            value (Array 
+                    (Array "value" value)
+                    (Array "left"  (Array 0))
+                    (Array "right" (Array 0))))
+    (function binary_tree_get_left 
+                    node (get node 1))
+    (function binary_tree_get_right 
+                    node (get node 2))
+    (function binary_tree_set_left 
+                    tree node (set tree 1 node))
+    (function binary_tree_set_right 
+                    tree node (set tree 2 node)) 
+    (function binary_tree_get_value
+                    node (get node 0))
+  (do 
+    (binary_tree_node 1)
+    (binary_tree_set_left 
+          (do 
+            (binary_tree_node 2) 
+            (binary_tree_set_left 
+              (do (binary_tree_node 4) 
+                  (binary_tree_set_right 
+                  (binary_tree_node 5))))))
+    (binary_tree_set_right (binary_tree_node 3))
+    (binary_tree_get_left)
+    (binary_tree_get_left)
+    (binary_tree_get_right))
+  binary_tree_node`),
+    [
+      ['value', 5],
+      ['left', []],
+      ['right', []],
+    ]
+  )
+  strictEqual(
+    runFromInterpreted(`(let add_seq (lambda x (+ x 1 2 3)))
+  (function mult_10 x (* x 10))
+  (let do_thing (lambda (do 100 
+                        (add_seq) 
+                        (mult_10))))
+  (do_thing)`),
+    1060
+  )
+  deepStrictEqual(
+    runFromInterpreted(`
     (function floor n (| n 0))
 (function push array value (set array (length array) value))
-(function array_to_numbers array (map array (lambda x i (type Number (x)))))
+(function array_to_numbers array (map array (lambda x i (type Number x))))
 (function product_array array (reduce array (lambda a b i o (* a b)) 1))
 (function split_by_lines string (format string (esc "n")))
 (function string_to_array string delim 
@@ -413,7 +459,7 @@ it('interpretation should work', () => {
      
      (map (map 
       (split_by_lines sample) 
-        (lambda x i (type Number (x)))) 
+        (lambda x i (type Number x))) 
         (lambda x i (- 2020 x)))
   `),
     [299, 1041, 1654, 1721, 1345, 564]

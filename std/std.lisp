@@ -198,7 +198,7 @@
         (push current entry)
         (set current index entry)
       )
-      (table)))
+      table))
 ; hash table_has 
 (function hash_table_has table key 
   (and (is_in_bounds table (let idx (hash_table_index table key))) (length (get table idx))))
@@ -258,7 +258,7 @@
       (if (not (is_in_bounds table idx)) (set table idx (Array 0)))
       (if (not (length (let current (do table (get idx))))) 
         (push current key))
-      (table)))
+      table))
 ; hash table_has 
 (function hash_set_has table key 
   (and (is_in_bounds table (let idx (hash_set_index table key))) (length (get table idx))))
@@ -287,6 +287,18 @@
 ; (/ Hash Set)
 
 ; (Binary Tree)
+; (do 
+; (binary_tree_node 1)
+; (binary_tree_set_left (do 
+;                         (binary_tree_node 2) 
+;                         (binary_tree_set_left 
+;                           (do (binary_tree_node 4) 
+;                               (binary_tree_set_right 
+;                               (binary_tree_node 5))))))
+; (binary_tree_set_right (binary_tree_node 3))
+; (binary_tree_get_left)
+; (binary_tree_get_left)
+; (binary_tree_get_right))
 ; binary_tree_node
 (function binary_tree_node 
         value (Array 
@@ -308,8 +320,6 @@
 ; binary_tree_get_value
 (function binary_tree_get_value
                 node (get node 0))  
-
 ; (/ Binary Tree)
-; (Array "min" min "max" max "is_odd" is_odd "is_even" is_even)
 ; ))
 ; (/ std lib)

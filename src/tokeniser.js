@@ -217,10 +217,10 @@ export const tokens = {
         'Invalid number of arguments to (function) [2 required]'
       )
     const params = args.slice(1, -1)
-    if (!params.length)
-      throw new RangeError(
-        'Invalid number of params for (function) (>= 1 required)'
-      )
+    // if (!params.length)
+    //   throw new RangeError(
+    //     'Invalid number of params for (function) (>= 1 required)'
+    //   )
     const body = args.at(-1)
     const name = args[0].value
     const fn = (props, scope) => {
@@ -253,10 +253,10 @@ export const tokens = {
   },
   ['lambda']: (args, env) => {
     const params = args.slice(0, -1)
-    if (!params.length)
-      throw new RangeError(
-        'Invalid number of arguments for (lambda) (>= 1 required)'
-      )
+    // if (!params.length)
+    //   throw new RangeError(
+    //     'Invalid number of arguments for (lambda) (>= 1 required)'
+    //   )
     const body = args.at(-1)
     return (props, scope) => {
       if (props.length !== params.length)
