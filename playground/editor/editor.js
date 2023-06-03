@@ -43,7 +43,7 @@ const extensions = {
     const current = consoleEditor.getValue()
     const msg = expressions.at(-1)
     consoleEditor.setValue(
-      `${current ? `${current} ` : ''}${
+      `${current ? `${current}\n` : ''}${
         msg !== undefined
           ? typeof msg === 'string'
             ? `"${msg}"`
@@ -75,6 +75,7 @@ console.error = (error) => {
 const execute = async (source) => {
   try {
     consoleElement.classList.remove('error_line')
+    if (!source.trim()) throw new Error('Nothing to evaluate.')
     const result = runFromInterpreted(source, extensions)
     droneButton.classList.remove('shake')
     errorIcon.style.visibility = 'hidden'

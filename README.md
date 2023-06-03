@@ -19,7 +19,7 @@ Lisp for web
 ```
 
 ```lisp
-;; Define reusable modules
+; Define reusable modules
 (function binary_search
         array target (block
   (loop search
@@ -38,14 +38,16 @@ Lisp for web
 (let is_odd (lambda x i (= (mod x 2) 1)))
 (let mult_2 (lambda x i (* x 2)))
 (let sum (lambda a x i (+ a x)))
-;; Pipe the first to a series of composed functions
-;; (arg (arg .. ) (arg .. ) (ar . . . . ))
+; Pipe the first to a series of composed functions
+; (arg (arg .. ) (arg .. ) (ar . . . . ))
 (do
   (Array 1 2 3 4 5 6 7 101)
   (filter is_odd)
   (map mult_2)
   (reduce sum 0))
 ```
+
+try online [playground](https://at-290690.github.io/wisp/playground/editor/)
 
 interpred
 
@@ -72,21 +74,17 @@ yarn wisp -help
 ```
 
 ```
- -------------------------------------
+  -------------------------------------
    -help
   -------------------------------------
-   -file                prepare a file
+   -s                   prepare a file
   -------------------------------------
-   -dep           include dependencies
+   -d               file to compile js
   -------------------------------------
-   -js           log javascript output
+   -c                    compile to js
   -------------------------------------
-   -compile              compile to js
+   -r                  interpret & run
   -------------------------------------
-   -dist            file to compile js
-  -------------------------------------
-   -run              interpret and run
-  -------------------------------------
-   -log              interpret and log
+   -p      interpret & run with 0 deps
   -------------------------------------
 ```
