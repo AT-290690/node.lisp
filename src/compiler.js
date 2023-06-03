@@ -1,5 +1,6 @@
 const CAST_BOOLEAN_TO_NUMBER = true
 const Extensions = {}
+const Functions = new Map()
 const Helpers = {
   log: {
     source: `var log = (msg) => { console.log(msg); return msg }`,
@@ -20,7 +21,7 @@ const Helpers = {
       } else array[index] = value; 
       return array 
   }`,
-    has: false,
+    has: true,
   },
   error: {
     source: `_error = (error) => { 
@@ -144,7 +145,6 @@ const compile = (tree, Locals) => {
           Locals
         )});`
       case 'set':
-        Helpers.set.has = true
         return `_set(${parseArgs(Arguments, Locals)});`
       case 'lambda': {
         const body = Arguments.pop()
@@ -274,7 +274,21 @@ const compile = (tree, Locals) => {
         Helpers.error.has = true
         return `_error(${compile(Arguments[0], Locals)})`
       }
-
+      case 'import':
+        {
+          const [module, ...functions] = Arguments.map((x) =>
+            compile(x, Locals)
+          )
+          Functions.set(
+            module,
+            functions.map((fn) => {
+              const name = fn.substring(1, fn.length - 1)
+              Locals.add(name)
+              return name
+            })
+          )
+        }
+        break
       case 'esc': {
         const char = compile(Arguments[0], Locals)
         switch (char) {
@@ -314,5 +328,5 @@ export const compileToJs = (AST, extensions = {}, helpers = {}, tops = []) => {
     .join(',')};\nvar _NL="\\n";\n${
     vars.size ? `var ${[...vars].join(',')};` : ''
   }`
-  return { top, program }
+  return { top, program, deps: [...Functions] }
 }

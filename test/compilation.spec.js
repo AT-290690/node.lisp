@@ -2,6 +2,97 @@ import { deepStrictEqual } from 'assert'
 import { runFromCompiled, runFromInterpreted } from '../src/utils.js'
 it('compilation should work', () =>
   [
+    `(function min a b (if (< a b) a b))
+  (function push array value (set array (length array) value))
+  (function euclidean_mod a b (mod (+ (mod a b) b) b))
+  (function find array callback (block
+    (loop iterate i bounds (block
+      (let current (get array i))
+      (if (and (not (callback current i array)) (< i bounds))
+        (iterate (+ i 1) bounds) 
+        current)))
+        (iterate 0 (- (length array) 1))))
+  (function find_index array callback (block
+    (let idx -1)
+    (let has_found 0)
+    (loop iterate i bounds (block
+      (let current (get array i))
+      (let* has_found (callback current i array))
+      (if (and (not (callback current i array)) (< i bounds))
+        (iterate (+ i 1) bounds) 
+        (let* idx i))))
+        (iterate 0 (- (length array) 1))
+        (if has_found idx -1)))
+  (function is_in_bounds array index (and (< index (length array)) (>= index 0)))
+  (function map array callback (block 
+    (let new_array (Array 0))
+    (let i 0)
+    (loop iterate i bounds (block
+      (set new_array i (callback (get array i) i array))
+      (if (< i bounds) (iterate (+ i 1) bounds) new_array)))
+    (iterate 0 (- (length array) 1))))
+  
+      (function hash_table_index 
+        table key 
+          (block
+            (let total 0)
+            (let prime_num 31)
+            (let* key (... (type String key)))
+            (loop find_hash_index i bounds (block 
+              (let letter (get key i))
+              (let value (- (char letter 0) 96))
+              (let* total (euclidean_mod (+ (* total prime_num) value) (length table)))
+              (if (< i bounds) (find_hash_index (+ i 1) bounds) total)))
+            (find_hash_index 0 (min (- (length key) 1) 100))))
+        ; hash_table_set
+      (function hash_table_set 
+        table key value 
+          (block
+            (let idx (hash_table_index table key))
+            (if (not (is_in_bounds table idx)) (set table idx (Array 0)))
+            (let current (get table idx))
+            (let len (length current))
+            (let index (if len (find_index current (lambda x i o (= (get x 0) key))) -1))
+            (let entry (Array key value))
+            (if (= index -1)
+              (push current entry)
+              (set current index entry)
+            )
+            table))
+      (function hash_table_has table key 
+        (and (is_in_bounds table (let idx (hash_table_index table key))) (length (get table idx))))
+      (function hash_table_get
+        table key 
+          (block
+            (let idx (hash_table_index table key))
+            (if (is_in_bounds table idx) 
+              (block
+                (let current (get table idx))
+                (do current
+                  (find (lambda x i o (= key 
+                          (do x (get 0)))))
+                  (get 1))))))
+      (function hash_table 
+        size 
+          (map (Array size) (lambda x i o (Array 0))))
+      (function hash_table_make 
+        items 
+          (block
+            (let len (- (length items) 1))
+            (let table (hash_table (* len len)))
+            (loop add i (block
+              (let item (get items i))
+              (hash_table_set table (get item 0) (get item 1))
+            (if (< i len) (add (+ i 1)) table)))
+            (add 0)))
+      
+      (let tabl  (do
+      (hash_table_make (Array 
+        (Array "name" "Anthony") 
+        (Array "age" 32) 
+        (Array "skills" 
+          (Array "Animation" "Programming"))))
+    )) (hash_table_set tabl "age" 33)`,
     ` (function binary_tree_node 
       value (Array 
               (Array "value" value)

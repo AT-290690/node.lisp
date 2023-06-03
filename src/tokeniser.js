@@ -223,7 +223,7 @@ export const tokens = {
     //   )
     const body = args.at(-1)
     const name = args[0].value
-    const fn = (props, scope) => {
+    const fn = (props = [], scope) => {
       if (props.length > params.length) {
         throw new RangeError(
           `More arguments for (function ${params
@@ -258,7 +258,7 @@ export const tokens = {
     //     'Invalid number of arguments for (lambda) (>= 1 required)'
     //   )
     const body = args.at(-1)
-    return (props, scope) => {
+    return (props = [], scope) => {
       if (props.length !== params.length)
         throw new RangeError(
           `Not all arguments for (lambda ${params
@@ -317,7 +317,9 @@ export const tokens = {
   },
   ['and']: (args, env) => {
     if (args.length !== 2)
-      throw new RangeError('Invalid number of arguments for (and) (2 required)')
+      throw new RangeError(
+        'Invalid number of arguments for (and) (>= 2 required)'
+      )
     for (let i = 0; i < args.length - 1; ++i)
       if (evaluate(args[i], env)) continue
       else return evaluate(args[i], env)
@@ -325,7 +327,9 @@ export const tokens = {
   },
   ['or']: (args, env) => {
     if (args.length !== 2)
-      throw new RangeError('Invalid number of arguments for (or) (2 required)')
+      throw new RangeError(
+        'Invalid number of arguments for (or) (>= 2 required)'
+      )
     for (let i = 0; i < args.length - 1; ++i)
       if (evaluate(args[i], env)) return evaluate(args[i], env)
       else continue
@@ -352,6 +356,27 @@ export const tokens = {
     throw new ReferenceError(
       `Tried setting an undefined variable: ${entityName} using (let*)`
     )
+  },
+  ['import']: (args, env) => {
+    if (args.length < 2)
+      throw new RangeError(
+        'Invalid number of arguments for (import) (>= 2 required)'
+      )
+    const [first, ...rest] = args
+    const module = evaluate(first, env)
+    if (typeof module !== 'function')
+      throw new TypeError('First argument of (import) must be an (function).')
+    const methods = rest.map((arg) => evaluate(arg, env))
+    if (methods.some((arg) => typeof arg !== 'string'))
+      throw new TypeError(
+        'Following arguments of (import) must all be (String).'
+      )
+    const records = methods.reduce((a, b) => (a.add(b), a), new Set())
+    module()
+      .filter(([n]) => records.has(n))
+      .forEach(([key, fn]) => (env[key] = fn))
+
+    return 0
   },
   ['regex_match']: (args, env) => {
     if (args.length !== 2)
@@ -498,9 +523,9 @@ export const tokens = {
   },
   ['esc']: (args, env) => ({ n: '\n' }[evaluate(args[0], env)]),
   ['do']: (args, env) => {
-    if (args.length < 2)
+    if (args.length < 1)
       throw new RangeError(
-        'Invalid number of arguments to (do) (>= 2 required).'
+        'Invalid number of arguments to (do) (>= 1 required).'
       )
     let inp = args[0]
     for (let i = 1; i < args.length; ++i) {

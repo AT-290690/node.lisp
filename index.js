@@ -17,40 +17,50 @@ while (argv.length) {
   if (!flag) throw new Error('No flag provided')
   switch (flag) {
     case '-d':
-    case '-destination':
-    case '-dist':
       destination = value
       break
-    case '-file':
-    case '-f':
-    case '-source':
     case '-s':
       file = readFileSync(value, 'utf-8')
       break
-    case '-dep':
-      file = `${readFileSync(value, 'utf-8')}\n${file}`
-      break
-    case '-js':
+    case '-c':
       {
         const tree = parse(file)
         if (Array.isArray(tree)) {
-          const compiled = compileToJs(tree, Extensions, Helpers, Tops)
-          const JavaScript = `${compiled.top}\n${compiled.program}`
-          console.log(JavaScript)
-        }
-      }
-      break
-    case '-compile':
-      {
-        const tree = parse(file)
-        if (Array.isArray(tree)) {
-          const compiled = compileToJs(tree, Extensions, Helpers, Tops)
-          const JavaScript = `${compiled.top}\n${compiled.program}`
+          const { top, program, deps } = compileToJs(
+            tree,
+            Extensions,
+            Helpers,
+            Tops
+          )
+          const mods = []
+          for (const [key, value] of deps) {
+            const depSet = new Set(value)
+            const parsed = parse(readFileSync(`./lib/${key}.lisp`, 'utf-8'))
+              .at(-1)
+              .at(-1)
+              .slice(1)
+            parsed.pop()
+            mods.push(
+              parsed.filter(
+                ([dec, name]) =>
+                  dec.type === 'apply' &&
+                  dec.value === 'function' &&
+                  name.type === 'word' &&
+                  depSet.has(name.value)
+              )
+            )
+          }
+
+          const JavaScript = `${top}${
+            mods.length
+              ? `${mods.map((x) => compileToJs(x).program).join('\n')}\n`
+              : '\n'
+          }${program}`
           writeFileSync(destination ?? './playground/dist/main.js', JavaScript)
         }
       }
       break
-    case '-env':
+    case '-e':
       {
         switch (value) {
           case 'fs':
@@ -104,38 +114,30 @@ while (argv.length) {
         }
       }
       break
-    case '-log':
-      {
-        const tree = parse(file)
-        if (Array.isArray(tree)) console.log(run(tree, env))
-      }
+    case '-p':
+      run(parse(file), env)
       break
-    case '-run':
     case '-r':
       {
-        const tree = parse(file)
-        if (Array.isArray(tree)) run(tree, env)
+        run(parse(`${readFileSync('./lib/std.lisp', 'utf-8')}\n${file}`), env)
       }
       break
     case '-help':
+    case '-h':
     default:
       console.log(`
   -------------------------------------
    -help
   -------------------------------------
-   -file                prepare a file
+   -s                   prepare a file
   -------------------------------------
-   -dep           include dependencies
+   -d               file to compile js
   -------------------------------------
-   -js           log javascript output
+   -c                    compile to js
   -------------------------------------
-   -compile              compile to js
+   -r                  interpret & run
   -------------------------------------
-   -dist            file to compile js
-  -------------------------------------
-   -run              interpret and run
-  -------------------------------------
-   -log              interpret and log
+   -p      interpret & run with 0 deps
   -------------------------------------
 `)
   }
