@@ -11,7 +11,7 @@
 (let input sample)
 
 (function solve1 array cb 
-     (reduce array (lambda a x i array (block
+     (reduce array (lambda a x _ array (block
         (let res (binary_search array (cb x)))
         (if res (push a res) a))) 
      (Array 0)))

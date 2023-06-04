@@ -63,6 +63,13 @@
       (push array (+ i start))
       (if (< i bounds) (iterate (+ i 1) bounds) array)))
     (iterate 0 (- end start))))
+ ; sequance
+  (function sequance end start step (block
+    (let array (Array 0))
+    (loop iterate i bounds (block
+      (push array (+ i start))
+      (if (< i bounds) (iterate (+ i step) bounds) array)))
+    (iterate 0 (- end start))))
   ; map
   (function map array callback (block 
     (let new_array (Array 0))
@@ -77,6 +84,20 @@
       (callback (get array i) i array)
       (if (< i bounds) (iterate (+ i 1) bounds) array)))
     (iterate 0 (- (length array) 1))))
+  ; for_n
+  (function for_n N callback (block
+    (let res 0)
+    (loop iterate i (block 
+        (let* res (callback i))
+        (if (< i N) (iterate (+ i 1)) res))) 
+        (iterate 0)))
+  ; for_range
+  (function for_range start end callback (block
+    (let res 0)
+    (loop iterate i (block 
+        (let* res (callback i))
+        (if (< i end) (iterate (+ i 1)) res))) 
+        (iterate start)))
   ; filter
   (function filter array callback (block
     (let new_array (Array 0))
@@ -334,6 +355,25 @@
   (function binary_tree_get_value
                   node (get node 0))  
   ; (/ Binary Tree)
+  
+  ; occurances_count
+  (function character_occurances_in_string string letter (block
+    (let array (... string))
+    (let bitmask 0)
+    (let zero (char "a" 0))
+    (let count 0)
+    (let has_at_least_one 0)
+    (loop iterate i bounds  (block
+        (let ch (get array i))
+        (let code (- (char ch 0) zero))
+        (let mask (<< 1 code))
+        (if (and (if (= ch letter) (let* has_at_least_one 1))
+            (not (= (& bitmask mask) 0))) 
+            (let* count (+ count 1))
+            (let* bitmask (| bitmask mask)))
+        (if (< i bounds) (iterate (+ i 1) bounds) 
+        (+ count has_at_least_one))))
+        (iterate 0 (- (length array) 1))))
 
   (Array 
     (Array "max" min)
@@ -356,7 +396,9 @@
     (Array "merge" merge)
     (Array "range" range)
     (Array "map" map)
-    (Array "for_each" for_each)    
+    (Array "for_each" for_each)
+    (Array "for_n" for_n)
+    (Array "for_range" for_range)
     (Array "filter" filter)
     (Array "reduce" reduce)
     (Array "sum_array" sum_array)
@@ -384,6 +426,7 @@
     (Array "binary_tree_set_right" binary_tree_set_right)
     (Array "binary_tree_set_left" binary_tree_set_left)
     (Array "binary_tree_get_value" binary_tree_get_value)
+    (Array "character_occurances_in_string" character_occurances_in_string)
   )
 ))
 ; (/ std lib)

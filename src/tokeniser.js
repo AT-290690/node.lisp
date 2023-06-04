@@ -16,6 +16,11 @@ export const tokens = {
     const [a, b] = args.map((x) => evaluate(x, env))
     if (typeof a !== 'number' || typeof b !== 'number')
       throw new TypeError(`Not all arguments for (mod) are numbers.`)
+    if (b === 0)
+      throw new TypeError(
+        `Second argument of (mod) can't be a (0) (devision by 0 is not allowed).`
+      )
+
     return a % b
   },
   ['/']: (args, env) => {
@@ -407,7 +412,6 @@ export const tokens = {
     const delim = evaluate(args[1], env)
     if (typeof delim !== 'string')
       throw new TypeError('Second argument of (format) has to be a (string)')
-
     return string.split(delim)
   },
   ['loop']: (args, env) => {

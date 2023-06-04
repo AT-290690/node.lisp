@@ -146,12 +146,15 @@ const compile = (tree, Locals) => {
       case 'set':
         return `_set(${parseArgs(Arguments, Locals)});`
       case 'lambda': {
+        const functionArgs = Arguments
         const body = Arguments.pop()
         const localVars = new Set()
         const evaluatedBody = compile(body, localVars)
         const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
         return `(${parseArgs(
-          Arguments.filter(({ value }) => value !== '_'),
+          functionArgs.map(({ type, value }, index) =>
+            value === '_' ? { type, value: `_${index}` } : { type, value }
+          ),
           Locals
         )})=>{${vars} ${Array.isArray(body) ? 'return' : ' '} ${evaluatedBody
           .toString()
@@ -191,7 +194,9 @@ const compile = (tree, Locals) => {
         const evaluatedBody = compile(body, localVars)
         const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
         out += `${name}=(${parseArgs(
-          functionArgs.filter(({ value }) => value !== '_'),
+          functionArgs.map(({ type, value }, index) =>
+            value === '_' ? { type, value: `_${index}` } : { type, value }
+          ),
           Locals
         )})=>{${vars}${Array.isArray(body) ? 'return' : ' '} ${evaluatedBody
           .toString()
