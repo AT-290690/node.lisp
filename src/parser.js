@@ -16,7 +16,7 @@ export const parse = (source) => {
       acc += '"'
       ++i
       while (source[i] !== '"') {
-        if (source[i] === '\\') {
+        if (source[i] === '\\')
           switch (source[++i]) {
             case '\\':
               acc += '\\'
@@ -31,11 +31,8 @@ export const parse = (source) => {
               acc += '\t'
               break
           }
-          ++i
-        } else {
-          acc += source[i]
-          ++i
-        }
+        else acc += source[i]
+        ++i
       }
     }
     if (cursor === '(') {
