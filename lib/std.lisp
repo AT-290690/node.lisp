@@ -94,25 +94,26 @@
       (if (< i bounds) (iterate (+ i 1) bounds) initial)))
     (iterate 0 (- (length array) 1))))
   ; sum_array
-  (function sum_array array (reduce array (lambda a b i o (+ a b)) 0))
+  (function sum_array array (reduce array (lambda a b _ _ (+ a b)) 0))
   ; product_array
-  (function product_array array (reduce array (lambda a b i o (* a b)) 1))
+  (function product_array array (reduce array (lambda a b _ _ (* a b)) 1))
   ; deep_flat
   (function deep_flat arr (block 
     (let new_array (Array 0)) 
-    (loop flatten item (if (Arrayp item) (for_each item (lambda x _ o (flatten x))) 
+    (loop flatten item (if (Arrayp item) (for_each item (lambda x _ _ (flatten x))) 
     (push new_array item)))
     (flatten arr) 
     new_array
   ))
   ; find
-  (function find array callback (block
-    (loop iterate i bounds (block
-      (let current (get array i))
-      (if (and (not (callback current i array)) (< i bounds))
-        (iterate (+ i 1) bounds) 
-        current)))
-        (iterate 0 (- (length array) 1))))
+(function find array callback (block
+        (loop iterate i bounds (block
+          (let current (get array i))
+          (let has (callback current i array))
+          (if (and (not has) (< i bounds))
+            (iterate (+ i 1) bounds) 
+            (if has current))))
+            (iterate 0 (- (length array) 1))))
   ; find_index
   (function find_index array callback (block
     (let idx -1)
@@ -214,13 +215,13 @@
           (block
             (let current (get table idx))
             (do current
-              (find (lambda x i o (= key 
+              (find (lambda x _ _ (= key 
                       (do x (get 0)))))
               (get 1))))))
   ; hash_table
   (function hash_table 
     size 
-      (map (Array size) (lambda x i o (Array 0))))
+      (map (Array size) (lambda _ _ _ (Array 0))))
   ; hash_table_make
   (function hash_table_make 
     items 
@@ -241,7 +242,7 @@
   ;   (log)
   ; )
 
-  (function hash_set_index 
+(function hash_set_index 
     table key 
       (block
         (let total 0)
@@ -259,8 +260,14 @@
       (block
         (let idx (hash_set_index table key))
         (if (not (is_in_bounds table idx)) (set table idx (Array 0)))
-        (if (not (length (let current (do table (get idx))))) 
-          (push current key))
+        (let current (get table idx))
+        (let len (length current))
+        (let index (if len (find_index current (lambda x i o (= x key))) -1))
+        (let entry key)
+        (if (= index -1)
+          (push current entry)
+          (set current index entry)
+        )
         table))
   ; hash table_has 
   (function hash_set_has table key 
@@ -271,11 +278,14 @@
       (block
         (let idx (hash_set_index table key))
         (if (is_in_bounds table idx) 
-          key)))
+          (block
+            (let current (get table idx))
+            (do current
+              (find (lambda x _ _ (= key x))))))))
   ; hash_set
   (function hash_set 
     size 
-      (map (Array size) (lambda x i o (Array 0))))
+      (map (Array size) (lambda _ _ _ (Array 0))))
   ; hash_set_make
   (function hash_set_make 
     items 
@@ -287,7 +297,7 @@
           (hash_set_set table item)
         (if (< i len) (add (+ i 1)) table)))
         (add 0)))
-  ; (/ Hash Set)
+; (/ Hash Set)
 
   ; (Binary Tree)
   ; (do 

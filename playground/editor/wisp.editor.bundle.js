@@ -53,9 +53,10 @@ const DefaultBufferLength=1024;let nextPropID=0;class Range$1{constructor(e,t){t
           new_array))`,{label:"define DeepFlat",detail:"definition",type:"type"}),snippetCompletion(`(function find array callback (block
         (loop iterate i bounds (block
           (let current (get array i))
-          (if (and (not (callback current i array)) (< i bounds))
+          (let has (callback current i array))
+          (if (and (not has) (< i bounds))
             (iterate (+ i 1) bounds) 
-            current)))
+            (if has current))))
             (iterate 0 (- (length array) 1))))`,{label:"define Find",detail:"definition",type:"type"}),snippetCompletion(`(function find_index array callback (block
         (let idx -1)
         (let has_found 0)
@@ -208,7 +209,6 @@ const DefaultBufferLength=1024;let nextPropID=0;class Range$1{constructor(e,t){t
     ;   (hash_set_set "D")
     ;   (log)
     ; )
-  
     (function hash_set_index 
       table key 
         (block
@@ -227,8 +227,14 @@ const DefaultBufferLength=1024;let nextPropID=0;class Range$1{constructor(e,t){t
         (block
           (let idx (hash_set_index table key))
           (if (not (is_in_bounds table idx)) (set table idx (Array 0)))
-          (if (not (length (let current (do table (get idx))))) 
-            (push current key))
+          (let current (get table idx))
+          (let len (length current))
+          (let index (if len (find_index current (lambda x i o (= x key))) -1))
+          (let entry key)
+          (if (= index -1)
+            (push current entry)
+            (set current index entry)
+          )
           table))
     ; hash table_has 
     (function hash_set_has table key 
@@ -239,11 +245,14 @@ const DefaultBufferLength=1024;let nextPropID=0;class Range$1{constructor(e,t){t
         (block
           (let idx (hash_set_index table key))
           (if (is_in_bounds table idx) 
-            key)))
+            (block
+              (let current (get table idx))
+              (do current
+                (find (lambda x _ _ (= key x))))))))
     ; hash_set
     (function hash_set 
       size 
-        (map (Array size) (lambda x i o (Array 0))))
+        (map (Array size) (lambda _ _ _ (Array 0))))
     ; hash_set_make
     (function hash_set_make 
       items 

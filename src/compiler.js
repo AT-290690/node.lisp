@@ -150,9 +150,12 @@ const compile = (tree, Locals) => {
         const localVars = new Set()
         const evaluatedBody = compile(body, localVars)
         const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
-        return `(${parseArgs(Arguments, Locals)})=>{${vars} ${
-          Array.isArray(body) ? 'return' : ' '
-        } ${evaluatedBody.toString().trimStart()}};`
+        return `(${parseArgs(
+          Arguments.filter(({ value }) => value !== '_'),
+          Locals
+        )})=>{${vars} ${Array.isArray(body) ? 'return' : ' '} ${evaluatedBody
+          .toString()
+          .trimStart()}};`
       }
       case 'loop': {
         let name,
@@ -187,10 +190,12 @@ const compile = (tree, Locals) => {
         const localVars = new Set()
         const evaluatedBody = compile(body, localVars)
         const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
-
-        out += `${name}=(${parseArgs(functionArgs, Locals)})=>{${vars}${
-          Array.isArray(body) ? 'return' : ' '
-        } ${evaluatedBody.toString().trimStart()}};`
+        out += `${name}=(${parseArgs(
+          functionArgs.filter(({ value }) => value !== '_'),
+          Locals
+        )})=>{${vars}${Array.isArray(body) ? 'return' : ' '} ${evaluatedBody
+          .toString()
+          .trimStart()}};`
         out += `), ${name});`
         return out
       }
