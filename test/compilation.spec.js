@@ -158,7 +158,7 @@ it('compilation should work', () =>
 (function push array value (set array (length array) value))
 (function array_to_numbers array (map array (lambda x i (type x Number))))
 (function product_array array (reduce array (lambda a b i o (* a b)) 1))
-(function split_by_lines string (format string (esc "n")))
+(function split_by_lines string (regex_match string "[^\n]+"))
 (function string_to_array string delim 
                     (reduce (... string) 
                       (lambda a x i o (block
@@ -323,7 +323,7 @@ left_arr (quick_sort)
     (Array (do occ
       (map (lambda x i o
                   (do x
-                    (format "-") 
+                    (regex_match "[^-]+") 
                     (map (lambda y i o (type y Number))))))
        (map (lambda x i o (do x 
                 (push (get policy i)) 
@@ -335,7 +335,7 @@ left_arr (quick_sort)
       (reduce (lambda a x i o (+ a (get x -1))) 0)
     )
     (do occ
-      (map (lambda x i o (do x (format "-") (map (lambda y i o (type y Number))))))
+      (map (lambda x i o (do x (regex_match "[^-]+") (map (lambda y i o (type y Number))))))
        (map (lambda x i o (do x 
                 (push (get policy i)) 
                 (push (get inputs i)))))
@@ -486,7 +486,7 @@ left_arr (quick_sort)
             (block (push (get a -1) x) a)
           )))(push (Array 0) (Array 0)))))
       
-       (let split_by_lines (lambda string (map (string_to_array string (esc "n")) (lambda x i (join x "")))))
+       (let split_by_lines (lambda string (map (string_to_array string "\n") (lambda x i (join x "")))))
        
        (map (map 
         (split_by_lines sample) 

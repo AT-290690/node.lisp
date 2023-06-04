@@ -1,4 +1,4 @@
-(import std "map" "reduce" "floor")
+(import std "map" "reduce" "floor" "split_by_lines")
 (let sample 
 "..##.......
 #...#...#..
@@ -37,7 +37,7 @@
 
 (function task input (block 
 (let matrix (do input 
-            (format (esc "n")) 
+            (split_by_lines)
             (to_bit_array)))
 ; 7 for sample
 (log "-----------------")

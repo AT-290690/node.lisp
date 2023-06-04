@@ -1,4 +1,4 @@
-import { handleUnbalancedParens, logError } from './utils.js'
+import { handleUnbalancedParens } from './utils.js'
 export const parse = (source) => {
   source = handleUnbalancedParens(
     source
@@ -16,8 +16,26 @@ export const parse = (source) => {
       acc += '"'
       ++i
       while (source[i] !== '"') {
-        acc += source[i]
-        ++i
+        if (source[i] === '\\') {
+          switch (source[++i]) {
+            case '\\':
+              acc += '\\'
+              break
+            case 'n':
+              acc += '\n'
+              break
+            case 'r':
+              acc += '\r'
+              break
+            case 't':
+              acc += '\t'
+              break
+          }
+          ++i
+        } else {
+          acc += source[i]
+          ++i
+        }
       }
     }
     if (cursor === '(') {

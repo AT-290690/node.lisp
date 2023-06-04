@@ -28,14 +28,10 @@
                       (if (< (mod a b) 0) (if (> b 0) (- q 1) (+ q 1)) q)))
   ; join
   (function join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
-  ; string_to_array
-  (function string_to_array string delim 
-                        (reduce (... string) 
-                          (lambda a x i o (block
-                                    (if (= x delim) (push a (Array 0)) (block 
-                                      (push (get a -1) x) a))))(push (Array 0) (Array 0))))
   ; split_by_lines
-  (function split_by_lines string (map (string_to_array string (esc "n")) (lambda x i o (join x ""))))
+  (function split_by_lines string (regex_match string "[^\n]+"))
+  ; split_by
+  (function split_by string delim (regex_match string (concatenate "[^" delim "]+")))
   ; array_to_numbers
   (function array_to_numbers array (map array (lambda x i o (type x Number))))
   ; concat
@@ -389,8 +385,8 @@
     (Array "euclidean_mod" euclidean_mod)
     (Array "euclidean_div" euclidean_div)
     (Array "join" join)
-    (Array "string_to_array" string_to_array)
     (Array "split_by_lines" split_by_lines)
+    (Array "split_by" split_by)
     (Array "array_to_numbers" array_to_numbers)
     (Array "concat" concat)
     (Array "merge" merge)

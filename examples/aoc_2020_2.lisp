@@ -1,4 +1,4 @@
-(import std "push" "map" "reduce")
+(import std "push" "map" "reduce" "split_by")
 
 (let sample "1-3 a: abcde
 1-3 b: cdefg
@@ -12,7 +12,7 @@
 (let policy (regex_match input "[a-z](?=:)"))
 (let inputs (regex_match input "(?<=:[ ])(.*)"))
 
-(function occ_to_numbers x _ _ (do x (format "-") (map (lambda y _ _ (type y Number)))))
+(function occ_to_numbers x _ _ (do x (split_by "-") (map (lambda y _ _ (type y Number)))))
 
 (function solve1 string letter (block
   (let array (... string))

@@ -1,4 +1,4 @@
-(import std "quick_sort" "binary_search" "floor" "push" "map" "join" "reduce" "product_array" "concat" "string_to_array" "array_to_numbers" "split_by_lines")
+(import std "quick_sort" "binary_search" "floor" "push" "map" "join" "reduce" "product_array" "concat" "array_to_numbers" "split_by_lines")
 
 (let sample "1721
 979

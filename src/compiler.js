@@ -295,15 +295,6 @@ const compile = (tree, Locals) => {
           )
         }
         break
-      case 'esc': {
-        const char = compile(Arguments[0], Locals)
-        switch (char) {
-          case '`n`':
-            return '_NL'
-          default:
-            return '\\'
-        }
-      }
       default: {
         if (token in Extensions)
           return `${Extensions[token](parseArgs(Arguments, Locals))}`
@@ -331,8 +322,6 @@ export const compileToJs = (AST, extensions = {}, helpers = {}, tops = []) => {
   const top = `${tops.join('\n')}${Object.values(Helpers)
     .filter((x) => x.has)
     .map((x) => x.source)
-    .join(',')};\nvar _NL="\\n";\n${
-    vars.size ? `var ${[...vars].join(',')};` : ''
-  }`
+    .join(',')};\n${vars.size ? `var ${[...vars].join(',')};` : ''}`
   return { top, program, deps: [...Functions] }
 }
