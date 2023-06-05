@@ -1,6 +1,8 @@
 import { deepStrictEqual, strictEqual } from 'assert'
 import { runFromInterpreted } from '../src/utils.js'
 it('interpretation should work', () => {
+  strictEqual(runFromInterpreted(`(if (< 1 2) 42 69)`), 42)
+  strictEqual(runFromInterpreted(`(unless (< 1 2) 42 69)`), 69)
   deepStrictEqual(
     runFromInterpreted(`
 (function min a b (if (< a b) a b))

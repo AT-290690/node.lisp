@@ -129,6 +129,15 @@ export const tokens = {
       ? evaluate(args[1], env)
       : evaluate(args[2], env)
   },
+  ['unless']: (args, env) => {
+    if (args.length < 2 || args.length > 3)
+      throw new RangeError(
+        `Invalid number of arguments for (unless), expected 2 or 3  but got ${args.length}.`
+      )
+    return evaluate(args[0], env)
+      ? evaluate(args[2], env)
+      : evaluate(args[1], env)
+  },
   ['Array']: (args, env) => {
     if (!args.length)
       throw new RangeError(

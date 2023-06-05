@@ -28,6 +28,12 @@
                       (if (< (mod a b) 0) (if (> b 0) (- q 1) (+ q 1)) q)))
   ; greatest_common_divisor
   (function greatest_common_divisor a b (if (= b 0) a (greatest_common_divisor b (mod a b))))
+  ; remainder
+  (function remainder n d (if (< n d) n (remainder (- n d) d)))
+  ; factorial
+  (function factorial n (if (= n 1) 1 (* n (factorial (- n 1)))))
+  ; fibonacci
+  (function fibonacci n (if (< n 2) n (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))
   ; join
   (function join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
   ; split_by_lines
@@ -426,6 +432,9 @@
     (Array "binary_tree_get_value" binary_tree_get_value)
     (Array "character_occurances_in_string" character_occurances_in_string)
     (Array "greatest_common_divisor" greatest_common_divisor)
+    (Array "remainder" remainder)
+    (Array "factorial" factorial)
+    (Array "fibonacci" fibonacci)
   )
 ))
 ; (/ std lib)

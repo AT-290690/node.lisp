@@ -256,15 +256,15 @@ const compile = (tree, Locals) => {
       case 'not':
         return handleBoolean(`!${compile(Arguments[0], Locals)}`)
       case 'if': {
-        const conditionStack = []
-        Arguments.map((x) => compile(x, Locals)).forEach((x, i) =>
-          i % 2 === 0
-            ? conditionStack.push(x, '?')
-            : conditionStack.push(x, ':')
-        )
-        conditionStack.pop()
-        if (conditionStack.length === 3) conditionStack.push(':', 0, ';')
-        return `(${conditionStack.join('')});`
+        return `(${compile(Arguments[0], Locals)}?${compile(
+          Arguments[1],
+          Locals
+        )}:${Arguments.length === 3 ? compile(Arguments[2], Locals) : 0});`
+      }
+      case 'unless': {
+        return `(${compile(Arguments[0], Locals)}?${
+          Arguments.length === 3 ? compile(Arguments[2], Locals) : 0
+        }:${compile(Arguments[1], Locals)});`
       }
       case 'type':
         return `_cast("${Arguments[1].value}", ${compile(
