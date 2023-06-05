@@ -26,6 +26,8 @@
   (function euclidean_div a b (block 
                       (let q (* a (/ b)))
                       (if (< (mod a b) 0) (if (> b 0) (- q 1) (+ q 1)) q)))
+  ; greatest_common_divisor
+  (function greatest_common_divisor a b (if (= b 0) a (greatest_common_divisor b (mod a b))))
   ; join
   (function join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
   ; split_by_lines
@@ -423,6 +425,7 @@
     (Array "binary_tree_set_left" binary_tree_set_left)
     (Array "binary_tree_get_value" binary_tree_get_value)
     (Array "character_occurances_in_string" character_occurances_in_string)
+    (Array "greatest_common_divisor" greatest_common_divisor)
   )
 ))
 ; (/ std lib)

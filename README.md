@@ -52,19 +52,13 @@ try online [playground](https://at-290690.github.io/wisp/playground/editor/)
 interpred
 
 ```
-yarn wisp -file <filepath> -run
+yarn wisp -file <filepath> -r
 ```
 
 or compile
 
 ```
-yarn wisp -file <filepath> -js
-```
-
-write to file
-
-```
-yarn wisp -s <filepath lisp> -d <filepath js> -compile
+yarn wisp -s <filepath lisp> -d <filepath js> -c
 ```
 
 show help
