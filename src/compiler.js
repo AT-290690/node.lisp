@@ -6,11 +6,15 @@ const Helpers = {
     source: `var log = (msg) => { console.log(msg); return msg }`,
     has: true,
   },
-  regexp: {
-    source: `_regexp = (string, regex) => {
+  regexp_match: {
+    source: `_regexp_match = (string, regex) => {
       const match = string.match(new RegExp(regex, 'g'))
       return match == undefined ? [] : [...match]
     }`,
+    has: true,
+  },
+  regexp_replace: {
+    source: `_regexp_replace = (string, a, b) => string.replace(new RegExp(a, 'g'), b)`,
     has: true,
   },
   set: {
@@ -117,7 +121,9 @@ const compile = (tree, Locals) => {
           Locals
         )}));`
       case 'regex_match':
-        return `_regexp(${parseArgs(Arguments, Locals)});`
+        return `_regexp_match(${parseArgs(Arguments, Locals)});`
+      case 'regex_replace':
+        return `_regexp_replace(${parseArgs(Arguments, Locals)});`
       case 'Stringp':
         return handleBoolean(
           `(typeof(${compile(Arguments[0], Locals)})==='string');`

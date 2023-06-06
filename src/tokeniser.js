@@ -330,7 +330,7 @@ export const tokens = {
     return +(evaluate(args[0], env) <= evaluate(args[1], env))
   },
   ['and']: (args, env) => {
-    if (args.length !== 2)
+    if (args.length < 2)
       throw new RangeError(
         'Invalid number of arguments for (and) (>= 2 required)'
       )
@@ -340,7 +340,7 @@ export const tokens = {
     return evaluate(args.at(-1), env)
   },
   ['or']: (args, env) => {
-    if (args.length !== 2)
+    if (args.length < 2)
       throw new RangeError(
         'Invalid number of arguments for (or) (>= 2 required)'
       )
@@ -409,6 +409,28 @@ export const tokens = {
       )
     const match = string.match(new RegExp(regex, 'g'))
     return match == undefined ? [] : [...match]
+  },
+  ['regex_replace']: (args, env) => {
+    if (args.length !== 3)
+      throw new RangeError(
+        'Invalid number of arguments to (regex_replace) [3 required]'
+      )
+    const string = evaluate(args[0], env)
+    if (typeof string !== 'string')
+      throw new TypeError(
+        'First argument of (regex_replace) has to be a (string)'
+      )
+    const a = evaluate(args[1], env)
+    if (typeof a !== 'string')
+      throw new TypeError(
+        'Second argument of (regex_replace) has to be a (string)'
+      )
+    const b = evaluate(args[2], env)
+    if (typeof b !== 'string')
+      throw new TypeError(
+        'Third argument of (regex_replace) has to be a (string)'
+      )
+    return string.replace(new RegExp(a, 'g'), b)
   },
   ['loop']: (args, env) => {
     if (args.length < 2)

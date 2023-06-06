@@ -218,7 +218,7 @@
     table key value 
       (block
         (let idx (hash_table_index table key))
-        (if (not (is_in_bounds table idx)) (set table idx (Array 0)))
+        (unless (is_in_bounds table idx) (set table idx (Array 0)))
         (let current (get table idx))
         (let len (length current))
         (let index (if len (find_index current (lambda x i o (= (get x 0) key))) -1))
@@ -284,7 +284,7 @@
     table key 
       (block
         (let idx (hash_set_index table key))
-        (if (not (is_in_bounds table idx)) (set table idx (Array 0)))
+        (unless (is_in_bounds table idx) (set table idx (Array 0)))
         (let current (get table idx))
         (let len (length current))
         (let index (if len (find_index current (lambda x i o (= x key))) -1))

@@ -19,7 +19,7 @@ const DefaultBufferLength=1024;let nextPropID=0;class Range$1{constructor(e,t){t
       (loop iterate i bounds (block
         (push array (+ i start))
         (if (< i bounds) (iterate (+ i 1) bounds) array)))
-      (iterate 0 (- end start))))`,{label:"define Range",detail:"definition",type:"type"}),snippetCompletion(`(function map array callback (block 
+      (iterate 0 (- end start))))`,{label:"define Range",detail:"definition",type:"type"}),snippetCompletion("(function greatest_common_divisor a b (if (= b 0) a (greatest_common_divisor b (mod a b))))",{label:"define GreatestCommonDivisor",detail:"definition",type:"type"}),snippetCompletion("(function factorial n (if (= n 1) 1 (* n (factorial (- n 1)))))",{label:"define Factorial",detail:"definition",type:"type"}),snippetCompletion("(function fibonacci n (if (< n 2) n (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))",{label:"define Fibonacci",detail:"definition",type:"type"}),snippetCompletion(`(function map array callback (block 
       (let new_array (Array 0))
       (let i 0)
       (loop iterate i bounds (block
