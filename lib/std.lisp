@@ -105,12 +105,19 @@
   ; filter
   (function filter array callback (block
     (let new_array (Array 0))
-    (let i 0)
     (loop iterate i bounds (block
       (let current (get array i))
       (if (callback current i) 
         (push new_array current))
       (if (< i bounds) (iterate (+ i 1) bounds) new_array)))
+    (iterate 0 (- (length array) 1))))
+; every
+(function every array callback (block
+    (let bol 1)
+    (loop iterate i bounds (block
+      (let res (callback (get array i) i array))
+      (if (not res) (let* bol 0))
+      (if (and res (< i bounds)) (iterate (+ i 1) bounds) bol)))
     (iterate 0 (- (length array) 1))))
   ; reduce
   (function reduce array callback initial (block
@@ -379,6 +386,8 @@
         (+ count has_at_least_one))))
         (iterate 0 (- (length array) 1))))
 
+(function split_by_n_lines string n (do string (regex_replace (concatenate "(\n){" n "}") "௮") (regex_match "[^௮]+") (map (lambda x _ _ (regex_match x "[^\n]+")))))
+
   (Array 
     (Array "max" min)
     (Array "min" min) 
@@ -395,6 +404,7 @@
     (Array "join" join)
     (Array "split_by_lines" split_by_lines)
     (Array "split_by" split_by)
+    (Array "split_by_n_lines" split_by_n_lines)
     (Array "array_to_numbers" array_to_numbers)
     (Array "concat" concat)
     (Array "merge" merge)
@@ -435,6 +445,7 @@
     (Array "remainder" remainder)
     (Array "factorial" factorial)
     (Array "fibonacci" fibonacci)
+    (Array "every" every)
   )
 ))
 ; (/ std lib)

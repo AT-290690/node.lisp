@@ -492,7 +492,6 @@ it('interpretation should work', () => {
   
   (let filter (lambda array callback (block 
   (let new_array (Array 0))
-  (let i 0)
   (let iterate (lambda i bounds (block
     (let current (get array i))
     (if (callback current i) 

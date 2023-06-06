@@ -13,19 +13,15 @@
 .#..#...#.#")
 
 (let input sample)
+; (let input (open "./playground/src/aoc_2020/3/input.txt"))
 
 (function to_bit_array array 
-  (map array (lambda line _ _ (do line 
-                              (...) 
-                              (map (lambda x _ _ 
-                                    (if (= x "#") 1 0)))))))
+  (map array (lambda line _ _ (do line (...) (map (lambda x _ _ (= x "#")))))))
 
 (function solve array slopeX slopeY (block 
   (let h (length array))
   (let w (length (get array 0)))
-  (do slopeY
-      (/)
-      (* h)
+  (do (* h (/ slopeY))
       (floor)
       (Array)
       (map (lambda _ index _ 
@@ -58,4 +54,4 @@
   (reduce (lambda a b _ _ (* a b)) 1)
   (log))))
 
-(task sample)
+(task input)

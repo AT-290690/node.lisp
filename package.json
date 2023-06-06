@@ -8,8 +8,8 @@
     "singleQuote": true
   },
   "scripts": {
-    "aoc:i": "yarn wisp -s playground/src/aoc_2020/2/main.lisp -e fs -r",
-    "aoc:c": "yarn wisp -s playground/src/aoc_2020/2/main.lisp -d playground/src/aoc_2020/2/main.js -e fs -c && node playground/src/aoc_2020/2/main.js",
+    "aoc:i": "yarn wisp -s playground/src/aoc_2020/4/main.lisp -e fs -r",
+    "aoc:c": "yarn wisp -s playground/src/aoc_2020/4/main.lisp -d playground/src/aoc_2020/4/main.js -e fs -c && node playground/src/aoc_2020/4/main.js",
     "wisp": "node index.js",
     "test": "mocha",
     "doctest": "node jsdoc.js"

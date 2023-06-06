@@ -516,7 +516,6 @@ left_arr (quick_sort)
       
       (let filter (lambda array callback (block
       (let new_array (Array 0))
-      (let i 0)
       (let interate (lambda i bounds (block
         (let current (get array i))
         (if (callback current i) 
@@ -563,7 +562,6 @@ left_arr (quick_sort)
         
         (let filter (lambda array callback (block 
         (let new_array (Array 0))
-        (let i 0)
         (loop interate i bounds (block
           (let current (get array i))
           (if (callback current i) 
