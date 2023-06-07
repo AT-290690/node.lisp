@@ -107,7 +107,7 @@
     (let new_array (Array 0))
     (loop iterate i bounds (block
       (let current (get array i))
-      (if (callback current i) 
+      (if (callback current i array) 
         (push new_array current))
       (if (< i bounds) (iterate (+ i 1) bounds) new_array)))
     (iterate 0 (- (length array) 1))))

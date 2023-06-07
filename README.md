@@ -35,9 +35,9 @@ Lisp for web
 ```
 
 ```lisp
-(let is_odd (lambda x i (= (mod x 2) 1)))
-(let mult_2 (lambda x i (* x 2)))
-(let sum (lambda a x i (+ a x)))
+(let is_odd (lambda x i o (= (mod x 2) 1)))
+(let mult_2 (lambda x i o (* x 2)))
+(let sum (lambda a x i o (+ a x)))
 ; Pipe the first to a series of composed functions
 ; (arg (arg .. ) (arg .. ) (ar . . . . ))
 (do
