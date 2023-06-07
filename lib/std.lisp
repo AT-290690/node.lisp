@@ -389,7 +389,7 @@
 (function split_by_n_lines string n (do string (regex_replace (concatenate "(\n){" n "}") "௮") (regex_match "[^௮]+") (map (lambda x _ _ (regex_match x "[^\n]+")))))
 
   (Array 
-    (Array "max" min)
+    (Array "max" max)
     (Array "min" min) 
     (Array "is_odd" is_odd) 
     (Array "is_even" is_even) 
