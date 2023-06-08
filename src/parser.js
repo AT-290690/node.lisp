@@ -30,6 +30,9 @@ export const parse = (source) => {
             case 't':
               acc += '\t'
               break
+            case 's':
+              acc += '\\s'
+              break
           }
         else acc += source[i]
         ++i

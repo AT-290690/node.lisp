@@ -40,6 +40,8 @@
   (function split_by_lines string (regex_match string "[^\n]+"))
   ; split_by
   (function split_by string delim (regex_match string (concatenate "[^" delim "]+")))
+  ; trim
+  (function trim string (regex_replace string "^\s+|\s+$" ""))
   ; array_to_numbers
   (function array_to_numbers array (map array (lambda x i o (type x Number))))
   ; concat
@@ -402,6 +404,7 @@
     (Array "euclidean_mod" euclidean_mod)
     (Array "euclidean_div" euclidean_div)
     (Array "join" join)
+    (Array "trim" trim)
     (Array "split_by_lines" split_by_lines)
     (Array "split_by" split_by)
     (Array "split_by_n_lines" split_by_n_lines)

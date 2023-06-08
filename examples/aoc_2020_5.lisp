@@ -23,7 +23,6 @@
     (if (= b upper) (set a 0 (round half)))))) bounds) 
     (get (= (get input -1) upper))))
 
-
 (function calc fb lr 
   (+ (* (binary_boarding fb (Array 0 127) "F" "B") 8) 
         (binary_boarding lr (Array 0 7) "L" "R")))
@@ -36,7 +35,6 @@
       (reduce (lambda a b _ _  (max a b)) 0)
       (log))
 
-
 (let sorted (do input 
     (split_by "\n")
     (map (lambda x _ _ (block 
@@ -46,9 +44,10 @@
 
 (let maxSeat (reduce sorted (lambda a b _ _  (max a b)) 0))
 (let minSeat (reduce sorted (lambda a b _ _  (min a b)) maxSeat))
+
 (do 
   sorted
-  (map (lambda x i _ (- x minSeat i)))
-  (find_index (lambda x _ _ (= x 1)))
+  (find_index (lambda x i _ (= (- x minSeat i) 1)))
   (+ minSeat)
   (log))
+  
