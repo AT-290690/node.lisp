@@ -105,7 +105,7 @@
         (if (< i end) (iterate (+ i 1)) res))) 
         (iterate start)))
   ; filter
-  (function filter array callback (block
+  (function remove array callback (block
     (let new_array (Array 0))
     (loop iterate i bounds (block
       (let current (get array i))
@@ -416,7 +416,7 @@
     (Array "for_each" for_each)
     (Array "for_n" for_n)
     (Array "for_range" for_range)
-    (Array "filter" filter)
+    (Array "remove" remove)
     (Array "reduce" reduce)
     (Array "sum_array" sum_array)
     (Array "product_array" product_array)

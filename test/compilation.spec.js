@@ -514,7 +514,7 @@ left_arr (quick_sort)
       (interate 0 (- (length array) 1)))))
       
       
-      (let filter (lambda array callback (block
+      (let remove (lambda array callback (block
       (let new_array (Array 0))
       (let interate (lambda i bounds (block
         (let current (get array i))
@@ -538,7 +538,7 @@ left_arr (quick_sort)
 
 (do 
 (Array 1 2 3 4 5 6 7 101) 
-(filter is_odd)
+(remove is_odd)
 (map mult_2)
 (reduce sum 0))
       `,
@@ -560,7 +560,7 @@ left_arr (quick_sort)
         (interate 0 (- (length array) 1)))))
         
         
-        (let filter (lambda array callback (block 
+        (let remove (lambda array callback (block 
         (let new_array (Array 0))
         (loop interate i bounds (block
           (let current (get array i))
@@ -582,7 +582,7 @@ left_arr (quick_sort)
   
   (do 
     (Array 1 2 3 4 5 6 7 101) 
-    (filter is_odd)
+    (remove is_odd)
     (map mult_2)
     (reduce sum 0)
   )

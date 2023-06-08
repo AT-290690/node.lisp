@@ -490,7 +490,7 @@ it('interpretation should work', () => {
   (iterate 0 (- (length array) 1)))))
   
   
-  (let filter (lambda array callback (block 
+  (let remove (lambda array callback (block 
   (let new_array (Array 0))
   (let iterate (lambda i bounds (block
     (let current (get array i))
@@ -514,7 +514,7 @@ it('interpretation should work', () => {
   
   (do 
   (Array 1 2 3 4 5 6 7 101) 
-  (filter is_odd)
+  (remove is_odd)
   (map mult_2)
   (reduce sum 0))
   

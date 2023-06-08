@@ -39,7 +39,7 @@ const DefaultBufferLength=1024;let nextPropID=0;class Range$1{constructor(e,t){t
         (loop iterate i (block 
             (let* res (callback i))
             (if (< i end) (iterate (+ i 1)) res))) 
-            (iterate start)))`,{label:"define ForRange",detail:"definition",type:"type"}),snippetCompletion(`(function filter array callback (block
+            (iterate start)))`,{label:"define ForRange",detail:"definition",type:"type"}),snippetCompletion(`(function remove array callback (block
       (let new_array (Array 0))
       (let i 0)
       (loop iterate i bounds (block
@@ -47,7 +47,7 @@ const DefaultBufferLength=1024;let nextPropID=0;class Range$1{constructor(e,t){t
         (if (callback current i) 
           (push new_array current))
         (if (< i bounds) (iterate (+ i 1) bounds) new_array)))
-      (iterate 0 (- (length array) 1))))`,{label:"define Filter",detail:"definition",type:"type"}),snippetCompletion(`(function reduce array callback initial (block
+      (iterate 0 (- (length array) 1))))`,{label:"define Remove",detail:"definition",type:"type"}),snippetCompletion(`(function reduce array callback initial (block
       (loop iterate i bounds (block
         (let* initial (callback initial (get array i) i array))
         (if (< i bounds) (iterate (+ i 1) bounds) initial)))
@@ -96,7 +96,13 @@ const DefaultBufferLength=1024;let nextPropID=0;class Range$1{constructor(e,t){t
             (loop iterate i bounds (block
               (set reversed (- offset i) (get array i))
               (if (< i bounds) (iterate (+ i 1) bounds) reversed)))
-            (iterate 0 offset)))`,{label:"define Reverse",detail:"definition",type:"type"}),snippetCompletion(`(function character_occurances_in_string string letter (block
+            (iterate 0 offset)))`,{label:"define Reverse",detail:"definition",type:"type"}),snippetCompletion(`(function every array callback (block
+    (let bol 1)
+    (loop iterate i bounds (block
+      (let res (callback (get array i) i array))
+      (if (not res) (let* bol 0))
+      (if (and res (< i bounds)) (iterate (+ i 1) bounds) bol)))
+    (iterate 0 (- (length array) 1))))`,{label:"define every",detail:"definition",type:"type"}),snippetCompletion(`(function character_occurances_in_string string letter (block
         (let array (... string))
         (let bitmask 0)
         (let zero (char "a" 0))

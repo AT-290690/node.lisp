@@ -1,4 +1,4 @@
-(import std  "filter" "for_each" "push" "map" "regex_match" "split_by_n_lines" "deep_flat" "split_by" "join" "every" "reduce" "sum_array")
+(import std  "remove" "for_each" "push" "map" "regex_match" "split_by_n_lines" "deep_flat" "split_by" "join" "every" "reduce" "sum_array")
 ; (let sample "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
 ; byr:1937 iyr:2017 cid:147 hgt:183cm
 
@@ -49,9 +49,9 @@ hgt:76in")
                         (do x (map (lambda y _ _ 
                           (do y (regex_match "byr|iyr|eyr|hgt|hcl|ecl|pid")))) 
                                 (deep_flat)
-                                (filter (lambda x _ _ (not (not x)))))))
+                                (remove (lambda x _ _ (not (not x)))))))
                   ; (map (lambda x _ _ (log x)))
-                  (filter (lambda x _ _ (= (length x) 7)))))
+                  (remove (lambda x _ _ (= (length x) 7)))))
 (do input (split_by_n_lines 2)
                 (validate_fields)
                   (length)
@@ -70,12 +70,12 @@ hgt:76in")
 (function to_entries array (map array (lambda x _ _ (do x (map (lambda y _ _ (do y (split_by " ")))) (deep_flat) (map (lambda x _ _ (split_by x ":")))))))
 (function without_invalid_fields fields (do fields 
                                             (map (lambda x _ _  (do x 
-                                             (filter (lambda y _ _ (and (not (= (get y 0) "cid")) (regex_match (get y 0) "byr|iyr|eyr|hgt|hcl|ecl|pid")))))))))
+                                             (remove (lambda y _ _ (and (not (= (get y 0) "cid")) (regex_match (get y 0) "byr|iyr|eyr|hgt|hcl|ecl|pid")))))))))
 (do input 
      (split_by_n_lines 2)
      (to_entries)
      (without_invalid_fields)
-     (filter (lambda x _ _ (= (length x) 7)))
+     (remove (lambda x _ _ (= (length x) 7)))
      (map (lambda x _ _ (do x     
       (map (lambda y _ _ (block
         (let key (get y 0))
@@ -108,7 +108,7 @@ hgt:76in")
                       (and 
                         (= (length arr) 9) 
                         (length (regex_match value "[0-9]{9}")))))))))))))))))
-       (filter (lambda x _ _ (every x (lambda y _ _ (= (get y -1) 1)))))
+       (remove (lambda x _ _ (every x (lambda y _ _ (= (get y -1) 1)))))
       (map (lambda x _ _ (log x)))
       (length)
       (log))
