@@ -143,7 +143,8 @@ export const tokens = {
       throw new RangeError(
         'Invalid number of arguments for (Array) (>= 1 required)'
       )
-    const isCapacity = args[1].type === 'word' && args[1].value === 'length'
+    const isCapacity =
+      args.length === 2 && args[1].type === 'word' && args[1].value === 'length'
     if (isCapacity) {
       const N = evaluate(args[0], env)
       if (args.length !== 2)

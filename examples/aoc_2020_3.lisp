@@ -1,4 +1,4 @@
-(import std "map" "reduce" "floor" "split_by_lines")
+(import std "map" "reduce" "floor" "split_by_lines" "sum_array" "product_array")
 (let sample 
 "..##.......
 #...#...#..
@@ -28,27 +28,26 @@
         (do array 
           (get (mod (* index slopeY) h)) 
           (get (mod (* index slopeX) w)))))
-      (reduce (lambda a b _ _ (+ a b)) 0))))
-
+      (sum_array))))
 
 (function task input (block 
-    (let matrix (do input 
-                (split_by_lines)
-                (to_bit_array)))
-    ; 7 for sample
-    (do matrix
-      (solve 3 1) 
-      (log)) 
-    ; 336 for sample
-    (do 
-    (Array 
-      (Array 1 1) 
-      (Array 3 1) 
-      (Array 5 1) 
-      (Array 7 1) 
-      (Array 1 2)) 
-      (map (lambda x _ _ (solve matrix (get x 0) (get x 1))))
-      (reduce (lambda a b _ _ (* a b)) 1)
-      (log))))
+(let matrix (do input 
+            (split_by_lines)
+            (to_bit_array)))
+; 7 for sample
+(do matrix
+  (solve 3 1) 
+  (log)) 
+; 336 for sample
+(do 
+(Array 
+  (Array 1 1) 
+  (Array 3 1) 
+  (Array 5 1) 
+  (Array 7 1) 
+  (Array 1 2)) 
+  (map (lambda x _ _ (solve matrix (get x 0) (get x 1))))
+  (product_array)
+  (log))))
 
 (task input)

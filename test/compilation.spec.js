@@ -2,6 +2,8 @@ import { deepStrictEqual } from 'assert'
 import { runFromCompiled, runFromInterpreted } from '../src/utils.js'
 it('compilation should work', () =>
   [
+    `(Array 10 length)`,
+    `(Array 10)`,
     `(if (< 1 2) 42 69)`,
     `(unless (< 1 2) 42 69)`,
     `(function min a b (if (< a b) a b))

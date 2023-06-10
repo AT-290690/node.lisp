@@ -135,7 +135,9 @@ const compile = (tree, Locals) => {
       case 'Arrayp':
         return `(Array.isArray(${compile(Arguments[0], Locals)}));`
       case 'Array':
-        return Arguments[1].type === 'word' && Arguments[1].value === 'length'
+        return Arguments.length === 2 &&
+          Arguments[1].type === 'word' &&
+          Arguments[1].value === 'length'
           ? `(new Array(${compile(Arguments[0], Locals)}).fill(0))`
           : `[${parseArgs(Arguments, Locals)}];`
       case "'":
