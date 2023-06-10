@@ -7,7 +7,22 @@ const DefaultBufferLength=1024;let nextPropID=0;class Range$1{constructor(e,t){t
         (iterate (+ i 1) bounds)
       array1
       )))
-    (iterate 0 (- (length array2) 1))))`,{label:"define Concat",detail:"definition",type:"type"}),snippetCompletion(`(function merge array1 array2 (block
+    (iterate 0 (- (length array2) 1))))`,{label:"define Concat",detail:"definition",type:"type"}),snippetCompletion(`(function split string separator (block 
+      (let cursor "")
+      (let sepArr (... separator))
+      (let skip (length sepArr))
+      (let result (Array 0 length))
+      (let array (... string))
+      (loop iterate i bounds (block
+        (if (every sepArr (lambda y j _ (= (get array (+ i j)) y)))
+              (block 
+                (let* i (+ i skip -1))
+                (push result cursor)
+                (let* cursor ""))
+              (let* cursor (concatenate cursor (get array i))))
+        (if (< i bounds) (iterate (+ i 1) bounds) result)))
+      (iterate 0 (- (length array) 1))
+      (push result cursor)))`,{label:"define Split",detail:"definition",type:"type"}),snippetCompletion(`(function merge array1 array2 (block
       (loop iterate i bounds (block
       (push array1 (get array2 i))
       (if (< i bounds) 
@@ -15,12 +30,12 @@ const DefaultBufferLength=1024;let nextPropID=0;class Range$1{constructor(e,t){t
       array1
       )))
     (iterate 0 (- (length array2) 1))))`,{label:"define Merge",detail:"definition",type:"type"}),snippetCompletion(`(function range start end (block
-      (let array (Array 0))
+      (let array (Array 0 length))
       (loop iterate i bounds (block
         (push array (+ i start))
         (if (< i bounds) (iterate (+ i 1) bounds) array)))
       (iterate 0 (- end start))))`,{label:"define Range",detail:"definition",type:"type"}),snippetCompletion("(function greatest_common_divisor a b (if (= b 0) a (greatest_common_divisor b (mod a b))))",{label:"define GreatestCommonDivisor",detail:"definition",type:"type"}),snippetCompletion("(function factorial n (if (= n 1) 1 (* n (factorial (- n 1)))))",{label:"define Factorial",detail:"definition",type:"type"}),snippetCompletion("(function fibonacci n (if (< n 2) n (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))",{label:"define Fibonacci",detail:"definition",type:"type"}),snippetCompletion(`(function map array callback (block 
-      (let new_array (Array 0))
+      (let new_array (Array 0 length))
       (let i 0)
       (loop iterate i bounds (block
         (set new_array i (callback (get array i) i array))
@@ -40,7 +55,7 @@ const DefaultBufferLength=1024;let nextPropID=0;class Range$1{constructor(e,t){t
             (let* res (callback i))
             (if (< i end) (iterate (+ i 1)) res))) 
             (iterate start)))`,{label:"define ForRange",detail:"definition",type:"type"}),snippetCompletion(`(function remove array callback (block
-      (let new_array (Array 0))
+      (let new_array (Array 0 length))
       (let i 0)
       (loop iterate i bounds (block
         (let current (get array i))
@@ -52,7 +67,7 @@ const DefaultBufferLength=1024;let nextPropID=0;class Range$1{constructor(e,t){t
         (let* initial (callback initial (get array i) i array))
         (if (< i bounds) (iterate (+ i 1) bounds) initial)))
       (iterate 0 (- (length array) 1))))`,{label:"define Reduce",detail:"definition",type:"type"}),snippetCompletion(`(function deep_flat arr (block 
-          (let new_array (Array 0)) 
+          (let new_array (Array 0 length)) 
           (loop flatten item (if (Arrayp item) (for_each item (lambda x _ o (flatten x))) 
           (push new_array item)))
           (flatten arr) 
@@ -77,8 +92,8 @@ const DefaultBufferLength=1024;let nextPropID=0;class Range$1{constructor(e,t){t
           (if (<= (length arr) 1) arr
           (block
             (let pivot (get arr 0))
-            (let left_arr (Array 0))
-            (let right_arr (Array 0))
+            (let left_arr (Array 0 length))
+            (let right_arr (Array 0 length))
         (loop iterate i bounds (block
             (let current (get arr i))
             (if (< current pivot) 
@@ -91,7 +106,7 @@ const DefaultBufferLength=1024;let nextPropID=0;class Range$1{constructor(e,t){t
           (push pivot) 
           (concat (quick_sort right_arr)))))))`,{label:"define QuickSort",detail:"definition",type:"type"}),snippetCompletion(`(function reverse array (block
             (let len (length array))
-            (let reversed (Array len))
+            (let reversed (Array len length))
             (let offset (- len 1))
             (loop iterate i bounds (block
               (set reversed (- offset i) (get array i))
@@ -156,7 +171,7 @@ const DefaultBufferLength=1024;let nextPropID=0;class Range$1{constructor(e,t){t
       table key value 
         (block
           (let idx (hash_table_index table key))
-          (if (not (is_in_bounds table idx)) (set table idx (Array 0)))
+          (if (not (is_in_bounds table idx)) (set table idx (Array 0 length)))
           (let current (get table idx))
           (let len (length current))
           (let index (if len (find_index current (lambda x i o (= (get x 0) key))) -1))
@@ -184,7 +199,7 @@ const DefaultBufferLength=1024;let nextPropID=0;class Range$1{constructor(e,t){t
     ; hash_table
     (function hash_table 
       size 
-        (map (Array size) (lambda x i o (Array 0))))
+        (map (Array size length) (lambda x i o (Array 0 length))))
     ; hash_table_make
     (function hash_table_make 
       items 
@@ -213,8 +228,8 @@ const DefaultBufferLength=1024;let nextPropID=0;class Range$1{constructor(e,t){t
     (function binary_tree_node 
             value (Array 
                     (Array "value" value)
-                    (Array "left"  (Array 0))
-                    (Array "right" (Array 0))))
+                    (Array "left"  (Array 0 length))
+                    (Array "right" (Array 0 length))))
     ; binary_tree_get_left
     (function binary_tree_get_left 
                     node (get node 1))
@@ -254,7 +269,7 @@ const DefaultBufferLength=1024;let nextPropID=0;class Range$1{constructor(e,t){t
       table key 
         (block
           (let idx (hash_set_index table key))
-          (if (not (is_in_bounds table idx)) (set table idx (Array 0)))
+          (if (not (is_in_bounds table idx)) (set table idx (Array 0 length)))
           (let current (get table idx))
           (let len (length current))
           (let index (if len (find_index current (lambda x i o (= x key))) -1))
@@ -280,7 +295,7 @@ const DefaultBufferLength=1024;let nextPropID=0;class Range$1{constructor(e,t){t
     ; hash_set
     (function hash_set 
       size 
-        (map (Array size) (lambda _ _ _ (Array 0))))
+        (map (Array size length) (lambda _ _ _ (Array 0 length))))
     ; hash_set_make
     (function hash_set_make 
       items 

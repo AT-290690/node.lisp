@@ -48,9 +48,7 @@ hgt:76in")
 (function validate_fields fields (do fields (map (lambda x _ _ 
                         (do x (map (lambda y _ _ 
                           (do y (regex_match "byr|iyr|eyr|hgt|hcl|ecl|pid")))) 
-                                (deep_flat)
-                                (remove (lambda x _ _ (not (not x)))))))
-                  ; (map (lambda x _ _ (log x)))
+                                (deep_flat))))
                   (remove (lambda x _ _ (= (length x) 7)))))
 (do input (split_by_n_lines 2)
                 (validate_fields)

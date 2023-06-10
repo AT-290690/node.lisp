@@ -28,7 +28,7 @@ it('interpretation should work', () => {
       (if has_found idx -1)))
 (function is_in_bounds array index (and (< index (length array)) (>= index 0)))
 (function map array callback (block 
-  (let new_array (Array 0))
+  (let new_array (Array 0 length))
   (let i 0)
   (loop iterate i bounds (block
     (set new_array i (callback (get array i) i array))
@@ -52,7 +52,7 @@ it('interpretation should work', () => {
       table key value 
         (block
           (let idx (hash_table_index table key))
-          (unless (is_in_bounds table idx) (set table idx (Array 0)))
+          (unless (is_in_bounds table idx) (set table idx (Array 0 length)))
           (let current (get table idx))
           (let len (length current))
           (let index (if len (find_index current (lambda x i o (= (get x 0) key))) -1))
@@ -77,7 +77,7 @@ it('interpretation should work', () => {
                 (get 1))))))
     (function hash_table 
       size 
-        (map (Array size) (lambda x i o (Array 0))))
+        (map (Array size length) (lambda x i o (Array 0 length))))
     (function hash_table_make 
       items 
         (block
@@ -111,8 +111,8 @@ it('interpretation should work', () => {
     (function binary_tree_node 
             value (Array 
                     (Array "value" value)
-                    (Array "left"  (Array 0))
-                    (Array "right" (Array 0))))
+                    (Array "left"  (Array 0 length))
+                    (Array "right" (Array 0 length))))
     (function binary_tree_get_left 
                     node (get node 1))
     (function binary_tree_get_right 
@@ -162,8 +162,8 @@ it('interpretation should work', () => {
 (function string_to_array string delim 
                       (reduce (... string) 
                         (lambda a x i o (block
-                                  (if (= x delim) (push a (Array 0)) (block 
-                                    (push (get a -1) x) a))))(push (Array 0) (Array 0))))
+                                  (if (= x delim) (push a (Array 0 length)) (block 
+                                    (push (get a -1) x) a))))(push (Array 0 length) (Array 0 length))))
 (function join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
 
 (function concat array1 array2 (block
@@ -175,7 +175,7 @@ it('interpretation should work', () => {
 (iterate 0 (- (length array2) 1))))
 
 (function map array callback (block 
-  (let new_array (Array 0))
+  (let new_array (Array 0 length))
   (let i 0)
   (loop iterate i bounds (block
     (set new_array i (callback (get array i) i))
@@ -192,8 +192,8 @@ it('interpretation should work', () => {
   (if (<= (length arr) 1) arr
   (block
     (let pivot (get arr 0))
-    (let left_arr (Array 0))
-    (let right_arr (Array 0))
+    (let left_arr (Array 0 length))
+    (let right_arr (Array 0 length))
 (loop iterate i bounds (block
     (let current (get arr i))
     (if (< current pivot) 
@@ -232,7 +232,7 @@ it('interpretation should work', () => {
      (reduce array (lambda a x i array (block
         (let res (binary_search array (cb x)))
         (if res (push a res) a))) 
-     (Array 0)))
+     (Array 0 length)))
 
 (function solve2 array cb 
     (reduce array
@@ -244,7 +244,7 @@ it('interpretation should work', () => {
             (if (< j bounds) (iterate (+ j 1) bounds)
         accumulator)))
         (iterate i (- (length array) 1)))) 
-     (Array 0)))
+     (Array 0 length)))
 
 
 (Array
@@ -279,7 +279,7 @@ it('interpretation should work', () => {
   array1)))
 (iterate 0 (- (length array2) 1))))
 (function map array callback (block 
-  (let new_array (Array 0))
+  (let new_array (Array 0 length))
   (let i 0)
   (loop iterate i bounds (block
     (set new_array i (callback (get array i) i array))
@@ -355,7 +355,7 @@ it('interpretation should work', () => {
 
   strictEqual(
     runFromInterpreted(`
-  (let array (Array 5))
+  (let array (Array 5 length))
   (set array -5)
   (length array)
 `),
@@ -376,8 +376,8 @@ it('interpretation should work', () => {
       (if (<= (length arr) 1) arr
       (block
         (let pivot (get arr 0))
-        (let left_arr (Array 0))
-        (let right_arr (Array 0))
+        (let left_arr (Array 0 length))
+        (let right_arr (Array 0 length))
     (loop iterate i bounds (block
         (let current (get arr i))
         (if (< current pivot) 
@@ -391,7 +391,7 @@ it('interpretation should work', () => {
       (concat (quick_sort right_arr)))))))
     (function reverse array (block
       (let len (length array))
-      (let reversed (Array len))
+      (let reversed (Array len length))
       (let offset (- len 1))
       (loop iterate i bounds (block
         (set reversed (- offset i) (get array i))
@@ -426,7 +426,7 @@ it('interpretation should work', () => {
         (if (< i bounds) (iterate (+ i 1) bounds) array)))
       (iterate 0 (- (length array) 1)))))
     (let deep_flat (lambda arr (block 
-      (let new_array (Array 0)) 
+      (let new_array (Array 0 length)) 
       (loop flatten item (if (Arrayp item) (for_each item (lambda x _ (flatten x))) 
       (push new_array item)))
       (flatten arr) 
@@ -472,7 +472,7 @@ it('interpretation should work', () => {
   )
   strictEqual(
     runFromInterpreted(`(let range (lambda start end (block 
-  (let array (Array 0))
+  (let array (Array 0 length))
   (let iterate (lambda i bounds (block
     (set array i (+ i start))
     (if (< i bounds) (iterate (+ i 1) bounds) array)
@@ -481,7 +481,7 @@ it('interpretation should work', () => {
   
   
   (let map (lambda array callback (block 
-  (let new_array (Array 0))
+  (let new_array (Array 0 length))
   (let i 0)
   (let iterate (lambda i bounds (block
     (set new_array i (callback (get array i) i))
@@ -491,7 +491,7 @@ it('interpretation should work', () => {
   
   
   (let remove (lambda array callback (block 
-  (let new_array (Array 0))
+  (let new_array (Array 0 length))
   (let iterate (lambda i bounds (block
     (let current (get array i))
     (if (callback current i) 
@@ -538,7 +538,7 @@ it('interpretation should work', () => {
     (let min (lambda a b (if (< a b) a b)))
     
     (let map (lambda array callback (block 
-    (let new_array (Array 0))
+    (let new_array (Array 0 length))
     (let i 0)
     (let iterate (lambda i bounds (block
       (set new_array i (callback (get array i) i))
@@ -555,9 +555,9 @@ it('interpretation should work', () => {
     (let string_to_array (lambda string delim 
     (reduce (... string) (lambda a x i (block
         (if (= x delim) 
-          (push a (Array 0)) 
+          (push a (Array 0 length)) 
           (block (push (get a -1) x) a)
-        )))(push (Array 0) (Array 0)))))
+        )))(push (Array 0 length) (Array 0 length)))))
     
      (let split_by_lines (lambda string (map (string_to_array string "\n") (lambda x i (join x "")))))
      

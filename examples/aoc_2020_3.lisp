@@ -23,7 +23,7 @@
   (let w (length (get array 0)))
   (do (* h (/ slopeY))
       (floor)
-      (Array)
+      (Array length)
       (map (lambda _ index _ 
         (do array 
           (get (mod (* index slopeY) h)) 

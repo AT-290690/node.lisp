@@ -64,21 +64,21 @@
   (iterate 0 (- (length array2) 1))))
   ; range
   (function range start end (block
-    (let array (Array 0))
+    (let array (Array 0 length))
     (loop iterate i bounds (block
       (push array (+ i start))
       (if (< i bounds) (iterate (+ i 1) bounds) array)))
     (iterate 0 (- end start))))
  ; sequance
   (function sequance end start step (block
-    (let array (Array 0))
+    (let array (Array 0 length))
     (loop iterate i bounds (block
       (push array (+ i start))
       (if (< i bounds) (iterate (+ i step) bounds) array)))
     (iterate 0 (- end start))))
   ; map
   (function map array callback (block 
-    (let new_array (Array 0))
+    (let new_array (Array 0 length))
     (let i 0)
     (loop iterate i bounds (block
       (set new_array i (callback (get array i) i array))
@@ -106,7 +106,7 @@
         (iterate start)))
   ; filter
   (function remove array callback (block
-    (let new_array (Array 0))
+    (let new_array (Array 0 length))
     (loop iterate i bounds (block
       (let current (get array i))
       (if (callback current i array) 
@@ -133,12 +133,13 @@
   (function product_array array (reduce array (lambda a b _ _ (* a b)) 1))
   ; deep_flat
   (function deep_flat arr (block 
-    (let new_array (Array 0)) 
-    (loop flatten item (if (Arrayp item) (for_each item (lambda x _ _ (flatten x))) 
-    (push new_array item)))
+    (let new_array (Array 0 length)) 
+    (loop flatten item 
+      (if (and (Arrayp item) (length item)) 
+            (for_each item (lambda x _ _ (flatten x))) 
+            (unless (Arrayp item) (push new_array item))))
     (flatten arr) 
-    new_array
-  ))
+    new_array))
   ; find
 (function find array callback (block
         (loop iterate i bounds (block
@@ -165,8 +166,8 @@
     (if (<= (length arr) 1) arr
     (block
       (let pivot (get arr 0))
-      (let left_arr (Array 0))
-      (let right_arr (Array 0))
+      (let left_arr (Array 0 length))
+      (let right_arr (Array 0 length))
   (loop iterate i bounds (block
       (let current (get arr i))
       (if (< current pivot) 
@@ -181,7 +182,7 @@
   ; reverse 
   (function reverse array (block
     (let len (length array))
-    (let reversed (Array len))
+    (let reversed (Array len length))
     (let offset (- len 1))
     (loop iterate i bounds (block
       (set reversed (- offset i) (get array i))
@@ -227,7 +228,7 @@
     table key value 
       (block
         (let idx (hash_table_index table key))
-        (unless (is_in_bounds table idx) (set table idx (Array 0)))
+        (unless (is_in_bounds table idx) (set table idx (Array 0 length)))
         (let current (get table idx))
         (let len (length current))
         (let index (if len (find_index current (lambda x i o (= (get x 0) key))) -1))
@@ -255,7 +256,7 @@
   ; hash_table
   (function hash_table 
     size 
-      (map (Array size) (lambda _ _ _ (Array 0))))
+      (map (Array size length) (lambda _ _ _ (Array 0 length))))
   ; hash_table_make
   (function hash_table_make 
     items 
@@ -293,7 +294,7 @@
     table key 
       (block
         (let idx (hash_set_index table key))
-        (unless (is_in_bounds table idx) (set table idx (Array 0)))
+        (unless (is_in_bounds table idx) (set table idx (Array 0 length)))
         (let current (get table idx))
         (let len (length current))
         (let index (if len (find_index current (lambda x i o (= x key))) -1))
@@ -319,7 +320,7 @@
   ; hash_set
   (function hash_set 
     size 
-      (map (Array size) (lambda _ _ _ (Array 0))))
+      (map (Array size length) (lambda _ _ _ (Array 0 length))))
   ; hash_set_make
   (function hash_set_make 
     items 
@@ -350,8 +351,8 @@
   (function binary_tree_node 
           value (Array 
                   (Array "value" value)
-                  (Array "left"  (Array 0))
-                  (Array "right" (Array 0))))
+                  (Array "left"  (Array 0 length))
+                  (Array "right" (Array 0 length))))
   ; binary_tree_get_left
   (function binary_tree_get_left 
                   node (get node 1))
@@ -389,7 +390,23 @@
         (iterate 0 (- (length array) 1))))
 
 (function split_by_n_lines string n (do string (regex_replace (concatenate "(\n){" n "}") "௮") (regex_match "[^௮]+") (map (lambda x _ _ (regex_match x "[^\n]+")))))
-
+; split
+(function split string separator (block 
+    (let cursor "")
+    (let sepArr (... separator))
+    (let skip (length sepArr))
+    (let result (Array 0 length))
+    (let array (... string))
+    (loop iterate i bounds (block
+      (if (every sepArr (lambda y j _ (= (get array (+ i j)) y)))
+            (block 
+              (let* i (+ i skip -1))
+              (push result cursor)
+              (let* cursor ""))
+            (let* cursor (concatenate cursor (get array i))))
+      (if (< i bounds) (iterate (+ i 1) bounds) result)))
+    (iterate 0 (- (length array) 1))
+    (push result cursor)))
   (Array 
     (Array "max" max)
     (Array "min" min) 
@@ -408,6 +425,7 @@
     (Array "split_by_lines" split_by_lines)
     (Array "split_by" split_by)
     (Array "split_by_n_lines" split_by_n_lines)
+    (Array "split" split)
     (Array "array_to_numbers" array_to_numbers)
     (Array "concat" concat)
     (Array "merge" merge)

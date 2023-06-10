@@ -15,8 +15,8 @@
 ; BBFFBBFRLL")
 ; (let input sample)
 (let input (open "./playground/src/aoc_2020/5/input.txt"))
-(function to_fb array (reduce array (lambda a b i _ (if (< i 7) (push a b) a)) (Array 0)))
-(function to_lr array (reduce array (lambda a b i _ (if (>= i 7) (push a b) a)) (Array 0)))
+(function to_fb array (reduce array (lambda a b i _ (if (< i 7) (push a b) a)) (Array 0 length)))
+(function to_lr array (reduce array (lambda a b i _ (if (>= i 7) (push a b) a)) (Array 0 length)))
 (function binary_boarding input bounds lower upper (do input 
     (reduce (lambda a b _ _ (block (let half (* (+ (get a 0) (get a 1)) 0.5))
     (if (= b lower) (set a 1 (floor half))

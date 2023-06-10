@@ -103,7 +103,7 @@ const compile = (tree, Locals) => {
       case 'let': {
         let name = Arguments[0].value
         Locals.add(name)
-        return `((${name}=${compile(Arguments[1], Locals)}), ${name});`
+        return `((${name}=${compile(Arguments[1], Locals)}),${name});`
       }
       case 'let*': {
         const res = compile(Arguments[1], Locals)
@@ -135,7 +135,7 @@ const compile = (tree, Locals) => {
       case 'Arrayp':
         return `(Array.isArray(${compile(Arguments[0], Locals)}));`
       case 'Array':
-        return Arguments.length === 1
+        return Arguments[1].type === 'word' && Arguments[1].value === 'length'
           ? `(new Array(${compile(Arguments[0], Locals)}).fill(0))`
           : `[${parseArgs(Arguments, Locals)}];`
       case "'":

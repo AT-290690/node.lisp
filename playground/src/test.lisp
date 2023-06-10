@@ -1,4 +1,4 @@
-(import std "split_by_n_lines" "trim")
+(import std "split" "trim" "push" "join" "every" "map")
 (let sample "abc
 
 a
@@ -15,6 +15,8 @@ a
 
 b")
 
-(do sample (trim) (split_by_n_lines 2) I (log))
-
-
+(do
+  sample
+  (split "\n\n")
+  (map (lambda x _ _ (split x "\n")))
+  (log))

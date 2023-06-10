@@ -14,7 +14,7 @@
      (reduce array (lambda a x _ array (block
         (let res (binary_search array (cb x)))
         (if res (push a res) a))) 
-     (Array 0)))
+     (Array 0 length)))
 
 ; 514579 for sample
 (do input
@@ -35,7 +35,7 @@
             (if (< j bounds) (iterate (+ j 1) bounds)
         accumulator)))
         (iterate i (- (length array) 1)))) 
-     (Array 0)))
+     (Array 0 length)))
 
 ; 241861950 for sample
 (do input

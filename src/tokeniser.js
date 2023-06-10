@@ -143,9 +143,18 @@ export const tokens = {
       throw new RangeError(
         'Invalid number of arguments for (Array) (>= 1 required)'
       )
-    return args.length === 1
-      ? new Array(evaluate(args[0], env)).fill(0)
-      : args.map((x) => evaluate(x, env))
+    const isCapacity = args[1].type === 'word' && args[1].value === 'length'
+    if (isCapacity) {
+      const N = evaluate(args[0], env)
+      if (args.length !== 2)
+        throw new RangeError(
+          'Invalid number of arguments for (Array) (= 2 required)'
+        )
+      if (!Number.isInteger(N))
+        throw new TypeError('Second argument for (Array) has to be an integer')
+      return new Array(N).fill(0)
+    }
+    return args.map((x) => evaluate(x, env))
   },
   ['get']: (args, env) => {
     if (args.length !== 2)
