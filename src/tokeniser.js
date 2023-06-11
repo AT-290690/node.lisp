@@ -225,6 +225,18 @@ export const tokens = {
     }
     return array
   },
+  ['probe-file']: (_, env) => {
+    let out = {}
+    let total = 0
+    for (const item in env) {
+      const current = env[item]
+      if (current.count) {
+        total += current.count
+        out[item] = current.count
+      }
+    }
+    return [Object.entries(out), ['⏱️ ', total]]
+  },
   ['log']: (args, env) => {
     if (!args.length)
       throw new RangeError(

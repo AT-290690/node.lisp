@@ -1,5 +1,4 @@
 import { tokens } from './tokeniser.js'
-import { logError } from './utils.js'
 export const evaluate = (expression, env) => {
   if (expression == undefined) return 0
   const [first, ...rest] = Array.isArray(expression) ? expression : [expression]
@@ -15,6 +14,8 @@ export const evaluate = (expression, env) => {
       const apply = env[first.value]
       if (typeof apply !== 'function')
         throw new TypeError(`${first.value} is not a (function).`)
+      if (!apply.count) apply.count = 0
+      apply.count++
       return apply(rest, env)
     case 'value':
       if (rest.length) throw new TypeError(`Values can't have arguments.`)
