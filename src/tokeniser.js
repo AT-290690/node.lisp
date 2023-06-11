@@ -1,5 +1,5 @@
 import { evaluate } from './interpreter.js'
-const maxCallstackLimitInterpretation = 256
+const maxCallstackLimitInterpretation = 1024
 export const tokens = {
   ['concatenate']: (args, env) => {
     if (args.length < 2)
@@ -38,12 +38,18 @@ export const tokens = {
     return 1 / number
   },
   ['...']: (args, env) => {
-    if (args.length !== 1)
-      throw new RangeError('Invalid number of arguments for (...) (1 required)')
-    const iterable = evaluate(args[0], env)
-    if (typeof iterable[Symbol.iterator] !== 'function')
-      throw new TypeError('Argument is not iterable for (...).')
-    return [...iterable]
+    if (!args.length)
+      throw new RangeError(
+        'Invalid number of arguments for (...) (>= 1 required)'
+      )
+    const iterables = args.map((arg) => evaluate(arg, env))
+    if (
+      iterables.some(
+        (iterable) => typeof iterable[Symbol.iterator] !== 'function'
+      )
+    )
+      throw new TypeError('Arguments are not iterable for (...).')
+    return iterables.reduce((a, b) => [...a, ...b], [])
   },
   ['length']: (args, env) => {
     if (args.length !== 1)
@@ -111,14 +117,14 @@ export const tokens = {
     return operands.reduce((a, b) => a * b)
   },
   ['-']: (args, env) => {
-    if (args.length < 2)
+    if (!args.length)
       throw new RangeError(
-        `Invalid number of arguments for (-), expected > 1 but got ${args.length}.`
+        `Invalid number of arguments for (-), expected >= 1 but got ${args.length}.`
       )
     const operands = args.map((x) => evaluate(x, env))
     if (!operands.every((x) => typeof x === 'number'))
       throw new TypeError(`Not all arguments for (-) are numbers.`)
-    return operands.reduce((a, b) => a - b)
+    return args.length === 1 ? -operands[0] : operands.reduce((a, b) => a - b)
   },
   ['if']: (args, env) => {
     if (args.length < 2 || args.length > 3)
@@ -492,12 +498,13 @@ export const tokens = {
         )
       return num
     } else if (type.value === 'String') return value.toString()
+    else if (type.value === 'Bit') return parseInt(value, 2)
     else if (type.value === 'Array') return [value]
     else throw new TypeError('Can only cast number or string at (type)')
   },
-  ['bit']: (args, env) => {
+  ['Bit']: (args, env) => {
     if (args.length !== 1)
-      throw new RangeError('Invalid number of arguments to (bit) (1 required).')
+      throw new RangeError('Invalid number of arguments to (Bit) (1 required).')
     return (evaluate(args[0], env) >>> 0).toString(2)
   },
   ['&']: (args, env) => {

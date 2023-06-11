@@ -42,17 +42,12 @@ const Helpers = {
          return Number(value)
        case 'Array':
          return [value]
+       case 'Bit':
+        return parseInt(value, 2)
        default:
          return 0
       }
     }`,
-    has: true,
-  },
-  tco: {
-    source: `_tco = function (fn) { return function () {
-let result = fn(...arguments)
-while (typeof result === 'function') result = result()
-return result }}`,
     has: true,
   },
 }
@@ -143,7 +138,7 @@ const compile = (tree, Locals) => {
       case "'":
         return `[${parseArgs(Arguments, Locals)}];`
       case '...':
-        return `[...${compile(Arguments[0], Locals)}];`
+        return `[...${parseArgs(Arguments, Locals, ',...')}];`
       case 'length':
         return `(${compile(Arguments[0], Locals)}).length`
       case 'get':
@@ -181,12 +176,9 @@ const compile = (tree, Locals) => {
         const evaluatedBody = compile(body, localVars)
         const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
 
-        out += `${name}=_tco(function ${name}(${parseArgs(
-          functionArgs,
-          Locals
-        )}) {${vars} ${Array.isArray(body) ? 'return' : ' '} ${evaluatedBody
-          .toString()
-          .trimStart()}});`
+        out += `${name}=(${parseArgs(functionArgs, Locals)})=>{${vars} ${
+          Array.isArray(body) ? 'return' : ' '
+        } ${evaluatedBody.toString().trimStart()}};`
         out += `), ${name});`
         return out
       }
@@ -226,8 +218,11 @@ const compile = (tree, Locals) => {
       case '>':
       case '<':
         return handleBoolean(`(${parseArgs(Arguments, Locals, token)});`)
-      case '+':
       case '-':
+        return Arguments.length === 1
+          ? `(-${compile(Arguments[0], Locals)});`
+          : `(${parseArgs(Arguments, Locals, token)});`
+      case '+':
       case '*':
       case '&&':
       case '||':
@@ -257,8 +252,8 @@ const compile = (tree, Locals) => {
         return `(${compile(Arguments[0], Locals)}*=${
           Arguments[1] != undefined ? compile(Arguments[1], Locals) : 1
         });`
-      case 'bit':
-        return `\`\${${compile(Arguments[0], Locals) >>> 0}}\`.toString(2)`
+      case 'Bit':
+        return `(${compile(Arguments[0], Locals)}>>>0).toString(2)`
       case '~':
         return `~${compile(Arguments[0], Locals)}`
       case 'not':

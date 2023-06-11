@@ -2,6 +2,9 @@ import { deepStrictEqual } from 'assert'
 import { runFromCompiled, runFromInterpreted } from '../src/utils.js'
 it('compilation should work', () =>
   [
+    `(let x -1) (do x (-))`,
+    `(let x -1) (- x)`,
+    `(- 1)`,
     `(Array 10 length)`,
     `(Array 10)`,
     `(if (< 1 2) 42 69)`,
@@ -22,7 +25,7 @@ it('compilation should work', () =>
     (loop iterate i bounds (block
       (let current (get array i))
       (let* has_found (callback current i array))
-      (if (and (not (callback current i array)) (< i bounds))
+      (if (and (not has_found) (< i bounds))
         (iterate (+ i 1) bounds) 
         (let* idx i))))
         (iterate 0 (- (length array) 1))

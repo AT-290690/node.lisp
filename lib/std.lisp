@@ -127,6 +127,13 @@
       (let* initial (callback initial (get array i) i array))
       (if (< i bounds) (iterate (+ i 1) bounds) initial)))
     (iterate 0 (- (length array) 1))))
+      ; reduce
+(function accumulate array callback (block
+  (let initial (get array 0))
+  (loop iterate i bounds (block
+    (let* initial (callback initial (get array i) i array))
+    (if (< i bounds) (iterate (+ i 1) bounds) initial)))
+  (iterate 0 (- (length array) 1))))
   ; sum_array
   (function sum_array array (reduce array (lambda a b _ _ (+ a b)) 0))
   ; product_array
@@ -156,11 +163,24 @@
     (loop iterate i bounds (block
       (let current (get array i))
       (let* has_found (callback current i array))
-      (if (and (not (callback current i array)) (< i bounds))
+      (if (and (not has_found) (< i bounds))
         (iterate (+ i 1) bounds) 
         (let* idx i))))
         (iterate 0 (- (length array) 1))
         (if has_found idx -1)))
+; index_of
+  (function index_of array target (block
+    (let idx -1)
+    (let has_found 0)
+    (loop iterate i bounds (block
+      (let current (get array i))
+      (let* has_found (= target current))
+      (if (and (not has_found) (< i bounds))
+        (iterate (+ i 1) bounds) 
+        (let* idx i))))
+        (iterate 0 (- (length array) 1))
+        (if has_found idx -1)))
+              
   ; quick_sort
   (function quick_sort arr (block
     (if (<= (length arr) 1) arr
@@ -394,19 +414,18 @@
 (function split string separator (block 
     (let cursor "")
     (let sepArr (... separator))
-    (let skip (length sepArr))
-    (let result (Array 0 length))
     (let array (... string))
-    (loop iterate i bounds (block
-      (if (every sepArr (lambda y j _ (= (get array (+ i j)) y)))
+    (let skip (length sepArr))
+    (loop iterate result i bounds
+      (if (< (if (every sepArr (lambda y j _ (= (get array (+ i j)) y)))
             (block 
               (let* i (+ i skip -1))
               (push result cursor)
-              (let* cursor ""))
-            (let* cursor (concatenate cursor (get array i))))
-      (if (< i bounds) (iterate (+ i 1) bounds) result)))
-    (iterate 0 (- (length array) 1))
-    (push result cursor)))
+              (let* cursor "")
+              i)
+            (block (let* cursor (concatenate cursor (get array i))) i)) bounds) 
+                (iterate result (+ i 1) bounds) result))
+    (push (iterate (Array 0 length) 0 (- (length array) 1)) cursor)))
   (Array 
     (Array "max" max)
     (Array "min" min) 
@@ -467,6 +486,8 @@
     (Array "factorial" factorial)
     (Array "fibonacci" fibonacci)
     (Array "every" every)
+    (Array "index_of" index_of)
+    (Array "accumulate" accumulate)
   )
 ))
 ; (/ std lib)

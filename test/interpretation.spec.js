@@ -1,6 +1,16 @@
 import { deepStrictEqual, strictEqual } from 'assert'
 import { runFromInterpreted } from '../src/utils.js'
 it('interpretation should work', () => {
+  strictEqual(
+    runFromInterpreted(`(do 1 
+    (+ 2) 
+      (* 3 4)
+       (- 3 2))`),
+    31
+  )
+  strictEqual(runFromInterpreted(`(let x -1) (do x (-))`), 1)
+  strictEqual(runFromInterpreted(`(let x -1) (- x)`), 1)
+  strictEqual(runFromInterpreted(`(- 1)`), -1)
   strictEqual(runFromInterpreted(`(if (< 1 2) 42 69)`), 42)
   strictEqual(runFromInterpreted(`(unless (< 1 2) 42 69)`), 69)
   deepStrictEqual(
@@ -21,7 +31,7 @@ it('interpretation should work', () => {
   (loop iterate i bounds (block
     (let current (get array i))
     (let* has_found (callback current i array))
-    (if (and (not (callback current i array)) (< i bounds))
+    (if (and (not has_found) (< i bounds))
       (iterate (+ i 1) bounds) 
       (let* idx i))))
       (iterate 0 (- (length array) 1))
@@ -567,13 +577,5 @@ it('interpretation should work', () => {
         (lambda x i (- 2020 x)))
   `),
     [299, 1041, 1654, 1721, 1345, 564]
-  )
-
-  strictEqual(
-    runFromInterpreted(`(do 1 
-    (+ 2) 
-      (* 3 4)
-       (- 3 2))`),
-    31
   )
 })

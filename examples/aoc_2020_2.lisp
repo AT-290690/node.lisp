@@ -6,8 +6,7 @@
 ; (let sample "3-4 b: jbmb")
 ; (let sample "2-3 f: fvwc")
 (let input sample)
-; (let input (open "./playground/src/aoc_2020/2/input.txt"))
-
+(let input (open "./playground/src/aoc_2020/2/input.txt"))
 (let occ (regex_match input "([0-9]{1,2}-[0-9]{1,2})"))
 (let policy (regex_match input "[a-z](?=:)"))
 (let inputs (regex_match input "(?<=:[ ])(.*)"))
