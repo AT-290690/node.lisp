@@ -2,6 +2,9 @@ import { deepStrictEqual } from 'assert'
 import { runFromCompiled, runFromInterpreted } from '../src/utils.js'
 it('compilation should work', () =>
   [
+    `(do (Array (Array 1 2 3 4 5) 2 3 4) (car) (cdr) (car))`,
+    `(cdr (Array 1 2 3 4))`,
+    `(car (Array 1 2 3 4))`,
     `(let x -1) (do x (-))`,
     `(let x -1) (- x)`,
     `(- 1)`,

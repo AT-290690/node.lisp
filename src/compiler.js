@@ -141,6 +141,10 @@ const compile = (tree, Locals) => {
         return `[...${parseArgs(Arguments, Locals, ',...')}];`
       case 'length':
         return `(${compile(Arguments[0], Locals)}).length`
+      case 'car':
+        return `${compile(Arguments[0], Locals)}.at(0);`
+      case 'cdr':
+        return `${compile(Arguments[0], Locals)}.slice(1);`
       case 'get':
         return `${compile(Arguments[0], Locals)}.at(${compile(
           Arguments[1],

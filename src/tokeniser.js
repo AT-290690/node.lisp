@@ -163,6 +163,29 @@ export const tokens = {
     }
     return args.map((x) => evaluate(x, env))
   },
+  ['car']: (args, env) => {
+    if (args.length !== 1)
+      throw new RangeError('Invalid number of arguments for (car) (1 required)')
+    const array = evaluate(args[0], env)
+    if (!Array.isArray(array))
+      throw new TypeError('Argument of (car) must be an (Array).')
+    if (array.length === 0)
+      throw new RangeError(`Argument of (car) is an empty (Array).`)
+    const value = array.at(0)
+    if (value == undefined)
+      throw new RangeError(`Trying to get a null value in (Array) at (car).`)
+    return value
+  },
+  ['cdr']: (args, env) => {
+    if (args.length !== 1)
+      throw new RangeError('Invalid number of arguments for (cdr) (1 required)')
+    const array = evaluate(args[0], env)
+    if (!Array.isArray(array))
+      throw new TypeError('Argument of (cdr) must be an (Array).')
+    if (array.length === 0)
+      throw new RangeError(`Argument of (cdr) is an empty (Array).`)
+    return array.slice(1)
+  },
   ['get']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError('Invalid number of arguments for (get) (2 required)')
@@ -183,7 +206,7 @@ export const tokens = {
     const value = array.at(index)
     if (value == undefined)
       throw new RangeError(`Trying to get a null value in (Array) at (get).`)
-    return array.at(index)
+    return value
   },
   ['set']: (args, env) => {
     if (args.length !== 2 && args.length !== 3)

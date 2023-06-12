@@ -2,6 +2,14 @@ import { deepStrictEqual, strictEqual } from 'assert'
 import { runFromInterpreted } from '../src/utils.js'
 it('interpretation should work', () => {
   strictEqual(
+    runFromInterpreted(
+      `(do (Array (Array 1 2 3 4 5) 2 3 4) (car) (cdr) (car))`
+    ),
+    2
+  )
+  deepStrictEqual(runFromInterpreted(`(cdr (Array 1 2 3 4))`), [2, 3, 4])
+  strictEqual(runFromInterpreted(`(car (Array 1 2 3 4))`), 1)
+  strictEqual(
     runFromInterpreted(`(do 1 
     (+ 2) 
       (* 3 4)
