@@ -12,8 +12,10 @@
   (function push array value (set array (length array) value))
   ; pop
   (function pop array (set array -1))
-  ; is_in_bounds
+  ; is_in_bounds 
   (function is_in_bounds array index (and (< index (length array)) (>= index 0)))
+  ; is_array_of_atoms
+  (function is_array_of_atoms array (if (not (length array)) 1 (if (atom (car array)) (is_array_of_atoms (cdr array)) 0)))
   ; abs
   (function abs n (- (^ n (>> n 31)) (>> n 31)))
   ; floor

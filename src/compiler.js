@@ -158,7 +158,7 @@ const compile = (tree, Locals) => {
       case 'length':
         return `(${compile(Arguments[0], Locals)}).length`
       case 'atom':
-        return `_isAtom(${compile(Arguments[0], Locals)});`
+        return handleBoolean(`_isAtom(${compile(Arguments[0], Locals)});`)
       case 'car':
         return `${compile(Arguments[0], Locals)}.at(0);`
       case 'cdr':
@@ -320,6 +320,8 @@ const compile = (tree, Locals) => {
           )
         }
         break
+      case 'probe-file':
+        return ''
       default: {
         const camleCasedToken = toCamelCase(token)
         if (camleCasedToken in Extensions)

@@ -1,6 +1,19 @@
 import { deepStrictEqual, strictEqual } from 'assert'
 import { runFromInterpreted } from '../src/utils.js'
 it('interpretation should work', () => {
+  deepStrictEqual(
+    runFromInterpreted(
+      `(function is_array_of_atoms array 
+        (if (not (length array)) 1 
+         (if (atom (car array)) 
+          (is_array_of_atoms (cdr array)) 0)))
+     
+           (Array 
+               (is_array_of_atoms (Array 1 2 (Array 1 2) "5"))
+               (is_array_of_atoms (Array 1 2 3 4 "5")))`
+    ),
+    [0, 1]
+  )
   strictEqual(
     runFromInterpreted(
       `(do (Array (Array 1 2 3 4 5) 2 3 4) (car) (cdr) (car))`
