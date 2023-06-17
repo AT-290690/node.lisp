@@ -1,6 +1,10 @@
 # wisp
 
-Lisp for web
+<p align="center">
+<img width="200" src="./lisp-lizard.svg"/>
+</p>
+
+A Lisp for the Web
 
 ```lisp
 (let hello "Hello World")
