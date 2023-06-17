@@ -50,12 +50,12 @@ export const parse = (source) => {
         if (!head.length) head.push({ type: 'apply', value: token })
         else if (token.match(/^"([^"]*)"/))
           head.push({
-            type: 'value',
+            type: 'atom',
             value: token.substring(1, token.length - 1),
           })
         else if (token.match(/^-?[0-9]\d*(\.\d+)?$/))
           head.push({
-            type: 'value',
+            type: 'atom',
             value: Number(token),
           })
         else head.push({ type: 'word', value: token })

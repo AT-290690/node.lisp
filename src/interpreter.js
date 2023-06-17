@@ -17,8 +17,8 @@ export const evaluate = (expression, env) => {
       if (!apply.count) apply.count = 0
       apply.count++
       return apply(rest, env)
-    case 'value':
-      if (rest.length) throw new TypeError(`Values can't have arguments.`)
+    case 'atom':
+      if (rest.length) throw new TypeError(`Atoms can't have arguments.`)
       return first.value
     default:
       // console.log(first, rest[0][1])

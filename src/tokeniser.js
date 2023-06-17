@@ -163,6 +163,17 @@ export const tokens = {
     }
     return args.map((x) => evaluate(x, env))
   },
+  ['atom']: (args, env) => {
+    if (args.length !== 1)
+      throw new RangeError(
+        'Invalid number of arguments for (Atomp) (1 required)'
+      )
+    if (args[0].type === 'atom') return 1
+    else {
+      const atom = evaluate(args[0], env)
+      return +(typeof atom === 'number' || typeof atom === 'string')
+    }
+  },
   ['car']: (args, env) => {
     if (args.length !== 1)
       throw new RangeError('Invalid number of arguments for (car) (1 required)')

@@ -1,4 +1,4 @@
-import { compileToJs } from './src/compiler.js'
+import { compileToJs, toCamelCase } from './src/compiler.js'
 import { evaluate, run } from './src/interpreter.js'
 import { parse } from './src/parser.js'
 
@@ -47,7 +47,7 @@ while (argv.length) {
                   dec.type === 'apply' &&
                   dec.value === 'function' &&
                   name.type === 'word' &&
-                  depSet.has(name.value)
+                  depSet.has(toCamelCase(name.value))
               )
             )
           }

@@ -1,3 +1,15 @@
+export const toCamelCase = (name) => {
+  let out = name[0]
+  for (let i = 1; i < name.length; ++i) {
+    const current = name[i],
+      prev = name[i - 1]
+    if (current === '-') continue
+    else if (prev === '-') {
+      out += current.toUpperCase()
+    } else out += current
+  }
+  return out
+}
 const CAST_BOOLEAN_TO_NUMBER = true
 const Extensions = {}
 const Functions = new Map()
@@ -7,14 +19,18 @@ const Helpers = {
     has: true,
   },
   regexp_match: {
-    source: `_regexp_match = (string, regex) => {
+    source: `_regExpMatch = (string, regex) => {
       const match = string.match(new RegExp(regex, 'g'))
       return match == undefined ? [] : [...match]
     }`,
     has: true,
   },
   regexp_replace: {
-    source: `_regexp_replace = (string, a, b) => string.replace(new RegExp(a, 'g'), b)`,
+    source: `_regExpReplace = (string, a, b) => string.replace(new RegExp(a, 'g'), b)`,
+    has: true,
+  },
+  atom: {
+    source: `_isAtom = (value) => typeof value === 'number' || typeof value === 'string'`,
     has: true,
   },
   set: {
@@ -96,7 +112,7 @@ const compile = (tree, Locals) => {
         }
       }
       case 'let': {
-        let name = Arguments[0].value
+        let name = toCamelCase(Arguments[0].value)
         Locals.add(name)
         return `((${name}=${compile(Arguments[1], Locals)}),${name});`
       }
@@ -116,9 +132,9 @@ const compile = (tree, Locals) => {
           Locals
         )}));`
       case 'regex_match':
-        return `_regexp_match(${parseArgs(Arguments, Locals)});`
+        return `_regExpMatch(${parseArgs(Arguments, Locals)});`
       case 'regex_replace':
-        return `_regexp_replace(${parseArgs(Arguments, Locals)});`
+        return `_regExpReplace(${parseArgs(Arguments, Locals)});`
       case 'Stringp':
         return handleBoolean(
           `(typeof(${compile(Arguments[0], Locals)})==='string');`
@@ -141,6 +157,8 @@ const compile = (tree, Locals) => {
         return `[...${parseArgs(Arguments, Locals, ',...')}];`
       case 'length':
         return `(${compile(Arguments[0], Locals)}).length`
+      case 'atom':
+        return `_isAtom(${compile(Arguments[0], Locals)});`
       case 'car':
         return `${compile(Arguments[0], Locals)}.at(0);`
       case 'cdr':
@@ -171,7 +189,7 @@ const compile = (tree, Locals) => {
         let name,
           out = '(('
         const arg = Arguments[0]
-        name = arg.value
+        name = toCamelCase(arg.value)
         Locals.add(name)
 
         const functionArgs = Arguments.slice(1)
@@ -190,7 +208,7 @@ const compile = (tree, Locals) => {
         let name,
           out = '(('
         const arg = Arguments[0]
-        name = arg.value
+        name = toCamelCase(arg.value)
         Locals.add(name)
         const functionArgs = Arguments.slice(1)
         const body = functionArgs.pop()
@@ -295,7 +313,7 @@ const compile = (tree, Locals) => {
           Functions.set(
             module,
             functions.map((fn) => {
-              const name = fn.substring(1, fn.length - 1)
+              const name = toCamelCase(fn.substring(1, fn.length - 1))
               Locals.add(name)
               return name
             })
@@ -303,19 +321,20 @@ const compile = (tree, Locals) => {
         }
         break
       default: {
-        if (token in Extensions)
-          return `${Extensions[token](parseArgs(Arguments, Locals))}`
-        else return `${token}(${parseArgs(Arguments, Locals)});`
+        const camleCasedToken = toCamelCase(token)
+        if (camleCasedToken in Extensions)
+          return `${Extensions[camleCasedToken](parseArgs(Arguments, Locals))}`
+        else return `${camleCasedToken}(${parseArgs(Arguments, Locals)});`
       }
     }
-  } else if (first.type === 'value')
+  } else if (first.type === 'atom')
     return typeof first.value === 'string' ? `\`${first.value}\`` : first.value
-  else if (first.type === 'word') return token
+  else if (first.type === 'word') return toCamelCase(token)
 }
 
 export const compileToJs = (AST, extensions = {}, helpers = {}, tops = []) => {
-  for (const ext in extensions) Extensions[ext] = extensions[ext]
-  for (const hlp in helpers) Helpers[hlp] = helpers[hlp]
+  for (const ext in extensions) Extensions[toCamelCase(ext)] = extensions[ext]
+  for (const hlp in helpers) Helpers[toCamelCase(hlp)] = helpers[hlp]
   const vars = new Set()
   const raw = AST.map((x) => compile(x, vars))
     .filter(Boolean)
