@@ -1,10 +1,10 @@
-# wisp
+# Node.lisp
 
 <p align="center">
 <img width="200" src="./lisp-lizard.svg"/>
 </p>
 
-A Lisp for the Web
+A Lisp for Node
 
 ```lisp
 (let hello "Hello World")
@@ -51,24 +51,24 @@ A Lisp for the Web
   (reduce sum 0))
 ```
 
-try online [playground](https://at-290690.github.io/wisp/playground/editor/)
+try online [playground](https://at-290690.github.io/node-lisp/playground/editor/)
 
 interpred
 
 ```
-yarn wisp -file <filepath> -r
+yarn lisp -file <filepath> -r
 ```
 
 or compile
 
 ```
-yarn wisp -s <filepath lisp> -d <filepath js> -c
+yarn lisp -s <filepath lisp> -d <filepath js> -c
 ```
 
 show help
 
 ```
-yarn wisp -help
+yarn lisp -help
 ```
 
 ```
