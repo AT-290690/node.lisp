@@ -51,8 +51,6 @@ A Lisp for Node
   (reduce sum 0))
 ```
 
-try online [playground](https://at-290690.github.io/node.lisp/playground/editor/)
-
 interpred
 
 ```
@@ -89,6 +87,6 @@ yarn lisp -help
   -------------------------------------
 ```
 
-<footer align="center">
+<p align="center">
 <img width="80" src="./lisp-lizard.svg"/>
-</footer>
+</p>
