@@ -1,7 +1,7 @@
 # Node.lisp
 
 <p align="center">
-<img width="200" src="./lisp-lizard.svg"/>
+<img width="200" src="./logo.svg"/>
 </p>
 
 A Lisp for Node
@@ -51,7 +51,7 @@ A Lisp for Node
   (reduce sum 0))
 ```
 
-try online [playground](https://at-290690.github.io/node-lisp/playground/editor/)
+try online [playground](https://at-290690.github.io/node.lisp/playground/editor/)
 
 interpred
 
@@ -75,6 +75,8 @@ yarn lisp -help
   -------------------------------------
    -help
   -------------------------------------
+   -std             list std functions
+  -------------------------------------
    -s                   prepare a file
   -------------------------------------
    -d               file to compile js
@@ -86,3 +88,7 @@ yarn lisp -help
    -p      interpret & run with 0 deps
   -------------------------------------
 ```
+
+<footer align="center">
+<img width="80" src="./lisp-lizard.svg"/>
+</footer>

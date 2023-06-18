@@ -127,23 +127,52 @@ while (argv.length) {
         }
       }
       break
+    case 'std':
+      {
+        const STD = readFileSync('./lib/std.lisp', 'utf-8')
+        const mods = []
+        const parsed = parse(STD).at(-1).at(-1).slice(1)
+        parsed.pop()
+        mods.push(
+          parsed.filter(
+            ([dec, name]) =>
+              dec.type === 'apply' &&
+              dec.value === 'function' &&
+              name.type === 'word'
+          )
+        )
+        ;(value
+          ? mods.flat(1).filter(([, x]) => x.value.includes(value))
+          : mods.flat(1)
+        ).forEach(([type, name, ...rest]) => {
+          console.log(
+            `(\x1b[35m${type.value}\x1b[33m ${name.value}\x1b[36m ${rest
+              .map((x) => x.value)
+              .join(' ')
+              .trimRight()}\x1b[0m)`
+          )
+        })
+      }
+      break
     case '-help':
     case '-h':
     default:
       console.log(`
-  -------------------------------------
-   -help
-  -------------------------------------
-   -s                   prepare a file
-  -------------------------------------
-   -d               file to compile js
-  -------------------------------------
-   -c                    compile to js
-  -------------------------------------
-   -r                  interpret & run
-  -------------------------------------
-   -p      interpret & run with 0 deps
-  -------------------------------------
+-------------------------------------
+-help
+-------------------------------------
+-std             list std functions
+-------------------------------------
+-s                   prepare a file
+-------------------------------------
+-d               file to compile js
+-------------------------------------
+-c                    compile to js
+-------------------------------------
+-r                  interpret & run
+-------------------------------------
+-p      interpret & run with 0 deps
+-------------------------------------
 `)
   }
 }

@@ -10,4 +10,4 @@
       (log (car array)))
     (iterate (cdr array)))))
 
-(iterate (car (probe-file)))
+; (iterate (car (probe-file)))
