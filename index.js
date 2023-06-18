@@ -127,7 +127,7 @@ while (argv.length) {
         }
       }
       break
-    case 'std':
+    case '-std':
       {
         const STD = readFileSync('./lib/std.lisp', 'utf-8')
         const mods = []
