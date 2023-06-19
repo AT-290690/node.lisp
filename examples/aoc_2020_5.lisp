@@ -9,11 +9,11 @@
 ; F keeps rows 44 through 45.
 ; The final F keeps the lower of the two, row 44.
 
-; (let sample "FBFBBFFRLR 
-; BFFFBBFRRR
-; FFFBBBFRRR
-; BBFFBBFRLL")
-; (let input sample)
+(let sample "FBFBBFFRLR 
+BFFFBBFRRR
+FFFBBBFRRR
+BBFFBBFRLL")
+(let input sample)
 (let input (open "./playground/src/aoc_2020/5/input.txt"))
 (function to_fb array (reduce array (lambda a b i _ (if (< i 7) (push a b) a)) (Array 0 length)))
 (function to_lr array (reduce array (lambda a b i _ (if (>= i 7) (push a b) a)) (Array 0 length)))

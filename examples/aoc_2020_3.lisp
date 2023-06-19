@@ -13,7 +13,7 @@
 .#..#...#.#")
 
 (let input sample)
-; (let input (open "./playground/src/aoc_2020/3/input.txt"))
+(let input (open "./playground/src/aoc_2020/3/input.txt"))
 
 (function to_bit_array array 
   (map array (lambda line _ _ (do line (...) (map (lambda x _ _ (= x "#")))))))
