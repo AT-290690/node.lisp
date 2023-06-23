@@ -52,7 +52,6 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
       (do y 
         (split ", "))))))))
 ; (map (lambda z _ _ (regex_match z "[1-9]|.*")))
-(log "-------------------------------------------------------------")
   (let target (Array "shiny" "gold"))
   (function solve1 bags target (block 
     (let count 0)
@@ -68,8 +67,7 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
                     (= right (car (cdr (cdr x))))
                     (let* count (+ count 1))
                     (set (car bag) 2 1)
-                    (traverse-bags (car (car bag)) (car (cdr (car bag))))
-                  ))))))))
+                    (traverse-bags (car (car bag)) (car (cdr (car bag))))))))))))
        (traverse-bags (car target) (car (cdr target)))
        count))
   

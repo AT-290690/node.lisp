@@ -106,6 +106,14 @@
         (let* res (callback i))
         (if (< i end) (iterate (+ i 1)) res))) 
         (iterate start)))
+  ; count
+  (function count array callback (block
+    (let amount 0)
+    (loop iterate i bounds (block
+      (let current (get array i))
+      (if (callback current i array) (let* amount (+ amount 1)))
+      (if (< i bounds) (iterate (+ i 1) bounds) amount)))
+    (iterate 0 (- (length array) 1))))
   ; filter
   (function remove array callback (block
     (let new_array (Array 0 length))
@@ -418,7 +426,7 @@
         (if (< i bounds) (iterate (+ i 1) bounds) 
         (+ count has_at_least_one))))
         (iterate 0 (- (length array) 1))))
-
+; split_by_n_lines
 (function split_by_n_lines string n (do string (regex_replace (concatenate "(\n){" n "}") "௮") (regex_match "[^௮]+") (map (lambda x _ _ (regex_match x "[^\n]+")))))
 ; split
 (function split string separator (block 
@@ -499,6 +507,7 @@
     (Array "some" some)
     (Array "index_of" index_of)
     (Array "accumulate" accumulate)
+    (Array "count" count)
   )
 ))
 ; (/ std lib)

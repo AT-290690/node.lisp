@@ -1,6 +1,6 @@
 import { evaluate } from './interpreter.js'
-const maxCallstackLimitInterpretation = 1024
-export const tokens = {
+const maxCallstackLimitInterpretation = process.env.MAX_RECURSIVE_CALLS || 1024
+const tokens = {
   ['concatenate']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
@@ -293,10 +293,6 @@ export const tokens = {
         'Invalid number of arguments to (function) [2 required]'
       )
     const params = args.slice(1, -1)
-    // if (!params.length)
-    //   throw new RangeError(
-    //     'Invalid number of params for (function) (>= 1 required)'
-    //   )
     const body = args.at(-1)
     const name = args[0].value
     const fn = (props = [], scope) => {
@@ -361,9 +357,7 @@ export const tokens = {
       typeof a === 'function' ||
       typeof b === 'function'
     )
-      throw new TypeError(
-        'Invalid use of (=), some arguments are not primitive'
-      )
+      throw new TypeError('Invalid use of (=), some arguments are not an atom')
     return +(a === b)
   },
   ['eq']: (args, env) => {
@@ -634,3 +628,5 @@ export const tokens = {
     throw new Error(string)
   },
 }
+
+export { tokens }
