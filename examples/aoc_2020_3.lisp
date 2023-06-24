@@ -1,4 +1,4 @@
-(import std "map" "reduce" "floor" "split_by_lines" "sum_array" "product_array")
+(import std "map" "reduce" "floor" "split-by-lines" "sum-array" "product-array")
 (let sample 
 "..##.......
 #...#...#..
@@ -13,7 +13,7 @@
 .#..#...#.#")
 
 (let input sample)
-(let input (open "./playground/src/aoc_2020/3/input.txt"))
+; (let input (open "./playground/src/aoc_2020/3/input.txt"))
 
 (function to_bit_array array 
   (map array (lambda line _ _ (do line (...) (map (lambda x _ _ (= x "#")))))))
@@ -31,13 +31,13 @@
 
 (function task input (block 
   (let matrix (do input 
-              (split_by_lines)
+              (split-by-lines)
               (to_bit_array)))
   ; 7 for sample
+  (Array 
   (do matrix
     (solve 3 1)
-    (sum_array) 
-    (log)) 
+    (sum-array)) 
   ; 336 for sample
   (do 
   (Array 
@@ -46,8 +46,7 @@
     (Array 5 1) 
     (Array 7 1) 
     (Array 1 2)) 
-    (map (lambda x _ _ (do matrix (solve (car x) (car (cdr x))) (sum_array))))
-    (product_array)
-    (log))))
+    (map (lambda x _ _ (do matrix (solve (car x) (car (cdr x))) (sum-array))))
+    (product-array)))))
 
 (task input)

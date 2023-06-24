@@ -18,14 +18,14 @@ const Helpers = {
     source: `var log = (msg) => { console.log(msg); return msg }`,
     has: true,
   },
-  regexp_match: {
+  'regexp-match': {
     source: `_regExpMatch = (string, regex) => {
       const match = string.match(new RegExp(regex, 'g'))
       return match == undefined ? [] : [...match]
     }`,
     has: true,
   },
-  regexp_replace: {
+  'regexp-replace': {
     source: `_regExpReplace = (string, a, b) => string.replace(new RegExp(a, 'g'), b)`,
     has: true,
   },
@@ -119,7 +119,10 @@ const compile = (tree, Locals) => {
       case 'let*': {
         const res = compile(Arguments[1], Locals)
         const arg = Arguments[0]
-        if (arg.type === 'word') return `((${arg.value}=${res}),${arg.value});`
+        if (arg.type === 'word') {
+          const name = toCamelCase(arg.value)
+          return `((${name}=${res}),${name});`
+        }
       }
       case 'char':
         return `((${compile(Arguments[0], Locals)}).charCodeAt(${compile(
@@ -131,9 +134,9 @@ const compile = (tree, Locals) => {
           Arguments[1],
           Locals
         )}));`
-      case 'regex_match':
+      case 'regex-match':
         return `_regExpMatch(${parseArgs(Arguments, Locals)});`
-      case 'regex_replace':
+      case 'regex-replace':
         return `_regExpReplace(${parseArgs(Arguments, Locals)});`
       case 'Stringp':
         return handleBoolean(

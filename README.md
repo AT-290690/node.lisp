@@ -24,7 +24,7 @@ A Lisp for Node
 
 ```lisp
 ; Define reusable modules
-(function binary_search
+(function binary-search
         array target (block
   (loop search
         arr target start end (block
@@ -39,14 +39,14 @@ A Lisp for Node
 ```
 
 ```lisp
-(let is_odd (lambda x i o (= (mod x 2) 1)))
+(let is-odd (lambda x i o (= (mod x 2) 1)))
 (let mult_2 (lambda x i o (* x 2)))
 (let sum (lambda a x i o (+ a x)))
 ; Pipe the first to a series of composed functions
 ; (arg (arg .. ) (arg .. ) (ar . . . . ))
 (do
   (Array 1 2 3 4 5 6 7 101)
-  (remove is_odd)
+  (remove is-odd)
   (map mult_2)
   (reduce sum 0))
 ```

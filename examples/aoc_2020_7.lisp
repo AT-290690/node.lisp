@@ -1,4 +1,4 @@
-(import std "reduce" "find" "for_each" "split_by" "split" "map" "trim" "push" "every" "remove" "some")
+(import std "reduce" "find" "for-each" "split-by" "split" "map" "trim" "push" "every" "remove" "some")
 (let sample1 
 "light red bags contain 1 bright white bag, 2 muted yellow bags.
 dark orange bags contain 3 bright white bags, 4 muted yellow bags.
@@ -46,17 +46,17 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
           (map array 
             (lambda x _ _ 
               (do x 
-                (regex_match "^(.*(?= bags contain))|(?<=(contain )).*(?=(,|.))") 
+                (regex-match "^(.*(?= bags contain))|(?<=(contain )).*(?=(,|.))") 
   (map 
     (lambda y _ _ 
       (do y 
         (split ", "))))))))
-; (map (lambda z _ _ (regex_match z "[1-9]|.*")))
+; (map (lambda z _ _ (regex-match z "[1-9]|.*")))
   (let target (Array "shiny" "gold"))
   (function solve1 bags target (block 
     (let count 0)
     (loop traverse-bags left right (block
-      (for_each bags 
+      (for-each bags 
         (lambda bag _ _ 
           (and 
             (not (= (get (car bag) -1) 1)) 
@@ -74,7 +74,7 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
   (function read-input input
       (do 
         input 
-        (split_by "\n") 
+        (split-by "\n") 
         (bags)
         (remove 
           (lambda bag _ _ 
@@ -100,15 +100,7 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
                           (set -1)))))))
               (Array head tail))))))
 
-    (do 
-      (read-input sample1) 
-      (solve1 target) 
-      (log))
-    (do 
-      (read-input sample2) 
-      (solve1 target) 
-      (log))
-    (log (solve1 all-bags target))
+ 
 
 (function find-bag bags left right 
           (find bags 
@@ -121,19 +113,22 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
     (let next (find-bag all-bags (car (cdr current)) (car (cdr (cdr current)))))
     (+ output (if next  (* (car current) (sum-bags (car (cdr next)) all-bags)) (car current))))) 1))
 ; 1 + 1*7 + 2 + 2*11 = 32
-(let inpt (read-input (open "./playground/src/aoc_2020/7/input.txt")))
-  (do 
-   inpt
-    (find-bag "shiny" "gold")
-    (cdr)
-    (car)
-    (sum-bags inpt)
-    (- 1)
-    (log))
-  (do (read-input sample1) (find-bag "shiny" "gold") (cdr) (car) (sum-bags (read-input sample1)) (- 1) (log))
-  (do (read-input sample2) (find-bag "shiny" "gold") (cdr) (car) (sum-bags (read-input sample2)) (- 1) (log))
-  (do (read-input sample3) (find-bag "shiny" "gold") (cdr) (car) (sum-bags (read-input sample3)) (- 1) (log))
-  (do (read-input sample4) (find-bag "shiny" "gold") (cdr) (car) (sum-bags (read-input sample4)) (- 1) (log))
-  (do (read-input sample5) (find-bag "shiny" "gold") (cdr) (car) (sum-bags (read-input sample5)) (- 1) (log))
-  (do (read-input sample6) (find-bag "shiny" "gold") (cdr) (car) (sum-bags (read-input sample6)) (- 1) (log))
-  (do (read-input sample7) (find-bag "shiny" "gold") (cdr) (car) (sum-bags (read-input sample7)) (- 1) (log))
+; (let inp (open "./playground/src/aoc_2020/7/input.txt"))
+; (do (read-input inp) (find-bag "shiny" "gold") (cdr) (car) (sum-bags (read-input inp)) (- 1) (log))
+
+(Array
+   (do 
+      (read-input sample1) 
+      (solve1 target))
+    (do 
+      (read-input sample2) 
+      (solve1 target))
+  (do (read-input sample1) (find-bag "shiny" "gold") (cdr) (car) (sum-bags (read-input sample1)) (- 1))
+  (do (read-input sample2) (find-bag "shiny" "gold") (cdr) (car) (sum-bags (read-input sample2)) (- 1))
+  (do (read-input sample3) (find-bag "shiny" "gold") (cdr) (car) (sum-bags (read-input sample3)) (- 1))
+  (do (read-input sample4) (find-bag "shiny" "gold") (cdr) (car) (sum-bags (read-input sample4)) (- 1))
+  (do (read-input sample5) (find-bag "shiny" "gold") (cdr) (car) (sum-bags (read-input sample5)) (- 1))
+  (do (read-input sample6) (find-bag "shiny" "gold") (cdr) (car) (sum-bags (read-input sample6)) (- 1))
+  (do (read-input sample7) (find-bag "shiny" "gold") (cdr) (car) (sum-bags (read-input sample7)) (- 1))
+  
+  )

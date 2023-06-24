@@ -448,43 +448,43 @@ const tokens = {
 
     return 0
   },
-  ['regex_match']: (args, env) => {
+  ['regex-match']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError(
-        'Invalid number of arguments to (regex_match) [2 required]'
+        'Invalid number of arguments to (regex-match) [2 required]'
       )
     const string = evaluate(args[0], env)
     if (typeof string !== 'string')
       throw new TypeError(
-        'First argument of (regex_match) has to be a (string)'
+        'First argument of (regex-match) has to be a (string)'
       )
     const regex = evaluate(args[1], env)
     if (typeof regex !== 'string')
       throw new TypeError(
-        'Second argument of (regex_match) has to be a (string)'
+        'Second argument of (regex-match) has to be a (string)'
       )
     const match = string.match(new RegExp(regex, 'g'))
     return match == undefined ? [] : [...match]
   },
-  ['regex_replace']: (args, env) => {
+  ['regex-replace']: (args, env) => {
     if (args.length !== 3)
       throw new RangeError(
-        'Invalid number of arguments to (regex_replace) [3 required]'
+        'Invalid number of arguments to (regex-replace) [3 required]'
       )
     const string = evaluate(args[0], env)
     if (typeof string !== 'string')
       throw new TypeError(
-        'First argument of (regex_replace) has to be a (string)'
+        'First argument of (regex-replace) has to be a (string)'
       )
     const a = evaluate(args[1], env)
     if (typeof a !== 'string')
       throw new TypeError(
-        'Second argument of (regex_replace) has to be a (string)'
+        'Second argument of (regex-replace) has to be a (string)'
       )
     const b = evaluate(args[2], env)
     if (typeof b !== 'string')
       throw new TypeError(
-        'Third argument of (regex_replace) has to be a (string)'
+        'Third argument of (regex-replace) has to be a (string)'
       )
     return string.replace(new RegExp(a, 'g'), b)
   },

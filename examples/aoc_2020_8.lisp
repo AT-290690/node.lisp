@@ -1,4 +1,4 @@
-(import std "split_by" "map" "find" "remove" "push")
+(import std "split-by" "map" "find" "remove" "push" "reduce")
 
 (let sample "nop +0
 acc +1
@@ -11,12 +11,12 @@ jmp -4
 acc +6")
 
 (let input sample)
-(let input (open "./playground/src/aoc_2020/8/input.txt"))
+; (let input (open "./playground/src/aoc_2020/8/input.txt"))
 
 (let stack (do input 
-  (split_by "\n")
+  (split-by "\n")
   (map (lambda x _ _ (block 
-    (let cmd (do x (split_by " ")))
+    (let cmd (do x (split-by " ")))
     (set cmd 1 (type (get cmd 1) Number)))))))
 
 (loop solve1 instructions offset accumulator (block 
@@ -42,28 +42,27 @@ acc +6")
         (block
           (do 
             instructions
-            (remove (lambda x i _ (and  (> i 0) (= (length x) 3) (or (= (car x) "nop") (= (car x) "jmp")))))
+            (remove (lambda x i _ (and (= (length x) 3) (or (= (car x) "nop") (= (car x) "jmp")))))
             (map (lambda x _ _ (block 
               (let cmd (if (= (car x) "jmp") "nop" "jmp"))
               (let value (car (cdr x)))
               (let options (get x -1))
               (Array cmd value options)))))))) accumulator))
+(Array 
+  (do 
+    stack
+    (solve1 0 0))
 
-(do 
-  stack
-  (solve1 0 0)
-  (log))
-
-(do 
-  stack
-  (solve2 0 0)
-  (map (lambda x _ _ (block 
-    (let cmd (car x))
-    (let value (car (cdr x)))
-    (let options (get x -1))
-    (let offset (car options))
-    (let accumulator (car (cdr options)))
-    (solve2 stack (+ offset (if (= cmd "jmp") value 1)) accumulator)))) 
-  (remove (lambda x _ _ (atom x)))
-  (car)
- (log))
+  (do 
+    stack
+    (solve2 0 0)
+    (reduce 
+      (lambda acc x _ _ 
+        (block 
+          (let cmd (car x))
+          (let value (car (cdr x)))
+          (let options (get x -1))
+          (let offset (car options))
+          (let accumulator (car (cdr options)))
+          (let result (solve2 stack (+ offset (if (= cmd "jmp") value 1)) accumulator))
+          (if (atom result) result acc))) 0)))

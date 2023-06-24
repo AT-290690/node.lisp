@@ -1,4 +1,4 @@
-(import std  "remove" "for_each" "push" "map" "regex_match" "split_by_n_lines" "deep_flat" "split_by" "join" "every" "reduce" "sum_array")
+(import std  "remove" "for-each" "push" "map" "regex-match" "split-by-n-lines" "deep-flat" "split-by" "join" "every" "reduce" "sum-array")
 
 (let sample "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
 byr:1937 iyr:2017 cid:147 hgt:183cm
@@ -9,18 +9,14 @@ ecl:oth pid:920076943 byr:1929
 hgt:76in")
 
 (let input sample)
-(let input (open "./playground/src/aoc_2020/4/input.txt"))
+; (let input (open "./playground/src/aoc_2020/4/input.txt"))
 
 ; 190
 (function validate_fields fields (do fields (map (lambda x _ _ 
                         (do x (map (lambda y _ _ 
-                          (do y (regex_match "byr|iyr|eyr|hgt|hcl|ecl|pid")))) 
-                                (deep_flat))))
+                          (do y (regex-match "byr|iyr|eyr|hgt|hcl|ecl|pid")))) 
+                                (deep-flat))))
                   (remove (lambda x _ _ (= (length x) 7)))))
-(do input (split_by_n_lines 2)
-                (validate_fields)
-                  (length)
-                  (log))
 
 ; byr (Birth Year) - four digits; at least 1920 and at most 2002.
 ; iyr (Issue Year) - four digits; at least 2010 and at most 2020.
@@ -32,12 +28,18 @@ hgt:76in")
 ; ecl (Eye Color) - exactly one of: amb blu brn gry grn hzl oth.
 ; pid (Passport ID) - a nine-digit number, including leading zeroes.
 ; cid (Country ID) - ignored, missing or not.
-(function to_entries array (map array (lambda x _ _ (do x (map (lambda y _ _ (do y (split_by " ")))) (deep_flat) (map (lambda x _ _ (split_by x ":")))))))
+(function to_entries array (map array (lambda x _ _ (do x (map (lambda y _ _ (do y (split-by " ")))) (deep-flat) (map (lambda x _ _ (split-by x ":")))))))
 (function without_invalid_fields fields (do fields 
                                             (map (lambda x _ _  (do x 
-                                             (remove (lambda y _ _ (and (not (= (car y) "cid")) (regex_match (car y) "byr|iyr|eyr|hgt|hcl|ecl|pid")))))))))
+                                             (remove (lambda y _ _ (and (not (= (car y) "cid")) (regex-match (car y) "byr|iyr|eyr|hgt|hcl|ecl|pid")))))))))
+
+
+(Array 
+(do input (split-by-n-lines 2)
+                (validate_fields)
+                  (length))
 (do input 
-     (split_by_n_lines 2)
+     (split-by-n-lines 2)
      (to_entries)
      (without_invalid_fields)
      (remove (lambda x _ _ (= (length x) 7)))
@@ -65,15 +67,14 @@ hgt:76in")
                       ; If in, the number must be at least 59 and at most 76.
                       (if (= units "in") (and (>= num 59) (<= num 76))))))
                 (if (= key "hcl") (block 
-                  (let color (regex_match value "#.+[0-9a-f]"))
+                  (let color (regex-match value "#.+[0-9a-f]"))
                     (and (length color) (= (length (... (car color))) 7)))
                   (if (= key "ecl")
-                    (and (= (length arr) 3) (length (regex_match value "amb|blu|brn|gry|grn|hzl|oth")))
+                    (and (= (length arr) 3) (length (regex-match value "amb|blu|brn|gry|grn|hzl|oth")))
                     (if (= key "pid") 
                       (and 
                         (= (length arr) 9) 
-                        (length (regex_match value "[0-9]{9}")))))))))))))))))
+                        (length (regex-match value "[0-9]{9}")))))))))))))))))
        (remove (lambda x _ _ (every x (lambda y _ _ (= (get y -1) 1)))))
       ; (map (lambda x _ _ (log x)))
-      (length)
-      (log))
+      (length)))
