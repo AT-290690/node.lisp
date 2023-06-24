@@ -115,6 +115,10 @@
       (if (callback current i array) (let* amount (+ amount 1)))
       (if (< i bounds) (iterate (+ i 1) bounds) amount)))
     (iterate 0 (- (length array) 1))))
+  ; partition 
+  (function partition array n (reduce array (lambda a x i _ (block 
+        (if (mod i n) (push (get a -1) x) (push a (Array x))) a)) 
+        (Array 0 length)))
   ; filter
   (function remove array callback (block
     (let new-array (Array 0 length))
@@ -510,6 +514,7 @@
     (Array "index-of" index-of)
     (Array "accumulate" accumulate)
     (Array "count" count)
+    (Array "partition" partition)
   )
 ))
 ; (/ std lib)

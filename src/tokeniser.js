@@ -446,7 +446,7 @@ const tokens = {
       .filter(([n]) => records.has(n))
       .forEach(([key, fn]) => (env[key] = fn))
 
-    return 0
+    return methods
   },
   ['regex-match']: (args, env) => {
     if (args.length !== 2)

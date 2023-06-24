@@ -1,10 +1,10 @@
+import { readFileSync, writeFileSync } from 'fs'
+import { start } from 'repl'
 import { compileToJs, toCamelCase } from './src/compiler.js'
 import { evaluate, run } from './src/interpreter.js'
 import { parse } from './src/parser.js'
-
-import { readFileSync, writeFileSync } from 'fs'
 import { logError } from './src/utils.js'
-
+const STD = readFileSync('./lib/std.lisp', 'utf-8')
 const [, , ...argv] = process.argv
 let file = '',
   Extensions = {},
@@ -121,7 +121,7 @@ while (argv.length) {
     case '-r':
       {
         try {
-          run(parse(`${readFileSync('./lib/std.lisp', 'utf-8')}\n${file}`), env)
+          run(parse(`${STD}\n${file}`), env)
         } catch (err) {
           logError(err.message)
         }
@@ -129,7 +129,6 @@ while (argv.length) {
       break
     case '-std':
       {
-        const STD = readFileSync('./lib/std.lisp', 'utf-8')
         const mods = []
         const parsed = parse(STD).at(-1).at(-1).slice(1)
         parsed.pop()
@@ -154,6 +153,47 @@ while (argv.length) {
         })
       }
       break
+    case '-repl':
+      {
+        let source = STD
+        const inpColor = '\x1b[32m'
+        const outColor = '\x1b[33m'
+        const errColor = '\x1b[31m'
+        console.log(inpColor)
+        start({
+          prompt: '',
+          eval: (input) => {
+            try {
+              let out = `${source}\n(block ${input})`
+              const result = run(parse(out), env)
+              if (typeof result === 'function') {
+                console.log(inpColor, `(λ)`)
+              } else if (Array.isArray(result)) {
+                console.log(
+                  outColor,
+                  JSON.stringify(result)
+                    .replaceAll('[', '(')
+                    .replaceAll(']', ')')
+                    .replaceAll(',', ' ')
+                    .replaceAll('null', 'void')
+                    .replaceAll('undefined', 'void'),
+                  inpColor
+                )
+              } else if (typeof result === 'string') {
+                console.log(outColor, `"${result}"`, inpColor)
+              } else if (result == undefined) {
+                console.log(errColor, '(void)', inpColor)
+              } else {
+                console.log(outColor, result, inpColor)
+              }
+              source = out
+            } catch (err) {
+              console.log(errColor, err.message, inpColor)
+            }
+          },
+        })
+      }
+      break
     case '-help':
     case '-h':
     default:
@@ -172,6 +212,8 @@ while (argv.length) {
 -r                  interpret & run
 -------------------------------------
 -p      interpret & run with 0 deps
+-------------------------------------
+-repl    start Read Eval Print Loop
 -------------------------------------
 `)
   }
