@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'fs'
 import { start } from 'repl'
-import { compileToJs, toCamelCase } from './src/compiler.js'
+import { compileToJs, lispToJavaScriptVariableName } from './src/compiler.js'
 import { evaluate, run } from './src/interpreter.js'
 import { parse } from './src/parser.js'
 import { logError } from './src/utils.js'
@@ -47,7 +47,7 @@ while (argv.length) {
                   dec.type === 'apply' &&
                   dec.value === 'function' &&
                   name.type === 'word' &&
-                  depSet.has(toCamelCase(name.value))
+                  depSet.has(lispToJavaScriptVariableName(name.value))
               )
             )
           }
@@ -164,7 +164,7 @@ while (argv.length) {
           prompt: '',
           eval: (input) => {
             try {
-              let out = `${source}\n(block ${input})`
+              let out = `${source}\n${file}\n(block ${input})`
               const result = run(parse(out), env)
               if (typeof result === 'function') {
                 console.log(inpColor, `(λ)`)
@@ -172,11 +172,9 @@ while (argv.length) {
                 console.log(
                   outColor,
                   JSON.stringify(result)
-                    .replaceAll('[', '(')
-                    .replaceAll(']', ')')
-                    .replaceAll(',', ' ')
-                    .replaceAll('null', 'void')
-                    .replaceAll('undefined', 'void'),
+                    .replace(new RegExp(/\[/g), '(')
+                    .replace(new RegExp(/\]/g), ')')
+                    .replace(new RegExp(/\,/g), ' '),
                   inpColor
                 )
               } else if (typeof result === 'string') {

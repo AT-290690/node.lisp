@@ -1,5 +1,15 @@
 import { evaluate } from './interpreter.js'
 const maxCallstackLimitInterpretation = process.env.MAX_RECURSIVE_CALLS || 1024
+const _eq = (a, b) => {
+  if (a === b) return 1
+  else if (Array.isArray(a)) {
+    let length = a.length,
+      i
+    if (length != b.length) return 0
+    for (i = length; i-- !== 0; ) if (!_eq(a[i], b[i])) return 0
+    return 1
+  } else return 0
+}
 const tokens = {
   ['concatenate']: (args, env) => {
     if (args.length < 2)
@@ -363,7 +373,7 @@ const tokens = {
   ['eq']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError('Invalid number of arguments for (eq) (2 required)')
-    return +(evaluate(args[0], env) === evaluate(args[1], env))
+    return _eq(evaluate(args[0], env), evaluate(args[1], env))
   },
   ['<']: (args, env) => {
     if (args.length !== 2)

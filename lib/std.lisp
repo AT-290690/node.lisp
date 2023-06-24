@@ -449,6 +449,21 @@
             (block (let* cursor (concatenate cursor (get array i))) i)) bounds) 
                 (iterate result (+ i 1) bounds) result))
     (push (iterate (Array 0 length) 0 (- (length array) 1)) cursor)))
+
+  ; slice 
+  (function slice array start end (block 
+    (let bounds (- end start))
+    (let out (Array bounds length))
+    (loop iterate i 
+      (if (< i bounds) 
+          (block 
+            (set out i (get array (+ start i))) 
+            (iterate (+ i 1)))
+           out))
+          (iterate 0)))
+
+  ; slice-if
+  (function slice-if array callback (reduce array (lambda a b i _ (if (callback i) (push a b) a)) (Array 0 length)))
   ; exports
   (Array 
     (Array "max" max)
@@ -515,6 +530,8 @@
     (Array "accumulate" accumulate)
     (Array "count" count)
     (Array "partition" partition)
+    (Array "slice" slice)
+    (Array "slice-if" slice-if)
   )
 ))
 ; (/ std lib)

@@ -2,6 +2,27 @@ import { deepStrictEqual, strictEqual } from 'assert'
 import { runFromInterpreted } from '../src/utils.js'
 it('interpretation should work', () => {
   deepStrictEqual(
+    runFromInterpreted(`(let patten (Array "hello" 10))
+  (eq patten (Array "hello" 10))`),
+    1
+  )
+  deepStrictEqual(
+    runFromInterpreted(`(let patten (Array "hello" 11))
+  (eq patten (Array "hello" patten))`),
+    0
+  )
+  deepStrictEqual(
+    runFromInterpreted(`(Array 
+    (eq 1 1) 
+    (eq 1 2)
+    (eq (Array 1 2) (Array 1 2))
+    (eq (Array 1 2) (Array 1 2 3))
+    (eq (Array 1 2) (Array 1 2 (Array 1 2)))
+    (eq (Array 1 (Array 1 2)) (Array 1 2 (Array 1 2)))
+    (eq (Array 1 2 (Array 1 2)) (Array 1 2 (Array 1 2))))`),
+    [1, 0, 1, 0, 0, 0, 1]
+  )
+  deepStrictEqual(
     runFromInterpreted(
       `(function is-array-of-atoms array 
         (if (not (length array)) 1 

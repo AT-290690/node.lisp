@@ -1,3 +1,4 @@
+export const earMuffsToLodashes = (name) => name.replace(new RegExp(/\*/g), '_')
 export const toCamelCase = (name) => {
   let out = name[0]
   for (let i = 1; i < name.length; ++i) {
@@ -10,12 +11,27 @@ export const toCamelCase = (name) => {
   }
   return out
 }
+export const lispToJavaScriptVariableName = (name) =>
+  toCamelCase(earMuffsToLodashes(name))
 const CAST_BOOLEAN_TO_NUMBER = true
 const Extensions = {}
 const Functions = new Map()
 const Helpers = {
   log: {
     source: `var log = (msg) => { console.log(msg); return msg }`,
+    has: true,
+  },
+  _equal: {
+    source: `_equal = (a, b) => {
+      if (a === b) return 1
+      else if (Array.isArray(a)) {
+        let length = a.length,
+          i
+        if (length != b.length) return 0
+        for (i = length; i-- !== 0; ) if (!_equal(a[i], b[i])) return 0
+        return 1
+      } else return 0
+    }`,
     has: true,
   },
   'regexp-match': {
@@ -112,7 +128,7 @@ const compile = (tree, Locals) => {
         }
       }
       case 'let': {
-        let name = toCamelCase(Arguments[0].value)
+        let name = lispToJavaScriptVariableName(Arguments[0].value)
         Locals.add(name)
         return `((${name}=${compile(Arguments[1], Locals)}),${name});`
       }
@@ -120,7 +136,7 @@ const compile = (tree, Locals) => {
         const res = compile(Arguments[1], Locals)
         const arg = Arguments[0]
         if (arg.type === 'word') {
-          const name = toCamelCase(arg.value)
+          const name = lispToJavaScriptVariableName(arg.value)
           return `((${name}=${res}),${name});`
         }
       }
@@ -192,7 +208,7 @@ const compile = (tree, Locals) => {
         let name,
           out = '(('
         const arg = Arguments[0]
-        name = toCamelCase(arg.value)
+        name = lispToJavaScriptVariableName(arg.value)
         Locals.add(name)
 
         const functionArgs = Arguments.slice(1)
@@ -211,7 +227,7 @@ const compile = (tree, Locals) => {
         let name,
           out = '(('
         const arg = Arguments[0]
-        name = toCamelCase(arg.value)
+        name = lispToJavaScriptVariableName(arg.value)
         Locals.add(name)
         const functionArgs = Arguments.slice(1)
         const body = functionArgs.pop()
@@ -236,6 +252,7 @@ const compile = (tree, Locals) => {
       case 'concatenate':
         return '(' + parseArgs(Arguments, Locals, '+') + ');'
       case 'eq':
+        return `_equal(${parseArgs(Arguments, Locals)});`
       case '=':
         return handleBoolean(`(${parseArgs(Arguments, Locals, '===')});`)
       case '>=':
@@ -316,7 +333,9 @@ const compile = (tree, Locals) => {
           Functions.set(
             module,
             functions.map((fn) => {
-              const name = toCamelCase(fn.substring(1, fn.length - 1))
+              const name = lispToJavaScriptVariableName(
+                fn.substring(1, fn.length - 1)
+              )
               Locals.add(name)
               return name
             })
@@ -326,7 +345,7 @@ const compile = (tree, Locals) => {
       case 'probe-file':
         return ''
       default: {
-        const camleCasedToken = toCamelCase(token)
+        const camleCasedToken = lispToJavaScriptVariableName(token)
         if (camleCasedToken in Extensions)
           return `${Extensions[camleCasedToken](parseArgs(Arguments, Locals))}`
         else return `${camleCasedToken}(${parseArgs(Arguments, Locals)});`
@@ -334,12 +353,14 @@ const compile = (tree, Locals) => {
     }
   } else if (first.type === 'atom')
     return typeof first.value === 'string' ? `\`${first.value}\`` : first.value
-  else if (first.type === 'word') return toCamelCase(token)
+  else if (first.type === 'word') return lispToJavaScriptVariableName(token)
 }
 
 export const compileToJs = (AST, extensions = {}, helpers = {}, tops = []) => {
-  for (const ext in extensions) Extensions[toCamelCase(ext)] = extensions[ext]
-  for (const hlp in helpers) Helpers[toCamelCase(hlp)] = helpers[hlp]
+  for (const ext in extensions)
+    Extensions[lispToJavaScriptVariableName(ext)] = extensions[ext]
+  for (const hlp in helpers)
+    Helpers[lispToJavaScriptVariableName(hlp)] = helpers[hlp]
   const vars = new Set()
   const raw = AST.map((x) => compile(x, vars))
     .filter(Boolean)

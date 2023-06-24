@@ -2,6 +2,20 @@ import { deepStrictEqual } from 'assert'
 import { runFromCompiled, runFromInterpreted } from '../src/utils.js'
 it('compilation should work', () =>
   [
+    `(let patten (Array "hello" 10))
+    (eq patten (Array "hello" 10))`,
+    `(let patten (Array "hello" 11))
+    (eq patten (Array "hello" 10))`,
+    `(let patten (Array "hello" 11))
+    (eq patten (Array "hello" patten))`,
+    `(Array 
+   (eq 1 1) 
+   (eq 1 2)
+   (eq (Array 1 2) (Array 1 2))
+   (eq (Array 1 2) (Array 1 2 3))
+   (eq (Array 1 2) (Array 1 2 (Array 1 2)))
+   (eq (Array 1 (Array 1 2)) (Array 1 2 (Array 1 2)))
+   (eq (Array 1 2 (Array 1 2)) (Array 1 2 (Array 1 2))))`,
     `(function is-array-of-atoms array 
       (if (not (length array)) 1 
        (if (atom (car array)) 
