@@ -153,6 +153,31 @@ while (argv.length) {
         })
       }
       break
+    case '-import':
+      {
+        const mods = []
+        const parsed = parse(STD).at(-1).at(-1).slice(1)
+        parsed.pop()
+        mods.push(
+          parsed.filter(
+            ([dec, name]) =>
+              dec.type === 'apply' &&
+              dec.value === 'function' &&
+              name.type === 'word'
+          )
+        )
+        console.log(
+          `\x1b[35m${(value
+            ? mods.flat(1).filter(([, x]) => x.value.includes(value))
+            : mods.flat(1)
+          )
+            .map(([, name]) => {
+              return `"${name.value.trimRight()}"`
+            })
+            .join(' ')}\x1b[0m`
+        )
+      }
+      break
     case '-repl':
       {
         let source = STD

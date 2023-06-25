@@ -55,7 +55,7 @@ it('compilation should work', () =>
         (let* idx i))))
         (iterate 0 (- (length array) 1))
         (if has-found idx -1)))
-  (function is-array-in-bounds array index (and (< index (length array)) (>= index 0)))
+  (function array-in-bounds-p array index (and (< index (length array)) (>= index 0)))
   (function map array callback (block 
     (let new-array (Array 0 length))
     (let i 0)
@@ -69,7 +69,7 @@ it('compilation should work', () =>
           (block
             (let total 0)
             (let prime-num 31)
-            (let* key (... (type key String)))
+            (let* key (. (type key String)))
             (loop find-hash-index i bounds (block 
               (let letter (get key i))
               (let value (- (char letter 0) 96))
@@ -81,7 +81,7 @@ it('compilation should work', () =>
         table key value 
           (block
             (let idx (hash-table-index table key))
-            (unless (is-array-in-bounds table idx) (set table idx (Array 0 length)))
+            (unless (array-in-bounds-p table idx) (set table idx (Array 0 length)))
             (let current (get table idx))
             (let len (length current))
             (let index (if len (find-index current (lambda x i o (= (get x 0) key))) -1))
@@ -92,12 +92,12 @@ it('compilation should work', () =>
             )
             table))
       (function hash-table-has table key 
-        (and (is-array-in-bounds table (let idx (hash-table-index table key))) (length (get table idx))))
+        (and (array-in-bounds-p table (let idx (hash-table-index table key))) (length (get table idx))))
       (function hash-table-get
         table key 
           (block
             (let idx (hash-table-index table key))
-            (if (is-array-in-bounds table idx) 
+            (if (array-in-bounds-p table idx) 
               (block
                 (let current (get table idx))
                 (do current
@@ -192,7 +192,7 @@ it('compilation should work', () =>
 (function product-array array (reduce array (lambda a b i o (* a b)) 1))
 (function split-by-lines string (regex-match string "[^\n]+"))
 (function string_to_array string delim 
-                    (reduce (... string) 
+                    (reduce (. string) 
                       (lambda a x i o (block
                                 (if (= x delim) (push a (Array 0 length)) (block 
                                   (push (get a -1) x) a))))(push (Array 0 length) (Array 0 length))))
@@ -326,7 +326,7 @@ left-arr (quick-sort)
     (let inputs (regex-match input "(?<=:[ ])(.*)"))
     
     (function solve1 string letter (block
-      (let array (... string))
+      (let array (. string))
       (let bitmask 0)
       (let zero (char "a" 0))
       (let count 0)
@@ -372,7 +372,7 @@ left-arr (quick-sort)
                 (push (get policy i)) 
                 (push (get inputs i)))))
        (map (lambda x i o 
-        (push x (solve2 (... (get x 3)) (get x 2) (get x 0) (get x 1)))
+        (push x (solve2 (. (get x 3)) (get x 2) (get x 0) (get x 1)))
        ))
        (reduce (lambda a x i o (+ a (get x -1))) 0)
     ))`,
@@ -474,7 +474,7 @@ left-arr (quick-sort)
     (do
       (Array 1 2 3)
       (push -1)
-      (concat (... "abc"))
+      (concat (. "abc"))
       (concat (Array 1 2 3 4))
       (concat (Array 5 6 7))
     )`,
@@ -512,7 +512,7 @@ left-arr (quick-sort)
       (interate 0 (- (length array) 1)))))
       (let join (lambda array delim (reduce array (lambda a x i (concatenate a delim x)) "")))
       (let string_to_array (lambda string delim 
-      (reduce (... string) (lambda a x i (block
+      (reduce (. string) (lambda a x i (block
           (if (= x delim) 
             (push a (Array 0 length)) 
             (block (push (get a -1) x) a)

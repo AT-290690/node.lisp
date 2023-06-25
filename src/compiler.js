@@ -60,7 +60,7 @@ const Helpers = {
        case 'Number':
          return Number(value)
        case 'Array':
-         return [value]
+         return [...value]
        case 'Bit':
         return parseInt(value, 2)
        default:
@@ -159,7 +159,7 @@ const compile = (tree, Locals) => {
           : `[${parseArgs(Arguments, Locals)}];`
       case "'":
         return `[${parseArgs(Arguments, Locals)}];`
-      case '...':
+      case '.':
         return `[...${parseArgs(Arguments, Locals, ',...')}];`
       case 'length':
         return `(${compile(Arguments[0], Locals)}).length`

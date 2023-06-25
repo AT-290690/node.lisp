@@ -1,11 +1,6 @@
-import { handleUnbalancedParens } from './utils.js'
+import { handleUnbalancedParens, removeNoCode } from './utils.js'
 export const parse = (source) => {
-  source = handleUnbalancedParens(
-    source
-      .replace(/;.+/g, '')
-      .replace(/[\s\s]+(?=[^"]*(?:"[^"]*"[^"]*)*$)/g, ' ')
-      .trim()
-  )
+  source = handleUnbalancedParens(removeNoCode(source))
   const tree = []
   let head = tree,
     stack = [tree],

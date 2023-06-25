@@ -1,5 +1,5 @@
 import { evaluate } from './interpreter.js'
-const maxCallstackLimitInterpretation = process.env.MAX_RECURSIVE_CALLS || 1024
+const maxCallstackLimitInterpretation = 1024
 const tokens = {
   ['concatenate']: (args, env) => {
     if (args.length < 2)
@@ -37,10 +37,10 @@ const tokens = {
       )
     return 1 / number
   },
-  ['...']: (args, env) => {
+  ['.']: (args, env) => {
     if (!args.length)
       throw new RangeError(
-        'Invalid number of arguments for (...) (>= 1 required)'
+        'Invalid number of arguments for (.) (>= 1 required)'
       )
     const iterables = args.map((arg) => evaluate(arg, env))
     if (
@@ -48,7 +48,7 @@ const tokens = {
         (iterable) => typeof iterable[Symbol.iterator] !== 'function'
       )
     )
-      throw new TypeError('Arguments are not iterable for (...).')
+      throw new TypeError('Arguments are not iterable for (.).')
     return iterables.reduce((a, b) => [...a, ...b], [])
   },
   ['length']: (args, env) => {
@@ -534,8 +534,11 @@ const tokens = {
       return num
     } else if (type.value === 'String') return value.toString()
     else if (type.value === 'Bit') return parseInt(value, 2)
-    else if (type.value === 'Array') return [value]
-    else throw new TypeError('Can only cast number or string at (type)')
+    else if (type.value === 'Array') {
+      if (typeof value[Symbol.iterator] !== 'function')
+        throw new TypeError('Arguments are not iterable for Array at (type).')
+      return [...value]
+    } else throw new TypeError('Can only cast number or string at (type)')
   },
   ['Bit']: (args, env) => {
     if (args.length !== 1)

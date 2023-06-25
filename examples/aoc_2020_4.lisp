@@ -8,8 +8,8 @@ eyr:2026
 ecl:oth pid:920076943 byr:1929
 hgt:76in")
 
-(let input sample)
-; (let input (open "./playground/src/aoc_2020/4/input.txt"))
+(let *input* sample)
+; (let *input* (open "./playground/src/aoc_2020/4/input.txt"))
 
 ; 190
 (function validate_fields fields (do fields (map (lambda x _ _ 
@@ -35,10 +35,10 @@ hgt:76in")
 
 
 (Array 
-(do input (split-by-n-lines 2)
+(do *input* (split-by-n-lines 2)
                 (validate_fields)
                   (length))
-(do input 
+(do *input* 
      (split-by-n-lines 2)
      (to_entries)
      (without_invalid_fields)
@@ -47,7 +47,7 @@ hgt:76in")
       (map (lambda y _ _ (block
         (let key (car y))
         (let value (car (cdr y)))
-        (let arr (... value))
+        (let arr (type value Array))
        (Array key value
         (if (= key "byr")
           (and (= (length arr) 4) (>= (type value Number) 1920)
@@ -68,7 +68,7 @@ hgt:76in")
                       (if (= units "in") (and (>= num 59) (<= num 76))))))
                 (if (= key "hcl") (block 
                   (let color (regex-match value "#.+[0-9a-f]"))
-                    (and (length color) (= (length (... (car color))) 7)))
+                    (and (length color) (= (length (. (car color))) 7)))
                   (if (= key "ecl")
                     (and (= (length arr) 3) (length (regex-match value "amb|blu|brn|gry|grn|hzl|oth")))
                     (if (= key "pid") 

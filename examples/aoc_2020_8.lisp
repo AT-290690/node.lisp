@@ -10,32 +10,32 @@ acc +1
 jmp -4
 acc +6")
 
-(let input sample)
-; (let input (open "./playground/src/aoc_2020/8/input.txt"))
+(let *input* sample)
+; (let *input* (open "./playground/src/aoc_2020/8/input.txt"))
 
-(let stack (do input 
+(let *stack* (do *input* 
   (split-by "\n")
   (map (lambda x _ _ (block 
     (let cmd (do x (split-by " ")))
     (set cmd 1 (type (get cmd 1) Number)))))))
 
-(loop solve1 instructions offset accumulator (block 
+(loop *solve1* instructions offset accumulator (block 
    (let instruction (get instructions offset))
    (let cmd (car instruction))
    (let value (car (cdr instruction)))
    (unless (= (length instruction) 3) 
-     (solve1 
+     (*solve1* 
         (set instructions offset (Array cmd value (Array offset accumulator)))
         (+ offset (if (= cmd "jmp") value 1)) 
         (if (= cmd "acc") (+ accumulator value) accumulator))
        accumulator)))
 
-(loop solve2 instructions offset accumulator (unless (= offset (length instructions)) (block 
+(loop *solve2* instructions offset accumulator (unless (= offset (length instructions)) (block 
    (let instruction (get instructions offset))
    (let cmd (car instruction))
    (let value (car (cdr instruction)))
    (unless (= (length instruction) 3) 
-     (solve2 
+     (*solve2* 
        (set instructions offset (Array cmd value (Array offset accumulator)))
        (+ offset (if (= cmd "jmp") value 1)) 
        (if (= cmd "acc") (+ accumulator value) accumulator)) 
@@ -50,12 +50,12 @@ acc +6")
               (Array cmd value options)))))))) accumulator))
 (Array 
   (do 
-    stack
-    (solve1 0 0))
+    *stack*
+    (*solve1* 0 0))
 
   (do 
-    stack
-    (solve2 0 0)
+    *stack*
+    (*solve2* 0 0)
     (reduce 
       (lambda acc x _ _ 
         (block 
@@ -64,5 +64,5 @@ acc +6")
           (let options (get x -1))
           (let offset (car options))
           (let accumulator (car (cdr options)))
-          (let result (solve2 stack (+ offset (if (= cmd "jmp") value 1)) accumulator))
+          (let result (*solve2* *stack* (+ offset (if (= cmd "jmp") value 1)) accumulator))
           (if (atom result) result acc))) 0)))

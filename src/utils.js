@@ -3,6 +3,11 @@ import { run } from './interpreter.js'
 import { parse } from './parser.js'
 export const logError = (error) => console.log('\x1b[31m', error, '\x1b[0m')
 export const logSuccess = (output) => console.log(output, '\x1b[0m')
+export const removeNoCode = (source) =>
+  source
+    .replace(/;.+/g, '')
+    .replace(/[\s\s]+(?=[^"]*(?:"[^"]*"[^"]*)*$)/g, ' ')
+    .trim()
 export const isBalancedParenthesis = (sourceCode) => {
   let count = 0
   const stack = []

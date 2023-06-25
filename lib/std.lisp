@@ -9,12 +9,27 @@
   (function is-odd x i (= (mod x 2) 1))
   ; is-even
   (function is-even x i (= (mod x 2) 0))
+  ; can-sum
+  (function can-sum t values 
+    (if (< t 0) 0 
+      (if (= t 0) 1 
+        (some values (lambda x _ _ (can-sum (- t x) values))))))
+  ; how-can-sum
+  (function how-can-sum t values 
+    (if (< t 0) 0 
+      (if (= t 0) (Array 0 length) 
+        (block 
+          (let res 0)
+          (some values (lambda x _ _ (block 
+            (let* res (how-can-sum (- t x) values))
+            (if (and (Arrayp res) (= -1 (array-index-of res x))) (push res x))))) 
+          res))))
   ; push
   (function push array value (set array (length array) value))
   ; pop
   (function pop array (set array -1))
-  ; is-array-in-bounds 
-  (function is-array-in-bounds array index (and (< index (length array)) (>= index 0)))
+  ; array-in-bounds-p 
+  (function array-in-bounds-p array index (and (< index (length array)) (>= index 0)))
   ; is-array-of-atoms
   (function is-array-of-atoms array (if (not (length array)) 1 (if (atom (car array)) (is-array-of-atoms (cdr array)) 0)))
   ; abs
@@ -203,7 +218,21 @@
         (let* idx i))))
         (iterate 0 (- (length array) 1))
         (if has-found idx -1)))
-              
+   ; array-index-of
+  (function array-index-of array target 
+    (block
+      (if (= (length array) 0) -1 
+        (block 
+          (let idx -1)
+          (let has-found 0)
+          (loop iterate i bounds (block
+            (let current (get array i))
+            (let* has-found (= target current))
+            (if (and (not has-found) (< i bounds))
+              (iterate (+ i 1) bounds) 
+              (let* idx i))))
+              (iterate 0 (- (length array) 1))
+              (if has-found idx -1)))))
   ; quick-sort
   (function quick-sort arr (block
     (if (<= (length arr) 1) arr
@@ -259,7 +288,7 @@
       (block
         (let total 0)
         (let prime-num 31)
-        (let* key (... (type key String)))
+        (let* key (. (type key String)))
         (loop find-hash-index i bounds (block 
           (let letter (get key i))
           (let value (- (char letter 0) 96))
@@ -271,7 +300,7 @@
     table key value 
       (block
         (let idx (hash-table-index table key))
-        (unless (is-array-in-bounds table idx) (set table idx (Array 0 length)))
+        (unless (array-in-bounds-p table idx) (set table idx (Array 0 length)))
         (let current (get table idx))
         (let len (length current))
         (let index (if len (find-index current (lambda x i o (= (get x 0) key))) -1))
@@ -283,13 +312,13 @@
         table))
   ; hash table_has 
   (function hash-table-has table key 
-    (and (is-array-in-bounds table (let idx (hash-table-index table key))) (length (get table idx))))
+    (and (array-in-bounds-p table (let idx (hash-table-index table key))) (length (get table idx))))
   ; hash-table-get
   (function hash-table-get
     table key 
       (block
         (let idx (hash-table-index table key))
-        (if (is-array-in-bounds table idx) 
+        (if (array-in-bounds-p table idx) 
           (block
             (let current (get table idx))
             (do current
@@ -325,7 +354,7 @@
       (block
         (let total 0)
         (let prime-num 31)
-        (let* key (... (type key String)))
+        (let* key (. (type key String)))
         (loop find-hash-index i bounds (block 
           (let letter (get key i))
           (let value (- (char letter 0) 96))
@@ -337,7 +366,7 @@
     table key 
       (block
         (let idx (hash-set-index table key))
-        (unless (is-array-in-bounds table idx) (set table idx (Array 0 length)))
+        (unless (array-in-bounds-p table idx) (set table idx (Array 0 length)))
         (let current (get table idx))
         (let len (length current))
         (let index (if len (find-index current (lambda x i o (= x key))) -1))
@@ -349,13 +378,13 @@
         table))
   ; hash table_has 
   (function hash-set-has table key 
-    (and (is-array-in-bounds table (let idx (hash-set-index table key))) (length (get table idx))))
+    (and (array-in-bounds-p table (let idx (hash-set-index table key))) (length (get table idx))))
   ; hash-set-get
   (function hash-set-get
     table key 
       (block
         (let idx (hash-set-index table key))
-        (if (is-array-in-bounds table idx) 
+        (if (array-in-bounds-p table idx) 
           (block
             (let current (get table idx))
             (do current
@@ -415,7 +444,7 @@
   
   ; occurances_count
   (function character-occurances-in-string string letter (block
-    (let array (... string))
+    (let array (. string))
     (let bitmask 0)
     (let zero (char "a" 0))
     (let count 0)
@@ -436,8 +465,8 @@
 ; split
 (function split string separator (block 
     (let cursor "")
-    (let sepArr (... separator))
-    (let array (... string))
+    (let sepArr (. separator))
+    (let array (. string))
     (let skip (length sepArr))
     (loop iterate result i bounds
       (if (< (if (every sepArr (lambda y j _ (= (get array (+ i j)) y)))
@@ -461,8 +490,10 @@
             (iterate (+ i 1)))
            out))
           (iterate 0)))
+  ; slice-if-index
+  (function slice-if-index array callback (reduce array (lambda a b i _ (if (callback i) (push a b) a)) (Array 0 length)))
   ; slice-if
-  (function slice-if array callback (reduce array (lambda a b i _ (if (callback i) (push a b) a)) (Array 0 length)))
+  (function slice-if array callback (reduce array (lambda a b i _ (if (callback b i) (push a b) a)) (Array 0 length)))
   ; equal 
   (function equal a b 
    (or (and (atom a) (atom b) (= a b)) 
@@ -477,7 +508,7 @@
     (Array "is-even" is-even) 
     (Array "push" push)
     (Array "pop" pop)
-    (Array "is-array-in-bounds" is-array-in-bounds)  
+    (Array "array-in-bounds-p" array-in-bounds-p)  
     (Array "abs" abs)
     (Array "floor" floor)
     (Array "round" round)
@@ -532,12 +563,16 @@
     (Array "every" every)
     (Array "some" some)
     (Array "index-of" index-of)
+    (Array "array-index-of" array-index-of)
     (Array "accumulate" accumulate)
     (Array "count" count)
     (Array "partition" partition)
     (Array "slice" slice)
     (Array "slice-if" slice-if)
+    (Array "slice-if-index" slice-if-index)
     (Array "equal" equal)
+    (Array "can-sum" how-can-sum)
+    (Array "how-can-sum" how-can-sum)
   )
 ))
 ; (/ std lib)
