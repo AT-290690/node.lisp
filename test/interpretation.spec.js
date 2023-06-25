@@ -2,26 +2,33 @@ import { deepStrictEqual, strictEqual } from 'assert'
 import { runFromInterpreted } from '../src/utils.js'
 it('interpretation should work', () => {
   deepStrictEqual(
-    runFromInterpreted(`(let patten (Array "hello" 10))
-  (eq patten (Array "hello" 10))`),
-    1
+    runFromInterpreted(`
+    (function some array callback (block
+      (let bol 1)
+      (loop iterate i bounds (block
+        (let res (callback (get array i) i array))
+        (let* bol (not (not res)))
+        (if (and (not res) (< i bounds)) (iterate (+ i 1) bounds) bol)))
+      (iterate 0 (- (length array) 1))))
+        (function equal a b 
+     (or (and (atom a) (atom b) (= a b)) 
+     (and (Arrayp a) 
+          (= (length a) (length b)) 
+            (not (some a (lambda _ i _ (not (equal (get a i) (get b i)))))))))
+    (let patten (Array "hello" 10))
+    (let patten2 (Array "hello" 11))
+  (Array (equal patten (Array "hello" 10)) (equal patten (Array "hello" patten2)) 
+  (Array 
+    (equal 1 1) 
+    (equal 1 2)
+    (equal (Array 1 2) (Array 1 2))
+    (equal (Array 1 2) (Array 1 2 3))
+    (equal (Array 1 2) (Array 1 2 (Array 1 2)))
+    (equal (Array 1 (Array 1 2)) (Array 1 2 (Array 1 2)))
+    (equal (Array 1 2 (Array 1 2)) (Array 1 2 (Array 1 2)))))`),
+    [1, 0, [1, 0, 1, 0, 0, 0, 1]]
   )
-  deepStrictEqual(
-    runFromInterpreted(`(let patten (Array "hello" 11))
-  (eq patten (Array "hello" patten))`),
-    0
-  )
-  deepStrictEqual(
-    runFromInterpreted(`(Array 
-    (eq 1 1) 
-    (eq 1 2)
-    (eq (Array 1 2) (Array 1 2))
-    (eq (Array 1 2) (Array 1 2 3))
-    (eq (Array 1 2) (Array 1 2 (Array 1 2)))
-    (eq (Array 1 (Array 1 2)) (Array 1 2 (Array 1 2)))
-    (eq (Array 1 2 (Array 1 2)) (Array 1 2 (Array 1 2))))`),
-    [1, 0, 1, 0, 0, 0, 1]
-  )
+
   deepStrictEqual(
     runFromInterpreted(
       `(function is-array-of-atoms array 

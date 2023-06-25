@@ -21,19 +21,6 @@ const Helpers = {
     source: `var log = (msg) => { console.log(msg); return msg }`,
     has: true,
   },
-  _equal: {
-    source: `_equal = (a, b) => {
-      if (a === b) return 1
-      else if (Array.isArray(a)) {
-        let length = a.length,
-          i
-        if (length != b.length) return 0
-        for (i = length; i-- !== 0; ) if (!_equal(a[i], b[i])) return 0
-        return 1
-      } else return 0
-    }`,
-    has: true,
-  },
   'regexp-match': {
     source: `_regExpMatch = (string, regex) => {
       const match = string.match(new RegExp(regex, 'g'))
@@ -248,11 +235,9 @@ const compile = (tree, Locals) => {
       case 'and':
         return `(${parseArgs(Arguments, Locals, '&&')});`
       case 'or':
-        return `(${parseArgs(Arguments, Locals, '||')});`
+        return `((${parseArgs(Arguments, Locals, '||')}) || 0);`
       case 'concatenate':
         return '(' + parseArgs(Arguments, Locals, '+') + ');'
-      case 'eq':
-        return `_equal(${parseArgs(Arguments, Locals)});`
       case '=':
         return handleBoolean(`(${parseArgs(Arguments, Locals, '===')});`)
       case '>=':

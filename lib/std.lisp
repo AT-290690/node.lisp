@@ -461,9 +461,14 @@
             (iterate (+ i 1)))
            out))
           (iterate 0)))
-
   ; slice-if
   (function slice-if array callback (reduce array (lambda a b i _ (if (callback i) (push a b) a)) (Array 0 length)))
+  ; equal 
+  (function equal a b 
+   (or (and (atom a) (atom b) (= a b)) 
+   (and (Arrayp a) 
+        (= (length a) (length b)) 
+          (not (some a (lambda _ i _ (not (equal (get a i) (get b i)))))))))
   ; exports
   (Array 
     (Array "max" max)
@@ -532,6 +537,7 @@
     (Array "partition" partition)
     (Array "slice" slice)
     (Array "slice-if" slice-if)
+    (Array "equal" equal)
   )
 ))
 ; (/ std lib)
