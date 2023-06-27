@@ -378,7 +378,7 @@
         table))
   ; hash table_has 
   (function hash-set-has table key 
-    (and (array-in-bounds-p table (let idx (hash-set-index table key))) (length (get table idx))))
+    (and (array-in-bounds-p table (let idx (hash-set-index table key))) (and (length (let current (get table idx))) (>= (index-of current key) 0))))
   ; hash-set-get
   (function hash-set-get
     table key 

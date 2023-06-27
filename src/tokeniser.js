@@ -274,7 +274,7 @@ const tokens = {
   ['log']: (args, env) => {
     if (!args.length)
       throw new RangeError(
-        'Invalid number of arguments to (log) [>= 1 required]'
+        'Invalid number of arguments to (log) (>= 1 required)'
       )
     const expressions = args.map((x) => evaluate(x, env))
     console.log(...expressions)
@@ -283,14 +283,14 @@ const tokens = {
   ['block']: (args, env) => {
     if (!args.length)
       throw new RangeError(
-        'Invalid number of arguments to (block) [>= 1 required]'
+        'Invalid number of arguments to (block) (>= 1 required)'
       )
     return args.reduce((_, x) => evaluate(x, env), 0)
   },
   ['function']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        'Invalid number of arguments to (function) [2 required]'
+        'Invalid number of arguments to (function) (2 required)'
       )
     const params = args.slice(1, -1)
     const body = args.at(-1)
@@ -402,7 +402,7 @@ const tokens = {
   },
   ['let']: (args, env) => {
     if (args.length !== 2)
-      throw new RangeError('Invalid number of arguments to let [2 required]')
+      throw new RangeError('Invalid number of arguments to (let) (2 required)')
     const name = args[0].value
     const value = evaluate(args[1], env)
     env[name] = value
@@ -410,7 +410,7 @@ const tokens = {
   },
   ['let*']: (args, env) => {
     if (args.length !== 2)
-      throw new RangeError('Invalid number of arguments to = [2 required]')
+      throw new RangeError('Invalid number of arguments to (let*) (2 required)')
     const entityName = args[0].value
     const value = evaluate(args[1], env)
     for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
@@ -446,7 +446,7 @@ const tokens = {
   ['regex-match']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError(
-        'Invalid number of arguments to (regex-match) [2 required]'
+        'Invalid number of arguments to (regex-match) (2 required)'
       )
     const string = evaluate(args[0], env)
     if (typeof string !== 'string')
@@ -464,7 +464,7 @@ const tokens = {
   ['regex-replace']: (args, env) => {
     if (args.length !== 3)
       throw new RangeError(
-        'Invalid number of arguments to (regex-replace) [3 required]'
+        'Invalid number of arguments to (regex-replace) (3 required)'
       )
     const string = evaluate(args[0], env)
     if (typeof string !== 'string')
@@ -485,7 +485,7 @@ const tokens = {
   },
   ['loop']: (args, env) => {
     if (args.length < 2)
-      throw new RangeError('Invalid number of arguments to (loop) [2 required]')
+      throw new RangeError('Invalid number of arguments to (loop) (2 required)')
     const params = args.slice(1, -1)
     if (!params.length)
       throw new RangeError(

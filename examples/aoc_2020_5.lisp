@@ -1,4 +1,4 @@
-(import std "reduce" "floor" "round" "map" "push" "min" "max" "split-by" "quick-sort" "concat" "find-index")
+(import std "slice-if-index" "reduce" "floor" "round" "map" "push" "min" "max" "split-by" "quick-sort" "concat" "find-index")
 
 ; Start by considering the whole range, rows 0 through 127.
 ; F means to take the lower half, keeping rows 0 through 63.
@@ -15,13 +15,13 @@ FFFBBBFRRR
 BBFFBBFRLL")
 (let *input* *sample*)
 ; (let *input* (open "./playground/src/aoc_2020/5/input.txt"))
-(function slice-if-index array callback (reduce array (lambda a b i _ (if (callback i) (push a b) a)) (Array 0 length)))
-(function binary_boarding inp bounds lower upper (do inp 
-    (reduce (lambda a b _ _ (block 
-    (let half (* (+ (get a 0) (get a 1)) 0.5))
-    (if (= b lower) (set a 1 (floor half))
-    (if (= b upper) (set a 0 (round half)))))) bounds) 
-    (get (= (get inp -1) upper))))
+(function binary_boarding inp bounds lower upper 
+  (do inp 
+      (reduce (lambda a b _ _ (block 
+            (let half (* (+ (car a) (car (cdr a))) 0.5))
+            (if (= b lower) (set a 1 (floor half))
+            (if (= b upper) (set a 0 (round half)))))) bounds) 
+      (get (= (get inp -1) upper))))
 
 (let *prepare-input* (do 
     *input* 

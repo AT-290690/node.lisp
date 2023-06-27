@@ -226,6 +226,8 @@ while (argv.length) {
 -------------------------------------
 -std             list std functions
 -------------------------------------
+-import          log import for std
+-------------------------------------
 -s                   prepare a file
 -------------------------------------
 -d               file to compile js
