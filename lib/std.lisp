@@ -500,6 +500,15 @@
    (and (Arrayp a) 
         (= (length a) (length b)) 
           (not (some a (lambda _ i _ (not (equal (get a i) (get b i)))))))))
+  ; adjacent-difference
+  (function adjacent-difference array callback (block 
+    (let len (length array))
+    (unless (= len 1) 
+    (block (let result (Array (car array)))
+    (loop iterate i (if (< i len) (block 
+    (set result i (callback (get array (- i 1)) (get array i)))
+    (iterate (+ i 1))) result))
+    (iterate 1)) array)))
   ; exports
   (Array 
     (Array "max" max)
@@ -573,6 +582,7 @@
     (Array "equal" equal)
     (Array "can-sum" how-can-sum)
     (Array "how-can-sum" how-can-sum)
+    (Array "adjacent-difference" adjacent-difference)
   )
 ))
 ; (/ std lib)
