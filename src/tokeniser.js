@@ -1,5 +1,18 @@
 import { evaluate } from './interpreter.js'
 const maxCallstackLimitInterpretation = 1024
+const stringifyArgs = (args) =>
+  args
+    .map((x) => {
+      return Array.isArray(x)
+        ? `(${stringifyArgs(x)})`
+        : x.type === 'apply' || x.type === 'word'
+        ? x.value
+        : JSON.stringify(x.value)
+            .replace(new RegExp(/\[/g), '(')
+            .replace(new RegExp(/\]/g), ')')
+            .replace(new RegExp(/\,/g), ' ')
+    })
+    .join(' ')
 const tokens = {
   ['concatenate']: (args, env) => {
     if (args.length < 2)
@@ -15,10 +28,14 @@ const tokens = {
       )
     const [a, b] = args.map((x) => evaluate(x, env))
     if (typeof a !== 'number' || typeof b !== 'number')
-      throw new TypeError(`Not all arguments for (mod) are numbers.`)
+      throw new TypeError(
+        `Not all arguments for (mod) are numbers (mod ${stringifyArgs(args)}).`
+      )
     if (b === 0)
       throw new TypeError(
-        `Second argument of (mod) can't be a (0) (devision by 0 is not allowed).`
+        `Second argument of (mod) can't be a (0) (devision by 0 is not allowed) (mod ${stringifyArgs(
+          args
+        )}).`
       )
 
     return a % b
@@ -30,10 +47,14 @@ const tokens = {
       )
     const number = evaluate(args[0], env)
     if (typeof number !== 'number')
-      throw new TypeError(`Arguments of (/) is not a number.`)
+      throw new TypeError(
+        `Arguments of (/) is not a number (/ ${stringifyArgs(args)}).`
+      )
     if (number === 0)
       throw new TypeError(
-        `Argument of (/) can't be a (0) (devision by 0 is not allowed).`
+        `Argument of (/) can't be a (0) (devision by 0 is not allowed) (/ ${stringifyArgs(
+          args
+        )}).`
       )
     return 1 / number
   },
@@ -48,7 +69,9 @@ const tokens = {
         (iterable) => typeof iterable[Symbol.iterator] !== 'function'
       )
     )
-      throw new TypeError('Arguments are not iterable for (.).')
+      throw new TypeError(
+        `Arguments are not iterable for (.) (. ${stringifyArgs(args)}).`
+      )
     return iterables.reduce((a, b) => [...a, ...b], [])
   },
   ['length']: (args, env) => {
@@ -58,7 +81,11 @@ const tokens = {
       )
     const array = evaluate(args[0], env)
     if (!Array.isArray(array))
-      throw new TypeError('First argument of (length) must be an (Array).')
+      throw new TypeError(
+        `First argument of (length) must be an (Array) (length ${stringifyArgs(
+          args
+        )}).`
+      )
     return array.length
   },
   ['Arrayp']: (args, env) => {
@@ -90,10 +117,18 @@ const tokens = {
       )
     const string = evaluate(args[0], env)
     if (typeof string !== 'string')
-      throw new TypeError('First argument of (char) must be an (String).')
+      throw new TypeError(
+        `First argument of (char) must be an (String) (char ${stringifyArgs(
+          args
+        )}).`
+      )
     const index = evaluate(args[1], env)
     if (!Number.isInteger(index) || index < 0)
-      throw new TypeError('Second argument of (char) must be an (+ Integer).')
+      throw new TypeError(
+        `Second argument of (char) must be an (+ Integer) (char ${stringifyArgs(
+          args
+        )}).`
+      )
     return string.charCodeAt(index)
   },
   ['+']: (args, env) => {
@@ -103,7 +138,9 @@ const tokens = {
       )
     const operands = args.map((x) => evaluate(x, env))
     if (!operands.every((x) => typeof x === 'number'))
-      throw new TypeError(`Not all arguments for (+) are numbers.`)
+      throw new TypeError(
+        `Not all arguments for (+) are numbers (+ ${stringifyArgs(args)}).`
+      )
     return operands.reduce((a, b) => a + b)
   },
   ['*']: (args, env) => {
@@ -113,7 +150,9 @@ const tokens = {
       )
     const operands = args.map((x) => evaluate(x, env))
     if (!operands.every((x) => typeof x === 'number'))
-      throw new TypeError(`Not all arguments for (*) are numbers.`)
+      throw new TypeError(
+        `Not all arguments for (*) are numbers (* ${stringifyArgs(args)}).`
+      )
     return operands.reduce((a, b) => a * b)
   },
   ['-']: (args, env) => {
@@ -123,13 +162,17 @@ const tokens = {
       )
     const operands = args.map((x) => evaluate(x, env))
     if (!operands.every((x) => typeof x === 'number'))
-      throw new TypeError(`Not all arguments for (-) are numbers.`)
+      throw new TypeError(
+        `Not all arguments for (-) are numbers (- ${stringifyArgs(args)}).`
+      )
     return args.length === 1 ? -operands[0] : operands.reduce((a, b) => a - b)
   },
   ['if']: (args, env) => {
     if (args.length < 2 || args.length > 3)
       throw new RangeError(
-        `Invalid number of arguments for (if), expected 2 or 3 but got ${args.length}.`
+        `Invalid number of arguments for (if), expected 2 or 3 but got ${
+          args.length
+        } (if ${stringifyArgs(args)}).`
       )
     return evaluate(args[0], env)
       ? evaluate(args[1], env)
@@ -138,7 +181,9 @@ const tokens = {
   ['unless']: (args, env) => {
     if (args.length < 2 || args.length > 3)
       throw new RangeError(
-        `Invalid number of arguments for (unless), expected 2 or 3  but got ${args.length}.`
+        `Invalid number of arguments for (unless), expected 2 or 3  but got ${
+          args.length
+        } (unless ${stringifyArgs(args)}).`
       )
     return evaluate(args[0], env)
       ? evaluate(args[2], env)
@@ -158,7 +203,11 @@ const tokens = {
           'Invalid number of arguments for (Array) (= 2 required)'
         )
       if (!Number.isInteger(N))
-        throw new TypeError('Second argument for (Array) has to be an integer')
+        throw new TypeError(
+          `Size argument for (Array) has to be an integer (Array ${stringifyArgs(
+            args
+          )})`
+        )
       return new Array(N).fill(0)
     }
     return args.map((x) => evaluate(x, env))
@@ -179,12 +228,20 @@ const tokens = {
       throw new RangeError('Invalid number of arguments for (car) (1 required)')
     const array = evaluate(args[0], env)
     if (!Array.isArray(array))
-      throw new TypeError('Argument of (car) must be an (Array).')
+      throw new TypeError(
+        `Argument of (car) must be an (Array) (car ${stringifyArgs(args)}).`
+      )
     if (array.length === 0)
-      throw new RangeError(`Argument of (car) is an empty (Array).`)
+      throw new RangeError(
+        `Argument of (car) is an empty (Array) (car ${stringifyArgs(args)}).`
+      )
     const value = array.at(0)
     if (value == undefined)
-      throw new RangeError(`Trying to get a null value in (Array) at (car).`)
+      throw new RangeError(
+        `Trying to get a null value in (Array) at (car) (car ${stringifyArgs(
+          args
+        )}).`
+      )
     return value
   },
   ['cdr']: (args, env) => {
@@ -192,9 +249,13 @@ const tokens = {
       throw new RangeError('Invalid number of arguments for (cdr) (1 required)')
     const array = evaluate(args[0], env)
     if (!Array.isArray(array))
-      throw new TypeError('Argument of (cdr) must be an (Array).')
+      throw new TypeError(
+        `Argument of (cdr) must be an (Array) (cdr ${stringifyArgs(args)}).`
+      )
     if (array.length === 0)
-      throw new RangeError(`Argument of (cdr) is an empty (Array).`)
+      throw new RangeError(
+        `Argument of (cdr) is an empty (Array) (cdr ${stringifyArgs(args)}).`
+      )
     return array.slice(1)
   },
   ['get']: (args, env) => {
@@ -202,21 +263,37 @@ const tokens = {
       throw new RangeError('Invalid number of arguments for (get) (2 required)')
     const array = evaluate(args[0], env)
     if (!Array.isArray(array))
-      throw new TypeError('First argument of (get) must be an (Array).')
+      throw new TypeError(
+        `First argument of (get) must be an (Array) (get ${stringifyArgs(
+          args
+        )}).`
+      )
     if (array.length === 0)
-      throw new RangeError(`First argument of (get) is an empty (Array).`)
+      throw new RangeError(
+        `First argument of (get) is an empty (Array) (get ${stringifyArgs(
+          args
+        )})).`
+      )
     const index = evaluate(args[1], env)
     if (!Number.isInteger(index))
       throw new TypeError(
-        `Second argument of (get) must be an integer (${index}).`
+        `Second argument of (get) must be an integer (${index}) (get ${stringifyArgs(
+          args
+        )}).`
       )
     if (index > array.length - 1)
       throw new RangeError(
-        `Second argument of (get) is outside of the (Array) bounds (${index}).`
+        `Second argument of (get) is outside of the (Array) bounds (${index}) (get ${stringifyArgs(
+          args
+        )}).`
       )
     const value = array.at(index)
     if (value == undefined)
-      throw new RangeError(`Trying to get a null value in (Array) at (get).`)
+      throw new RangeError(
+        `Trying to get a null value in (Array) at (get) (get $${stringifyArgs(
+          args
+        )}).`
+      )
     return value
   },
   ['set']: (args, env) => {
@@ -226,15 +303,23 @@ const tokens = {
       )
     const array = evaluate(args[0], env)
     if (!Array.isArray(array))
-      throw new TypeError(`First argument of (set) must be an (Array).`)
+      throw new TypeError(
+        `First argument of (set) must be an (Array) (set ${stringifyArgs(
+          args
+        )}).`
+      )
     const index = evaluate(args[1], env)
     if (!Number.isInteger(index))
       throw new TypeError(
-        `Second argument of (set) must be an integer (${index}).`
+        `Second argument of (set) must be an integer (${index}) (set ${stringifyArgs(
+          args
+        )}).`
       )
     if (index > array.length)
       throw new RangeError(
-        `Second argument of (set) is outside of the (Array) bounds (index ${index} bounds ${array.length}).`
+        `Second argument of (set) is outside of the (Array) bounds (index ${index} bounds ${
+          array.length
+        }) (set ${stringifyArgs(args)}).`
       )
     if (index < 0) {
       if (args.length !== 2)
@@ -243,7 +328,9 @@ const tokens = {
         )
       if (index * -1 > array.length)
         throw new RangeError(
-          `Second argument of (set) is outside of the (Array) bounds (index ${index} bounds ${array.length})`
+          `Second argument of (set) is outside of the (Array) bounds (index ${index} bounds ${
+            array.length
+          }) (set ${stringifyArgs(args)})`
         )
       const target = array.length + index
       while (array.length !== target) array.pop()
@@ -254,7 +341,11 @@ const tokens = {
         )
       const value = evaluate(args[2], env)
       if (value == undefined)
-        throw new RangeError(`Trying to set a null value in (Array) at (set).`)
+        throw new RangeError(
+          `Trying to set a null value in (Array) at (set). (set ${stringifyArgs(
+            args
+          )})`
+        )
       array[index] = value
     }
     return array
@@ -357,28 +448,84 @@ const tokens = {
       typeof a === 'function' ||
       typeof b === 'function'
     )
-      throw new TypeError('Invalid use of (=), some arguments are not an atom')
+      throw new TypeError(
+        `Invalid use of (=), some arguments are not an atom (= ${stringifyArgs(
+          args
+        )})`
+      )
     return +(a === b)
   },
   ['<']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError('Invalid number of arguments for (<) (2 required)')
-    return +(evaluate(args[0], env) < evaluate(args[1], env))
+    const a = evaluate(args[0], env)
+    const b = evaluate(args[1], env)
+    if (
+      Array.isArray(a) ||
+      Array.isArray(b) ||
+      typeof a === 'function' ||
+      typeof b === 'function'
+    )
+      throw new TypeError(
+        `Invalid use of (<), some arguments are not an atom (< ${stringifyArgs(
+          args
+        )})`
+      )
+    return +(a < b)
   },
   ['>']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError('Invalid number of arguments for (>) (2 required)')
-    return +(evaluate(args[0], env) > evaluate(args[1], env))
+    const a = evaluate(args[0], env)
+    const b = evaluate(args[1], env)
+    if (
+      Array.isArray(a) ||
+      Array.isArray(b) ||
+      typeof a === 'function' ||
+      typeof b === 'function'
+    )
+      throw new TypeError(
+        `Invalid use of (>), some arguments are not an atom (> ${stringifyArgs(
+          args
+        )})`
+      )
+    return +(a > b)
   },
   ['>=']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError('Invalid number of arguments for (>=) (2 required)')
-    return +(evaluate(args[0], env) >= evaluate(args[1], env))
+    const a = evaluate(args[0], env)
+    const b = evaluate(args[1], env)
+    if (
+      Array.isArray(a) ||
+      Array.isArray(b) ||
+      typeof a === 'function' ||
+      typeof b === 'function'
+    )
+      throw new TypeError(
+        `Invalid use of (>=), some arguments are not an atom (>= ${stringifyArgs(
+          args
+        )})`
+      )
+    return +(a >= b)
   },
   ['<=']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError('Invalid number of arguments for (<=) (2 required)')
-    return +(evaluate(args[0], env) <= evaluate(args[1], env))
+    const a = evaluate(args[0], env)
+    const b = evaluate(args[1], env)
+    if (
+      Array.isArray(a) ||
+      Array.isArray(b) ||
+      typeof a === 'function' ||
+      typeof b === 'function'
+    )
+      throw new TypeError(
+        `Invalid use of (<=), some arguments are not an atom (<= ${stringifyArgs(
+          args
+        )})`
+      )
+    return +(a <= b)
   },
   ['and']: (args, env) => {
     if (args.length < 2)
@@ -430,7 +577,9 @@ const tokens = {
     const [first, ...rest] = args
     const module = evaluate(first, env)
     if (typeof module !== 'function')
-      throw new TypeError('First argument of (import) must be an (function).')
+      throw new TypeError(
+        `First argument of (import) must be an (function) but got (${first.value}).`
+      )
     const methods = rest.map((arg) => evaluate(arg, env))
     if (methods.some((arg) => typeof arg !== 'string'))
       throw new TypeError(
@@ -529,16 +678,27 @@ const tokens = {
       const num = Number(value)
       if (isNaN(num))
         throw new TypeError(
-          `Attempting to convert Not a Number ("${value}") to a Number at (type)`
+          `Attempting to convert Not a Number ("${value}") to a Number at (type) (type ${stringifyArgs(
+            args
+          )}).`
         )
       return num
     } else if (type.value === 'String') return value.toString()
     else if (type.value === 'Bit') return parseInt(value, 2)
     else if (type.value === 'Array') {
       if (typeof value[Symbol.iterator] !== 'function')
-        throw new TypeError('Arguments are not iterable for Array at (type).')
+        throw new TypeError(
+          `Arguments are not iterable for Array at (type) (type ${stringifyArgs(
+            args
+          )}).`
+        )
       return [...value]
-    } else throw new TypeError('Can only cast number or string at (type)')
+    } else
+      throw new TypeError(
+        `Can only cast number or string at (type) (type ${stringifyArgs(
+          args
+        )}).`
+      )
   },
   ['Bit']: (args, env) => {
     if (args.length !== 1)
@@ -607,7 +767,9 @@ const tokens = {
     for (let i = 1; i < args.length; ++i) {
       if (!Array.isArray(args[i]))
         throw new TypeError(
-          `Argument at position (${i}) of (do) is not a (function).`
+          `Argument at position (${i}) of (do) is not a (function). (do ${stringifyArgs(
+            args
+          )})`
         )
       const [first, ...rest] = args[i]
       const arr = [first, inp, ...rest]
@@ -622,7 +784,11 @@ const tokens = {
       )
     const string = evaluate(args[0], env)
     if (typeof string !== 'string')
-      throw new TypeError('First argument of (error) must be an (String).')
+      throw new TypeError(
+        `First argument of (error) must be an (String) (error ${stringifyArgs(
+          args
+        )}).`
+      )
     throw new Error(string)
   },
 }

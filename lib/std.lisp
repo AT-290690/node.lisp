@@ -282,8 +282,8 @@
   ;       (Array "Animation" "Programming"))))
   ;   (log)
   ; )
-  ; hash-table-index
-  (function hash-table-index 
+  ; hash-index
+  (function hash-index 
     table key 
       (block
         (let total 0)
@@ -299,7 +299,7 @@
   (function hash-table-set 
     table key value 
       (block
-        (let idx (hash-table-index table key))
+        (let idx (hash-index table key))
         (unless (array-in-bounds-p table idx) (set table idx (Array 0 length)))
         (let current (get table idx))
         (let len (length current))
@@ -312,12 +312,12 @@
         table))
   ; hash table_has 
   (function hash-table-has table key 
-    (and (array-in-bounds-p table (let idx (hash-table-index table key))) (length (get table idx))))
+    (and (array-in-bounds-p table (let idx (hash-index table key))) (and (length (let current (get table idx))) (>= (index-of (car current) key) 0))))
   ; hash-table-get
   (function hash-table-get
     table key 
       (block
-        (let idx (hash-table-index table key))
+        (let idx (hash-index table key))
         (if (array-in-bounds-p table idx) 
           (block
             (let current (get table idx))
@@ -349,7 +349,7 @@
   ;   (log)
   ; )
 
-(function hash-set-index 
+(function hash-index 
     table key 
       (block
         (let total 0)
@@ -365,7 +365,7 @@
   (function hash-set-set 
     table key 
       (block
-        (let idx (hash-set-index table key))
+        (let idx (hash-index table key))
         (unless (array-in-bounds-p table idx) (set table idx (Array 0 length)))
         (let current (get table idx))
         (let len (length current))
@@ -378,12 +378,12 @@
         table))
   ; hash table_has 
   (function hash-set-has table key 
-    (and (array-in-bounds-p table (let idx (hash-set-index table key))) (and (length (let current (get table idx))) (>= (index-of current key) 0))))
+    (and (array-in-bounds-p table (let idx (hash-index table key))) (and (length (let current (get table idx))) (>= (index-of current key) 0))))
   ; hash-set-get
   (function hash-set-get
     table key 
       (block
-        (let idx (hash-set-index table key))
+        (let idx (hash-index table key))
         (if (array-in-bounds-p table idx) 
           (block
             (let current (get table idx))
@@ -547,7 +547,6 @@
     (Array "quick-sort" quick-sort)
     (Array "reverse" reverse)
     (Array "binary-search" binary-search)
-    (Array "hash-table-index" hash-table-index)
     (Array "hash-table-set" hash-table-set)
     (Array "hash-table-has" hash-table-has)
     (Array "hash-table-get" hash-table-get)

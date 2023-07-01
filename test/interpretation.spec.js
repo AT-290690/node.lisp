@@ -94,7 +94,7 @@ it('interpretation should work', () => {
     (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
   (iterate 0 (- (length array) 1))))
 
-    (function hash-table-index 
+    (function hash-index 
       table key 
         (block
           (let total 0)
@@ -110,7 +110,7 @@ it('interpretation should work', () => {
     (function hash-table-set 
       table key value 
         (block
-          (let idx (hash-table-index table key))
+          (let idx (hash-index table key))
           (unless (array-in-bounds-p table idx) (set table idx (Array 0 length)))
           (let current (get table idx))
           (let len (length current))
@@ -122,11 +122,11 @@ it('interpretation should work', () => {
           )
           table))
     (function hash-table-has table key 
-      (and (array-in-bounds-p table (let idx (hash-table-index table key))) (length (get table idx))))
+      (and (array-in-bounds-p table (let idx (hash-index table key))) (length (get table idx))))
     (function hash-table-get
       table key 
         (block
-          (let idx (hash-table-index table key))
+          (let idx (hash-index table key))
           (if (array-in-bounds-p table idx) 
             (block
               (let current (get table idx))
