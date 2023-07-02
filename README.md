@@ -54,7 +54,7 @@ A Lisp for Node
 Simple CLI usage - create main.js
 
 ```js
-import lisp from './node.lisp'
+import lisp from './node-lisper'
 lisp.cli()
 ```
 

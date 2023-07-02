@@ -11,8 +11,8 @@ import {
   runFromInterpreted,
 } from './src/utils.js'
 import { tokens } from './src/tokeniser.js'
+import std from './lib/std.js'
 const cli = () => {
-  const STD = readFileSync('./lib/std.lisp', 'utf-8')
   const [, , ...argv] = process.argv
   let file = '',
     Extensions = {},
@@ -44,10 +44,7 @@ const cli = () => {
             const mods = []
             for (const [key, value] of deps) {
               const depSet = new Set(value)
-              const parsed = parse(readFileSync(`./lib/${key}.lisp`, 'utf-8'))
-                .at(-1)
-                .at(-1)
-                .slice(1)
+              const parsed = parse(std).at(-1).at(-1).slice(1)
               parsed.pop()
               mods.push(
                 parsed.filter(
@@ -132,7 +129,7 @@ const cli = () => {
       case '-r':
         {
           try {
-            run(parse(`${STD}\n${file}`), env)
+            run(parse(`${std}\n${file}`), env)
           } catch (err) {
             logError(err.message)
           }
@@ -141,7 +138,7 @@ const cli = () => {
       case '-std':
         {
           const mods = []
-          const parsed = parse(STD).at(-1).at(-1).slice(1)
+          const parsed = parse(std).at(-1).at(-1).slice(1)
           parsed.pop()
           mods.push(
             parsed.filter(
@@ -167,7 +164,7 @@ const cli = () => {
       case '-import':
         {
           const mods = []
-          const parsed = parse(STD).at(-1).at(-1).slice(1)
+          const parsed = parse(std).at(-1).at(-1).slice(1)
           parsed.pop()
           mods.push(
             parsed.filter(
@@ -191,7 +188,7 @@ const cli = () => {
         break
       case '-repl':
         {
-          let source = STD
+          let source = std
           const inpColor = '\x1b[32m'
           const outColor = '\x1b[33m'
           const errColor = '\x1b[31m'

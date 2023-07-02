@@ -2,7 +2,7 @@
   "name": "node-lisper",
   "description": "A Lisp for Node.js",
   "author": "AT290690",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "keywords": [
     "lisp",
