@@ -263,4 +263,5 @@ export default {
   evaluate,
   balance: isBalancedParenthesis,
   source: removeNoCode,
+  run,
 }
