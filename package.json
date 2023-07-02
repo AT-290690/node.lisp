@@ -1,5 +1,5 @@
 {
-  "name": "node.lisp",
+  "name": "node-lisper",
   "description": "A Lisp for Node.js",
   "author": "AT290690",
   "version": "1.0.0",

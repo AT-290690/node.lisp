@@ -1,4 +1,4 @@
-# Node.lisp
+# Node Lisper
 
 <p align="center">
 <img width="200" src="./logo.svg"/>
@@ -107,7 +107,7 @@ yarn lisp -help
 Parse, Interpred & Compile
 
 ```js
-import lisp from './node.lisp'
+import lisp from './node-lisper'
 lisp.parse('(+ 1 2)') // [[{  type: 'apply', value: '+' }, { type: 'atom', value: 1 }, { type: 'atom', value: 2 }]]
 lisp.interpred('(+ 1 2)') // 3
 lisp.compile('(+ 1 2)') // 3 but faster!
