@@ -11,6 +11,8 @@
   (function is-odd x i (= (mod x 2) 1))
   ; is-even
   (function is-even x i (= (mod x 2) 0))
+  ; manhattan-distance
+  (function manhattan-distance x1 y1 x2 y2 (+ (abs (- x2 x1)) (abs (- y2 y1))))
   ; can-sum
   (function can-sum t values 
     (if (< t 0) 0 
@@ -119,16 +121,14 @@
     (iterate 0 (- (length array) 1))))
   ; for-n
   (function for-n N callback (block
-    (let res 0)
     (loop iterate i (block 
-        (let* res (callback i))
+        (let res (callback i))
         (if (< i N) (iterate (+ i 1)) res))) 
         (iterate 0)))
   ; for-range
   (function for-range start end callback (block
-    (let res 0)
     (loop iterate i (block 
-        (let* res (callback i))
+        (let res (callback i))
         (if (< i end) (iterate (+ i 1)) res))) 
         (iterate start)))
   ; count
@@ -297,13 +297,13 @@
       (block
         (let total 0)
         (let prime-num 31)
-        (let* key (. (type key String)))
+        (let key-arr (. (type key String)))
         (loop find-hash-index i bounds (block 
-          (let letter (get key i))
+          (let letter (get key-arr i))
           (let value (- (char letter 0) 96))
           (let* total (euclidean-mod (+ (* total prime-num) value) (length table)))
           (if (< i bounds) (find-hash-index (+ i 1) bounds) total)))
-        (find-hash-index 0 (min (- (length key) 1) 100))))
+        (find-hash-index 0 (min (- (length key-arr) 1) 100))))
     ; hash-table-set
   (function hash-table-set 
     table key value 
@@ -363,13 +363,13 @@
       (block
         (let total 0)
         (let prime-num 31)
-        (let* key (. (type key String)))
+        (let key-arr (. (type key String)))
         (loop find-hash-index i bounds (block 
-          (let letter (get key i))
+          (let letter (get key-arr i))
           (let value (- (char letter 0) 96))
           (let* total (euclidean-mod (+ (* total prime-num) value) (length table)))
           (if (< i bounds) (find-hash-index (+ i 1) bounds) total)))
-        (find-hash-index 0 (min (- (length key) 1) 100))))
+        (find-hash-index 0 (min (- (length key-arr) 1) 100))))
     ; hash-set-set
   (function hash-set-set 
     table key 
@@ -593,6 +593,7 @@
     (Array "adjacent-difference" adjacent-difference)
     (Array "neighborhood" neighborhood)
     (Array "clamp" clamp)
+    (Array "manhattan-distance" manhattan-distance)
   )
 ))
 ; (/ std lib)

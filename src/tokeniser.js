@@ -562,6 +562,14 @@ const tokens = {
     const value = evaluate(args[1], env)
     for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
       if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
+        if (typeof scope[entityName] !== typeof value)
+          throw new TypeError(
+            `Invalid use of (let*), variable must be assigned to the same type (${typeof scope[
+              entityName
+            ]}) but attempted to assign to (${
+              Array.isArray(value) ? 'Array' : typeof value
+            }) (let* ${stringifyArgs(args)})`
+          )
         scope[entityName] = value
         return value
       }
@@ -576,7 +584,7 @@ const tokens = {
       )
     const entityName = args[0].value
     const value = evaluate(args[1], env)
-    if (!(value === 0 || value === 1))
+    if (value !== 0 && value !== 1)
       throw new TypeError(
         `Invalid use of (boole), value must be either (or 0 1) (boole ${stringifyArgs(
           args
@@ -584,7 +592,7 @@ const tokens = {
       )
     for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
       if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
-        if (!(scope[entityName] === 0 || scope[entityName] === 1))
+        if (scope[entityName] !== 0 && scope[entityName] !== 1)
           throw new TypeError(
             `Invalid use of (boole), variable must be either (or 0 1) (boole ${stringifyArgs(
               args

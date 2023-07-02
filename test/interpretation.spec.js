@@ -3,6 +3,13 @@ import { runFromInterpreted } from '../src/utils.js'
 it('interpretation should work', () => {
   deepStrictEqual(
     runFromInterpreted(`
+    (let bol (Boolean))
+    (Array bol (boole bol 1) (boole bol 0) (boole bol 1) (boole bol 0))
+  `),
+    [1, 1, 0, 1, 0]
+  )
+  deepStrictEqual(
+    runFromInterpreted(`
     (function some array callback (block
       (let bol 1)
       (loop iterate i bounds (block
@@ -99,13 +106,13 @@ it('interpretation should work', () => {
         (block
           (let total 0)
           (let prime-num 31)
-          (let* key (. (type key String)))
+          (let key-arr (. (type key String)))
           (loop find-hash-index i bounds (block 
-            (let letter (get key i))
+            (let letter (get key-arr i))
             (let value (- (char letter 0) 96))
             (let* total (euclidean-mod (+ (* total prime-num) value) (length table)))
             (if (< i bounds) (find-hash-index (+ i 1) bounds) total)))
-          (find-hash-index 0 (min (- (length key) 1) 100))))
+          (find-hash-index 0 (min (- (length key-arr) 1) 100))))
       ; hash-table-set
     (function hash-table-set 
       table key value 

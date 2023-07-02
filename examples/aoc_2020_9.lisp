@@ -1,4 +1,4 @@
-(import std  "range" "min" "max" "map" "array-of-numbers" "push" "reduce" "sum-array" "some" "find" "slice")
+(import std "split-by" "range" "min" "max" "map" "array-of-numbers" "push" "reduce" "sum-array" "some" "find" "slice")
 ; The data is encrypted with the eXchange-Masking Addition System (XMAS).
 ; XMAS transmits a preamble of 25 *numbers* and each subsequent number should be the sum of any two of the 25 immediately previous *numbers*.
 ; The first number that is not the sum of two of the 25 *numbers* before it needs to be found.
@@ -49,7 +49,7 @@
     (if (>= i n) 
       (push acc (slice all (- i n) i)) acc)) (Array 0 length))))
 
-(let *weakness* 0)
+(let *weakness* (Array 0 length))
 (do (range 2 (- (length *numbers*) 1))
     (some (lambda n _ _
     (some (window *numbers* n) (lambda x _ _ (block 
