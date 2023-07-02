@@ -5,6 +5,8 @@
   (function max a b (if (> a b) a b))
   ; min
   (function min a b (if (< a b) a b))
+  ; clamp
+  (function clamp x limit (if (> x limit) limit x))
   ; is-odd
   (function is-odd x i (= (mod x 2) 1))
   ; is-even
@@ -44,6 +46,13 @@
   (function euclidean-div a b (block 
                       (let q (* a (/ b)))
                       (if (< (mod a b) 0) (if (> b 0) (- q 1) (+ q 1)) q)))
+; neighborhood
+ (function neighborhood array directions y x callback
+    (reduce directions (lambda sum dir _ _ 
+        (block
+          (let dy (+ (car dir) y))
+          (let dx (+ (car (cdr dir)) x))
+           (+ sum (if (and (array-in-bounds-p array dy) (array-in-bounds-p (get array dy) dx)) (callback (get (get array dy) dx) dir))))) 0))
   ; greatest-common-divisor
   (function greatest-common-divisor a b (if (= b 0) a (greatest-common-divisor b (mod a b))))
   ; remainder
@@ -148,7 +157,7 @@
     (let bol 1)
     (loop iterate i bounds (block
       (let res (callback (get array i) i array))
-      (if (not res) (let* bol 0))
+      (boole bol (type res Boolean))
       (if (and res (< i bounds)) (iterate (+ i 1) bounds) bol)))
     (iterate 0 (- (length array) 1))))
 ; some
@@ -156,7 +165,7 @@
     (let bol 1)
     (loop iterate i bounds (block
       (let res (callback (get array i) i array))
-      (let* bol (not (not res)))
+      (boole bol (type res Boolean))
       (if (and (not res) (< i bounds)) (iterate (+ i 1) bounds) bol)))
     (iterate 0 (- (length array) 1))))
   ; reduce
@@ -200,7 +209,7 @@
     (let has-found 0)
     (loop iterate i bounds (block
       (let current (get array i))
-      (let* has-found (callback current i array))
+      (boole has-found (callback current i array))
       (if (and (not has-found) (< i bounds))
         (iterate (+ i 1) bounds) 
         (let* idx i))))
@@ -212,7 +221,7 @@
     (let has-found 0)
     (loop iterate i bounds (block
       (let current (get array i))
-      (let* has-found (= target current))
+      (boole has-found (= target current))
       (if (and (not has-found) (< i bounds))
         (iterate (+ i 1) bounds) 
         (let* idx i))))
@@ -227,7 +236,7 @@
           (let has-found 0)
           (loop iterate i bounds (block
             (let current (get array i))
-            (let* has-found (= target current))
+            (boole has-found (= target current))
             (if (and (not has-found) (< i bounds))
               (iterate (+ i 1) bounds) 
               (let* idx i))))
@@ -453,7 +462,7 @@
         (let ch (get array i))
         (let code (- (char ch 0) zero))
         (let mask (<< 1 code))
-        (if (and (if (= ch letter) (let* has-at-least-one 1))
+        (if (and (if (= ch letter) (boole has-at-least-one 1))
             (not (= (& bitmask mask) 0))) 
             (let* count (+ count 1))
             (let* bitmask (| bitmask mask)))
@@ -582,6 +591,8 @@
     (Array "can-sum" how-can-sum)
     (Array "how-can-sum" how-can-sum)
     (Array "adjacent-difference" adjacent-difference)
+    (Array "neighborhood" neighborhood)
+    (Array "clamp" clamp)
   )
 ))
 ; (/ std lib)

@@ -24,7 +24,7 @@
       (let ch (get array i))
       (let code (- (char ch 0) zero))
       (let mask (<< 1 code))
-      (if (and (if (= ch letter) (let* has-at-least-one 1))
+      (if (and (if (= ch letter) (boole has-at-least-one 1))
           (not (= (& bitmask mask) 0))) 
           (let* count (+ count 1))
           (let* bitmask (| bitmask mask)))

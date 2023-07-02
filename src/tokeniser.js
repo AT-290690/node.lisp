@@ -170,7 +170,7 @@ const tokens = {
   ['if']: (args, env) => {
     if (args.length < 2 || args.length > 3)
       throw new RangeError(
-        `Invalid number of arguments for (if), expected 2 or 3 but got ${
+        `Invalid number of arguments for (if), expected (or 2 3) but got ${
           args.length
         } (if ${stringifyArgs(args)}).`
       )
@@ -181,7 +181,7 @@ const tokens = {
   ['unless']: (args, env) => {
     if (args.length < 2 || args.length > 3)
       throw new RangeError(
-        `Invalid number of arguments for (unless), expected 2 or 3  but got ${
+        `Invalid number of arguments for (unless), expected (or 2 3)  but got ${
           args.length
         } (unless ${stringifyArgs(args)}).`
       )
@@ -290,7 +290,7 @@ const tokens = {
     const value = array.at(index)
     if (value == undefined)
       throw new RangeError(
-        `Trying to get a null value in (Array) at (get) (get $${stringifyArgs(
+        `Trying to get a null value in (Array) at (get) (get ${stringifyArgs(
           args
         )}).`
       )
@@ -299,7 +299,7 @@ const tokens = {
   ['set']: (args, env) => {
     if (args.length !== 2 && args.length !== 3)
       throw new RangeError(
-        'Invalid number of arguments for (set) (2 or 3 required)'
+        'Invalid number of arguments for (set) (or 2 3) required'
       )
     const array = evaluate(args[0], env)
     if (!Array.isArray(array))
@@ -569,6 +569,34 @@ const tokens = {
       `Tried setting an undefined variable: ${entityName} using (let*)`
     )
   },
+  ['boole']: (args, env) => {
+    if (args.length !== 2)
+      throw new RangeError(
+        'Invalid number of arguments to (boole) (2 required)'
+      )
+    const entityName = args[0].value
+    const value = evaluate(args[1], env)
+    if (!(value === 0 || value === 1))
+      throw new TypeError(
+        `Invalid use of (boole), value must be either (or 0 1) (boole ${stringifyArgs(
+          args
+        )})`
+      )
+    for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
+      if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
+        if (!(scope[entityName] === 0 || scope[entityName] === 1))
+          throw new TypeError(
+            `Invalid use of (boole), variable must be either (or 0 1) (boole ${stringifyArgs(
+              args
+            )})`
+          )
+        scope[entityName] = value
+        return value
+      }
+    throw new ReferenceError(
+      `Tried setting an undefined variable: ${entityName} using (boole)`
+    )
+  },
   ['import']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
@@ -665,6 +693,7 @@ const tokens = {
   },
   ['String']: () => '',
   ['Number']: () => 0,
+  ['Boolean']: () => 1,
   ['type']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError(
@@ -685,6 +714,7 @@ const tokens = {
       return num
     } else if (type.value === 'String') return value.toString()
     else if (type.value === 'Bit') return parseInt(value, 2)
+    else if (type.value === 'Boolean') return +!!value
     else if (type.value === 'Array') {
       if (typeof value[Symbol.iterator] !== 'function')
         throw new TypeError(
@@ -695,7 +725,7 @@ const tokens = {
       return [...value]
     } else
       throw new TypeError(
-        `Can only cast number or string at (type) (type ${stringifyArgs(
+        `Can only cast (or number string) at (type) (type ${stringifyArgs(
           args
         )}).`
       )

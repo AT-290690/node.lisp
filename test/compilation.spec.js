@@ -6,7 +6,7 @@ it('compilation should work', () =>
       (let bol 1)
       (loop iterate i bounds (block
         (let res (callback (get array i) i array))
-        (let* bol (not (not res)))
+        (boole bol (type res Boolean))
         (if (and (not res) (< i bounds)) (iterate (+ i 1) bounds) bol)))
       (iterate 0 (- (length array) 1))))
         (function equal a b 

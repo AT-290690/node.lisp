@@ -63,6 +63,8 @@ const Helpers = {
          return [...value]
        case 'Bit':
         return parseInt(value, 2)
+      case 'Boolean':
+          return +!!value
        default:
          return 0
       }
@@ -119,13 +121,15 @@ const compile = (tree, Locals) => {
         Locals.add(name)
         return `((${name}=${compile(Arguments[1], Locals)}),${name});`
       }
-      case 'let*': {
+      case 'let*':
+      case 'boole': {
         const res = compile(Arguments[1], Locals)
         const arg = Arguments[0]
         if (arg.type === 'word') {
           const name = lispToJavaScriptVariableName(arg.value)
           return `((${name}=${res}),${name});`
         }
+        return ''
       }
       case 'char':
         return `((${compile(Arguments[0], Locals)}).charCodeAt(${compile(
@@ -151,6 +155,12 @@ const compile = (tree, Locals) => {
         )
       case 'Arrayp':
         return `(Array.isArray(${compile(Arguments[0], Locals)}));`
+      case 'Number':
+        return '0'
+      case 'Boolean':
+        return '1'
+      case 'String':
+        return ''
       case 'Array':
         return Arguments.length === 2 &&
           Arguments[1].type === 'word' &&

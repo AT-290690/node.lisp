@@ -96,7 +96,6 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
                           (set -1)))))))
               (Array head tail))))))
 
- 
 
 (function *find-bag* bags left right 
           (find bags 

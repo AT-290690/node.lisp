@@ -9,8 +9,11 @@
 ; F keeps rows 44 through 45.
 ; The final F keeps the lower of the two, row 44.
 
-(let *sample* "FBFBBFFRLR
-BFFFBBFRRR
+; (let *sample* "FBFBBFFRLR
+; BFFFBBFRRR
+; FFFBBBFRRR
+; BBFFBBFRLL")
+(let *sample* "BFFFBBFRRR
 FFFBBBFRRR
 BBFFBBFRLL")
 (let *input* *sample*)
