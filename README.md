@@ -51,6 +51,19 @@ A Lisp for Node
   (reduce sum 0))
 ```
 
+Simple CLI usage - create main.js
+
+```js
+import lisp from './node.lisp'
+lisp.cli()
+```
+
+```json
+"scripts": {
+  "lisp": "node main.js"
+}
+```
+
 interpred
 
 ```
@@ -89,6 +102,16 @@ yarn lisp -help
 -------------------------------------
 -repl    start Read Eval Print Loop
 -------------------------------------
+```
+
+Parse, Interpred & Compile
+
+```js
+import lisp from './node.lisp'
+lisp.parse('(+ 1 2)') // [[{  type: 'apply', value: '+' }, { type: 'atom', value: 1 }, { type: 'atom', value: 2 }]]
+lisp.interpred('(+ 1 2)') // 3
+lisp.compile('(+ 1 2)') // 3 but faster!
+lisp.js(lisp.parse('(+ 1 2)')).program // (1 + 2); as js
 ```
 
 <p align="center">
