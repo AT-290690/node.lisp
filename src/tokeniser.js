@@ -547,6 +547,28 @@ const tokens = {
       else continue
     return evaluate(args.at(-1), env)
   },
+  ['identity']: (args, env) => {
+    if (!args.length)
+      throw new RangeError(
+        'Invalid number of arguments to (identity) (>= 1 required)'
+      )
+    const [first, ...rest] = args
+    if (first.type === 'word' && first.value in tokens)
+      throw new TypeError(
+        `Following argument of (identity) must not be an reserved word (identity ${stringifyArgs(
+          args
+        )})`
+      )
+    const identity = evaluate(first, env)
+    if (typeof identity !== 'function')
+      throw new TypeError(
+        `First argument of (identity) must be a (lambda) (${stringifyArgs(
+          args
+        )})`
+      )
+
+    return identity(rest, env)
+  },
   ['let']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError('Invalid number of arguments to (let) (2 required)')

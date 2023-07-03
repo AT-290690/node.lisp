@@ -47,9 +47,9 @@
 (function window inp n (do inp 
   (reduce (lambda acc current i all 
     (if (>= i n) 
-      (push acc (slice all (- i n) i)) acc)) (Array 0 length))))
+      (push acc (slice all (- i n) i)) acc)) ())))
 
-(let *weakness* (Array 0 length))
+(let *weakness* ())
 (do (range 2 (- (length *numbers*) 1))
     (some (lambda n _ _
     (some (window *numbers* n) (lambda x _ _ (block 

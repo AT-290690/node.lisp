@@ -102,7 +102,7 @@ const cli = () => {
                   write: (args, env) => {
                     if (!args.length)
                       throw new RangeError(
-                        'Invalid number of arguments for (open)'
+                        'Invalid number of arguments for (write)'
                       )
                     const path = evaluate(args[0], env)
                     if (typeof path !== 'string')

@@ -2,6 +2,8 @@ import { deepStrictEqual } from 'assert'
 import { runFromCompiled, runFromInterpreted } from '../src/utils.js'
 it('compilation should work', () =>
   [
+    `(let T (lambda x (lambda y (lambda (* 5 x y)))))
+  (identity (identity (identity T 10) 3))`,
     ` (let bol (Boolean))
     (Array bol (boole bol 1) (boole bol 0) (boole bol 1) (boole bol 0))`,
     `(function some array callback (block
@@ -59,7 +61,7 @@ it('compilation should work', () =>
         (if has-found idx -1)))
   (function array-in-bounds-p array index (and (< index (length array)) (>= index 0)))
   (function map array callback (block 
-    (let new-array (Array 0 length))
+    (let new-array ())
     (let i 0)
     (loop iterate i bounds (block
       (set new-array i (callback (get array i) i array))
@@ -83,7 +85,7 @@ it('compilation should work', () =>
         table key value 
           (block
             (let idx (hash-index table key))
-            (unless (array-in-bounds-p table idx) (set table idx (Array 0 length)))
+            (unless (array-in-bounds-p table idx) (set table idx ()))
             (let current (get table idx))
             (let len (length current))
             (let index (if len (find-index current (lambda x i o (= (get x 0) key))) -1))
@@ -108,7 +110,7 @@ it('compilation should work', () =>
                   (get 1))))))
       (function hash-table 
         size 
-          (map (Array size length) (lambda x i o (Array 0 length))))
+          (map (Array size length) (lambda x i o ())))
       (function hash-table-make 
         items 
           (block
@@ -130,8 +132,8 @@ it('compilation should work', () =>
     ` (function binary-tree-node 
       value (Array 
               (Array "value" value)
-              (Array "left"  (Array 0 length))
-              (Array "right" (Array 0 length))))
+              (Array "left"  ())
+              (Array "right" ())))
 (function binary-tree-get-left 
               node (get node 1))
 (function binary-tree-get-right 
@@ -164,8 +166,8 @@ it('compilation should work', () =>
     `(function binary-tree-node 
       value (Array 
               (Array "value" value)
-              (Array "left"  (Array 0 length))
-              (Array "right" (Array 0 length))))
+              (Array "left"  ())
+              (Array "right" ())))
 (function binary-tree-get-left 
               node (get node 1))
 (function binary-tree-get-right 
@@ -196,8 +198,8 @@ it('compilation should work', () =>
 (function string_to_array string delim 
                     (reduce (. string) 
                       (lambda a x i o (block
-                                (if (= x delim) (push a (Array 0 length)) (block 
-                                  (push (get a -1) x) a))))(push (Array 0 length) (Array 0 length))))
+                                (if (= x delim) (push a ()) (block 
+                                  (push (get a -1) x) a))))(push () ())))
 (function join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
 
 (function concat array1 array2 (block
@@ -209,7 +211,7 @@ array1)))
 (iterate 0 (- (length array2) 1))))
 
 (function map array callback (block 
-(let new-array (Array 0 length))
+(let new-array ())
 (let i 0)
 (loop iterate i bounds (block
   (set new-array i (callback (get array i) i))
@@ -226,8 +228,8 @@ array1)))
 (if (<= (length arr) 1) arr
 (block
   (let pivot (get arr 0))
-  (let left-arr (Array 0 length))
-  (let right-arr (Array 0 length))
+  (let left-arr ())
+  (let right-arr ())
 (loop iterate i bounds (block
   (let current (get arr i))
   (if (< current pivot) 
@@ -266,7 +268,7 @@ left-arr (quick-sort)
    (reduce array (lambda a x i array (block
       (let res (binary-search array (cb x)))
       (if res (push a res) a))) 
-   (Array 0 length)))
+   ()))
 
 (function solve2 array cb 
   (reduce array
@@ -278,7 +280,7 @@ left-arr (quick-sort)
           (if (< j bounds) (iterate (+ j 1) bounds)
       accumulator)))
       (iterate i (- (length array) 1)))) 
-   (Array 0 length)))
+   ()))
 (Array
 (do input
 (split-by-lines)
@@ -306,7 +308,7 @@ left-arr (quick-sort)
       array1)))
     (iterate 0 (- (length array2) 1))))
     (function map array callback (block 
-      (let new-array (Array 0 length))
+      (let new-array ())
       (let i 0)
       (loop iterate i bounds (block
         (set new-array i (callback (get array i) i array))
@@ -401,8 +403,8 @@ left-arr (quick-sort)
       (if (<= (length arr) 1) arr
       (block
         (let pivot (get arr 0))
-        (let left-arr (Array 0 length))
-        (let right-arr (Array 0 length))
+        (let left-arr ())
+        (let right-arr ())
     (loop iterate i bounds (block
         (let current (get arr i))
         (if (< current pivot) 
@@ -444,7 +446,7 @@ left-arr (quick-sort)
       (if (< i bounds) (interate (+ i 1) bounds) array)))
     (interate 0 (- (length array) 1)))))
   (let deep-flat (lambda arr (block 
-    (let new-array (Array 0 length)) 
+    (let new-array ()) 
     (loop flatten item (if (Arrayp item) (for-each item (lambda x _ (flatten x))) 
     (push new-array item)))
     (flatten arr) 
@@ -499,7 +501,7 @@ left-arr (quick-sort)
       (let min (lambda a b (if (< a b) a b)))
       
       (let map (lambda array callback (block 
-      (let new-array (Array 0 length))
+      (let new-array ())
       (let i 0)
       (let interate (lambda i bounds (block
         (set new-array i (callback (get array i) i))
@@ -516,9 +518,9 @@ left-arr (quick-sort)
       (let string_to_array (lambda string delim 
       (reduce (. string) (lambda a x i (block
           (if (= x delim) 
-            (push a (Array 0 length)) 
+            (push a ()) 
             (block (push (get a -1) x) a)
-          )))(push (Array 0 length) (Array 0 length)))))
+          )))(push () ()))))
       
        (let split-by-lines (lambda string (map (string_to_array string "\n") (lambda x i (join x "")))))
        
@@ -528,7 +530,7 @@ left-arr (quick-sort)
           (lambda x i (- 2020 x)))
     `,
     `(let range (lambda start end (block
-      (let array (Array 0 length))
+      (let array ())
       (let interate (lambda i bounds (block
         (set array i (+ i start))
         (if (< i bounds) (interate (+ i 1) bounds) array)
@@ -537,7 +539,7 @@ left-arr (quick-sort)
       
       
       (let map (lambda array callback (block 
-      (let new-array (Array 0 length))
+      (let new-array ())
       (let i 0)
       (let interate (lambda i bounds (block
         (set new-array i (callback (get array i) i))
@@ -547,7 +549,7 @@ left-arr (quick-sort)
       
       
       (let remove (lambda array callback (block
-      (let new-array (Array 0 length))
+      (let new-array ())
       (let interate (lambda i bounds (block
         (let current (get array i))
         (if (callback current i) 
@@ -576,7 +578,7 @@ left-arr (quick-sort)
       `,
 
     `(let range (lambda start end (block
-        (let array (Array 0 length))
+        (let array ())
         (loop interate i bounds (block
           (set array i (+ i start))
           (if (< i bounds) (interate (+ i 1) bounds) array)))
@@ -584,7 +586,7 @@ left-arr (quick-sort)
         
         
         (let map (lambda array callback (block 
-        (let new-array (Array 0 length))
+        (let new-array ())
         (let i 0)
         (loop interate i bounds (block
           (set new-array i (callback (get array i) i))
@@ -593,7 +595,7 @@ left-arr (quick-sort)
         
         
         (let remove (lambda array callback (block 
-        (let new-array (Array 0 length))
+        (let new-array ())
         (loop interate i bounds (block
           (let current (get array i))
           (if (callback current i) 

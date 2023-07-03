@@ -14,7 +14,7 @@
      (reduce array (lambda a x _ array (block
         (let res (binary-search array (cb x)))
         (if res (push a res) a))) 
-     (Array 0 length)))
+     ()))
 
 (function *solve2* array cb 
     (reduce array
@@ -26,7 +26,7 @@
             (if (< j bounds) (iterate (+ j 1) bounds)
         accumulator)))
         (iterate i (- (length array) 1)))) 
-     (Array 0 length)))
+     ()))
 
 (Array 
 ; 514579 for sample

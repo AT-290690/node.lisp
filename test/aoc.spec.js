@@ -19,14 +19,14 @@ const problems = [
 ]
 it('Should compile aoc 2020', () =>
   problems
-    .map((x) => `(function std (Array 0 length)) ${STD} ${x}`)
+    .map((x) => `(function std ()) ${STD} ${x}`)
     .forEach((source) =>
       deepStrictEqual(runFromInterpreted(source), runFromCompiled(source))
     ))
 it('Should solve aoc 2020 tasks', () =>
   deepStrictEqual(
     problems
-      .map((x) => `(function std (Array 0 length)) ${STD} ${x}`)
+      .map((x) => `(function std ()) ${STD} ${x}`)
       .map((source) => runFromCompiled(source)),
     [
       [514579, 241861950],

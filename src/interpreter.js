@@ -2,7 +2,7 @@ import { tokens } from './tokeniser.js'
 export const evaluate = (expression, env) => {
   if (expression == undefined) return 0
   const [first, ...rest] = Array.isArray(expression) ? expression : [expression]
-  if (first == undefined) throw new SyntaxError(`Undefined operator.`)
+  if (first == undefined) return []
   switch (first.type) {
     case 'word': {
       const word = env[first.value]

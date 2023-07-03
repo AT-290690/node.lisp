@@ -101,6 +101,7 @@ const parseArgs = (Arguments, Locals, separator = ',') =>
 const compile = (tree, Locals) => {
   if (!tree) return ''
   const [first, ...Arguments] = Array.isArray(tree) ? tree : [tree]
+  if (first == undefined) return '[];'
   const token = first.value
   if (first.type === 'apply') {
     switch (token) {
@@ -115,6 +116,10 @@ const compile = (tree, Locals) => {
           const res = compile(Arguments[0], Locals)
           return res !== undefined ? res.toString().trim() : ''
         }
+      }
+      case 'identity': {
+        const [first, ...rest] = Arguments
+        return `${compile(first, Locals)}(${parseArgs(rest, Locals)})`
       }
       case 'let': {
         let name = lispToJavaScriptVariableName(Arguments[0].value)
@@ -277,18 +282,6 @@ const compile = (tree, Locals) => {
         )});`
       case '/':
         return `(1/${compile(Arguments[0], Locals)});`
-      case '+=':
-        return `(${compile(Arguments[0], Locals)}+=${
-          Arguments[1] != undefined ? compile(Arguments[1], Locals) : 1
-        });`
-      case '-=':
-        return `(${compile(Arguments[0], Locals)}-=${
-          Arguments[1] != undefined ? compile(Arguments[1], Locals) : 1
-        });`
-      case '*=':
-        return `(${compile(Arguments[0], Locals)}*=${
-          Arguments[1] != undefined ? compile(Arguments[1], Locals) : 1
-        });`
       case 'Bit':
         return `(${compile(Arguments[0], Locals)}>>>0).toString(2)`
       case '~':

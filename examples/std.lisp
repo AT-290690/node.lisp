@@ -21,7 +21,7 @@
   ; how-can-sum
   (function how-can-sum t values 
     (if (< t 0) 0 
-      (if (= t 0) (Array 0 length) 
+      (if (= t 0) () 
         (block 
           (let res 0)
           (some values (lambda x _ _ (block 
@@ -93,21 +93,21 @@
   (iterate 0 (- (length array2) 1))))
   ; range
   (function range start end (block
-    (let array (Array 0 length))
+    (let array ())
     (loop iterate i bounds (block
       (push array (+ i start))
       (if (< i bounds) (iterate (+ i 1) bounds) array)))
     (iterate 0 (- end start))))
  ; sequance
   (function sequance end start step (block
-    (let array (Array 0 length))
+    (let array ())
     (loop iterate i bounds (block
       (push array (+ i start))
       (if (< i bounds) (iterate (+ i step) bounds) array)))
     (iterate 0 (- end start))))
   ; map
   (function map array callback (block 
-    (let new-array (Array 0 length))
+    (let new-array ())
     (let i 0)
     (loop iterate i bounds (block
       (set new-array i (callback (get array i) i array))
@@ -142,10 +142,10 @@
   ; partition 
   (function partition array n (reduce array (lambda a x i _ (block 
         (if (mod i n) (push (get a -1) x) (push a (Array x))) a)) 
-        (Array 0 length)))
+        ()))
   ; filter
   (function remove array callback (block
-    (let new-array (Array 0 length))
+    (let new-array ())
     (loop iterate i bounds (block
       (let current (get array i))
       (if (callback current i array) 
@@ -187,7 +187,7 @@
   (function product-array array (reduce array (lambda a b _ _ (* a b)) 1))
   ; deep-flat
   (function deep-flat arr (block 
-    (let new-array (Array 0 length)) 
+    (let new-array ()) 
     (loop flatten item 
       (if (and (Arrayp item) (length item)) 
             (for-each item (lambda x _ _ (flatten x))) 
@@ -247,8 +247,8 @@
     (if (<= (length arr) 1) arr
     (block
       (let pivot (get arr 0))
-      (let left-arr (Array 0 length))
-      (let right-arr (Array 0 length))
+      (let left-arr ())
+      (let right-arr ())
   (loop iterate i bounds (block
       (let current (get arr i))
       (if (< current pivot) 
@@ -309,7 +309,7 @@
     table key value 
       (block
         (let idx (hash-index table key))
-        (unless (array-in-bounds-p table idx) (set table idx (Array 0 length)))
+        (unless (array-in-bounds-p table idx) (set table idx ()))
         (let current (get table idx))
         (let len (length current))
         (let index (if len (find-index current (lambda x i o (= (get x 0) key))) -1))
@@ -337,7 +337,7 @@
   ; hash-table
   (function hash-table 
     size 
-      (map (Array size length) (lambda _ _ _ (Array 0 length))))
+      (map (Array size length) (lambda _ _ _ ())))
   ; hash-table-make
   (function hash-table-make 
     items 
@@ -375,7 +375,7 @@
     table key 
       (block
         (let idx (hash-index table key))
-        (unless (array-in-bounds-p table idx) (set table idx (Array 0 length)))
+        (unless (array-in-bounds-p table idx) (set table idx ()))
         (let current (get table idx))
         (let len (length current))
         (let index (if len (find-index current (lambda x i o (= x key))) -1))
@@ -401,7 +401,7 @@
   ; hash-set
   (function hash-set 
     size 
-      (map (Array size length) (lambda _ _ _ (Array 0 length))))
+      (map (Array size length) (lambda _ _ _ ())))
   ; hash-set-make
   (function hash-set-make 
     items 
@@ -432,8 +432,8 @@
   (function binary-tree-node 
           value (Array 
                   (Array "value" value)
-                  (Array "left"  (Array 0 length))
-                  (Array "right" (Array 0 length))))
+                  (Array "left"  ())
+                  (Array "right" ())))
   ; binary-tree-get-left
   (function binary-tree-get-left 
                   node (get node 1))
@@ -486,7 +486,7 @@
               i)
             (block (let* cursor (concatenate cursor (get array i))) i)) bounds) 
                 (iterate result (+ i 1) bounds) result))
-    (push (iterate (Array 0 length) 0 (- (length array) 1)) cursor)))
+    (push (iterate () 0 (- (length array) 1)) cursor)))
 
   ; slice 
   (function slice array start end (block 
@@ -500,9 +500,9 @@
            out))
           (iterate 0)))
   ; slice-if-index
-  (function slice-if-index array callback (reduce array (lambda a b i _ (if (callback i) (push a b) a)) (Array 0 length)))
+  (function slice-if-index array callback (reduce array (lambda a b i _ (if (callback i) (push a b) a)) ()))
   ; slice-if
-  (function slice-if array callback (reduce array (lambda a b i _ (if (callback b i) (push a b) a)) (Array 0 length)))
+  (function slice-if array callback (reduce array (lambda a b i _ (if (callback b i) (push a b) a)) ()))
   ; equal 
   (function equal a b 
    (or (and (atom a) (atom b) (= a b)) 
