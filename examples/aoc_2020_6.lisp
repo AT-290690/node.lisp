@@ -23,9 +23,8 @@ b")
 (let lines (do *input* (split-by-n-lines 2)))
 (let *unique_chars* (do lines (map (lambda x _ _ (do x (join "") (remove-duplicates))))))
 
-(Array (do *input*
-  (split-by-n-lines 2)
-  (map (lambda x _ _ (do x (join "") (remove-duplicates) (length))))
+(Array (do *unique_chars* 
+  (map (lambda x _ _ (length x)))
   (sum-array))
 
 (do lines 
