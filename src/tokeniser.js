@@ -29,7 +29,9 @@ const tokens = {
     const [a, b] = args.map((x) => evaluate(x, env))
     if (typeof a !== 'number' || typeof b !== 'number')
       throw new TypeError(
-        `Not all arguments for (mod) are numbers (mod ${stringifyArgs(args)}).`
+        `Not all arguments for (mod) are (numbers) (mod ${stringifyArgs(
+          args
+        )}).`
       )
     if (b === 0)
       throw new TypeError(
@@ -48,7 +50,7 @@ const tokens = {
     const number = evaluate(args[0], env)
     if (typeof number !== 'number')
       throw new TypeError(
-        `Arguments of (/) is not a number (/ ${stringifyArgs(args)}).`
+        `Arguments of (/) is not a (number) (/ ${stringifyArgs(args)}).`
       )
     if (number === 0)
       throw new TypeError(
@@ -139,7 +141,7 @@ const tokens = {
     const operands = args.map((x) => evaluate(x, env))
     if (!operands.every((x) => typeof x === 'number'))
       throw new TypeError(
-        `Not all arguments for (+) are numbers (+ ${stringifyArgs(args)}).`
+        `Not all arguments for (+) are (numbers) (+ ${stringifyArgs(args)}).`
       )
     return operands.reduce((a, b) => a + b)
   },
@@ -151,7 +153,7 @@ const tokens = {
     const operands = args.map((x) => evaluate(x, env))
     if (!operands.every((x) => typeof x === 'number'))
       throw new TypeError(
-        `Not all arguments for (*) are numbers (* ${stringifyArgs(args)}).`
+        `Not all arguments for (*) are (numbers) (* ${stringifyArgs(args)}).`
       )
     return operands.reduce((a, b) => a * b)
   },
@@ -163,7 +165,7 @@ const tokens = {
     const operands = args.map((x) => evaluate(x, env))
     if (!operands.every((x) => typeof x === 'number'))
       throw new TypeError(
-        `Not all arguments for (-) are numbers (- ${stringifyArgs(args)}).`
+        `Not all arguments for (-) are (numbers) (- ${stringifyArgs(args)}).`
       )
     return args.length === 1 ? -operands[0] : operands.reduce((a, b) => a - b)
   },
@@ -689,6 +691,23 @@ const tokens = {
         'Third argument of (regex-replace) has to be a (string)'
       )
     return string.replace(new RegExp(a, 'g'), b)
+  },
+  ['sleep']: (args, env) => {
+    const time = evaluate(args[0], env)
+    if (typeof time !== 'number')
+      throw new TypeError(
+        `First argument of (sleep) is not a (number) (sleep ${stringifyArgs(
+          args
+        )}).`
+      )
+    const callback = evaluate(args[1], env)
+    if (typeof callback !== 'function')
+      throw new TypeError(
+        `Second argument of (sleep) is not a (number) (sleep ${stringifyArgs(
+          args
+        )}).`
+      )
+    return setTimeout(callback, time)
   },
   ['loop']: (args, env) => {
     if (args.length < 2)

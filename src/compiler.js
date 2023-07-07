@@ -119,7 +119,12 @@ const compile = (tree, Locals) => {
       }
       case 'identity': {
         const [first, ...rest] = Arguments
-        return `${compile(first, Locals)}(${parseArgs(rest, Locals)})`
+        const identity = compile(first, Locals)
+        return `${
+          identity[identity.length - 1] === ';'
+            ? identity.substring(0, identity.length - 1)
+            : identity
+        }(${parseArgs(rest, Locals)})`
       }
       case 'let': {
         let name = lispToJavaScriptVariableName(Arguments[0].value)
@@ -309,6 +314,12 @@ const compile = (tree, Locals) => {
         for (let i = 1; i < Arguments.length; ++i)
           inp = [Arguments[i].shift(), inp, ...Arguments[i]]
         return compile(inp, Locals)
+      }
+      case 'sleep': {
+        return `setTimeout(${compile(Arguments[1], Locals)},${compile(
+          Arguments[0],
+          Locals
+        )});`
       }
       case 'error': {
         return `_error(${compile(Arguments[0], Locals)})`

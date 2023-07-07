@@ -5,6 +5,10 @@
   (function max a b (if (> a b) a b))
   ; min
   (function min a b (if (< a b) a b))
+  ; normalize 
+  (function normalize value min max (* (- value min) (/ (- max min))))
+  ; linear-interpolation
+  (function linear-interpolation a b n (+ (* (- 1 n) a) (* n b)))
   ; clamp
   (function clamp x limit (if (> x limit) limit x))
   ; is-odd
@@ -594,6 +598,8 @@
     (Array "neighborhood" neighborhood)
     (Array "clamp" clamp)
     (Array "manhattan-distance" manhattan-distance)
+    (Array "normalize" normalize)
+    (Array "linear-interpolation" linear-interpolation)
   )
 ))
 ; (/ std lib)

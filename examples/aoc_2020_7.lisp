@@ -106,7 +106,7 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
 (function *sum-bags* initial all-bags 
   (reduce initial (lambda output current _ _ (block 
     (let next (*find-bag* all-bags (car (cdr current)) (car (cdr (cdr current)))))
-    (+ output (if next  (* (car current) (*sum-bags* (car (cdr next)) all-bags)) (car current))))) 1))
+    (+ output (if next (* (car current) (*sum-bags* (car (cdr next)) all-bags)) (car current))))) 1))
 ; 1 + 1*7 + 2 + 2*11 = 32
 ; (let inp (open "./playground/src/aoc_2020/7/input.txt"))
 ; (do (*read-input* inp) (*find-bag* "shiny" "gold") (cdr) (car) (*sum-bags* (*read-input* inp)) (- 1) (log))

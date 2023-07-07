@@ -1,4 +1,4 @@
-(import std "accumulate" "split-by-n-lines" "character-occurances-in-string" "join" "sum-array" "reduce" "index-of" "push" "map" "remove")
+(import std "accumulate" "array-of-numbers" "split-by-n-lines" "character-occurances-in-string" "join" "sum-array" "reduce" "index-of" "push" "map" "remove")
 (let sample "abc
 
 a
@@ -20,18 +20,18 @@ b")
 
 (function remove-duplicates string (do (. string) (remove (lambda item pos self (= (index-of self item) pos)))))
 
-(let lines (do *input* (split-by-n-lines 2)))
-(let *unique_chars* (do lines (map (lambda x _ _ (do x (join "") (remove-duplicates))))))
+(let *lines* (do *input* (split-by-n-lines 2)))
+(let *unique_chars* (do *lines* (map (lambda x _ _ (do x (join "") (remove-duplicates))))))
 
 (Array (do *unique_chars* 
   (map (lambda x _ _ (length x)))
   (sum-array))
 
-(do lines 
-  (map (lambda x i o (block 
-    (let current (get *unique_chars* i))
-    (do x 
-      (map (lambda y _ _ (do current (map (lambda z _ _ (character-occurances-in-string y z))) (join "") (type Bit))))
+(do *lines* 
+  (map (lambda line i _ (block 
+    (let *unique-char* (get *unique_chars* i))
+    (do line 
+      (map (lambda ch _ _ (do *unique-char* (map (lambda *ch* _ _ (character-occurances-in-string ch *ch*))) (join "") (type Bit))))
       (accumulate (lambda a b _ _ (& a b)))))))
-      (map (lambda y _ _ (do y (Bit) (type Array) (map (lambda d _ _ (type d Number))) (sum-array))))
+      (map (lambda y _ _ (do y (Bit) (type Array) (array-of-numbers) (sum-array))))
       (sum-array)))
