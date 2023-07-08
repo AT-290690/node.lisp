@@ -33,7 +33,7 @@
   (split-by "\n") 
   (array-of-numbers)))
 
-  (loop can-sum t values 
+  (function can-sum t values 
     (if (< t 0) 0 
       (if (= t 0) 1 
         (some values (lambda x _ _ (can-sum (- t x) values))))))

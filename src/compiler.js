@@ -11,6 +11,13 @@ export const toCamelCase = (name) => {
   }
   return out
 }
+export const deepRename = (name, newName, tree) => {
+  if (Array.isArray(tree))
+    for (const branch of tree) {
+      if (branch.value === name) branch.value = `()=>${newName}`
+      deepRename(name, newName, branch)
+    }
+}
 export const lispToJavaScriptVariableName = (name) =>
   toCamelCase(earMuffsToLodashes(name))
 const CAST_BOOLEAN_TO_NUMBER = true
@@ -19,6 +26,14 @@ const Functions = new Map()
 const Helpers = {
   log: {
     source: `var log = (msg) => { console.log(msg); return msg }`,
+    has: true,
+  },
+  tco: {
+    source: `tco = fn => (...args) => {
+      let result = fn(...args)
+      while (typeof result === 'function') result = result()
+      return result
+    }`,
     has: true,
   },
   'regexp-match': {
@@ -213,21 +228,32 @@ const compile = (tree, Locals) => {
       }
       case 'loop': {
         let name,
+          newName,
           out = '(('
         const arg = Arguments[0]
         name = lispToJavaScriptVariableName(arg.value)
+        newName = `rec_${performance.now().toString().replace('.', 7)}`
         Locals.add(name)
-
+        Locals.add(newName)
         const functionArgs = Arguments.slice(1)
         const body = functionArgs.pop()
         const localVars = new Set()
+        deepRename(arg.value, newName, body)
         const evaluatedBody = compile(body, localVars)
         const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
 
-        out += `${name}=(${parseArgs(functionArgs, Locals)})=>{${vars} ${
-          Array.isArray(body) ? 'return' : ' '
-        } ${evaluatedBody.toString().trimStart()}};`
-        out += `), ${name});`
+        // out += `${name}=(${parseArgs(
+        //   functionArgs,
+        //   Locals
+        // )})=>{${vars} return ${evaluatedBody.toString().trimStart()}};`
+        // out += `),${name});`
+
+        out += `${name}=(tco(${newName}=(${parseArgs(
+          functionArgs,
+          Locals
+        )})=>{${vars} return ${evaluatedBody.toString().trimStart()}};`
+        out += `, ${newName}))), ${name});`
+
         return out
       }
       case 'function': {
@@ -249,7 +275,7 @@ const compile = (tree, Locals) => {
         )})=>{${vars}${Array.isArray(body) ? 'return' : ' '} ${evaluatedBody
           .toString()
           .trimStart()}};`
-        out += `), ${name});`
+        out += `),${name});`
         return out
       }
       case 'and':
@@ -342,6 +368,7 @@ const compile = (tree, Locals) => {
         }
         break
       case 'probe-file':
+      case 'void':
         return ''
       default: {
         const camleCasedToken = lispToJavaScriptVariableName(token)

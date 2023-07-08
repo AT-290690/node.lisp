@@ -47,7 +47,7 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
   (let *target* (Array "shiny" "gold"))
   (function *solve* bags target (block 
     (let count 0)
-    (loop traverse-bags left right (block
+    (let traverse-bags (lambda left right (block
       (for-each bags 
         (lambda bag _ _ 
           (and 
@@ -59,7 +59,7 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
                     (= right (car (cdr (cdr x))))
                     (let* count (+ count 1))
                     (set (car bag) 2 1)
-                    (traverse-bags (car (car bag)) (car (cdr (car bag))))))))))))
+                    (traverse-bags (car (car bag)) (car (cdr (car bag)))))))))))))
        (traverse-bags (car target) (car (cdr target)))
        count))
   

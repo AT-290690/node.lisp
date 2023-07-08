@@ -114,6 +114,61 @@ lisp.compile('(+ 1 2)') // 3 but faster!
 lisp.js(lisp.parse('(+ 1 2)')).program // (1 + 2); as js
 ```
 
+Compiles to JavaScript
+
+```lisp
+(import std "remove" "map" "reduce")
+(do
+  (Array 1 2 3 4 5 6 7 101)
+  (remove (lambda x _ _ (= (mod x 2) 1)))
+  (map (lambda x _ _ (* x 2)))
+  (reduce (lambda a x _ _ (+ a x)) 0))
+```
+
+```js
+reduce(
+  map(
+    remove([1, 2, 3, 4, 5, 6, 7, 101], (x, _1, _2) => {
+      return +(x % 2 === 1)
+    }),
+    (x, _1, _2) => {
+      return x * 2
+    }
+  ),
+  (a, x, _2, _3) => {
+    return a + x
+  },
+  0
+)
+```
+
+```lisp
+; Tail Call Optimization
+(loop sum-below number sum (block
+(if (= number 0) sum (sum-below (- number 1) (+ sum number)))))
+(log (sum-below 10000 0))
+```
+
+```js
+var log = (msg) => { console.log(msg) return msg },
+    tco = (fn) => (...args) => {
+      let result = fn(...args)
+      while (typeof result === 'function') result = result()
+      return result
+    }
+var sumBelow, rec_32721849989891052
+;(sumBelow = tco(
+  (rec_32721849989891052 = (number, sum) => {
+    return +(number === 0)
+      ? sum
+      : () => rec_32721849989891052(number - 1, sum + number)
+  }),
+  rec_32721849989891052
+)),
+  sumBelow
+log(sumBelow(10000, 0))
+```
+
 <p align="center">
 <img width="80" src="./lisp-lizard.svg"/>
 </p>

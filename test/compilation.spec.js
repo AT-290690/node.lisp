@@ -445,13 +445,12 @@ left-arr (quick-sort)
       (callback (get array i) i)
       (if (< i bounds) (interate (+ i 1) bounds) array)))
     (interate 0 (- (length array) 1)))))
-  (let deep-flat (lambda arr (block 
-    (let new-array ()) 
-    (loop flatten item (if (Arrayp item) (for-each item (lambda x _ (flatten x))) 
-    (push new-array item)))
-    (flatten arr) 
-    new-array
-  )))
+    (let deep-flat (lambda arr (block 
+      (let new-array ()) 
+      (let flatten (lambda item (if (Arrayp item) (for-each item (lambda x _ (flatten x))) 
+      (push new-array item))))
+      new-array
+    )))
   (let arr (
   Array 
   (Array 1 2) 

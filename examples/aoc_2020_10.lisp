@@ -54,7 +54,7 @@
    (adjacent-difference (lambda a b (- b a)))))
 
 ; part 2
-(loop combinations inp index memo
+(function combinations inp index memo
       (if (array-in-bounds-p memo index) (get memo index) (block 
         (let result 0)
         (loop iterate j (block 

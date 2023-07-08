@@ -1,5 +1,4 @@
 import { evaluate } from './interpreter.js'
-const maxCallstackLimitInterpretation = 1024
 const stringifyArgs = (args) =>
   args
     .map((x) => {
@@ -719,12 +718,7 @@ const tokens = {
       )
     const body = args.at(-1)
     const name = args[0].value
-    let count = -1
     const fn = (props, env) => {
-      if (count > maxCallstackLimitInterpretation)
-        throw new RangeError(
-          `Recursive (loop) reached maximum ${maxCallstackLimitInterpretation} calls.\n For calls (> ${maxCallstackLimitInterpretation}), compile instead.`
-        )
       if (props.length !== params.length)
         throw new RangeError(
           `Not all arguments for (loop ${params
@@ -734,7 +728,6 @@ const tokens = {
       const localEnv = Object.create(env)
       for (let i = 0; i < props.length; ++i)
         localEnv[params[i].value] = evaluate(props[i], localEnv)
-      ++count
       return evaluate(body, localEnv)
     }
     env[name] = fn
@@ -871,5 +864,5 @@ const tokens = {
     throw new Error(string)
   },
 }
-
+tokens['void'] = tokens['block']
 export { tokens }
