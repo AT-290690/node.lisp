@@ -28,7 +28,7 @@ const tokens = {
     const [a, b] = args.map((x) => evaluate(x, env))
     if (typeof a !== 'number' || typeof b !== 'number')
       throw new TypeError(
-        `Not all arguments for (mod) are (numbers) (mod ${stringifyArgs(
+        `Incorrect number of arguments for (mod) are (numbers) (mod ${stringifyArgs(
           args
         )}).`
       )
@@ -140,7 +140,9 @@ const tokens = {
     const operands = args.map((x) => evaluate(x, env))
     if (!operands.every((x) => typeof x === 'number'))
       throw new TypeError(
-        `Not all arguments for (+) are (numbers) (+ ${stringifyArgs(args)}).`
+        `Incorrect number of arguments for (+) are (numbers) (+ ${stringifyArgs(
+          args
+        )}).`
       )
     return operands.reduce((a, b) => a + b)
   },
@@ -152,7 +154,9 @@ const tokens = {
     const operands = args.map((x) => evaluate(x, env))
     if (!operands.every((x) => typeof x === 'number'))
       throw new TypeError(
-        `Not all arguments for (*) are (numbers) (* ${stringifyArgs(args)}).`
+        `Incorrect number of arguments for (*) are (numbers) (* ${stringifyArgs(
+          args
+        )}).`
       )
     return operands.reduce((a, b) => a * b)
   },
@@ -164,7 +168,9 @@ const tokens = {
     const operands = args.map((x) => evaluate(x, env))
     if (!operands.every((x) => typeof x === 'number'))
       throw new TypeError(
-        `Not all arguments for (-) are (numbers) (- ${stringifyArgs(args)}).`
+        `Incorrect number of arguments for (-) are (numbers) (- ${stringifyArgs(
+          args
+        )}).`
       )
     return args.length === 1 ? -operands[0] : operands.reduce((a, b) => a - b)
   },
@@ -390,7 +396,7 @@ const tokens = {
     const fn = (props = [], scope) => {
       if (props.length > params.length) {
         throw new RangeError(
-          `More arguments for (function ${params
+          `More arguments for (function ${name} ${params
             .map((x) => x.value)
             .join(' ')
             .trim()}) are provided. (expects ${params.length} but got ${
@@ -400,7 +406,7 @@ const tokens = {
       }
       if (props.length !== params.length)
         throw new RangeError(
-          `Not all arguments for (function ${params
+          `Incorrect number of arguments for (function ${params
             .map((x) => x.value)
             .join(' ')
             .trim()}) are provided. (expects ${params.length} but got ${
@@ -425,7 +431,7 @@ const tokens = {
     return (props = [], scope) => {
       if (props.length !== params.length)
         throw new RangeError(
-          `Not all arguments for (lambda ${params
+          `Incorrect number of arguments for (lambda ${params
             .map((x) => x.value)
             .join(' ')}) are provided. (expects ${params.length} but got ${
             props.length
@@ -548,27 +554,25 @@ const tokens = {
       else continue
     return evaluate(args.at(-1), env)
   },
-  ['identity']: (args, env) => {
+  ['apply']: (args, env) => {
     if (!args.length)
       throw new RangeError(
-        'Invalid number of arguments to (identity) (>= 1 required)'
+        'Invalid number of arguments to (apply) (>= 1 required)'
       )
     const [first, ...rest] = args
     if (first.type === 'word' && first.value in tokens)
       throw new TypeError(
-        `Following argument of (identity) must not be an reserved word (identity ${stringifyArgs(
+        `Following argument of (apply) must not be an reserved word (apply ${stringifyArgs(
           args
         )})`
       )
-    const identity = evaluate(first, env)
-    if (typeof identity !== 'function')
+    const apply = evaluate(first, env)
+    if (typeof apply !== 'function')
       throw new TypeError(
-        `First argument of (identity) must be a (lambda) (${stringifyArgs(
-          args
-        )})`
+        `First argument of (apply) must be a (lambda) (${stringifyArgs(args)})`
       )
 
-    return identity(rest, env)
+    return apply(rest, env)
   },
   ['let']: (args, env) => {
     if (args.length !== 2)
@@ -721,7 +725,7 @@ const tokens = {
     const fn = (props, env) => {
       if (props.length !== params.length)
         throw new RangeError(
-          `Not all arguments for (loop ${params
+          `Incorrect number of arguments for (loop ${name} ${params
             .map((x) => x.value)
             .join(' ')}) are provided.`
         )
@@ -864,5 +868,11 @@ const tokens = {
     throw new Error(string)
   },
 }
+tokens['first'] = tokens['car']
+tokens['rest'] = tokens['cdr']
+tokens['∞'] = tokens['loop']
+tokens['ƒ'] = tokens['function']
+tokens['∘'] = tokens['do']
+tokens['λ'] = tokens['lambda']
 tokens['void'] = tokens['block']
 export { tokens }

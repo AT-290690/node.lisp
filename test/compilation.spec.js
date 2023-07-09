@@ -3,7 +3,7 @@ import { runFromCompiled, runFromInterpreted } from '../src/utils.js'
 it('compilation should work', () =>
   [
     `(let T (lambda x (lambda y (lambda (* 5 x y)))))
-  (identity (identity (identity T 10) 3))`,
+  (apply (apply (apply T 10) 3))`,
     ` (let bol (Boolean))
     (Array bol (boole bol 1) (boole bol 0) (boole bol 1) (boole bol 0))`,
     `(function some array callback (block

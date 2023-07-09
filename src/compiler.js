@@ -132,13 +132,13 @@ const compile = (tree, Locals) => {
           return res !== undefined ? res.toString().trim() : ''
         }
       }
-      case 'identity': {
+      case 'apply': {
         const [first, ...rest] = Arguments
-        const identity = compile(first, Locals)
+        const apply = compile(first, Locals)
         return `${
-          identity[identity.length - 1] === ';'
-            ? identity.substring(0, identity.length - 1)
-            : identity
+          apply[apply.length - 1] === ';'
+            ? apply.substring(0, apply.length - 1)
+            : apply
         }(${parseArgs(rest, Locals)})`
       }
       case 'let': {
@@ -201,8 +201,10 @@ const compile = (tree, Locals) => {
       case 'atom':
         return handleBoolean(`_isAtom(${compile(Arguments[0], Locals)});`)
       case 'car':
+      case 'first':
         return `${compile(Arguments[0], Locals)}.at(0);`
       case 'cdr':
+      case 'rest':
         return `${compile(Arguments[0], Locals)}.slice(1);`
       case 'get':
         return `${compile(Arguments[0], Locals)}.at(${compile(
@@ -211,22 +213,22 @@ const compile = (tree, Locals) => {
         )});`
       case 'set':
         return `_set(${parseArgs(Arguments, Locals)});`
-      case 'lambda': {
+      case 'lambda':
+      case 'λ': {
         const functionArgs = Arguments
         const body = Arguments.pop()
         const localVars = new Set()
         const evaluatedBody = compile(body, localVars)
         const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
-        return `(${parseArgs(
+        return `((${parseArgs(
           functionArgs.map(({ type, value }, index) =>
             value === '_' ? { type, value: `_${index}` } : { type, value }
           ),
           Locals
-        )})=>{${vars} ${Array.isArray(body) ? 'return' : ' '} ${evaluatedBody
-          .toString()
-          .trimStart()}};`
+        )})=>{${vars}return ${evaluatedBody.toString().trimStart()}});`
       }
-      case 'loop': {
+      case 'loop':
+      case '∞': {
         let name,
           newName,
           out = '(('
@@ -241,22 +243,15 @@ const compile = (tree, Locals) => {
         deepRename(arg.value, newName, body)
         const evaluatedBody = compile(body, localVars)
         const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
-
-        // out += `${name}=(${parseArgs(
-        //   functionArgs,
-        //   Locals
-        // )})=>{${vars} return ${evaluatedBody.toString().trimStart()}};`
-        // out += `),${name});`
-
         out += `${name}=(tco(${newName}=(${parseArgs(
           functionArgs,
           Locals
-        )})=>{${vars} return ${evaluatedBody.toString().trimStart()}};`
+        )})=>{${vars}return ${evaluatedBody.toString().trimStart()}};`
         out += `, ${newName}))), ${name});`
-
         return out
       }
-      case 'function': {
+      case 'function':
+      case 'ƒ': {
         let name,
           out = '(('
         const arg = Arguments[0]
@@ -272,9 +267,7 @@ const compile = (tree, Locals) => {
             value === '_' ? { type, value: `_${index}` } : { type, value }
           ),
           Locals
-        )})=>{${vars}${Array.isArray(body) ? 'return' : ' '} ${evaluatedBody
-          .toString()
-          .trimStart()}};`
+        )})=>{${vars}return ${evaluatedBody.toString().trimStart()}};`
         out += `),${name});`
         return out
       }
@@ -335,7 +328,8 @@ const compile = (tree, Locals) => {
           Arguments[0],
           Locals
         )})`
-      case 'do': {
+      case 'do':
+      case '∘': {
         let inp = Arguments[0]
         for (let i = 1; i < Arguments.length; ++i)
           inp = [Arguments[i].shift(), inp, ...Arguments[i]]

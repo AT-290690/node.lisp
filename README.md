@@ -51,6 +51,15 @@ A Lisp for Node
   (reduce sum 0))
 ```
 
+```lisp
+(import std "range" "push" "factorial" "product-array" "reduce")
+(function factorial n
+  (do
+    (range 1 n)
+    (product-array)))
+(factorial 10)
+```
+
 Simple CLI usage - create main.js
 
 ```js

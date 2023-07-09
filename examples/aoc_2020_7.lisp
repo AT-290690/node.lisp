@@ -43,59 +43,64 @@ b b bags contain 2 c c bags, 2 d d bags, 2 e e bags.
 a a bags contain 2 b b bags, 2 c c bags, 2 d d bags.
 shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
 
-; (map (lambda z _ _ (regex-match z "[1-9]|.*")))
-  (let *target* (Array "shiny" "gold"))
-  (function *solve* bags target (block 
-    (let count 0)
-    (let traverse-bags (lambda left right (block
-      (for-each bags 
-        (lambda bag _ _ 
-          (and 
-            (not (= (get (car bag) -1) 1)) 
-              (some (car (cdr bag)) 
-                (lambda x _ _ 
-                  (and 
-                    (= left (car (cdr x)))
-                    (= right (car (cdr (cdr x))))
-                    (let* count (+ count 1))
-                    (set (car bag) 2 1)
-                    (traverse-bags (car (car bag)) (car (cdr (car bag)))))))))))))
-       (traverse-bags (car target) (car (cdr target)))
-       count))
-  
-  (function *read-input* input
-      (do 
-        input 
-        (split-by "\n") 
-       (map (lambda x _ _ (do x (regex-match "^(.*(?= bags contain))|(?<=(contain )).*(?=(,|.))") 
-        (map 
-          (lambda y _ _ 
-            (do y 
-              (split ", ")))))))
-        (remove 
-          (lambda bag _ _ 
-            (not 
-              (or 
-                (= (car (car bag)) (concatenate (car *target*) (car (cdr *target*))))
-                (= (car (car (cdr bag))) "no other bags")
-                ))))
-        (map 
-          (lambda bag _ _ 
-            (block
-              (let left (car (car bag)))
-              (let right (car (cdr bag)))
-              (let head (split left " "))
-              (let tail 
-                (do right  
-                  (map 
-                    (lambda x _ _ 
-                      (block 
-                        (let current (split x " "))
-                        (do current 
-                          (set 0 (type (car current) Number)) 
-                          (set -1)))))))
-              (Array head tail))))))
+; (loop sum-below number sum (block 
+; (if (= number 0) sum (sum-below (- number 1) (+ sum number)))))
+; (log (sum-below 10000 0))
 
+(let input sample1)
+; (let input (open "./playground/src/aoc_2020/7/input.txt"))
+
+(let *target* (Array "shiny" "gold"))
+(function *read-input* input
+    (do 
+      input 
+      (split-by "\n") 
+      (map (lambda x _ _ (do x (regex-match "^(.*(?= bags contain))|(?<=(contain )).*(?=(,|.))") 
+      (map 
+        (lambda y _ _ 
+          (do y 
+            (split ", ")))))))
+      (remove 
+        (lambda bag _ _ 
+          (not 
+            (or 
+              (= (car (car bag)) (concatenate (car *target*) (car (cdr *target*))))
+              (= (car (car (cdr bag))) "no other bags")
+              ))))
+      (map 
+        (lambda bag _ _ 
+          (block
+            (let left (car (car bag)))
+            (let right (car (cdr bag)))
+            (let head (split left " "))
+            (let tail 
+              (do right  
+                (map 
+                  (lambda x _ _ 
+                    (block 
+                      (let current (split x " "))
+                      (do current 
+                        (set 0 (type (car current) Number)) 
+                        (set -1)))))))
+            (Array head tail))))))
+
+(function *solve1* bags target (block 
+  (let count 0)
+  (let traverse-bags (lambda left right (block
+    (for-each bags 
+      (lambda bag _ _ 
+        (and 
+          (not (= (get (car bag) -1) 1)) 
+            (some (car (cdr bag)) 
+              (lambda x _ _ 
+                (and 
+                  (= left (car (cdr x)))
+                  (= right (car (cdr (cdr x))))
+                  (let* count (+ count 1))
+                  (set (car bag) 2 1)
+                  (traverse-bags (car (car bag)) (car (cdr (car bag)))))))))))))
+      (traverse-bags (car target) (car (cdr target)))
+      count))
 
 (function *find-bag* bags left right 
           (find bags 
@@ -103,21 +108,18 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
               (= (car (car x)) left)
               (= (car (cdr (car x))) right)))))
       
-(function *sum-bags* initial all-bags 
+(function *solve2* initial all-bags 
   (reduce initial (lambda output current _ _ (block 
     (let next (*find-bag* all-bags (car (cdr current)) (car (cdr (cdr current)))))
-    (+ output (if next (* (car current) (*sum-bags* (car (cdr next)) all-bags)) (car current))))) 1))
-; 1 + 1*7 + 2 + 2*11 = 32
-; (let inp (open "./playground/src/aoc_2020/7/input.txt"))
-; (do (*read-input* inp) (*find-bag* "shiny" "gold") (cdr) (car) (*sum-bags* (*read-input* inp)) (- 1) (log))
+    (+ output (if next (* (car current) (*solve2* (car (cdr next)) all-bags)) (car current))))) 1))
 
 (Array
-  (do (*read-input* sample1) (*solve* *target*))
-  (do (*read-input* sample2) (*solve* *target*))
-  (do (*read-input* sample1) (*find-bag* "shiny" "gold") (cdr) (car) (*sum-bags* (*read-input* sample1)) (- 1))
-  (do (*read-input* sample2) (*find-bag* "shiny" "gold") (cdr) (car) (*sum-bags* (*read-input* sample2)) (- 1))
-  (do (*read-input* sample3) (*find-bag* "shiny" "gold") (cdr) (car) (*sum-bags* (*read-input* sample3)) (- 1))
-  (do (*read-input* sample4) (*find-bag* "shiny" "gold") (cdr) (car) (*sum-bags* (*read-input* sample4)) (- 1))
-  (do (*read-input* sample5) (*find-bag* "shiny" "gold") (cdr) (car) (*sum-bags* (*read-input* sample5)) (- 1))
-  (do (*read-input* sample6) (*find-bag* "shiny" "gold") (cdr) (car) (*sum-bags* (*read-input* sample6)) (- 1))
-  (do (*read-input* sample7) (*find-bag* "shiny" "gold") (cdr) (car) (*sum-bags* (*read-input* sample7)) (- 1)))
+  (do (*read-input* sample1) (*solve1* *target*))
+  (do (*read-input* sample2) (*solve1* *target*))
+  (do (*read-input* sample1) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample1)) (- 1))
+  (do (*read-input* sample2) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample2)) (- 1))
+  (do (*read-input* sample3) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample3)) (- 1))
+  (do (*read-input* sample4) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample4)) (- 1))
+  (do (*read-input* sample5) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample5)) (- 1))
+  (do (*read-input* sample6) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample6)) (- 1))
+  (do (*read-input* sample7) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample7)) (- 1)))

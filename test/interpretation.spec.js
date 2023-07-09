@@ -3,7 +3,7 @@ import { runFromInterpreted } from '../src/utils.js'
 it('interpretation should work', () => {
   strictEqual(
     runFromInterpreted(`(let T (lambda x (lambda y (lambda (* 5 x y)))))
-  (identity (identity (identity T 10) 3))`),
+  (apply (apply (apply T 10) 3))`),
     150
   )
   deepStrictEqual(
