@@ -43,10 +43,6 @@ b b bags contain 2 c c bags, 2 d d bags, 2 e e bags.
 a a bags contain 2 b b bags, 2 c c bags, 2 d d bags.
 shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
 
-; (loop sum-below number sum (block 
-; (if (= number 0) sum (sum-below (- number 1) (+ sum number)))))
-; (log (sum-below 10000 0))
-
 (let input sample1)
 ; (let input (open "./playground/src/aoc_2020/7/input.txt"))
 

@@ -3,6 +3,7 @@ import { start } from 'repl'
 import { compileToJs, lispToJavaScriptVariableName } from './src/compiler.js'
 import { evaluate, run } from './src/interpreter.js'
 import { parse } from './src/parser.js'
+// import wabt from 'wabt'
 import {
   isBalancedParenthesis,
   logError,
@@ -12,7 +13,7 @@ import {
 } from './src/utils.js'
 import { tokens } from './src/tokeniser.js'
 import std from './lib/std.js'
-const cli = () => {
+const cli = async () => {
   const [, , ...argv] = process.argv
   let file = '',
     Extensions = {},
@@ -74,6 +75,30 @@ const cli = () => {
           switch (value) {
             case 'fs':
               {
+                // const { readWasm, parseWat } = await wabt()
+                // module: (args, env) => {
+                //   const out = args.map((x) => evaluate(x, env))
+                //   const string = `(module ${out
+                //     .flat(1)
+                //     // .map((x) => x.replace(new RegExp(/'/g), '"'))
+                //     .join(' ')})`
+                //   // console.log(readWasm(), {
+                //   //   readDebugNames: true,
+                //   // })
+                //   // console.log({ string: })
+                //   // Buffer.from(string, 'utf-8')
+                //   // console.log(parseWat('main.wat', string))
+                //   console.log({ string })
+                //   console.log(
+                //     readWasm(parseWat('main.wat', string), {
+                //       readDebugNames: true,
+                //     })
+                //   )
+                //   return string
+                //   // parseWat('main.wat', args string)
+                //   // const wasmModule = wabt.parseWat(inputWat, readFileSync(inputWat, "utf8"));
+                //   // const { buffer } = wasmModule.toBinary({});
+                // },
                 Extensions = {
                   write: (path, data) =>
                     `writeFileSync(${path}, ${data}, 'utf-8);`,

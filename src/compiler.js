@@ -1,4 +1,5 @@
 export const earMuffsToLodashes = (name) => name.replace(new RegExp(/\*/g), '_')
+export const dotNamesToLowerCase = (name) => name.replace(new RegExp(/\./g), '')
 export const toCamelCase = (name) => {
   let out = name[0]
   for (let i = 1; i < name.length; ++i) {
@@ -19,7 +20,7 @@ export const deepRename = (name, newName, tree) => {
     }
 }
 export const lispToJavaScriptVariableName = (name) =>
-  toCamelCase(earMuffsToLodashes(name))
+  toCamelCase(dotNamesToLowerCase(earMuffsToLodashes(name)))
 const CAST_BOOLEAN_TO_NUMBER = true
 const Extensions = {}
 const Functions = new Map()

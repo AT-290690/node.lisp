@@ -17,6 +17,7 @@ const problems = [
   day(10),
   day(11),
   day(12),
+  day(13),
 ]
 it('Should compile aoc 2020', () =>
   problems
@@ -42,5 +43,6 @@ it('Should solve aoc 2020 tasks', () =>
       [35, 8, 8],
       [37, 26],
       [25, 286],
+      [295, 1835],
     ]
   ))

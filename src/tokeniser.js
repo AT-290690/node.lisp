@@ -867,6 +867,7 @@ const tokens = {
       )
     throw new Error(string)
   },
+  ['module']: () => 'WAT module',
 }
 tokens['first'] = tokens['car']
 tokens['rest'] = tokens['cdr']

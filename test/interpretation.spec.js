@@ -1,6 +1,20 @@
 import { deepStrictEqual, strictEqual } from 'assert'
 import { runFromInterpreted } from '../src/utils.js'
 it('interpretation should work', () => {
+  deepStrictEqual(
+    runFromInterpreted(`
+  (function floor n (| n 0)) (function round n (| (+ n 0.5) 0))
+  (Array (round 1.5) (floor 1.5) (round 1.2) (floor 1.2) (round 1.7) (floor 1.7))
+  `),
+    [
+      Math.round(1.5),
+      Math.floor(1.5),
+      Math.round(1.2),
+      Math.floor(1.2),
+      Math.round(1.7),
+      Math.floor(1.7),
+    ]
+  )
   strictEqual(
     runFromInterpreted(`(let T (lambda x (lambda y (lambda (* 5 x y)))))
   (apply (apply (apply T 10) 3))`),
