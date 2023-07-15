@@ -418,7 +418,7 @@ const tokens = {
       }
       if (props.length !== params.length)
         throw new RangeError(
-          `Incorrect number of arguments for (defun ${params
+          `Incorrect number of arguments for (defun ${name} ${params
             .map((x) => x.value)
             .join(' ')
             .trim()}) are provided. (expects ${params.length} but got ${
@@ -738,31 +738,6 @@ const tokens = {
       )
     return setTimeout(callback, time)
   },
-  ['loop']: (args, env) => {
-    if (args.length < 2)
-      throw new RangeError('Invalid number of arguments to (loop) (2 required)')
-    const params = args.slice(1, -1)
-    if (!params.length)
-      throw new RangeError(
-        'Invalid number of arguments for (loop) (>= 1 required)'
-      )
-    const body = args.at(-1)
-    const name = args[0].value
-    const fn = (props, env) => {
-      if (props.length !== params.length)
-        throw new RangeError(
-          `Incorrect number of arguments for (loop ${name} ${params
-            .map((x) => x.value)
-            .join(' ')}) are provided.`
-        )
-      const localEnv = Object.create(env)
-      for (let i = 0; i < props.length; ++i)
-        localEnv[params[i].value] = evaluate(props[i], localEnv)
-      return evaluate(body, localEnv)
-    }
-    env[name] = fn
-    return fn
-  },
   ['String']: (args) => {
     if (args.length)
       throw new RangeError(
@@ -916,8 +891,11 @@ const tokens = {
 
 tokens['first'] = tokens['car']
 tokens['rest'] = tokens['cdr']
-tokens['∞'] = tokens['loop']
-tokens['ƒ'] = tokens['function'] = tokens['defun']
+tokens['∞'] =
+  tokens['loop'] =
+  tokens['ƒ'] =
+  tokens['function'] =
+    tokens['defun']
 tokens['∘'] = tokens['do']
 tokens['λ'] = tokens['lambda']
 tokens['void'] = tokens['block']

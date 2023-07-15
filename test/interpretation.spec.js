@@ -1,50 +1,51 @@
 import { deepStrictEqual, strictEqual } from 'assert'
 import { runFromInterpreted } from '../src/utils.js'
-it('interpretation should work', () => {
-  strictEqual(
-    runFromInterpreted(`(let x 8)
+describe('Interpration', () => {
+  it('Should be correct', () => {
+    strictEqual(
+      runFromInterpreted(`(let x 8)
   (or (cond 
   (= x 10) "Ten"
   (= x 9) "Nine"
   (= x 8) "Eight") "NaN")`),
-    'Eight'
-  )
-  deepStrictEqual(
-    runFromInterpreted(`
-  (function floor n (| n 0)) (function round n (| (+ n 0.5) 0))
+      'Eight'
+    )
+    deepStrictEqual(
+      runFromInterpreted(`
+  (defun floor n (| n 0)) (defun round n (| (+ n 0.5) 0))
   (Array (round 1.5) (floor 1.5) (round 1.2) (floor 1.2) (round 1.7) (floor 1.7))
   `),
-    [
-      Math.round(1.5),
-      Math.floor(1.5),
-      Math.round(1.2),
-      Math.floor(1.2),
-      Math.round(1.7),
-      Math.floor(1.7),
-    ]
-  )
-  strictEqual(
-    runFromInterpreted(`(let T (lambda x (lambda y (lambda (* 5 x y)))))
+      [
+        Math.round(1.5),
+        Math.floor(1.5),
+        Math.round(1.2),
+        Math.floor(1.2),
+        Math.round(1.7),
+        Math.floor(1.7),
+      ]
+    )
+    strictEqual(
+      runFromInterpreted(`(let T (lambda x (lambda y (lambda (* 5 x y)))))
   (apply (apply (apply T 10) 3))`),
-    150
-  )
-  deepStrictEqual(
-    runFromInterpreted(`
+      150
+    )
+    deepStrictEqual(
+      runFromInterpreted(`
     (let bol (Boolean))
     (Array bol (boole bol 1) (boole bol 0) (boole bol 1) (boole bol 0))
   `),
-    [1, 1, 0, 1, 0]
-  )
-  deepStrictEqual(
-    runFromInterpreted(`
-    (function some array callback (block
+      [1, 1, 0, 1, 0]
+    )
+    deepStrictEqual(
+      runFromInterpreted(`
+    (defun some array callback (block
       (let bol 1)
       (loop iterate i bounds (block
         (let res (callback (get array i) i array))
         (boole bol (type res Boolean))
         (if (and (not res) (< i bounds)) (iterate (+ i 1) bounds) bol)))
       (iterate 0 (- (length array) 1))))
-        (function equal a b 
+        (defun equal a b 
      (or (and (atom a) (atom b) (= a b)) 
      (and (Arrayp a) 
           (= (length a) (length b)) 
@@ -60,12 +61,12 @@ it('interpretation should work', () => {
     (equal (Array 1 2) (Array 1 2 (Array 1 2)))
     (equal (Array 1 (Array 1 2)) (Array 1 2 (Array 1 2)))
     (equal (Array 1 2 (Array 1 2)) (Array 1 2 (Array 1 2)))))`),
-    [1, 0, [1, 0, 1, 0, 0, 0, 1]]
-  )
+      [1, 0, [1, 0, 1, 0, 0, 0, 1]]
+    )
 
-  deepStrictEqual(
-    runFromInterpreted(
-      `(function is-array-of-atoms array 
+    deepStrictEqual(
+      runFromInterpreted(
+        `(defun is-array-of-atoms array 
         (if (not (length array)) 1 
          (if (atom (car array)) 
           (is-array-of-atoms (cdr array)) 0)))
@@ -73,42 +74,42 @@ it('interpretation should work', () => {
            (Array 
                (is-array-of-atoms (Array 1 2 (Array 1 2) "5"))
                (is-array-of-atoms (Array 1 2 3 4 "5")))`
-    ),
-    [0, 1]
-  )
-  strictEqual(
-    runFromInterpreted(
-      `(do (Array (Array 1 2 3 4 5) 2 3 4) (car) (cdr) (car))`
-    ),
-    2
-  )
-  deepStrictEqual(runFromInterpreted(`(cdr (Array 1 2 3 4))`), [2, 3, 4])
-  strictEqual(runFromInterpreted(`(car (Array 1 2 3 4))`), 1)
-  strictEqual(
-    runFromInterpreted(`(do 1 
+      ),
+      [0, 1]
+    )
+    strictEqual(
+      runFromInterpreted(
+        `(do (Array (Array 1 2 3 4 5) 2 3 4) (car) (cdr) (car))`
+      ),
+      2
+    )
+    deepStrictEqual(runFromInterpreted(`(cdr (Array 1 2 3 4))`), [2, 3, 4])
+    strictEqual(runFromInterpreted(`(car (Array 1 2 3 4))`), 1)
+    strictEqual(
+      runFromInterpreted(`(do 1 
     (+ 2) 
       (* 3 4)
        (- 3 2))`),
-    31
-  )
-  strictEqual(runFromInterpreted(`(let x -1) (do x (-))`), 1)
-  strictEqual(runFromInterpreted(`(let x -1) (- x)`), 1)
-  strictEqual(runFromInterpreted(`(- 1)`), -1)
-  strictEqual(runFromInterpreted(`(if (< 1 2) 42 69)`), 42)
-  strictEqual(runFromInterpreted(`(unless (< 1 2) 42 69)`), 69)
-  deepStrictEqual(
-    runFromInterpreted(`
-(function min a b (if (< a b) a b))
-(function push array value (set array (length array) value))
-(function euclidean-mod a b (mod (+ (mod a b) b) b))
-(function find array callback (block
+      31
+    )
+    strictEqual(runFromInterpreted(`(let x -1) (do x (-))`), 1)
+    strictEqual(runFromInterpreted(`(let x -1) (- x)`), 1)
+    strictEqual(runFromInterpreted(`(- 1)`), -1)
+    strictEqual(runFromInterpreted(`(if (< 1 2) 42 69)`), 42)
+    strictEqual(runFromInterpreted(`(unless (< 1 2) 42 69)`), 69)
+    deepStrictEqual(
+      runFromInterpreted(`
+(defun min a b (if (< a b) a b))
+(defun push array value (set array (length array) value))
+(defun euclidean-mod a b (mod (+ (mod a b) b) b))
+(defun find array callback (block
   (loop iterate i bounds (block
     (let current (get array i))
     (if (and (not (callback current i array)) (< i bounds))
       (iterate (+ i 1) bounds) 
       current)))
       (iterate 0 (- (length array) 1))))
-(function find-index array callback (block
+(defun find-index array callback (block
   (let idx -1)
   (let has-found 0)
   (loop iterate i bounds (block
@@ -119,8 +120,8 @@ it('interpretation should work', () => {
       (let* idx i))))
       (iterate 0 (- (length array) 1))
       (if has-found idx -1)))
-(function array-in-bounds-p array index (and (< index (length array)) (>= index 0)))
-(function map array callback (block 
+(defun array-in-bounds-p array index (and (< index (length array)) (>= index 0)))
+(defun map array callback (block 
   (let new-array ())
   (let i 0)
   (loop iterate i bounds (block
@@ -128,7 +129,7 @@ it('interpretation should work', () => {
     (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
   (iterate 0 (- (length array) 1))))
 
-    (function hash-index 
+    (defun hash-index 
       table key 
         (block
           (let total 0)
@@ -141,7 +142,7 @@ it('interpretation should work', () => {
             (if (< i bounds) (find-hash-index (+ i 1) bounds) total)))
           (find-hash-index 0 (min (- (length key-arr) 1) 100))))
       ; hash-table-set
-    (function hash-table-set 
+    (defun hash-table-set 
       table key value 
         (block
           (let idx (hash-index table key))
@@ -155,9 +156,9 @@ it('interpretation should work', () => {
             (set current index entry)
           )
           table))
-    (function hash-table-has table key 
+    (defun hash-table-has table key 
       (and (array-in-bounds-p table (let idx (hash-index table key))) (length (get table idx))))
-    (function hash-table-get
+    (defun hash-table-get
       table key 
         (block
           (let idx (hash-index table key))
@@ -168,10 +169,10 @@ it('interpretation should work', () => {
                 (find (lambda x i o (= key 
                         (do x (get 0)))))
                 (get 1))))))
-    (function hash-table 
+    (defun hash-table 
       size 
         (map (Array size length) (lambda x i o ())))
-    (function hash-table-make 
+    (defun hash-table-make 
       items 
         (block
           (let len (- (length items) 1))
@@ -189,32 +190,32 @@ it('interpretation should work', () => {
       (Array "skills" 
         (Array "Animation" "Programming"))))
   )) (hash-table-set tabl "age" 33)`),
-    [
-      [],
-      [],
-      [['skills', ['Animation', 'Programming']]],
       [
-        ['name', 'Anthony'],
-        ['age', 33],
-      ],
-    ]
-  )
-  deepStrictEqual(
-    runFromInterpreted(`
-    (function binary-tree-node 
+        [],
+        [],
+        [['skills', ['Animation', 'Programming']]],
+        [
+          ['name', 'Anthony'],
+          ['age', 33],
+        ],
+      ]
+    )
+    deepStrictEqual(
+      runFromInterpreted(`
+    (defun binary-tree-node 
             value (Array 
                     (Array "value" value)
                     (Array "left"  ())
                     (Array "right" ())))
-    (function binary-tree-get-left 
+    (defun binary-tree-get-left 
                     node (get node 1))
-    (function binary-tree-get-right 
+    (defun binary-tree-get-right 
                     node (get node 2))
-    (function binary-tree-set-left 
+    (defun binary-tree-set-left 
                     tree node (set tree 1 node))
-    (function binary-tree-set-right 
+    (defun binary-tree-set-right 
                     tree node (set tree 2 node)) 
-    (function binary-tree-get-value
+    (defun binary-tree-get-value
                     node (get node 0))
   (do 
     (binary-tree-node 1)
@@ -230,36 +231,36 @@ it('interpretation should work', () => {
     (binary-tree-get-left)
     (binary-tree-get-right))
   binary-tree-node`),
-    [
-      ['value', 5],
-      ['left', []],
-      ['right', []],
-    ]
-  )
-  strictEqual(
-    runFromInterpreted(`(let add_seq (lambda x (+ x 1 2 3)))
-  (function mult_10 x (* x 10))
+      [
+        ['value', 5],
+        ['left', []],
+        ['right', []],
+      ]
+    )
+    strictEqual(
+      runFromInterpreted(`(let add_seq (lambda x (+ x 1 2 3)))
+  (defun mult_10 x (* x 10))
   (let do_thing (lambda (do 100 
                         (add_seq) 
                         (mult_10))))
   (do_thing)`),
-    1060
-  )
-  deepStrictEqual(
-    runFromInterpreted(`
-    (function floor n (| n 0))
-(function push array value (set array (length array) value))
-(function array-of-numbers array (map array (lambda x i (type x Number))))
-(function product-array array (reduce array (lambda a b i o (* a b)) 1))
-(function split-by-lines string (regex-match string "[^\n]+"))
-(function string_to_array string delim 
+      1060
+    )
+    deepStrictEqual(
+      runFromInterpreted(`
+    (defun floor n (| n 0))
+(defun push array value (set array (length array) value))
+(defun array-of-numbers array (map array (lambda x i (type x Number))))
+(defun product-array array (reduce array (lambda a b i o (* a b)) 1))
+(defun split-by-lines string (regex-match string "[^\n]+"))
+(defun string_to_array string delim 
                       (reduce (. string) 
                         (lambda a x i o (block
                                   (if (= x delim) (push a ()) (block 
                                     (push (get a -1) x) a))))(push () ())))
-(function join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
+(defun join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
 
-(function concat array1 array2 (block
+(defun concat array1 array2 (block
   (loop iterate i bounds (block
   (if (< i (length array2)) (push array1 (get array2 i)))
   (if (< i bounds) 
@@ -267,7 +268,7 @@ it('interpretation should work', () => {
   array1)))
 (iterate 0 (- (length array2) 1))))
 
-(function map array callback (block 
+(defun map array callback (block 
   (let new-array ())
   (let i 0)
   (loop iterate i bounds (block
@@ -275,13 +276,13 @@ it('interpretation should work', () => {
     (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
   (iterate 0 (- (length array) 1))))
 
-(function reduce array callback initial (block
+(defun reduce array callback initial (block
   (loop iterate i bounds (block
     (let* initial (callback initial (get array i) i array))
     (if (< i bounds) (iterate (+ i 1) bounds) initial)))
   (iterate 0 (- (length array) 1))))
 
-(function quick-sort arr (block
+(defun quick-sort arr (block
   (if (<= (length arr) 1) arr
   (block
     (let pivot (get arr 0))
@@ -299,7 +300,7 @@ it('interpretation should work', () => {
   (push pivot) 
   (concat (quick-sort right-arr)))))))
 
-(function binary-search 
+(defun binary-search 
         array target (block
   (loop search 
         arr target start end (block
@@ -321,13 +322,13 @@ it('interpretation should work', () => {
 
 (let input sample)
 
-(function solve1 array cb 
+(defun solve1 array cb 
      (reduce array (lambda a x i array (block
         (let res (binary-search array (cb x)))
         (if res (push a res) a))) 
      ()))
 
-(function solve2 array cb 
+(defun solve2 array cb 
     (reduce array
       (lambda accumulator y i array (block
           (loop iterate j bounds (block 
@@ -354,31 +355,31 @@ it('interpretation should work', () => {
   (solve2 (lambda x y (- 2020 x y)))
   (product-array)))
     `),
-    [514579, 241861950]
-  )
+      [514579, 241861950]
+    )
 
-  deepStrictEqual(
-    runFromInterpreted(`
-(function floor n (| n 0))
-(function min a b (if (< a b) a b))
-(function push array value (set array (length array) value))
-(function product-array array (reduce array (lambda a b i o (* a b)) 1))
-(function join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
-(function concat array1 array2 (block
+    deepStrictEqual(
+      runFromInterpreted(`
+(defun floor n (| n 0))
+(defun min a b (if (< a b) a b))
+(defun push array value (set array (length array) value))
+(defun product-array array (reduce array (lambda a b i o (* a b)) 1))
+(defun join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
+(defun concat array1 array2 (block
   (loop iterate i bounds (block
   (if (< i (length array2)) (push array1 (get array2 i)))
   (if (< i bounds) 
     (iterate (+ i 1) bounds)
   array1)))
 (iterate 0 (- (length array2) 1))))
-(function map array callback (block 
+(defun map array callback (block 
   (let new-array ())
   (let i 0)
   (loop iterate i bounds (block
     (set new-array i (callback (get array i) i array))
     (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
   (iterate 0 (- (length array) 1))))
-(function reduce array callback initial (block
+(defun reduce array callback initial (block
   (loop iterate i bounds (block
     (let* initial (callback initial (get array i) i array))
     (if (< i bounds) (iterate (+ i 1) bounds) initial)))
@@ -393,7 +394,7 @@ it('interpretation should work', () => {
 (let policy (regex-match input "[a-z](?=:)"))
 (let inputs (regex-match input "(?<=:[ ])(.*)"))
 
-(function solve1 string letter (block
+(defun solve1 string letter (block
   (let array (. string))
   (let bitmask 0)
   (let zero (char "a" 0))
@@ -411,7 +412,7 @@ it('interpretation should work', () => {
       (+ count has-at-least-one))))
       (iterate 0 (- (length array) 1))))
 
-(function solve2 array letter x y (block 
+(defun solve2 array letter x y (block 
 (let a (get array (- x 1)))
 (let b (get array (- y 1)))
 (let left (= letter a))
@@ -443,21 +444,21 @@ it('interpretation should work', () => {
    ))
    (reduce (lambda a x i o (+ a (get x -1))) 0)
 ))`),
-    [2, 1]
-  )
+      [2, 1]
+    )
 
-  strictEqual(
-    runFromInterpreted(`
+    strictEqual(
+      runFromInterpreted(`
   (let array (Array 5 length))
   (set array -5)
   (length array)
 `),
-    0
-  )
-  deepStrictEqual(
-    runFromInterpreted(`
-    (function push array value (set array (length array) value))
-    (function concat array1 array2 (block
+      0
+    )
+    deepStrictEqual(
+      runFromInterpreted(`
+    (defun push array value (set array (length array) value))
+    (defun concat array1 array2 (block
       (loop iterate i bounds (block
       (if (< i (length array2)) (push array1 (get array2 i)))
       (if (< i bounds) 
@@ -465,7 +466,7 @@ it('interpretation should work', () => {
       array1
       )))
     (iterate 0 (- (length array2) 1))))
-    (function quick-sort arr (block
+    (defun quick-sort arr (block
       (if (<= (length arr) 1) arr
       (block
         (let pivot (get arr 0))
@@ -482,7 +483,7 @@ it('interpretation should work', () => {
       left-arr (quick-sort) 
       (push pivot) 
       (concat (quick-sort right-arr)))))))
-    (function reverse array (block
+    (defun reverse array (block
       (let len (length array))
       (let reversed (Array len length))
       (let offset (- len 1))
@@ -497,10 +498,10 @@ it('interpretation should work', () => {
         (quick-sort)
         (reverse))
     `),
-    [8, 3, 1, 0, -2]
-  )
-  strictEqual(
-    runFromInterpreted(`(let find (lambda array callback (block
+      [8, 3, 1, 0, -2]
+    )
+    strictEqual(
+      runFromInterpreted(`(let find (lambda array callback (block
       (loop iterate i bounds (block
         (let current (get array i))
         (if (and (not (callback current i)) (< i bounds))
@@ -508,10 +509,10 @@ it('interpretation should work', () => {
           current)))
           (iterate 0 (- (length array) 1)))))
     (find (Array 1 2 3 4 5 6) (lambda x i (= i 2)))`),
-    3
-  )
-  deepStrictEqual(
-    runFromInterpreted(`
+      3
+    )
+    deepStrictEqual(
+      runFromInterpreted(`
     (let push (lambda array value (set array (length array) value)))
     (let for-each (lambda array callback (block
       (loop iterate i bounds (block
@@ -534,17 +535,17 @@ it('interpretation should work', () => {
     (Array 1 2))
   )
   (deep-flat arr)`),
-    [1, 2, 1, 2, 1, 3, 1, 4, 4, 'x', 'y', 1, 2]
-  )
-  strictEqual(
-    runFromInterpreted(`(loop iterate i (if (< i 100) 
+      [1, 2, 1, 2, 1, 3, 1, 4, 4, 'x', 'y', 1, 2]
+    )
+    strictEqual(
+      runFromInterpreted(`(loop iterate i (if (< i 100) 
   (iterate (+ i 1)) i))
 (iterate 0)
 `),
-    100
-  )
-  deepStrictEqual(
-    runFromInterpreted(`(let push (lambda array value (set array (length array) value)))
+      100
+    )
+    deepStrictEqual(
+      runFromInterpreted(`(let push (lambda array value (set array (length array) value)))
   (let concat (lambda array1 array2 (block
     (let iterate (lambda i bounds (block
     (push array1 (get array2 i))
@@ -561,10 +562,10 @@ it('interpretation should work', () => {
     (concat (Array 1 2 3 4))
     (concat (Array 5 6 7))
   )`),
-    [1, 2, 3, -1, 'a', 'b', 'c', 1, 2, 3, 4, 5, 6, 7]
-  )
-  strictEqual(
-    runFromInterpreted(`(let range (lambda start end (block 
+      [1, 2, 3, -1, 'a', 'b', 'c', 1, 2, 3, 4, 5, 6, 7]
+    )
+    strictEqual(
+      runFromInterpreted(`(let range (lambda start end (block 
   (let array ())
   (let iterate (lambda i bounds (block
     (set array i (+ i start))
@@ -612,11 +613,11 @@ it('interpretation should work', () => {
   (reduce sum 0))
   
   `),
-    234
-  )
+      234
+    )
 
-  deepStrictEqual(
-    runFromInterpreted(`
+    deepStrictEqual(
+      runFromInterpreted(`
   (let sample 
     "1721
     979
@@ -659,6 +660,7 @@ it('interpretation should work', () => {
         (lambda x i (type x Number))) 
         (lambda x i (- 2020 x)))
   `),
-    [299, 1041, 1654, 1721, 1345, 564]
-  )
+      [299, 1041, 1654, 1721, 1345, 564]
+    )
+  })
 })

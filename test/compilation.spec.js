@@ -1,24 +1,25 @@
 import { deepStrictEqual } from 'assert'
 import { runFromCompiled, runFromInterpreted } from '../src/utils.js'
-it('compilation should work', () =>
-  [
-    `(let x 8)
+describe('Compilation', () => {
+  it('Should match interpretation', () =>
+    [
+      `(let x 8)
 (or (cond 
 (= x 10) "Ten"
 (= x 9) "Nine"
 (= x 8) "Eight") "NaN")`,
-    `(let T (lambda x (lambda y (lambda (* 5 x y)))))
+      `(let T (lambda x (lambda y (lambda (* 5 x y)))))
   (apply (apply (apply T 10) 3))`,
-    ` (let bol (Boolean))
+      ` (let bol (Boolean))
     (Array bol (boole bol 1) (boole bol 0) (boole bol 1) (boole bol 0))`,
-    `(function some array callback (block
+      `(defun some array callback (block
       (let bol 1)
       (loop iterate i bounds (block
         (let res (callback (get array i) i array))
         (boole bol (type res Boolean))
         (if (and (not res) (< i bounds)) (iterate (+ i 1) bounds) bol)))
       (iterate 0 (- (length array) 1))))
-        (function equal a b 
+        (defun equal a b 
      (or (and (atom a) (atom b) (= a b)) 
      (and (Arrayp a) 
           (= (length a) (length b)) 
@@ -34,26 +35,26 @@ it('compilation should work', () =>
     (equal (Array 1 2) (Array 1 2 (Array 1 2)))
     (equal (Array 1 (Array 1 2)) (Array 1 2 (Array 1 2)))
     (equal (Array 1 2 (Array 1 2)) (Array 1 2 (Array 1 2)))))`,
-    `(cdr (Array 1 2 3 4))`,
-    `(car (Array 1 2 3 4))`,
-    `(let x -1) (do x (-))`,
-    `(let x -1) (- x)`,
-    `(- 1)`,
-    `(Array 10 length)`,
-    `(Array 10)`,
-    `(if (< 1 2) 42 69)`,
-    `(unless (< 1 2) 42 69)`,
-    `(function min a b (if (< a b) a b))
-  (function push array value (set array (length array) value))
-  (function euclidean-mod a b (mod (+ (mod a b) b) b))
-  (function find array callback (block
+      `(cdr (Array 1 2 3 4))`,
+      `(car (Array 1 2 3 4))`,
+      `(let x -1) (do x (-))`,
+      `(let x -1) (- x)`,
+      `(- 1)`,
+      `(Array 10 length)`,
+      `(Array 10)`,
+      `(if (< 1 2) 42 69)`,
+      `(unless (< 1 2) 42 69)`,
+      `(defun min a b (if (< a b) a b))
+  (defun push array value (set array (length array) value))
+  (defun euclidean-mod a b (mod (+ (mod a b) b) b))
+  (defun find array callback (block
     (loop iterate i bounds (block
       (let current (get array i))
       (if (and (not (callback current i array)) (< i bounds))
         (iterate (+ i 1) bounds) 
         current)))
         (iterate 0 (- (length array) 1))))
-  (function find-index array callback (block
+  (defun find-index array callback (block
     (let idx -1)
     (let has-found 0)
     (loop iterate i bounds (block
@@ -64,8 +65,8 @@ it('compilation should work', () =>
         (let* idx i))))
         (iterate 0 (- (length array) 1))
         (if has-found idx -1)))
-  (function array-in-bounds-p array index (and (< index (length array)) (>= index 0)))
-  (function map array callback (block 
+  (defun array-in-bounds-p array index (and (< index (length array)) (>= index 0)))
+  (defun map array callback (block 
     (let new-array ())
     (let i 0)
     (loop iterate i bounds (block
@@ -73,7 +74,7 @@ it('compilation should work', () =>
       (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
     (iterate 0 (- (length array) 1))))
   
-      (function hash-index 
+      (defun hash-index 
         table key 
           (block
             (let total 0)
@@ -86,7 +87,7 @@ it('compilation should work', () =>
               (if (< i bounds) (find-hash-index (+ i 1) bounds) total)))
             (find-hash-index 0 (min (- (length key-arr) 1) 100))))
         ; hash-table-set
-      (function hash-table-set 
+      (defun hash-table-set 
         table key value 
           (block
             (let idx (hash-index table key))
@@ -100,9 +101,9 @@ it('compilation should work', () =>
               (set current index entry)
             )
             table))
-      (function hash-table-has table key 
+      (defun hash-table-has table key 
         (and (array-in-bounds-p table (let idx (hash-index table key))) (length (get table idx))))
-      (function hash-table-get
+      (defun hash-table-get
         table key 
           (block
             (let idx (hash-index table key))
@@ -113,10 +114,10 @@ it('compilation should work', () =>
                   (find (lambda x i o (= key 
                           (do x (get 0)))))
                   (get 1))))))
-      (function hash-table 
+      (defun hash-table 
         size 
           (map (Array size length) (lambda x i o ())))
-      (function hash-table-make 
+      (defun hash-table-make 
         items 
           (block
             (let len (- (length items) 1))
@@ -134,20 +135,20 @@ it('compilation should work', () =>
         (Array "skills" 
           (Array "Animation" "Programming"))))
     )) (hash-table-set tabl "age" 33)`,
-    ` (function binary-tree-node 
+      ` (defun binary-tree-node 
       value (Array 
               (Array "value" value)
               (Array "left"  ())
               (Array "right" ())))
-(function binary-tree-get-left 
+(defun binary-tree-get-left 
               node (get node 1))
-(function binary-tree-get-right 
+(defun binary-tree-get-right 
               node (get node 2))
-(function binary-tree-set-left 
+(defun binary-tree-set-left 
               tree node (set tree 1 node))
-(function binary-tree-set-right 
+(defun binary-tree-set-right 
               tree node (set tree 2 node)) 
-(function binary-tree-get-value
+(defun binary-tree-get-value
               node (get node 0))
 (do 
 (binary-tree-node 1)
@@ -162,26 +163,26 @@ it('compilation should work', () =>
 (binary-tree-get-left)
 (binary-tree-get-left)
 (binary-tree-get-right))`,
-    `(let add_seq (lambda x (+ x 1 2 3)))
-  (function mult_10 x (* x 10))
+      `(let add_seq (lambda x (+ x 1 2 3)))
+  (defun mult_10 x (* x 10))
   (let do_thing (lambda (do 100 
                         (add_seq) 
                         (mult_10))))
   (do_thing)`,
-    `(function binary-tree-node 
+      `(defun binary-tree-node 
       value (Array 
               (Array "value" value)
               (Array "left"  ())
               (Array "right" ())))
-(function binary-tree-get-left 
+(defun binary-tree-get-left 
               node (get node 1))
-(function binary-tree-get-right 
+(defun binary-tree-get-right 
               node (get node 2))
-(function binary-tree-set-left 
+(defun binary-tree-set-left 
               tree node (set tree 1 node))
-(function binary-tree-set-right 
+(defun binary-tree-set-right 
               tree node (set tree 2 node)) 
-(function binary-tree-get-value
+(defun binary-tree-get-value
               node (get node 0))
 (do 
 (binary-tree-node 1)
@@ -195,19 +196,19 @@ it('compilation should work', () =>
 (binary-tree-get-left)
 (binary-tree-get-left)
 (binary-tree-get-right))`,
-    `(function floor n (| n 0))
-(function push array value (set array (length array) value))
-(function array-of-numbers array (map array (lambda x i (type x Number))))
-(function product-array array (reduce array (lambda a b i o (* a b)) 1))
-(function split-by-lines string (regex-match string "[^\n]+"))
-(function string_to_array string delim 
+      `(defun floor n (| n 0))
+(defun push array value (set array (length array) value))
+(defun array-of-numbers array (map array (lambda x i (type x Number))))
+(defun product-array array (reduce array (lambda a b i o (* a b)) 1))
+(defun split-by-lines string (regex-match string "[^\n]+"))
+(defun string_to_array string delim 
                     (reduce (. string) 
                       (lambda a x i o (block
                                 (if (= x delim) (push a ()) (block 
                                   (push (get a -1) x) a))))(push () ())))
-(function join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
+(defun join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
 
-(function concat array1 array2 (block
+(defun concat array1 array2 (block
 (loop iterate i bounds (block
 (if (< i (length array2)) (push array1 (get array2 i)))
 (if (< i bounds) 
@@ -215,7 +216,7 @@ it('compilation should work', () =>
 array1)))
 (iterate 0 (- (length array2) 1))))
 
-(function map array callback (block 
+(defun map array callback (block 
 (let new-array ())
 (let i 0)
 (loop iterate i bounds (block
@@ -223,13 +224,13 @@ array1)))
   (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
 (iterate 0 (- (length array) 1))))
 
-(function reduce array callback initial (block
+(defun reduce array callback initial (block
 (loop iterate i bounds (block
   (let* initial (callback initial (get array i) i array))
   (if (< i bounds) (iterate (+ i 1) bounds) initial)))
 (iterate 0 (- (length array) 1))))
 
-(function quick-sort arr (block
+(defun quick-sort arr (block
 (if (<= (length arr) 1) arr
 (block
   (let pivot (get arr 0))
@@ -247,7 +248,7 @@ left-arr (quick-sort)
 (push pivot) 
 (concat (quick-sort right-arr)))))))
 
-(function binary-search 
+(defun binary-search 
       array target (block
 (loop search 
       arr target start end (block
@@ -269,13 +270,13 @@ left-arr (quick-sort)
 
 (let input sample)
 
-(function solve1 array cb 
+(defun solve1 array cb 
    (reduce array (lambda a x i array (block
       (let res (binary-search array (cb x)))
       (if res (push a res) a))) 
    ()))
 
-(function solve2 array cb 
+(defun solve2 array cb 
   (reduce array
     (lambda accumulator y i array (block
         (loop iterate j bounds (block 
@@ -300,26 +301,26 @@ left-arr (quick-sort)
 (solve2 (lambda x y (- 2020 x y)))
 (product-array)))
   `,
-    `(function floor n (| n 0))
-    (function min a b (if (< a b) a b))
-    (function push array value (set array (length array) value))
-    (function product-array array (reduce array (lambda a b i o (* a b)) 1))
-    (function join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
-    (function concat array1 array2 (block
+      `(defun floor n (| n 0))
+    (defun min a b (if (< a b) a b))
+    (defun push array value (set array (length array) value))
+    (defun product-array array (reduce array (lambda a b i o (* a b)) 1))
+    (defun join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
+    (defun concat array1 array2 (block
       (loop iterate i bounds (block
       (if (< i (length array2)) (push array1 (get array2 i)))
       (if (< i bounds) 
         (iterate (+ i 1) bounds)
       array1)))
     (iterate 0 (- (length array2) 1))))
-    (function map array callback (block 
+    (defun map array callback (block 
       (let new-array ())
       (let i 0)
       (loop iterate i bounds (block
         (set new-array i (callback (get array i) i array))
         (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
       (iterate 0 (- (length array) 1))))
-    (function reduce array callback initial (block
+    (defun reduce array callback initial (block
       (loop iterate i bounds (block
         (let* initial (callback initial (get array i) i array))
         (if (< i bounds) (iterate (+ i 1) bounds) initial)))
@@ -334,7 +335,7 @@ left-arr (quick-sort)
     (let policy (regex-match input "[a-z](?=:)"))
     (let inputs (regex-match input "(?<=:[ ])(.*)"))
     
-    (function solve1 string letter (block
+    (defun solve1 string letter (block
       (let array (. string))
       (let bitmask 0)
       (let zero (char "a" 0))
@@ -352,7 +353,7 @@ left-arr (quick-sort)
           (+ count has-at-least-one))))
           (iterate 0 (- (length array) 1))))
     
-    (function solve2 array letter x y (block 
+    (defun solve2 array letter x y (block 
     (let a (get array (- x 1)))
     (let b (get array (- y 1)))
     (let left (= letter a))
@@ -386,17 +387,17 @@ left-arr (quick-sort)
        (reduce (lambda a x i o (+ a (get x -1))) 0)
     ))`,
 
-    `(let array (Array 5 length))
+      `(let array (Array 5 length))
     (set array -1)
     (length array)`,
-    `(let array (Array 5 length))
+      `(let array (Array 5 length))
     (set array -4)
     (length array)`,
-    `(let array (Array 5 length))
+      `(let array (Array 5 length))
     (set array -5)
     (length array)`,
-    `(function push array value (set array (length array) value))
-    (function concat array1 array2 (block
+      `(defun push array value (set array (length array) value))
+    (defun concat array1 array2 (block
     (loop iterate i bounds (block
     (if (< i (length array2)) (push array1 (get array2 i)))
     (if (< i bounds) 
@@ -404,7 +405,7 @@ left-arr (quick-sort)
     array1
     )))
     (iterate 0 (- (length array2) 1))))
-    (function sort arr (block
+    (defun sort arr (block
       (if (<= (length arr) 1) arr
       (block
         (let pivot (get arr 0))
@@ -423,7 +424,7 @@ left-arr (quick-sort)
       (concat (sort right-arr)))
     ))))
     
-    (function reverse array (block
+    (defun reverse array (block
     (let len (length array))
     (let reversed (Array len length))
     (let offset (- len 1))
@@ -436,7 +437,7 @@ left-arr (quick-sort)
       (sort)
       (reverse))`,
 
-    `(let find (lambda array callback (block
+      `(let find (lambda array callback (block
     (loop interate i bounds (block
       (let current (get array i))
       (if (and (not (callback current i)) (< i bounds))
@@ -444,7 +445,7 @@ left-arr (quick-sort)
         current)))
         (interate 0 (- (length array) 1)))))
   (find (Array 1 2 3 4 5 6) (lambda x i (= i 2)))`,
-    `(let push (lambda array value (set array (length array) value)))
+      `(let push (lambda array value (set array (length array) value)))
   (let for-each (lambda array callback (block 
     (loop interate i bounds (block
       (callback (get array i) i)
@@ -465,11 +466,11 @@ left-arr (quick-sort)
   (Array 1 2))
 )
 (deep-flat arr)`,
-    `(loop interate i (if (< i 100) 
+      `(loop interate i (if (< i 100) 
   (interate (+ i 1)) i))
 (interate 0)
 `,
-    `(let push (lambda array value (set array (length array) value)))
+      `(let push (lambda array value (set array (length array) value)))
     (let concat (lambda array1 array2 (block
       (let interate (lambda i bounds (block
       (push array1 (get array2 i))
@@ -487,11 +488,11 @@ left-arr (quick-sort)
       (concat (Array 5 6 7))
     )`,
 
-    `(do 1 
+      `(do 1 
       (+ 2) 
         (* 3 4)
          (- 3 2))`,
-    `(let sample 
+      `(let sample 
       "1721
       979
       366
@@ -533,7 +534,7 @@ left-arr (quick-sort)
           (lambda x i (type x Number))) 
           (lambda x i (- 2020 x)))
     `,
-    `(let range (lambda start end (block
+      `(let range (lambda start end (block
       (let array ())
       (let interate (lambda i bounds (block
         (set array i (+ i start))
@@ -581,7 +582,7 @@ left-arr (quick-sort)
 (reduce sum 0))
       `,
 
-    `(let range (lambda start end (block
+      `(let range (lambda start end (block
         (let array ())
         (loop interate i bounds (block
           (set array i (+ i start))
@@ -625,6 +626,7 @@ left-arr (quick-sort)
     (reduce sum 0)
   )
   `,
-  ].forEach((source) =>
-    deepStrictEqual(runFromInterpreted(source), runFromCompiled(source))
-  ))
+    ].forEach((source) =>
+      deepStrictEqual(runFromInterpreted(source), runFromCompiled(source))
+    ))
+})

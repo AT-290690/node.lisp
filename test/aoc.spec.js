@@ -19,30 +19,32 @@ const problems = [
   day(12),
   day(13),
 ]
-it('Should compile aoc 2020', () =>
-  problems
-    .map((x) => `(function std ()) ${STD} ${x}`)
-    .forEach((source) =>
-      deepStrictEqual(runFromInterpreted(source), runFromCompiled(source))
-    ))
-it('Should solve aoc 2020 tasks', () =>
-  deepStrictEqual(
+describe('AOC', () => {
+  it('Should compile aoc 2020', () =>
     problems
-      .map((x) => `(function std ()) ${STD} ${x}`)
-      .map((source) => runFromCompiled(source)),
-    [
-      [514579, 241861950],
-      [2, 1],
-      [7, 336],
-      [2, 2],
-      [820, 118],
-      [11, 6],
-      [4, 0, 32, 126, 8, 2, 6, 8, 674],
-      [5, 8],
-      [127, 62],
-      [35, 8, 8],
-      [37, 26],
-      [25, 286],
-      [295, 1835],
-    ]
-  ))
+      .map((x) => `(defun std ()) ${STD} ${x}`)
+      .forEach((source) =>
+        deepStrictEqual(runFromInterpreted(source), runFromCompiled(source))
+      ))
+  it('Should solve aoc 2020 tasks', () =>
+    deepStrictEqual(
+      problems
+        .map((x) => `(defun std ()) ${STD} ${x}`)
+        .map((source) => runFromCompiled(source)),
+      [
+        [514579, 241861950],
+        [2, 1],
+        [7, 336],
+        [2, 2],
+        [820, 118],
+        [11, 6],
+        [4, 0, 32, 126, 8, 2, 6, 8, 674],
+        [5, 8],
+        [127, 62],
+        [35, 8, 8],
+        [37, 26],
+        [25, 286],
+        [295, 1835],
+      ]
+    ))
+})
