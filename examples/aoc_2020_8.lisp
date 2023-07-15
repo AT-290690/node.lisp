@@ -20,9 +20,12 @@ acc +6")
     (set cmd 1 (type (get cmd 1) Number)))))))
 
 (loop *solve1* instructions offset accumulator (block 
-   (let instruction (get instructions offset))
-   (let cmd (car instruction))
-   (let value (car (cdr instruction)))
+   
+   (let 
+      instruction (get instructions offset)
+      cmd (car instruction)
+      value (car (cdr instruction)))
+
    (unless (= (length instruction) 3) 
      (*solve1* 
         (set instructions offset (Array cmd value (Array offset accumulator)))

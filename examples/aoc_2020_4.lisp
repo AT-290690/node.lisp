@@ -49,32 +49,25 @@ hgt:76in")
         (let value (car (cdr y)))
         (let arr (type value Array))
        (Array key value
-        (if (= key "byr")
-          (and (= (length arr) 4) (>= (type value Number) 1920)
-            (<= (type value Number) 2002)) 
-          (if (= key "iyr")  
-            (and (= (length arr) 4) (>= (type value Number) 2010)
-              (<= (type value Number) 2020))
-            (if (= key "eyr")
-              (and (= (length arr) 4) (>= (type value Number) 2020)
-                (<= (type value Number) 2030))
-              (if (= key "hgt")
-                (and (>= (length arr) 3) (block 
+        (cond 
+          (= key "byr") (and (= (length arr) 4) (>= (type value Number) 1920) (<= (type value Number) 2002)) 
+          (= key "iyr") (and (= (length arr) 4) (>= (type value Number) 2010) (<= (type value Number) 2020))
+          (= key "eyr") (and (= (length arr) 4) (>= (type value Number) 2020) (<= (type value Number) 2030))
+          (= key "hgt") (and (>= (length arr) 3) (block 
                   (let units (concatenate (get arr -2) (get arr -1)))
                   (let num (type (join (set arr -2) "") Number))
                     ; If cm, the number must be at least 150 and at most 193.
                     (if (= units "cm") (and (>= num 150) (<= num 193))
                       ; If in, the number must be at least 59 and at most 76.
                       (if (= units "in") (and (>= num 59) (<= num 76))))))
-                (if (= key "hcl") (block 
+          (= key "hcl") (block 
                   (let color (regex-match value "#.+[0-9a-f]"))
                     (and (length color) (= (length (. (car color))) 7)))
-                  (if (= key "ecl")
-                    (and (= (length arr) 3) (length (regex-match value "amb|blu|brn|gry|grn|hzl|oth")))
-                    (if (= key "pid") 
+          (= key "ecl") (and (= (length arr) 3) (length (regex-match value "amb|blu|brn|gry|grn|hzl|oth")))
+          (= key "pid") 
                       (and 
                         (= (length arr) 9) 
-                        (length (regex-match value "[0-9]{9}")))))))))))))))))
+                        (length (regex-match value "[0-9]{9}")))))))))))
        (remove (lambda x _ _ (every x (lambda y _ _ (= (get y -1) 1)))))
       ; (map (lambda x _ _ (log x)))
       (length)))

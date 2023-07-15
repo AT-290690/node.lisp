@@ -333,6 +333,16 @@ const compile = (tree, Locals) => {
           Arguments.length === 3 ? compile(Arguments[2], Locals) : 0
         }:${compile(Arguments[1], Locals)});`
       }
+      case 'cond': {
+        let out = '('
+        for (let i = 0; i < Arguments.length; i += 2)
+          out += `${compile(Arguments[i], Locals)}?${compile(
+            Arguments[i + 1],
+            Locals
+          )}:`
+        out += '0);'
+        return out
+      }
       case 'type':
         return `_cast("${Arguments[1].value}", ${compile(
           Arguments[0],

@@ -196,6 +196,18 @@ const tokens = {
       ? evaluate(args[2], env)
       : evaluate(args[1], env)
   },
+  ['cond']: (args, env) => {
+    if (args.length < 2)
+      throw new RangeError(
+        `Invalid number of arguments for (cond), expected (> 2 required) but got ${
+          args.length
+        } (cond ${stringifyArgs(args)}).`
+      )
+    for (let i = 0; i < args.length; i += 2) {
+      if (evaluate(args[i], env)) return evaluate(args[i + 1], env)
+    }
+    return 0
+  },
   ['Array']: (args, env) => {
     if (!args.length)
       throw new RangeError(

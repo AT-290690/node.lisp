@@ -1,6 +1,14 @@
 import { deepStrictEqual, strictEqual } from 'assert'
 import { runFromInterpreted } from '../src/utils.js'
 it('interpretation should work', () => {
+  strictEqual(
+    runFromInterpreted(`(let x 8)
+  (or (cond 
+  (= x 10) "Ten"
+  (= x 9) "Nine"
+  (= x 8) "Eight") "NaN")`),
+    'Eight'
+  )
   deepStrictEqual(
     runFromInterpreted(`
   (function floor n (| n 0)) (function round n (| (+ n 0.5) 0))

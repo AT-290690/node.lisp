@@ -42,13 +42,14 @@ F11")
     ; Action L means to turn left the given number of degrees.
     ; Action R means to turn right the given number of degrees.
     ; Action F means to move forward by the given value in the direction the ship is currently facing.
-    (if (= action "N") (block (let* y (- y value)))
-      (if (= action "E") (block (let* x (+ x value)))
-        (if (= action "S") (block (let* y (+ y value)))
-          (if (= action "W") (block (let* x (- x value)))
-            (if (= action "L") (set moves (length moves) (Array (get compass (let* arrow (mod (- arrow (do value (normalize 0 90) (floor))) (length compass)))) 0))
-              (if (= action "R") (set moves (length moves) (Array (get compass (let* arrow (mod (+ arrow (do value (normalize 0 90) (floor))) (length compass)))) 0))
-                (if (= action "F") (set moves (length moves) (Array (get compass arrow) value)))))))))
+    (cond 
+      (= action "N") (let* y (- y value))
+      (= action "E") (let* x (+ x value))
+      (= action "S") (let* y (+ y value))
+      (= action "W") (let* x (- x value))
+      (= action "L") (set moves (length moves) (Array (get compass (let* arrow (mod (- arrow (do value (normalize 0 90) (floor))) (length compass)))) 0))
+      (= action "R") (set moves (length moves) (Array (get compass (let* arrow (mod (+ arrow (do value (normalize 0 90) (floor))) (length compass)))) 0))
+      (= action "F") (set moves (length moves) (Array (get compass arrow) value)))
     (let* cursor (apply (car (cdr cursor))))))
   (function next (if (length moves) (block (go) (next)) (block (go))))
   (next)
@@ -120,27 +121,28 @@ F11")
     ; F7 moves the ship to the waypoint 7 times (a total of 70 units east and 28 units north), leaving the ship at east 170, north 38. The waypoint stays 10 units east and 4 units north of the ship.
     ; R90 rotates the waypoint around the ship clockwise 90 degrees, moving it to 4 units east and 10 units south of the ship. The ship remains at east 170, north 38.
     ; F11 moves the ship to the waypoint 11 times (a total of 44 units east and 110 units south), leaving the ship at east 214, south 72. The waypoint stays 4 units east and 10 units south of the ship.
-    (if (= action "N") (block (let* dy (+ dy value)))
-      (if (= action "E") (block (let* dx (+ dx value)))
-        (if (= action "S") (block (let* dy (- dy value)))
-          (if (= action "W") (block (let* dx (- dx value)))
-            (if (= action "L") (block 
+    (cond 
+      (= action "N") (let* dy (+ dy value))
+      (= action "E") (let* dx (+ dx value))
+      (= action "S") (let* dy (- dy value))
+      (= action "W") (let* dx (- dx value))
+      (= action "L") (block 
                     (let 
                       rad (radians value)
                       dx1 (- (* dx (cos rad TERM)) (* dy (sin rad TERM)))
                       dy1 (+ (* dx (sin rad TERM)) (* dy (cos rad TERM))))
                     (let* dx dx1)
                     (let* dy dy1))
-                (if (= action "R") (block
+      (= action "R") (block
                     (let 
                       rad (- (radians value))
                       dx1 (- (* dx (cos rad TERM)) (* dy (sin rad TERM)))
                       dy1 (+ (* dx (sin rad TERM)) (* dy (cos rad TERM))))
                     (let* dx dx1)
                     (let* dy dy1))
-                (if (= action "F") (block 
+      (= action "F") (block 
                   (let* x (+ x (* dx value))) 
-                  (let* y (+ y (* dy value)))))))))))
+                  (let* y (+ y (* dy value)))))
     (let* cursor (apply (car (cdr cursor))))))
   (function next (if (length moves) (block (go) (next)) (block (go))))
   (next)

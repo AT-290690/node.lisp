@@ -2,6 +2,11 @@ import { deepStrictEqual } from 'assert'
 import { runFromCompiled, runFromInterpreted } from '../src/utils.js'
 it('compilation should work', () =>
   [
+    `(let x 8)
+(or (cond 
+(= x 10) "Ten"
+(= x 9) "Nine"
+(= x 8) "Eight") "NaN")`,
     `(let T (lambda x (lambda y (lambda (* 5 x y)))))
   (apply (apply (apply T 10) 3))`,
     ` (let bol (Boolean))
