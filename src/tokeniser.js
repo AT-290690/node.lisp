@@ -575,9 +575,13 @@ const tokens = {
     return apply(rest, env)
   },
   ['let']: (args, env) => {
-    if (args.length < 2 && !(args.length % 2))
+    if (args.length < 2)
       throw new RangeError(
         'Invalid number of arguments to (declare) (> 2 required)'
+      )
+    if (args.length % 2 === 1)
+      throw new RangeError(
+        'Invalid number of arguments to (declare) (pairs of 2 required)'
       )
     let name
     for (let i = 0; i < args.length; ++i) {
