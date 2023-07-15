@@ -30,7 +30,7 @@ BBFFBBFRLL")
     *input* 
     (split-by "\n")
     (map (lambda directions _ _ (block 
-      (declare 
+      (let 
             array (type directions Array)
             fb (binary_boarding (slice-if-index array (lambda i (< i 7))) (Array 0 127) "F" "B")
             lr (binary_boarding (slice-if-index array (lambda i (>= i 7))) (Array 0 7) "L" "R"))

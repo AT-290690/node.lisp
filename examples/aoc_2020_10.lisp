@@ -67,7 +67,7 @@
           result)))
 
 (function iterative-solution inp (block
-  (declare 
+  (let 
     memo (Array 1)
     size (length inp))
   (loop iterate-i i (block

@@ -95,8 +95,8 @@
  (function neighborhood array directions y x callback
     (reduce directions (lambda sum dir _ _ 
         (block
-          (let dy (+ (car dir) y))
-          (let dx (+ (car (cdr dir)) x))
+          (let dy (+ (car dir) y)
+               dx (+ (car (cdr dir)) x))
            (+ sum (if (and (array-in-bounds-p array dy) (array-in-bounds-p (get array dy) dx)) (callback (get (get array dy) dx) dir))))) 0))
   ; greatest-common-divisor
   (function greatest-common-divisor a b (if (= b 0) a (greatest-common-divisor b (mod a b))))
@@ -152,8 +152,7 @@
     (iterate 0 (- end start))))
   ; map
   (function map array callback (block 
-    (let new-array ())
-    (let i 0)
+    (let new-array () i 0)
     (loop iterate i bounds (block
       (set new-array i (callback (get array i) i array))
       (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
@@ -242,16 +241,16 @@
   ; find
 (function find array callback (block
         (loop iterate i bounds (block
-          (let current (get array i))
-          (let has (callback current i array))
+          (let 
+            current (get array i) 
+            has (callback current i array))
           (if (and (not has) (< i bounds))
             (iterate (+ i 1) bounds) 
             (if has current))))
             (iterate 0 (- (length array) 1))))
   ; find-index
   (function find-index array callback (block
-    (let idx -1)
-    (let has-found 0)
+    (let idx -1 has-found 0)
     (loop iterate i bounds (block
       (let current (get array i))
       (boole has-found (callback current i array))
@@ -262,8 +261,7 @@
         (if has-found idx -1)))
 ; index-of
   (function index-of array target (block
-    (let idx -1)
-    (let has-found 0)
+    (let idx -1 has-found 0)
     (loop iterate i bounds (block
       (let current (get array i))
       (boole has-found (= target current))
@@ -277,8 +275,7 @@
     (block
       (if (= (length array) 0) -1 
         (block 
-          (let idx -1)
-          (let has-found 0)
+          (let idx -1 has-found 0)
           (loop iterate i bounds (block
             (let current (get array i))
             (boole has-found (= target current))
@@ -291,9 +288,10 @@
   (function quick-sort arr (block
     (if (<= (length arr) 1) arr
     (block
-      (let pivot (get arr 0))
-      (let left-arr ())
-      (let right-arr ())
+      (let 
+        pivot (get arr 0) 
+        left-arr () 
+        right-arr ())
   (loop iterate i bounds (block
       (let current (get arr i))
       (if (< current pivot) 
@@ -307,9 +305,10 @@
     (concat (quick-sort right-arr)))))))
   ; reverse 
   (function reverse array (block
-    (let len (length array))
-    (let reversed (Array len length))
-    (let offset (- len 1))
+    (let 
+      len (length array)
+      reversed (Array len length)
+      offset (- len 1))
     (loop iterate i bounds (block
       (set reversed (- offset i) (get array i))
       (if (< i bounds) (iterate (+ i 1) bounds) reversed)))
@@ -320,8 +319,9 @@
     (loop search 
           arr target start end (block
       (if (<= start end) (block 
-          (let index (floor (* (+ start end) 0.5)))
-          (let current (get arr index))
+          (let 
+            index (floor (* (+ start end) 0.5))
+             current (get arr index))
           (if (= target current) target
             (if (> current target) 
               (search arr target start (- index 1))
@@ -332,12 +332,14 @@
   (function hash-index 
     table key 
       (block
-        (let total 0)
-        (let prime-num 31)
-        (let key-arr (. (type key String)))
+        (let 
+          total 0
+          prime-num 31
+          key-arr (. (type key String)))
         (loop find-hash-index i bounds (block 
-          (let letter (get key-arr i))
-          (let value (- (char letter 0) 96))
+          (let 
+            letter (get key-arr i) 
+            value (- (char letter 0) 96))
           (let* total (euclidean-mod (+ (* total prime-num) value) (length table)))
           (if (< i bounds) (find-hash-index (+ i 1) bounds) total)))
         (find-hash-index 0 (min (- (length key-arr) 1) 100))))
@@ -357,10 +359,11 @@
       (block
         (let idx (hash-index table key))
         (unless (array-in-bounds-p table idx) (set table idx ()))
-        (let current (get table idx))
-        (let len (length current))
-        (let index (if len (find-index current (lambda x i o (= (get x 0) key))) -1))
-        (let entry (Array key value))
+        (let 
+          current (get table idx)
+          len (length current)
+          index (if len (find-index current (lambda x i o (= (get x 0) key))) -1)
+          entry (Array key value))
         (if (= index -1)
           (push current entry)
           (set current index entry)
@@ -389,8 +392,9 @@
   (function hash-table-make 
     items 
       (block
-        (let len (- (length items) 1))
-        (let table (hash-table (* len len)))
+        (let 
+          len (- (length items) 1)
+          table (hash-table (* len len)))
         (loop add i (block
           (let item (get items i))
           (hash-table-set table (get item 0) (get item 1))
@@ -402,10 +406,11 @@
       (block
         (let idx (hash-index table key))
         (unless (array-in-bounds-p table idx) (set table idx ()))
-        (let current (get table idx))
-        (let len (length current))
-        (let index (if len (find-index current (lambda x i o (= x key))) -1))
-        (let entry key)
+        (let 
+          current (get table idx)
+          len (length current)
+          index (if len (find-index current (lambda x i o (= x key))) -1)
+          entry key)
         (if (= index -1)
           (push current entry)
           (set current index entry)
@@ -432,8 +437,9 @@
   (function hash-set-make 
     items 
       (block
-        (let len (- (length items) 1))
-        (let table (hash-set (* len len)))
+        (let 
+          len (- (length items) 1)
+          table (hash-set (* len len)))
         (loop add i (block
           (let item (get items i))
           (hash-set-set table item)
@@ -479,15 +485,17 @@
   
   ; occurances_count
   (function character-occurances-in-string string letter (block
-    (let array (. string))
-    (let bitmask 0)
-    (let zero (char "a" 0))
-    (let count 0)
-    (let has-at-least-one 0)
+    (let 
+      array (. string)
+      bitmask 0
+      zero (char "a" 0)
+      count 0
+      has-at-least-one 0)
     (loop iterate i bounds  (block
-        (let ch (get array i))
-        (let code (- (char ch 0) zero))
-        (let mask (<< 1 code))
+        (let 
+          ch (get array i)
+          code (- (char ch 0) zero)
+          mask (<< 1 code))
         (if (and (if (= ch letter) (boole has-at-least-one 1))
             (not (= (& bitmask mask) 0))) 
             (let* count (+ count 1))
@@ -499,10 +507,11 @@
 (function split-by-n-lines string n (do string (regex-replace (concatenate "(\n){" n "}") "௮") (regex-match "[^௮]+") (map (lambda x _ _ (regex-match x "[^\n]+")))))
 ; split
 (function split string separator (block 
-    (let cursor "")
-    (let sepArr (. separator))
-    (let array (. string))
-    (let skip (length sepArr))
+    (let 
+      cursor ""
+      sepArr (. separator)
+      array (. string)
+      skip (length sepArr))
     (loop iterate result i bounds
       (if (< (if (every sepArr (lambda y j _ (= (get array (+ i j)) y)))
             (block 
@@ -516,8 +525,7 @@
 
   ; slice 
   (function slice array start end (block 
-    (let bounds (- end start))
-    (let out (Array bounds length))
+    (let bounds (- end start) out (Array bounds length))
     (loop iterate i 
       (if (< i bounds) 
           (block 

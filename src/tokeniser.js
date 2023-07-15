@@ -574,7 +574,7 @@ const tokens = {
 
     return apply(rest, env)
   },
-  ['declare']: (args, env) => {
+  ['let']: (args, env) => {
     if (args.length < 2 && !(args.length % 2))
       throw new RangeError(
         'Invalid number of arguments to (declare) (> 2 required)'
@@ -591,14 +591,6 @@ const tokens = {
       } else env[name] = evaluate(args[i], env)
     }
     return env[name]
-  },
-  ['let']: (args, env) => {
-    if (args.length !== 2)
-      throw new RangeError('Invalid number of arguments to (let) (2 required)')
-    const name = args[0].value
-    const value = evaluate(args[1], env)
-    env[name] = value
-    return value
   },
   ['let*']: (args, env) => {
     if (args.length !== 2)

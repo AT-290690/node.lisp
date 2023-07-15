@@ -23,7 +23,7 @@ F11")
       (Array (car str) (do str (cdr) (join "") (type Number))))))
   (reverse)))
 
-  (declare 
+  (let 
     moves (. *stack*)
     cursor (apply (move moves))
     x 0
@@ -31,7 +31,7 @@ F11")
     compass (Array "N" "E" "S" "W")
     arrow 1)
   (function go (block 
-    (declare 
+    (let 
       action (car (car cursor))
       value (car (cdr (car cursor))))
     ; (log (Array action value (Array x y)))
@@ -101,7 +101,7 @@ F11")
         (let str (. x))
         (Array (car str) (do str (cdr) (join "") (type Number))))))
     (reverse)))
-  (declare 
+  (let 
     moves (. *stack*)
     cursor (apply (move moves))
     x 0
@@ -111,7 +111,7 @@ F11")
     TERM 17
     compass (Array "N" "E" "S" "W"))
   (function go (block 
-    (declare 
+    (let 
       action (car (car cursor))
       value (car (cdr (car cursor))))
     ; (log (Array action value (Array x y) (Array dx dy)))
@@ -125,15 +125,17 @@ F11")
         (if (= action "S") (block (let* dy (- dy value)))
           (if (= action "W") (block (let* dx (- dx value)))
             (if (= action "L") (block 
-                    (let rad (radians value))
-                    (let dx1 (- (* dx (cos rad TERM)) (* dy (sin rad TERM))))
-                    (let dy1 (+ (* dx (sin rad TERM)) (* dy (cos rad TERM))))
+                    (let 
+                      rad (radians value)
+                      dx1 (- (* dx (cos rad TERM)) (* dy (sin rad TERM)))
+                      dy1 (+ (* dx (sin rad TERM)) (* dy (cos rad TERM))))
                     (let* dx dx1)
                     (let* dy dy1))
                 (if (= action "R") (block
-                    (let rad (- (radians value)))
-                    (let dx1 (- (* dx (cos rad TERM)) (* dy (sin rad TERM))))
-                    (let dy1 (+ (* dx (sin rad TERM)) (* dy (cos rad TERM))))
+                    (let 
+                      rad (- (radians value))
+                      dx1 (- (* dx (cos rad TERM)) (* dy (sin rad TERM)))
+                      dy1 (+ (* dx (sin rad TERM)) (* dy (cos rad TERM))))
                     (let* dx dx1)
                     (let* dy dy1))
                 (if (= action "F") (block 

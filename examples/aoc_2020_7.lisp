@@ -66,7 +66,7 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
       (map 
         (lambda bag _ _ 
           (block
-            (declare 
+            (let 
               left (car (car bag))
               right (car (cdr bag))
               head (split left " ")
@@ -82,7 +82,7 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
             (Array head tail))))))
 
 (function *solve1* bags target (block 
-  (declare 
+  (let 
     count 0
     traverse-bags (lambda left right (block
     (for-each bags 

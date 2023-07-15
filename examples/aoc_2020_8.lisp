@@ -32,7 +32,7 @@ acc +6")
 
 (loop *solve2* instructions offset accumulator (unless (= offset (length instructions)) (block 
    
-   (declare 
+   (let 
       instruction (get instructions offset)
       cmd (car instruction)
       value (car (cdr instruction)))
@@ -47,7 +47,7 @@ acc +6")
             instructions
             (remove (lambda x i _ (and (= (length x) 3) (or (= (car x) "nop") (= (car x) "jmp")))))
             (map (lambda x _ _ (block 
-              (declare 
+              (let 
                 cmd (if (= (car x) "jmp") "nop" "jmp")
                 value (car (cdr x))
                 options (get x -1))
@@ -63,7 +63,7 @@ acc +6")
     (reduce 
       (lambda acc x _ _ 
         (block 
-          (declare 
+          (let 
             cmd (car x)
             value (car (cdr x))
             options (get x -1)

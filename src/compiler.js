@@ -143,14 +143,6 @@ const compile = (tree, Locals) => {
         }(${parseArgs(rest, Locals)})`
       }
       case 'let': {
-        const name = lispToJavaScriptVariableName(Arguments[0].value)
-        Locals.add(name)
-        return `((${name}=${compile(Arguments[1], Locals)}),${name});`
-      }
-      case 'declare': {
-        // const name = lispToJavaScriptVariableName(Arguments[0].value)
-        // Locals.add(name)
-        // return `(${name}=${compile(Arguments[1], Locals)});`
         let name,
           out = '(('
         for (let i = 0, len = Arguments.length; i < len; ++i) {
