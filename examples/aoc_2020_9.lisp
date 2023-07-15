@@ -33,15 +33,15 @@
   (split-by "\n") 
   (array-of-numbers)))
 
-  (function can-sum t values 
+  (function can-sum-some t values 
     (if (< t 0) 0 
       (if (= t 0) 1 
-        (some values (lambda x _ _ (can-sum (- t x) values))))))
+        (some values (lambda x _ _ (can-sum-some (- t x) values))))))
   
   (function find-preamble inp n (do inp 
     (find (lambda current i all 
       (if (>= i n) 
-       (not (can-sum current (slice all (- i n) i))))))))
+       (not (can-sum-some current (slice all (- i n) i))))))))
 
 (let *preamble* (find-preamble *numbers* (if (> (length *numbers*) 25) 25 5)))
 (function window inp n (do inp 

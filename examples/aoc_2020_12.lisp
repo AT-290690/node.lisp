@@ -1,4 +1,4 @@
-(import std "split-by" "reduce"  "push" "map" "join" "reverse" "floor" "abs")
+(import std "split-by" "reduce"  "push" "map" "join" "reverse" "floor" "abs" "radians")
 (let sample "F10
 N3
 F7
@@ -23,15 +23,17 @@ F11")
       (Array (car str) (do str (cdr) (join "") (type Number))))))
   (reverse)))
 
-  (let moves (. *stack*))
-  (let cursor (apply (move moves)))
-  (let x 0)
-  (let y 0)
-  (let compass (Array "N" "E" "S" "W"))
-  (let arrow 1)
+  (declare 
+    moves (. *stack*)
+    cursor (apply (move moves))
+    x 0
+    y 0
+    compass (Array "N" "E" "S" "W")
+    arrow 1)
   (function go (block 
-    (let action (car (car cursor)))
-    (let value (car (cdr (car cursor))))
+    (declare 
+      action (car (car cursor))
+      value (car (cdr (car cursor))))
     ; (log (Array action value (Array x y)))
     ; Action N means to move north by the given value.
     ; Action S means to move south by the given value.
@@ -99,17 +101,19 @@ F11")
         (let str (. x))
         (Array (car str) (do str (cdr) (join "") (type Number))))))
     (reverse)))
-  (let moves (. *stack*))
-  (let cursor (apply (move moves)))
-  (let x 0)
-  (let y 0)
-  (let dx 10)
-  (let dy 1)
-  (let TERM 17)
-  (let compass (Array "N" "E" "S" "W"))
+  (declare 
+    moves (. *stack*)
+    cursor (apply (move moves))
+    x 0
+    y 0
+    dx 10
+    dy 1
+    TERM 17
+    compass (Array "N" "E" "S" "W"))
   (function go (block 
-    (let action (car (car cursor)))
-    (let value (car (cdr (car cursor))))
+    (declare 
+      action (car (car cursor))
+      value (car (cdr (car cursor))))
     ; (log (Array action value (Array x y) (Array dx dy)))
     ; F10 moves the ship to the waypoint 10 times (a total of 100 units east and 10 units north), leaving the ship at east 100, north 10. The waypoint stays 10 units east and 1 unit north of the ship.
     ; N3 moves the waypoint 3 units north to 10 units east and 4 units north of the ship. The ship remains at east 100, north 10.

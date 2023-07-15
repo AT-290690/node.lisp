@@ -1,4 +1,4 @@
-(import std "neighborhood" "split-by" "split-by-lines" "for-n" "for-each" "deep-flat" "array-of-numbers" "reduce" "max" "quick-sort" "map" "concat" "push" "adjacent-difference" "count" "join" "array-in-bounds-p")
+(import std "neighborhood" "split-by" "split-by-lines" "for-n" "for-each" "deep-flat" "array-of-numbers" "reduce" "max" "quick-sort" "map" "concat" "push" "adjacent-difference" "count-of" "join" "array-in-bounds-p")
 (let sample 
 "L.LL.LL.LL
 LLLLLLL.LL
@@ -13,7 +13,7 @@ L.LLLLL.LL")
 (let *input* sample)
 ; (let *input* (open "./playground/src/aoc_2020/11/input.txt"))
 (function count-seats matrix (block
-  (reduce matrix (lambda a row _ _ (+ a (count row (lambda x _ _ (> x 0))))) 0)))
+  (reduce matrix (lambda a row _ _ (+ a (count-of row (lambda x _ _ (> x 0))))) 0)))
 
 (function parse-input input (do 
   input
@@ -24,24 +24,26 @@ L.LLLLL.LL")
       (map (lambda col _ _ (- (= col "L") 1))))))))
 
 (function solve-1 matrix tolerance (block 
-  (let height (- (length matrix) 1))
-  (let width (- (length (car matrix)) 1))
-  (let directions (Array (Array 0 1) (Array 1 0) (Array -1 0) (Array 0 -1) (Array 1 -1) (Array -1 -1) (Array 1 1) (Array -1 1)))
-  (let copy (map (Array (+ height 1) length) (lambda _ _ _ (Array (+ width 1) length))))
+  (declare 
+    height (- (length matrix) 1)
+    width (- (length (car matrix)) 1)
+    directions (Array (Array 0 1) (Array 1 0) (Array -1 0) (Array 0 -1) (Array 1 -1) (Array -1 -1) (Array 1 1) (Array -1 1))
+    copy (map (Array (+ height 1) length) (lambda _ _ _ (Array (+ width 1) length))))
   (for-n height (lambda y 
     (for-n width (lambda x (block 
-      (let current (get (get matrix y) x))
-      (let sum (neighborhood matrix directions y x (lambda neighbor _ (and (not (= neighbor -1)) neighbor))))
+      (declare current (get (get matrix y) x)
+        sum (neighborhood matrix directions y x (lambda neighbor _ (and (not (= neighbor -1)) neighbor))))
       (set (get copy y) x 
         (if (and (= sum 0) (= current 0)) 1
           (if (and (>= sum tolerance) (= current 1)) 0 current))))))))
           copy))
           
 (function solve-2 matrix tolerance (block 
-  (let height (- (length matrix) 1))
-  (let width (- (length (car matrix)) 1))
-  (let copy (map (Array (+ height 1) length) (lambda _ _ _ (Array (+ width 1) length))))
-  (let directions (Array (Array 0 1) (Array 1 0) (Array -1 0) (Array 0 -1) (Array 1 -1) (Array -1 -1) (Array 1 1) (Array -1 1)))
+  (declare 
+    height (- (length matrix) 1)
+    width (- (length (car matrix)) 1)
+    copy (map (Array (+ height 1) length) (lambda _ _ _ (Array (+ width 1) length)))
+    directions (Array (Array 0 1) (Array 1 0) (Array -1 0) (Array 0 -1) (Array 1 -1) (Array -1 -1) (Array 1 1) (Array -1 1)))
   (for-n height (lambda y 
     (for-n width (lambda x 
       (block 

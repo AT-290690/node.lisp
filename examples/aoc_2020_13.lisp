@@ -5,16 +5,18 @@
 17,x,x,x,x,x,x,41,x,x,x,37,x,x,x,x,x,367,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,19,x,x,x,23,x,x,x,x,x,29,x,613,x,x,x,x,x,x,x,x,x,x,x,x,13")
 (function *parse_input* inp 
   (block 
-    (let INP (do inp (split "\n")))
-    (let time (type (car INP) Number))
-    (let buses (do (car (cdr INP)) (split ",") (map (lambda x _ _ (if (= x "x") 0 (type x Number)))) (remove (lambda x _ _ (> x 0)))))
+    (declare 
+      INP (do inp (split "\n"))
+      time (type (car INP) Number)
+      buses (do (car (cdr INP)) (split ",") (map (lambda x _ _ (if (= x "x") 0 (type x Number)))) (remove (lambda x _ _ (> x 0)))))
     (Array time buses)
     ))
 
 (function *solve1* inp (block 
-(let *INP* (*parse_input* inp))
-(let *time* (car *INP*))
-(let *buses* (car (cdr *INP*)))
+(declare 
+  *INP* (*parse_input* inp)
+  *time* (car *INP*)
+  *buses* (car (cdr *INP*)))
 (do 
   *buses*
   (map (lambda x _ _  (Array x (- x (mod *time* x)))))

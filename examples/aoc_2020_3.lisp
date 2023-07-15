@@ -19,8 +19,9 @@
   (map array (lambda line _ _ (do line (type Array) (map (lambda x _ _ (= x "#")))))))
 
 (function *solve* array slopeX slopeY (block 
-  (let h (length array))
-  (let w (length (car array)))
+  (declare 
+    h (length array)
+    w (length (car array)))
   (do (* h (/ slopeY))
       (floor)
       (Array length)

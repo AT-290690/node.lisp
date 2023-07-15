@@ -31,9 +31,12 @@ acc +6")
        accumulator)))
 
 (loop *solve2* instructions offset accumulator (unless (= offset (length instructions)) (block 
-   (let instruction (get instructions offset))
-   (let cmd (car instruction))
-   (let value (car (cdr instruction)))
+   
+   (declare 
+      instruction (get instructions offset)
+      cmd (car instruction)
+      value (car (cdr instruction)))
+
    (unless (= (length instruction) 3) 
      (*solve2* 
        (set instructions offset (Array cmd value (Array offset accumulator)))
@@ -44,9 +47,10 @@ acc +6")
             instructions
             (remove (lambda x i _ (and (= (length x) 3) (or (= (car x) "nop") (= (car x) "jmp")))))
             (map (lambda x _ _ (block 
-              (let cmd (if (= (car x) "jmp") "nop" "jmp"))
-              (let value (car (cdr x)))
-              (let options (get x -1))
+              (declare 
+                cmd (if (= (car x) "jmp") "nop" "jmp")
+                value (car (cdr x))
+                options (get x -1))
               (Array cmd value options)))))))) accumulator))
 (Array 
   (do 
@@ -59,10 +63,11 @@ acc +6")
     (reduce 
       (lambda acc x _ _ 
         (block 
-          (let cmd (car x))
-          (let value (car (cdr x)))
-          (let options (get x -1))
-          (let offset (car options))
-          (let accumulator (car (cdr options)))
-          (let result (*solve2* *stack* (+ offset (if (= cmd "jmp") value 1)) accumulator))
+          (declare 
+            cmd (car x)
+            value (car (cdr x))
+            options (get x -1)
+            offset (car options)
+            accumulator (car (cdr options))
+            result (*solve2* *stack* (+ offset (if (= cmd "jmp") value 1)) accumulator))
           (if (atom result) result acc))) 0)))

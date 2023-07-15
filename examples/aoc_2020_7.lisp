@@ -66,23 +66,25 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
       (map 
         (lambda bag _ _ 
           (block
-            (let left (car (car bag)))
-            (let right (car (cdr bag)))
-            (let head (split left " "))
-            (let tail 
-              (do right  
-                (map 
-                  (lambda x _ _ 
-                    (block 
-                      (let current (split x " "))
-                      (do current 
-                        (set 0 (type (car current) Number)) 
-                        (set -1)))))))
+            (declare 
+              left (car (car bag))
+              right (car (cdr bag))
+              head (split left " ")
+              tail 
+                (do right  
+                  (map 
+                    (lambda x _ _ 
+                      (block 
+                        (let current (split x " "))
+                        (do current 
+                          (set 0 (type (car current) Number)) 
+                          (set -1)))))))
             (Array head tail))))))
 
 (function *solve1* bags target (block 
-  (let count 0)
-  (let traverse-bags (lambda left right (block
+  (declare 
+    count 0
+    traverse-bags (lambda left right (block
     (for-each bags 
       (lambda bag _ _ 
         (and 

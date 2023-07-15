@@ -15,15 +15,17 @@
 (function occ_to_numbers x _ _ (do x (split-by "-") (map (lambda y _ _ (type y Number)))))
 
 (function *solve1* string letter (block
-  (let array (type string Array))
-  (let bitmask 0)
-  (let zero (char "a" 0))
-  (let count 0)
-  (let has-at-least-one 0)
+  (declare 
+    array (type string Array) 
+    bitmask 0
+    zero (char "a" 0)
+    count 0
+    has-at-least-one 0)
   (loop iterate i bounds  (block
-      (let ch (get array i))
-      (let code (- (char ch 0) zero))
-      (let mask (<< 1 code))
+      (declare 
+        ch (get array i)
+        code (- (char ch 0) zero)
+        mask (<< 1 code))
       (if (and (if (= ch letter) (boole has-at-least-one 1))
           (not (= (& bitmask mask) 0))) 
           (let* count (+ count 1))
@@ -33,12 +35,12 @@
       (iterate 0 (- (length array) 1))))
 
 (function *solve2* array letter x y (block 
-  (let a (get array (- x 1)))
-  (let b (get array (- y 1)))
-  (let left (= letter a))
-  (let right (= letter b))
+  (declare 
+    a (get array (- x 1))
+    b (get array (- y 1))
+    left (= letter a)
+    right (= letter b))
   (and (not (and left right)) (or left right))))
-
 
 (Array 
 (do *occ*

@@ -574,6 +574,24 @@ const tokens = {
 
     return apply(rest, env)
   },
+  ['declare']: (args, env) => {
+    if (args.length < 2 && !(args.length % 2))
+      throw new RangeError(
+        'Invalid number of arguments to (declare) (> 2 required)'
+      )
+    let name
+    for (let i = 0; i < args.length; ++i) {
+      if (i % 2 === 0) {
+        const word = args[i]
+        if (word.type !== 'word')
+          throw new SyntaxError(
+            `First argument of (declare) must be word but got ${word.type}`
+          )
+        name = word.value
+      } else env[name] = evaluate(args[i], env)
+    }
+    return env[name]
+  },
   ['let']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError('Invalid number of arguments to (let) (2 required)')
@@ -737,9 +755,27 @@ const tokens = {
     env[name] = fn
     return fn
   },
-  ['String']: () => '',
-  ['Number']: () => 0,
-  ['Boolean']: () => 1,
+  ['String']: (args) => {
+    if (args.length)
+      throw new RangeError(
+        `Invalid number of arguments for (String) ${args.length}`
+      )
+    return ''
+  },
+  ['Number']: (args) => {
+    if (args.length)
+      throw new RangeError(
+        `Invalid number of arguments for (Number) ${args.length}`
+      )
+    return 0
+  },
+  ['Boolean']: (args) => {
+    if (args.length)
+      throw new RangeError(
+        `Invalid number of arguments for (Boolean) ${args.length}`
+      )
+    return 1
+  },
   ['type']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError(
@@ -869,6 +905,7 @@ const tokens = {
   },
   ['module']: () => 'WAT module',
 }
+
 tokens['first'] = tokens['car']
 tokens['rest'] = tokens['cdr']
 tokens['∞'] = tokens['loop']

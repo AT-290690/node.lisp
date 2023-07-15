@@ -176,8 +176,8 @@
         (let res (callback i))
         (if (< i end) (iterate (+ i 1)) res))) 
         (iterate start)))
-  ; count
-  (function count array callback (block
+  ; count-of
+  (function count-of array callback (block
     (let amount 0)
     (loop iterate i bounds (block
       (let current (get array i))
@@ -327,15 +327,7 @@
               (search arr target start (- index 1))
               (search arr target (+ index 1) end))))))) 
     (search array target 0 (length array))))
-  ; (Hash Table)
-  ; (do
-  ;   (hash-table-make (Array 
-  ;     (Array "name" "Anthony") 
-  ;     (Array "age" 32) 
-  ;     (Array "skills" 
-  ;       (Array "Animation" "Programming"))))
-  ;   (log)
-  ; )
+
   ; hash-index
   (function hash-index 
     table key 
@@ -349,6 +341,16 @@
           (let* total (euclidean-mod (+ (* total prime-num) value) (length table)))
           (if (< i bounds) (find-hash-index (+ i 1) bounds) total)))
         (find-hash-index 0 (min (- (length key-arr) 1) 100))))
+
+  ; (Hash Table)
+  ; (do
+  ;   (hash-table-make (Array 
+  ;     (Array "name" "Anthony") 
+  ;     (Array "age" 32) 
+  ;     (Array "skills" 
+  ;       (Array "Animation" "Programming"))))
+  ;   (log)
+  ; )
     ; hash-table-set
   (function hash-table-set 
     table key value 
@@ -394,27 +396,6 @@
           (hash-table-set table (get item 0) (get item 1))
         (if (< i len) (add (+ i 1)) table)))
         (add 0)))
-  ; (/ Hash Table)
-  ; (Hash Set)
-  ; (do
-  ;   (hash-set-make (Array "A" "B" "C"))
-  ;   (hash-set-set "A")
-  ;   (hash-set-set "D")
-  ;   (log)
-  ; )
-
-(function hash-index 
-    table key 
-      (block
-        (let total 0)
-        (let prime-num 31)
-        (let key-arr (. (type key String)))
-        (loop find-hash-index i bounds (block 
-          (let letter (get key-arr i))
-          (let value (- (char letter 0) 96))
-          (let* total (euclidean-mod (+ (* total prime-num) value) (length table)))
-          (if (< i bounds) (find-hash-index (+ i 1) bounds) total)))
-        (find-hash-index 0 (min (- (length key-arr) 1) 100))))
     ; hash-set-set
   (function hash-set-set 
     table key 
@@ -627,7 +608,7 @@
     (Array "index-of" index-of)
     (Array "array-index-of" array-index-of)
     (Array "accumulate" accumulate)
-    (Array "count" count)
+    (Array "count-of" count-of)
     (Array "partition" partition)
     (Array "slice" slice)
     (Array "slice-if" slice-if)

@@ -1,4 +1,4 @@
-(import std "split-by" "array-of-numbers" "reduce" "max" "quick-sort" "map" "concat" "push" "adjacent-difference" "count" "join" "array-in-bounds-p")
+(import std "split-by" "array-of-numbers" "reduce" "max" "quick-sort" "map" "concat" "push" "adjacent-difference" "count-of" "join" "array-in-bounds-p")
 (let sample "16
 10
 15
@@ -67,8 +67,9 @@
           result)))
 
 (function iterative-solution inp (block
-  (let memo (Array 1))
-  (let size (length inp))
+  (declare 
+    memo (Array 1)
+    size (length inp))
   (loop iterate-i i (block
     (if (< i size) 
       (block 
@@ -98,10 +99,10 @@
   (* 
     (do 
       diffs 
-      (count (lambda x _ _ (= x 1))))
+      (count-of (lambda x _ _ (= x 1))))
       (+ (do 
           diffs
-          (count (lambda x _ _ (= x 3)))) 1))
+          (count-of (lambda x _ _ (= x 3)))) 1))
 ; part 2
 ; recursive
  (do  
