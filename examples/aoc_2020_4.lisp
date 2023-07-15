@@ -12,7 +12,7 @@ hgt:76in")
 ; (let *input* (open "./playground/src/aoc_2020/4/input.txt"))
 
 ; 190
-(function validate_fields fields (do fields (map (lambda x _ _ 
+(defun validate_fields fields (do fields (map (lambda x _ _ 
                         (do x (map (lambda y _ _ 
                           (do y (regex-match "byr|iyr|eyr|hgt|hcl|ecl|pid")))) 
                                 (deep-flat))))
@@ -28,8 +28,8 @@ hgt:76in")
 ; ecl (Eye Color) - exactly one of: amb blu brn gry grn hzl oth.
 ; pid (Passport ID) - a nine-digit number, including leading zeroes.
 ; cid (Country ID) - ignored, missing or not.
-(function to_entries array (map array (lambda x _ _ (do x (map (lambda y _ _ (do y (split-by " ")))) (deep-flat) (map (lambda x _ _ (split-by x ":")))))))
-(function without_invalid_fields fields (do fields 
+(defun to_entries array (map array (lambda x _ _ (do x (map (lambda y _ _ (do y (split-by " ")))) (deep-flat) (map (lambda x _ _ (split-by x ":")))))))
+(defun without_invalid_fields fields (do fields 
                                             (map (lambda x _ _  (do x 
                                              (remove (lambda y _ _ (and (not (= (car y) "cid")) (regex-match (car y) "byr|iyr|eyr|hgt|hcl|ecl|pid")))))))))
 

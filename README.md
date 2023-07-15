@@ -12,7 +12,7 @@ A Lisp for Node
 ```
 
 ```lisp
-(function fibonacci n
+(defun fibonacci n
   (if (< n 2)
       n
       (+ (fibonacci (- n 1))
@@ -24,7 +24,7 @@ A Lisp for Node
 
 ```lisp
 ; Define reusable modules
-(function binary-search
+(defun binary-search
         array target (block
   (loop search
         arr target start end (block
@@ -53,7 +53,7 @@ A Lisp for Node
 
 ```lisp
 (import std "range" "push" "factorial" "product-array" "reduce")
-(function factorial n
+(defun factorial n
   (do
     (range 1 n)
     (product-array)))

@@ -3,7 +3,7 @@
 7,13,x,x,59,x,31,19")
 (let sample2 "1001171
 17,x,x,x,x,x,x,41,x,x,x,37,x,x,x,x,x,367,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,19,x,x,x,23,x,x,x,x,x,29,x,613,x,x,x,x,x,x,x,x,x,x,x,x,13")
-(function *parse_input* inp 
+(defun *parse_input* inp 
   (block 
     (let 
       INP (do inp (split "\n"))
@@ -12,7 +12,7 @@
     (Array time buses)
     ))
 
-(function *solve1* inp (block 
+(defun *solve1* inp (block 
 (let 
   *INP* (*parse_input* inp)
   *time* (car *INP*)

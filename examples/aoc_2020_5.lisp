@@ -18,7 +18,7 @@ FFFBBBFRRR
 BBFFBBFRLL")
 (let *input* *sample*)
 ; (let *input* (open "./playground/src/aoc_2020/5/input.txt"))
-(function binary_boarding inp bounds lower upper 
+(defun binary_boarding inp bounds lower upper 
   (do inp 
       (reduce (lambda a b _ _ (block 
             (let half (* (+ (car a) (car (cdr a))) 0.5))

@@ -51,7 +51,7 @@ const cli = async () => {
                 parsed.filter(
                   ([dec, name]) =>
                     dec.type === 'apply' &&
-                    dec.value === 'function' &&
+                    dec.value === 'defun' &&
                     name.type === 'word' &&
                     depSet.has(lispToJavaScriptVariableName(name.value))
                 )
@@ -167,7 +167,7 @@ const cli = async () => {
             parsed.filter(
               ([dec, name]) =>
                 dec.type === 'apply' &&
-                dec.value === 'function' &&
+                dec.value === 'defun' &&
                 name.type === 'word'
             )
           )

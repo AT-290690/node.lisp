@@ -12,7 +12,7 @@
 (let *policy* (regex-match *input* "[a-z](?=:)"))
 (let *inputs* (regex-match *input* "(?<=:[ ])(.*)"))
 
-(function occ_to_numbers x _ _ (do x (split-by "-") (map (lambda y _ _ (type y Number)))))
+(defun occ_to_numbers x _ _ (do x (split-by "-") (map (lambda y _ _ (type y Number)))))
 
 (function *solve1* string letter (block
   (let 

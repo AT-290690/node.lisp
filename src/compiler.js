@@ -260,6 +260,7 @@ const compile = (tree, Locals) => {
         out += `, ${newName}))), ${name});`
         return out
       }
+      case 'defun':
       case 'function':
       case 'ƒ': {
         let name,

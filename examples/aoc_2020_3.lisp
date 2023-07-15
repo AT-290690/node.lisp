@@ -15,10 +15,10 @@
 (let *input* sample)
 ; (let *input* (open "./playground/src/aoc_2020/3/input.txt"))
 
-(function to_bit_array array 
+(defun to_bit_array array 
   (map array (lambda line _ _ (do line (type Array) (map (lambda x _ _ (= x "#")))))))
 
-(function *solve* array slopeX slopeY (block 
+(defun *solve* array slopeX slopeY (block 
   (let 
     h (length array)
     w (length (car array)))
@@ -30,7 +30,7 @@
           (get (* index slopeY))
           (get (mod (* index slopeX) w))))))))
 
-(function task *input* (block 
+(defun task *input* (block 
   (let matrix (do *input* 
               (split-by-lines)
               (to_bit_array)))

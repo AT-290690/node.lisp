@@ -18,7 +18,7 @@ b")
 (let *input* sample)
 ; (let *input* (open "./playground/src/aoc_2020/6/input.txt"))
 
-(function remove-duplicates string (do (. string) (remove (lambda item pos self (= (index-of self item) pos)))))
+(defun remove-duplicates string (do (. string) (remove (lambda item pos self (= (index-of self item) pos)))))
 
 (let *lines* (do *input* (split-by-n-lines 2)))
 (let *unique_chars* (do *lines* (map (lambda x _ _ (do x (join "") (remove-duplicates))))))

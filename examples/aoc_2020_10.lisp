@@ -54,7 +54,7 @@
    (adjacent-difference (lambda a b (- b a)))))
 
 ; part 2
-(function combinations inp index memo
+(defun combinations inp index memo
       (if (array-in-bounds-p memo index) (get memo index) (block 
         (let result 0)
         (loop iterate j (block 
@@ -66,7 +66,7 @@
           (set memo index result)
           result)))
 
-(function iterative-solution inp (block
+(defun iterative-solution inp (block
   (let 
     memo (Array 1)
     size (length inp))
@@ -83,7 +83,7 @@
   (iterate-i 1)
   (get memo -1)))
 
-(function transform-input input
+(defun transform-input input
                           (set 
                             (let sorted 
                               (do input 

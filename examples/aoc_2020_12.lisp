@@ -7,12 +7,12 @@ F11")
 (let *input* sample)
 ; (let *input* (open "./playground/src/aoc_2020/12/input.txt"))
 
-(function yoink stack (unless (not (length stack)) (block (let last (get stack -1)) (set stack -1) last)))
-(function move stack (let f (lambda (Array (yoink stack) f))))
+(defun yoink stack (unless (not (length stack)) (block (let last (get stack -1)) (set stack -1) last)))
+(defun move stack (let f (lambda (Array (yoink stack) f))))
 ; 362
-(function solve1 (block 
+(defun solve1 (block 
 
-(function normalize value min max (* (- value min) (/ (- max min))))
+(defun normalize value min max (* (- value min) (/ (- max min))))
 (let *stack* (do 
   *input* 
   (split-by "\n") 
@@ -30,7 +30,7 @@ F11")
     y 0
     compass (Array "N" "E" "S" "W")
     arrow 1)
-  (function go (block 
+  (defun go (block 
     (let 
       action (car (car cursor))
       value (car (cdr (car cursor))))
@@ -51,16 +51,16 @@ F11")
       (= action "R") (set moves (length moves) (Array (get compass (let* arrow (mod (+ arrow (do value (normalize 0 90) (floor))) (length compass)))) 0))
       (= action "F") (set moves (length moves) (Array (get compass arrow) value)))
     (let* cursor (apply (car (cdr cursor))))))
-  (function next (if (length moves) (block (go) (next)) (block (go))))
+  (defun next (if (length moves) (block (go) (next)) (block (go))))
   (next)
   (abs (+ x y))))
 
 ; 29895
-(function solve2 (block 
+(defun solve2 (block 
 
-(function factorial n (if (<= n 0) 1 (* n (factorial (- n 1)))))
+(defun factorial n (if (<= n 0) 1 (* n (factorial (- n 1)))))
 
-(function power base exp 
+(defun power base exp 
   (if (< exp 0) 
       (if (= base 0) 
       (error "Attempting to divide by 0 in (power)")
@@ -69,7 +69,7 @@ F11")
         (if (= exp 1) base
           (* base (power base (- exp 1)))))))
 
-(function sin rad terms (block
+(defun sin rad terms (block
     (let sine 0)
     (loop inc i 
     (block 
@@ -82,7 +82,7 @@ F11")
       (if (< i terms) (inc (+ i 1)) sine)))
     (inc 0)))
    ; cos 
-  (function cos rad terms (block
+  (defun cos rad terms (block
     (let cosine 0)
     (loop inc i 
     (block 
@@ -111,7 +111,7 @@ F11")
     dy 1
     TERM 17
     compass (Array "N" "E" "S" "W"))
-  (function go (block 
+  (defun go (block 
     (let 
       action (car (car cursor))
       value (car (cdr (car cursor))))
@@ -144,7 +144,7 @@ F11")
                   (let* x (+ x (* dx value))) 
                   (let* y (+ y (* dy value)))))
     (let* cursor (apply (car (cdr cursor))))))
-  (function next (if (length moves) (block (go) (next)) (block (go))))
+  (defun next (if (length moves) (block (go) (next)) (block (go))))
   (next)
   (+ (abs x) (abs y))))
 

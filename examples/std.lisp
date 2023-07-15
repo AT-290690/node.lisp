@@ -1,26 +1,26 @@
 ; (std lib)
-(function std (block 
+(defun std (block 
   ; modules
   ; max
-  (function max a b (if (> a b) a b))
+  (defun max a b (if (> a b) a b))
   ; min
-  (function min a b (if (< a b) a b))
+  (defun min a b (if (< a b) a b))
   ; normalize 
-  (function normalize value min max (* (- value min) (/ (- max min))))
+  (defun normalize value min max (* (- value min) (/ (- max min))))
   ; linear-interpolation
-  (function linear-interpolation a b n (+ (* (- 1 n) a) (* n b)))
+  (defun linear-interpolation a b n (+ (* (- 1 n) a) (* n b)))
   ; clamp
-  (function clamp x limit (if (> x limit) limit x))
+  (defun clamp x limit (if (> x limit) limit x))
   ; is-odd
-  (function is-odd x i (= (mod x 2) 1))
+  (defun is-odd x i (= (mod x 2) 1))
   ; is-even
-  (function is-even x i (= (mod x 2) 0))
+  (defun is-even x i (= (mod x 2) 0))
   ; sign 
-  (function sign n (if (< n 0) -1 1))
+  (defun sign n (if (< n 0) -1 1))
   ; radians
-  (function radians deg (* deg 3.141592653589793 (/ 180)))
+  (defun radians deg (* deg 3.141592653589793 (/ 180)))
   ; sin
-  (function sin rad terms (block
+  (defun sin rad terms (block
     (let sine 0)
     (loop inc i 
     (block 
@@ -33,7 +33,7 @@
       (if (< i terms) (inc (+ i 1)) sine)))
     (inc 0)))
    ; cos 
-  (function cos rad terms (block
+  (defun cos rad terms (block
     (let cosine 0)
     (loop inc i 
     (block 
@@ -45,15 +45,28 @@
             (power rad  (* 2 i))))) 
       (if (< i terms) (inc (+ i 1)) cosine)))
     (inc 0)))
+  ; square
+  (defun square x (* x x))
+  ; average
+  (defun average x y (* (+ x y) 0.5))
+ ; sqrt
+  (defun sqrt x (block 
+    (let is-good-enough (lambda g x (< (abs (- (square g) x)) 0.01))
+         improve-guess (lambda g x (average g (* x (/ g)))))
+    (loop sqrt-iter g x 
+        (if (is-good-enough g x) 
+            g
+            (sqrt-iter (improve-guess g x) x)))
+  (sqrt-iter 1.0 x)))
   ; manhattan-distance
-  (function manhattan-distance x1 y1 x2 y2 (+ (abs (- x2 x1)) (abs (- y2 y1))))
+  (defun manhattan-distance x1 y1 x2 y2 (+ (abs (- x2 x1)) (abs (- y2 y1))))
   ; can-sum
-  (function can-sum t values 
+  (defun can-sum t values 
     (if (< t 0) 0 
       (if (= t 0) 1 
         (some values (lambda x _ _ (can-sum (- t x) values))))))
   ; how-can-sum
-  (function how-can-sum t values 
+  (defun how-can-sum t values 
     (if (< t 0) 0 
       (if (= t 0) () 
         (block 
@@ -63,27 +76,27 @@
             (if (and (Arrayp res) (= -1 (array-index-of res x))) (push res x))))) 
           res))))
   ; push
-  (function push array value (set array (length array) value))
+  (defun push array value (set array (length array) value))
   ; pop
-  (function pop array (set array -1))
+  (defun pop array (set array -1))
   ; array-in-bounds-p 
-  (function array-in-bounds-p array index (and (< index (length array)) (>= index 0)))
+  (defun array-in-bounds-p array index (and (< index (length array)) (>= index 0)))
   ; is-array-of-atoms
-  (function is-array-of-atoms array (if (not (length array)) 1 (if (atom (car array)) (is-array-of-atoms (cdr array)) 0)))
+  (defun is-array-of-atoms array (if (not (length array)) 1 (if (atom (car array)) (is-array-of-atoms (cdr array)) 0)))
   ; abs
-  (function abs n (- (^ n (>> n 31)) (>> n 31)))
+  (defun abs n (- (^ n (>> n 31)) (>> n 31)))
   ; floor
-  (function floor n (| n 0))
+  (defun floor n (| n 0))
   ; round a number
-  (function round n (| (+ n 0.5) 0))
+  (defun round n (| (+ n 0.5) 0))
   ; euclidean-mod
-  (function euclidean-mod a b (mod (+ (mod a b) b) b))
+  (defun euclidean-mod a b (mod (+ (mod a b) b) b))
   ; euclidean-div
-  (function euclidean-div a b (block 
+  (defun euclidean-div a b (block 
                       (let q (* a (/ b)))
                       (if (< (mod a b) 0) (if (> b 0) (- q 1) (+ q 1)) q)))
 ; power
-(function power base exp 
+(defun power base exp 
   (if (< exp 0) 
       (if (= base 0) 
       (error "Attempting to divide by 0 in (power)")
@@ -92,34 +105,34 @@
         (if (= exp 1) base
           (* base (power base (- exp 1)))))))
 ; neighborhood
- (function neighborhood array directions y x callback
+ (defun neighborhood array directions y x callback
     (reduce directions (lambda sum dir _ _ 
         (block
           (let dy (+ (car dir) y)
                dx (+ (car (cdr dir)) x))
            (+ sum (if (and (array-in-bounds-p array dy) (array-in-bounds-p (get array dy) dx)) (callback (get (get array dy) dx) dir))))) 0))
   ; greatest-common-divisor
-  (function greatest-common-divisor a b (if (= b 0) a (greatest-common-divisor b (mod a b))))
+  (defun greatest-common-divisor a b (if (= b 0) a (greatest-common-divisor b (mod a b))))
   ; remainder
-  (function remainder n d (if (< n d) n (remainder (- n d) d)))
+  (defun remainder n d (if (< n d) n (remainder (- n d) d)))
   ; factorial
-  (function factorial n (if (<= n 0) 1 (* n (factorial (- n 1)))))
+  (defun factorial n (if (<= n 0) 1 (* n (factorial (- n 1)))))
   ; fibonacci
-  (function fibonacci n (if (< n 2) n (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))
+  (defun fibonacci n (if (< n 2) n (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))
   ; join
-  (function join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
+  (defun join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
   ; repeat
-  (function repeat n x (map (Array n length) (lambda _ _ _ x)))
+  (defun repeat n x (map (Array n length) (lambda _ _ _ x)))
   ; split-by-lines
-  (function split-by-lines string (regex-match string "[^\n]+"))
+  (defun split-by-lines string (regex-match string "[^\n]+"))
   ; split-by
-  (function split-by string delim (regex-match string (concatenate "[^" delim "]+")))
+  (defun split-by string delim (regex-match string (concatenate "[^" delim "]+")))
   ; trim
-  (function trim string (regex-replace string "^\s+|\s+$" ""))
+  (defun trim string (regex-replace string "^\s+|\s+$" ""))
   ; array-of-numbers
-  (function array-of-numbers array (map array (lambda x i o (type x Number))))
+  (defun array-of-numbers array (map array (lambda x i o (type x Number))))
   ; concat
-  (function concat array1 array2 (block
+  (defun concat array1 array2 (block
     (loop iterate i bounds (block
     (if (< i (length array2)) (push array1 (get array2 i)))
     (if (< i bounds) 
@@ -128,7 +141,7 @@
     )))
   (iterate 0 (- (length array2) 1))))
   ; merge
-  (function merge array1 array2 (block
+  (defun merge array1 array2 (block
     (loop iterate i bounds (block
     (push array1 (get array2 i))
     (if (< i bounds) 
@@ -137,46 +150,46 @@
     )))
   (iterate 0 (- (length array2) 1))))
   ; range
-  (function range start end (block
+  (defun range start end (block
     (let array ())
     (loop iterate i bounds (block
       (push array (+ i start))
       (if (< i bounds) (iterate (+ i 1) bounds) array)))
     (iterate 0 (- end start))))
  ; sequance
-  (function sequance end start step (block
+  (defun sequance end start step (block
     (let array ())
     (loop iterate i bounds (block
       (push array (+ i start))
       (if (< i bounds) (iterate (+ i step) bounds) array)))
     (iterate 0 (- end start))))
   ; map
-  (function map array callback (block 
+  (defun map array callback (block 
     (let new-array () i 0)
     (loop iterate i bounds (block
       (set new-array i (callback (get array i) i array))
       (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
     (iterate 0 (- (length array) 1))))
   ; for-each
-  (function for-each array callback (block
+  (defun for-each array callback (block
     (loop iterate i bounds (block
       (callback (get array i) i array)
       (if (< i bounds) (iterate (+ i 1) bounds) array)))
     (iterate 0 (- (length array) 1))))
   ; for-n
-  (function for-n N callback (block
+  (defun for-n N callback (block
     (loop iterate i (block 
         (let res (callback i))
         (if (< i N) (iterate (+ i 1)) res))) 
         (iterate 0)))
   ; for-range
-  (function for-range start end callback (block
+  (defun for-range start end callback (block
     (loop iterate i (block 
         (let res (callback i))
         (if (< i end) (iterate (+ i 1)) res))) 
         (iterate start)))
   ; count-of
-  (function count-of array callback (block
+  (defun count-of array callback (block
     (let amount 0)
     (loop iterate i bounds (block
       (let current (get array i))
@@ -184,11 +197,11 @@
       (if (< i bounds) (iterate (+ i 1) bounds) amount)))
     (iterate 0 (- (length array) 1))))
   ; partition 
-  (function partition array n (reduce array (lambda a x i _ (block 
+  (defun partition array n (reduce array (lambda a x i _ (block 
         (if (mod i n) (push (get a -1) x) (push a (Array x))) a)) 
         ()))
   ; filter
-  (function remove array callback (block
+  (defun remove array callback (block
     (let new-array ())
     (loop iterate i bounds (block
       (let current (get array i))
@@ -197,7 +210,7 @@
       (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
     (iterate 0 (- (length array) 1))))
 ; every
-(function every array callback (block
+(defun every array callback (block
     (let bol 1)
     (loop iterate i bounds (block
       (let res (callback (get array i) i array))
@@ -205,7 +218,7 @@
       (if (and res (< i bounds)) (iterate (+ i 1) bounds) bol)))
     (iterate 0 (- (length array) 1))))
 ; some
-(function some array callback (block
+(defun some array callback (block
     (let bol 1)
     (loop iterate i bounds (block
       (let res (callback (get array i) i array))
@@ -213,24 +226,24 @@
       (if (and (not res) (< i bounds)) (iterate (+ i 1) bounds) bol)))
     (iterate 0 (- (length array) 1))))
   ; reduce
-  (function reduce array callback initial (block
+  (defun reduce array callback initial (block
     (loop iterate i bounds (block
       (let* initial (callback initial (get array i) i array))
       (if (< i bounds) (iterate (+ i 1) bounds) initial)))
     (iterate 0 (- (length array) 1))))
       ; reduce
-(function accumulate array callback (block
+(defun accumulate array callback (block
   (let initial (get array 0))
   (loop iterate i bounds (block
     (let* initial (callback initial (get array i) i array))
     (if (< i bounds) (iterate (+ i 1) bounds) initial)))
   (iterate 0 (- (length array) 1))))
   ; sum-array
-  (function sum-array array (reduce array (lambda a b _ _ (+ a b)) 0))
+  (defun sum-array array (reduce array (lambda a b _ _ (+ a b)) 0))
   ; product-array
-  (function product-array array (reduce array (lambda a b _ _ (* a b)) 1))
+  (defun product-array array (reduce array (lambda a b _ _ (* a b)) 1))
   ; deep-flat
-  (function deep-flat arr (block 
+  (defun deep-flat arr (block 
     (let new-array ()) 
     (let flatten (lambda item 
       (if (and (Arrayp item) (length item)) 
@@ -239,7 +252,7 @@
     (flatten arr) 
     new-array))
   ; find
-(function find array callback (block
+(defun find array callback (block
         (loop iterate i bounds (block
           (let 
             current (get array i) 
@@ -249,7 +262,7 @@
             (if has current))))
             (iterate 0 (- (length array) 1))))
   ; find-index
-  (function find-index array callback (block
+  (defun find-index array callback (block
     (let idx -1 has-found 0)
     (loop iterate i bounds (block
       (let current (get array i))
@@ -260,7 +273,7 @@
         (iterate 0 (- (length array) 1))
         (if has-found idx -1)))
 ; index-of
-  (function index-of array target (block
+  (defun index-of array target (block
     (let idx -1 has-found 0)
     (loop iterate i bounds (block
       (let current (get array i))
@@ -271,7 +284,7 @@
         (iterate 0 (- (length array) 1))
         (if has-found idx -1)))
    ; array-index-of
-  (function array-index-of array target 
+  (defun array-index-of array target 
     (block
       (if (= (length array) 0) -1 
         (block 
@@ -285,7 +298,7 @@
               (iterate 0 (- (length array) 1))
               (if has-found idx -1)))))
   ; quick-sort
-  (function quick-sort arr (block
+  (defun quick-sort arr (block
     (if (<= (length arr) 1) arr
     (block
       (let 
@@ -304,7 +317,7 @@
     (push pivot) 
     (concat (quick-sort right-arr)))))))
   ; reverse 
-  (function reverse array (block
+  (defun reverse array (block
     (let 
       len (length array)
       reversed (Array len length)
@@ -314,7 +327,7 @@
       (if (< i bounds) (iterate (+ i 1) bounds) reversed)))
     (iterate 0 offset)))
   ; binary-search
-  (function binary-search 
+  (defun binary-search 
           array target (block
     (loop search 
           arr target start end (block
@@ -329,7 +342,7 @@
     (search array target 0 (length array))))
 
   ; hash-index
-  (function hash-index 
+  (defun hash-index 
     table key 
       (block
         (let 
@@ -354,7 +367,7 @@
   ;   (log)
   ; )
     ; hash-table-set
-  (function hash-table-set 
+  (defun hash-table-set 
     table key value 
       (block
         (let idx (hash-index table key))
@@ -370,10 +383,10 @@
         )
         table))
   ; hash table_has 
-  (function hash-table-has table key 
+  (defun hash-table-has table key 
     (and (array-in-bounds-p table (let idx (hash-index table key))) (and (length (let current (get table idx))) (>= (index-of (car current) key) 0))))
   ; hash-table-get
-  (function hash-table-get
+  (defun hash-table-get
     table key 
       (block
         (let idx (hash-index table key))
@@ -385,11 +398,11 @@
                       (do x (get 0)))))
               (get 1))))))
   ; hash-table
-  (function hash-table 
+  (defun hash-table 
     size 
       (map (Array size length) (lambda _ _ _ ())))
   ; hash-table-make
-  (function hash-table-make 
+  (defun hash-table-make 
     items 
       (block
         (let 
@@ -401,7 +414,7 @@
         (if (< i len) (add (+ i 1)) table)))
         (add 0)))
     ; hash-set-set
-  (function hash-set-set 
+  (defun hash-set-set 
     table key 
       (block
         (let idx (hash-index table key))
@@ -417,10 +430,10 @@
         )
         table))
   ; hash table_has 
-  (function hash-set-has table key 
+  (defun hash-set-has table key 
     (and (array-in-bounds-p table (let idx (hash-index table key))) (and (length (let current (get table idx))) (>= (index-of current key) 0))))
   ; hash-set-get
-  (function hash-set-get
+  (defun hash-set-get
     table key 
       (block
         (let idx (hash-index table key))
@@ -430,11 +443,11 @@
             (do current
               (find (lambda x _ _ (= key x))))))))
   ; hash-set
-  (function hash-set 
+  (defun hash-set 
     size 
       (map (Array size length) (lambda _ _ _ ())))
   ; hash-set-make
-  (function hash-set-make 
+  (defun hash-set-make 
     items 
       (block
         (let 
@@ -461,30 +474,30 @@
   ; (binary-tree-get-left)
   ; (binary-tree-get-right))
   ; binary-tree-node
-  (function binary-tree-node 
+  (defun binary-tree-node 
           value (Array 
                   (Array "value" value)
                   (Array "left"  ())
                   (Array "right" ())))
   ; binary-tree-get-left
-  (function binary-tree-get-left 
+  (defun binary-tree-get-left 
                   node (get node 1))
   ; binary-tree-get-right
-  (function binary-tree-get-right 
+  (defun binary-tree-get-right 
                   node (get node 2))
   ; binary-tree-set-left
-  (function binary-tree-set-left 
+  (defun binary-tree-set-left 
                   tree node (set tree 1 node))
   ; binary-tree-set-right
-  (function binary-tree-set-right 
+  (defun binary-tree-set-right 
                   tree node (set tree 2 node)) 
   ; binary-tree-get-value
-  (function binary-tree-get-value
+  (defun binary-tree-get-value
                   node (get node 0))  
   ; (/ Binary Tree)
   
   ; occurances_count
-  (function character-occurances-in-string string letter (block
+  (defun character-occurances-in-string string letter (block
     (let 
       array (. string)
       bitmask 0
@@ -504,9 +517,9 @@
         (+ count has-at-least-one))))
         (iterate 0 (- (length array) 1))))
 ; split-by-n-lines
-(function split-by-n-lines string n (do string (regex-replace (concatenate "(\n){" n "}") "௮") (regex-match "[^௮]+") (map (lambda x _ _ (regex-match x "[^\n]+")))))
+(defun split-by-n-lines string n (do string (regex-replace (concatenate "(\n){" n "}") "௮") (regex-match "[^௮]+") (map (lambda x _ _ (regex-match x "[^\n]+")))))
 ; split
-(function split string separator (block 
+(defun split string separator (block 
     (let 
       cursor ""
       sepArr (. separator)
@@ -524,7 +537,7 @@
     (push (iterate () 0 (- (length array) 1)) cursor)))
 
   ; slice 
-  (function slice array start end (block 
+  (defun slice array start end (block 
     (let bounds (- end start) out (Array bounds length))
     (loop iterate i 
       (if (< i bounds) 
@@ -534,17 +547,17 @@
            out))
           (iterate 0)))
   ; slice-if-index
-  (function slice-if-index array callback (reduce array (lambda a b i _ (if (callback i) (push a b) a)) ()))
+  (defun slice-if-index array callback (reduce array (lambda a b i _ (if (callback i) (push a b) a)) ()))
   ; slice-if
-  (function slice-if array callback (reduce array (lambda a b i _ (if (callback b i) (push a b) a)) ()))
+  (defun slice-if array callback (reduce array (lambda a b i _ (if (callback b i) (push a b) a)) ()))
   ; equal 
-  (function equal a b 
+  (defun equal a b 
    (or (and (atom a) (atom b) (= a b)) 
    (and (Arrayp a) 
         (= (length a) (length b)) 
           (not (some a (lambda _ i _ (not (equal (get a i) (get b i)))))))))
   ; adjacent-difference
-  (function adjacent-difference array callback (block 
+  (defun adjacent-difference array callback (block 
     (let len (length array))
     (unless (= len 1) 
     (block (let result (Array (car array)))
@@ -636,6 +649,9 @@
     (Array "cos" cos)
     (Array "repeat" repeat)
     (Array "sign" sign)
+    (Array "square" square)
+    (Array "average" average)
+    (Array "sqrt" sqrt)
   )
 ))
 ; (/ std lib)

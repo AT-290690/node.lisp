@@ -47,7 +47,7 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
 ; (let input (open "./playground/src/aoc_2020/7/input.txt"))
 
 (let *target* (Array "shiny" "gold"))
-(function *read-input* input
+(defun *read-input* input
     (do 
       input 
       (split-by "\n") 
@@ -81,7 +81,7 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
                           (set -1)))))))
             (Array head tail))))))
 
-(function *solve1* bags target (block 
+(defun *solve1* bags target (block 
   (let 
     count 0
     traverse-bags (lambda left right (block
@@ -100,13 +100,13 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
       (traverse-bags (car target) (car (cdr target)))
       count))
 
-(function *find-bag* bags left right 
+(defun *find-bag* bags left right 
           (find bags 
             (lambda x _ _ (and 
               (= (car (car x)) left)
               (= (car (cdr (car x))) right)))))
       
-(function *solve2* initial all-bags 
+(defun *solve2* initial all-bags 
   (reduce initial (lambda output current _ _ (block 
     (let next (*find-bag* all-bags (car (cdr current)) (car (cdr (cdr current)))))
     (+ output (if next (* (car current) (*solve2* (car (cdr next)) all-bags)) (car current))))) 1))

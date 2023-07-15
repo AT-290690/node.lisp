@@ -33,18 +33,18 @@
   (split-by "\n") 
   (array-of-numbers)))
 
-  (function can-sum-some t values 
+  (defun can-sum-some t values 
     (if (< t 0) 0 
       (if (= t 0) 1 
         (some values (lambda x _ _ (can-sum-some (- t x) values))))))
   
-  (function find-preamble inp n (do inp 
+  (defun find-preamble inp n (do inp 
     (find (lambda current i all 
       (if (>= i n) 
        (not (can-sum-some current (slice all (- i n) i))))))))
 
 (let *preamble* (find-preamble *numbers* (if (> (length *numbers*) 25) 25 5)))
-(function window inp n (do inp 
+(defun window inp n (do inp 
   (reduce (lambda acc current i all 
     (if (>= i n) 
       (push acc (slice all (- i n) i)) acc)) ())))

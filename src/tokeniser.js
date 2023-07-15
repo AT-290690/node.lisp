@@ -397,10 +397,10 @@ const tokens = {
       )
     return args.reduce((_, x) => evaluate(x, env), 0)
   },
-  ['function']: (args, env) => {
+  ['defun']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        'Invalid number of arguments to (function) (2 required)'
+        'Invalid number of arguments to (defun) (2 required)'
       )
     const params = args.slice(1, -1)
     const body = args.at(-1)
@@ -408,7 +408,7 @@ const tokens = {
     const fn = (props = [], scope) => {
       if (props.length > params.length) {
         throw new RangeError(
-          `More arguments for (function ${name} ${params
+          `More arguments for (defun ${name} ${params
             .map((x) => x.value)
             .join(' ')
             .trim()}) are provided. (expects ${params.length} but got ${
@@ -418,7 +418,7 @@ const tokens = {
       }
       if (props.length !== params.length)
         throw new RangeError(
-          `Incorrect number of arguments for (function ${params
+          `Incorrect number of arguments for (defun ${params
             .map((x) => x.value)
             .join(' ')
             .trim()}) are provided. (expects ${params.length} but got ${
@@ -589,11 +589,11 @@ const tokens = {
   ['let']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        'Invalid number of arguments to (declare) (> 2 required)'
+        'Invalid number of arguments to (let) (> 2 required)'
       )
     if (args.length % 2 === 1)
       throw new RangeError(
-        'Invalid number of arguments to (declare) (pairs of 2 required)'
+        'Invalid number of arguments to (let) (pairs of 2 required)'
       )
     let name
     for (let i = 0; i < args.length; ++i) {
@@ -601,7 +601,7 @@ const tokens = {
         const word = args[i]
         if (word.type !== 'word')
           throw new SyntaxError(
-            `First argument of (declare) must be word but got ${word.type}`
+            `First argument of (let) must be word but got ${word.type}`
           )
         name = word.value
       } else env[name] = evaluate(args[i], env)
@@ -917,7 +917,7 @@ const tokens = {
 tokens['first'] = tokens['car']
 tokens['rest'] = tokens['cdr']
 tokens['∞'] = tokens['loop']
-tokens['ƒ'] = tokens['function']
+tokens['ƒ'] = tokens['function'] = tokens['defun']
 tokens['∘'] = tokens['do']
 tokens['λ'] = tokens['lambda']
 tokens['void'] = tokens['block']

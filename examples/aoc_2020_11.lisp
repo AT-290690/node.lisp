@@ -12,10 +12,10 @@ L.LLLLLL.L
 L.LLLLL.LL")
 (let *input* sample)
 ; (let *input* (open "./playground/src/aoc_2020/11/input.txt"))
-(function count-seats matrix (block
+(defun count-seats matrix (block
   (reduce matrix (lambda a row _ _ (+ a (count-of row (lambda x _ _ (> x 0))))) 0)))
 
-(function parse-input input (do 
+(defun parse-input input (do 
   input
   (split-by-lines)
   (map (lambda row _ _ 
@@ -23,7 +23,7 @@ L.LLLLL.LL")
       (type Array) 
       (map (lambda col _ _ (- (= col "L") 1))))))))
 
-(function solve-1 matrix tolerance (block 
+(defun solve-1 matrix tolerance (block 
   (let 
     height (- (length matrix) 1)
     width (- (length (car matrix)) 1)
@@ -38,7 +38,7 @@ L.LLLLL.LL")
           (if (and (>= sum tolerance) (= current 1)) 0 current))))))))
           copy))
           
-(function solve-2 matrix tolerance (block 
+(defun solve-2 matrix tolerance (block 
   (let 
     height (- (length matrix) 1)
     width (- (length (car matrix)) 1)
@@ -68,14 +68,14 @@ L.LLLLL.LL")
               (if (and (>= sum tolerance) (= current 1)) 0 current))))))))
               copy))
 
-(function format-matrix matrix (do matrix 
+(defun format-matrix matrix (do matrix 
                                   (map (lambda row _ _ 
                                     (do row 
                                       (map (lambda col _ _ (if (= col 1) "#" (if (= col 0) "L"  "."))))
                                       (join ""))))
                                   (join "\n")))
 
-(function print-matrix matrix (and (log (format-matrix matrix)) matrix))
+(defun print-matrix matrix (and (log (format-matrix matrix)) matrix))
 
 (let *matrix* (parse-input *input*))
 

@@ -10,13 +10,13 @@
 (let *input* sample)
 ; (let *input* (open "./playground/src/aoc_2020/1/input.txt"))
 
-(function *solve1* array cb 
+(defun *solve1* array cb 
      (reduce array (lambda a x _ array (block
         (let res (binary-search array (cb x)))
         (if res (push a res) a))) 
      ()))
 
-(function *solve2* array cb 
+(defun *solve2* array cb 
     (reduce array
       (lambda accumulator y i array (block
           (loop iterate j bounds (block 
