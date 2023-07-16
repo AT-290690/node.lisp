@@ -13,14 +13,14 @@ F11")
 (defun solve1 (do 
 
 (defun normalize value min max (* (- value min) (/ (- max min))))
-(defvar *stack* (trace 
+(defvar *stack* (go 
   *input* 
   (split-by "\n") 
   (push "F0") ; TODO delete this later
   (map (lambda x . .
     (do 
       (defvar str (type x Array))
-      (Array (car str) (trace str (cdr) (join "") (type Number))))))
+      (Array (car str) (go str (cdr) (join "") (type Number))))))
   (reverse)))
 
   (defvar 
@@ -30,7 +30,7 @@ F11")
     y 0
     compass (Array "N" "E" "S" "W")
     arrow 1)
-  (defun go (do 
+  (defun lazy (do 
     (defvar 
       action (car (car cursor))
       value (car (cdr (car cursor))))
@@ -47,11 +47,11 @@ F11")
       (= action "E") (setf x (+ x value))
       (= action "S") (setf y (+ y value))
       (= action "W") (setf x (- x value))
-      (= action "L") (set moves (length moves) (Array (get compass (setf arrow (mod (- arrow (trace value (normalize 0 90) (floor))) (length compass)))) 0))
-      (= action "R") (set moves (length moves) (Array (get compass (setf arrow (mod (+ arrow (trace value (normalize 0 90) (floor))) (length compass)))) 0))
+      (= action "L") (set moves (length moves) (Array (get compass (setf arrow (mod (- arrow (go value (normalize 0 90) (floor))) (length compass)))) 0))
+      (= action "R") (set moves (length moves) (Array (get compass (setf arrow (mod (+ arrow (go value (normalize 0 90) (floor))) (length compass)))) 0))
       (= action "F") (set moves (length moves) (Array (get compass arrow) value)))
     (setf cursor (apply (car (cdr cursor))))))
-  (defun next (if (length moves) (do (go) (next)) (do (go))))
+  (defun next (if (length moves) (do (lazy) (next)) (do (lazy))))
   (next)
   (abs (+ x y))))
 
@@ -95,12 +95,12 @@ F11")
       (if (< i terms) (inc (+ i 1)) cosine)))
     (inc 0)))
 
-  (defvar *stack* (trace 
+  (defvar *stack* (go 
     *input* 
     (split-by "\n") 
     (map (lambda x . . (do 
         (defvar str (type x Array))
-        (Array (car str) (trace str (cdr) (join "") (type Number))))))
+        (Array (car str) (go str (cdr) (join "") (type Number))))))
     (reverse)))
   (defvar 
     moves (type *stack* Array)
@@ -111,7 +111,7 @@ F11")
     dy 1
     TERM 17
     compass (Array "N" "E" "S" "W"))
-  (defun go (do 
+  (defun lazy (do 
     (defvar 
       action (car (car cursor))
       value (car (cdr (car cursor))))
@@ -144,7 +144,7 @@ F11")
                   (setf x (+ x (* dx value))) 
                   (setf y (+ y (* dy value)))))
     (setf cursor (apply (car (cdr cursor))))))
-  (defun next (if (length moves) (do (go) (next)) (do (go))))
+  (defun next (if (length moves) (do (lazy) (next)) (do (lazy))))
   (next)
   (+ (abs x) (abs y))))
 

@@ -211,10 +211,8 @@ const compile = (tree, Locals) => {
       case 'atom':
         return handleBoolean(`_isAtom(${compile(Arguments[0], Locals)});`)
       case 'car':
-      case 'first':
         return `${compile(Arguments[0], Locals)}.at(0);`
       case 'cdr':
-      case 'rest':
         return `${compile(Arguments[0], Locals)}.slice(1);`
       case 'get':
         return `${compile(Arguments[0], Locals)}.at(${compile(
@@ -345,7 +343,7 @@ const compile = (tree, Locals) => {
           Arguments[0],
           Locals
         )})`
-      case 'trace': {
+      case 'go': {
         let inp = Arguments[0]
         for (let i = 1; i < Arguments.length; ++i)
           inp = [Arguments[i].shift(), inp, ...Arguments[i]]

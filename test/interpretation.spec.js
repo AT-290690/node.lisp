@@ -79,20 +79,20 @@ describe('Interpration', () => {
     )
     strictEqual(
       runFromInterpreted(
-        `(trace (Array (Array 1 2 3 4 5) 2 3 4) (car) (cdr) (car))`
+        `(go (Array (Array 1 2 3 4 5) 2 3 4) (car) (cdr) (car))`
       ),
       2
     )
     deepStrictEqual(runFromInterpreted(`(cdr (Array 1 2 3 4))`), [2, 3, 4])
     strictEqual(runFromInterpreted(`(car (Array 1 2 3 4))`), 1)
     strictEqual(
-      runFromInterpreted(`(trace 1 
+      runFromInterpreted(`(go 1 
     (+ 2) 
       (* 3 4)
        (- 3 2))`),
       31
     )
-    strictEqual(runFromInterpreted(`(defvar x -1) (trace x (-))`), 1)
+    strictEqual(runFromInterpreted(`(defvar x -1) (go x (-))`), 1)
     strictEqual(runFromInterpreted(`(defvar x -1) (- x)`), 1)
     strictEqual(runFromInterpreted(`(- 1)`), -1)
     strictEqual(runFromInterpreted(`(if (< 1 2) 42 69)`), 42)
@@ -164,9 +164,9 @@ describe('Interpration', () => {
           (if (array-in-bounds-p table idx) 
             (do
               (defvar current (get table idx))
-              (trace current
+              (go current
                 (find (lambda x i o (= key 
-                        (trace x (get 0)))))
+                        (go x (get 0)))))
                 (get 1))))))
     (defun hash-table 
       size 
@@ -182,7 +182,7 @@ describe('Interpration', () => {
           (if (< i len) (add (+ i 1)) table)))
           (add 0)))
     
-    (defvar tabl  (trace
+    (defvar tabl  (go
     (hash-table-make (Array 
       (Array "name" "Anthony") 
       (Array "age" 32) 
@@ -216,13 +216,13 @@ describe('Interpration', () => {
                     tree node (set tree 2 node)) 
     (defun binary-tree-get-value
                     node (get node 0))
-  (trace 
+  (go 
     (binary-tree-node 1)
     (binary-tree-set-left 
-          (trace 
+          (go 
             (binary-tree-node 2) 
             (binary-tree-set-left 
-              (trace (binary-tree-node 4) 
+              (go (binary-tree-node 4) 
                   (binary-tree-set-right 
                   (binary-tree-node 5))))))
     (binary-tree-set-right (binary-tree-node 3))
@@ -239,7 +239,7 @@ describe('Interpration', () => {
     strictEqual(
       runFromInterpreted(`(defvar add_seq (lambda x (+ x 1 2 3)))
   (defun mult_10 x (* x 10))
-  (defvar do_thing (lambda (trace 100 
+  (defvar do_thing (lambda (go 100 
                         (add_seq) 
                         (mult_10))))
   (do_thing)`),
@@ -294,7 +294,7 @@ describe('Interpration', () => {
         (push right-arr current))
     (if (< i bounds) (iterate (+ i 1) bounds))))
     (iterate 1 (- (length arr) 1))
-(trace 
+(go 
   left-arr (quick-sort) 
   (push pivot) 
   (concat (quick-sort right-arr)))))))
@@ -341,13 +341,13 @@ describe('Interpration', () => {
 
 
 (Array
-  (trace input
+  (go input
   (split-by-lines)
   (array-of-numbers)
   (quick-sort)
   (solve1 (lambda x (- 2020 x)))
   (product-array))
-(trace input
+(go input
   (split-by-lines)
   (array-of-numbers)
   (quick-sort)
@@ -389,7 +389,7 @@ describe('Interpration', () => {
             (push right-arr current))
         (if (< i bounds) (iterate (+ i 1) bounds))))
         (iterate 1 (- (length arr) 1))
-    (trace 
+    (go 
       left-arr (quick-sort) 
       (push pivot) 
       (concat (quick-sort right-arr)))))))
@@ -403,7 +403,7 @@ describe('Interpration', () => {
       (iterate 0 offset)
       ))
     
-      (trace
+      (go
         (Array 1 0 8 -2 3)
         (quick-sort)
         (reverse))
@@ -465,7 +465,7 @@ describe('Interpration', () => {
     ))))
   (iterate 0 (- (length array2) 1)))))
 
-  (trace
+  (go
     (Array 1 2 3)
     (push -1)
     (concat (type "abc" Array))
@@ -516,7 +516,7 @@ describe('Interpration', () => {
   (defvar mult_2 (lambda x i (* x 2)))
   (defvar sum (lambda a x i (+ a x)))
   
-  (trace 
+  (go 
   (Array 1 2 3 4 5 6 7 101) 
   (remove is-odd)
   (map mult_2)

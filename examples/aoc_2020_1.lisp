@@ -30,7 +30,7 @@
 
 (Array 
 ; 514579 for sample
-(trace *input*
+(go *input*
   (split-by-lines)
   (array-of-numbers)
   (quick-sort)
@@ -38,7 +38,7 @@
   (product-array))
 
 ; 241861950 for sample
-(trace *input*
+(go *input*
   (split-by-lines)
   (array-of-numbers)
   (quick-sort)

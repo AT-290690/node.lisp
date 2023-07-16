@@ -15,11 +15,11 @@ L.LLLLL.LL")
 (defun count-seats matrix (do
   (reduce matrix (lambda a row . . (+ a (count-of row (lambda x . . (> x 0))))) 0)))
 
-(defun parse-input input (trace 
+(defun parse-input input (go 
   input
   (split-by-lines)
   (map (lambda row . . 
-    (trace row 
+    (go row 
       (type Array) 
       (map (lambda col . . (- (= col "L") 1))))))))
 
@@ -68,9 +68,9 @@ L.LLLLL.LL")
               (if (and (>= sum tolerance) (= current 1)) 0 current))))))))
               copy))
 
-(defun format-matrix matrix (trace matrix 
+(defun format-matrix matrix (go matrix 
                                   (map (lambda row . . 
-                                    (trace row 
+                                    (go row 
                                       (map (lambda col . . (if (= col 1) "#" (if (= col 0) "L"  "."))))
                                       (join ""))))
                                   (join "\n")))
@@ -83,7 +83,7 @@ L.LLLLL.LL")
 ; (log "PART 1")
 ; (log (format-matrix *matrix*))
 ; (log "\n----------")
-; (trace *matrix* 
+; (go *matrix* 
 ;   (solve-1 4) 
 ;   (print-matrix) 
 ;   (solve-1 4)
@@ -97,7 +97,7 @@ L.LLLLL.LL")
 ; (log "\n----------")
 
   
-  ; (trace 
+  ; (go 
   ; *matrix* 
   ; (solve-1 4) 
   ; (solve-1 4)
@@ -111,7 +111,7 @@ L.LLLLL.LL")
 ; (log "PART 2")
 ; (log (format-matrix *matrix*))
 ; (log "\n----------")
-; (trace *matrix* 
+; (go *matrix* 
 ;   (solve-2 5) 
 ;   (print-matrix) 
 ;   (solve-2 5) 
@@ -134,4 +134,4 @@ L.LLLLL.LL")
       (rotate next-matrix next n)
       next)))
 
-(Array (trace *matrix* (rotate -1 0)) (trace *matrix* (rotate -1 1)))
+(Array (go *matrix* (rotate -1 0)) (go *matrix* (rotate -1 1)))

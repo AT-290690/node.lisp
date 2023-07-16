@@ -13,13 +13,15 @@ acc +6")
 (defvar *input* sample)
 ; (defvar *input* (open "./playground/src/aoc_2020/8/input.txt"))
 
-(defvar *stack* (trace *input* 
-  (split-by "\n")
-  (map (lambda x . . (do 
-    (defvar cmd (trace x (split-by " ")))
-    (set cmd 1 (type (get cmd 1) Number)))))))
+(defvar *stack* 
+  (go 
+    *input* 
+    (split-by "\n")
+    (map (lambda x . . (do 
+      (defvar cmd (go x (split-by " ")))
+      (set cmd 1 (type (get cmd 1) Number)))))))
 
-(loop defun *solve1* instructions offset accumulator (do 
+(loop defun find-infinite-loop instructions offset accumulator (do 
    
    (defvar 
       instruction (get instructions offset)
@@ -27,13 +29,13 @@ acc +6")
       value (car (cdr instruction)))
 
    (unless (= (length instruction) 3) 
-     (*solve1* 
+     (find-infinite-loop 
         (set instructions offset (Array cmd value (Array offset accumulator)))
         (+ offset (if (= cmd "jmp") value 1)) 
         (if (= cmd "acc") (+ accumulator value) accumulator))
        accumulator)))
 
-(loop defun *solve2* instructions offset accumulator (unless (= offset (length instructions)) (do 
+(loop defun fix-infinite-loop instructions offset accumulator (unless (= offset (length instructions)) (do 
    
    (defvar 
       instruction (get instructions offset)
@@ -41,36 +43,34 @@ acc +6")
       value (car (cdr instruction)))
 
    (unless (= (length instruction) 3) 
-     (*solve2* 
+     (fix-infinite-loop 
        (set instructions offset (Array cmd value (Array offset accumulator)))
        (+ offset (if (= cmd "jmp") value 1)) 
-       (if (= cmd "acc") (+ accumulator value) accumulator)) 
-        (do
-          (trace 
-            instructions
-            (remove (lambda x i . (and (= (length x) 3) (or (= (car x) "nop") (= (car x) "jmp")))))
-            (map (lambda x . . (do 
-              (defvar 
-                cmd (if (= (car x) "jmp") "nop" "jmp")
-                value (car (cdr x))
-                options (get x -1))
-              (Array cmd value options)))))))) accumulator))
+       (if (= cmd "acc") (+ accumulator value) accumulator)) (do
+        (go 
+          instructions
+          (remove (lambda x i . (and (= (length x) 3) (or (= (car x) "nop") (= (car x) "jmp")))))
+          (map (lambda x . . (do 
+            (defvar 
+              cmd (if (= (car x) "jmp") "nop" "jmp")
+              value (car (cdr x))
+              options (get x -1))
+            (Array cmd value options)))))))) accumulator))
 (Array 
-  (trace 
+  (go 
     *stack*
-    (*solve1* 0 0))
+    (find-infinite-loop 0 0))
 
-  (trace 
+  (go 
     *stack*
-    (*solve2* 0 0)
+    (fix-infinite-loop 0 0)
     (reduce 
-      (lambda acc x . . 
-        (do 
+      (lambda acc x . . (do 
           (defvar 
             cmd (car x)
             value (car (cdr x))
             options (get x -1)
             offset (car options)
             accumulator (car (cdr options))
-            result (*solve2* *stack* (+ offset (if (= cmd "jmp") value 1)) accumulator))
+            result (fix-infinite-loop *stack* (+ offset (if (= cmd "jmp") value 1)) accumulator))
           (if (atom result) result acc))) 0)))

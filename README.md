@@ -44,7 +44,7 @@ A Lisp for Node
 (defvar sum (lambda a x i o (+ a x)))
 ; Pipe the first to a series of composed functions
 ; (arg (arg .. ) (arg .. ) (ar . . . . ))
-(trace
+(go
   (Array 1 2 3 4 5 6 7 101)
   (remove is-odd)
   (map mult_2)
@@ -54,7 +54,7 @@ A Lisp for Node
 ```lisp
 (import std "range" "push" "factorial" "product-array" "reduce")
 (defun factorial n
-  (trace
+  (go
     (range 1 n)
     (product-array)))
 (factorial 10)
@@ -127,7 +127,7 @@ Compiles to JavaScript
 
 ```lisp
 (import std "remove" "map" "reduce")
-(trace
+(go
   (Array 1 2 3 4 5 6 7 101)
   (remove (lambda x . . (= (mod x 2) 1)))
   (map (lambda x . . (* x 2)))

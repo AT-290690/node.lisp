@@ -47,9 +47,9 @@
 ; (defvar *input* (open "./playground/src/aoc_2020/10/input.txt"))
 
 ; part 1
-(defvar *parsed-input* (trace *input* (split-by "\n") (array-of-numbers)))
+(defvar *parsed-input* (go *input* (split-by "\n") (array-of-numbers)))
 
-(defvar diffs (trace *parsed-input* 
+(defvar diffs (go *parsed-input* 
    (quick-sort) 
    (adjacent-difference (lambda a b (- b a)))))
 
@@ -86,29 +86,29 @@
 (defun transform-input input
                           (set 
                             (defvar sorted 
-                              (trace input 
+                              (go input 
                                 (set (length input) 0) 
                                 (quick-sort))) 
                             (length sorted) 
                             (+ (get sorted -1) 3)))
 
-(defvar *transformed-input* (trace *parsed-input* (transform-input)))
+(defvar *transformed-input* (go *parsed-input* (transform-input)))
 
 (Array
 ; part 1
   (* 
-    (trace 
+    (go 
       diffs 
       (count-of (lambda x . . (= x 1))))
-      (+ (trace 
+      (+ (go 
           diffs
           (count-of (lambda x . . (= x 3)))) 1))
 ; part 2
 ; recursive
- (trace  
+ (go  
   *transformed-input*
   (combinations (- (length *transformed-input*) 1) (Array 1)))
  ; iterative 
- (trace 
+ (go 
     *transformed-input*
     (iterative-solution)))

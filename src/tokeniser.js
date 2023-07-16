@@ -837,16 +837,16 @@ const tokens = {
     const operands = args.map((a) => evaluate(a, env))
     return operands.reduce((acc, x) => acc >>> x)
   },
-  ['trace']: (args, env) => {
+  ['go']: (args, env) => {
     if (args.length < 1)
       throw new RangeError(
-        'Invalid number of arguments to (trace) (>= 1 required).'
+        'Invalid number of arguments to (go) (>= 1 required).'
       )
     let inp = args[0]
     for (let i = 1; i < args.length; ++i) {
       if (!Array.isArray(args[i]))
         throw new TypeError(
-          `Argument at position (${i}) of (trace) is not a (function). (trace ${stringifyArgs(
+          `Argument at position (${i}) of (go) is not a (function). (go ${stringifyArgs(
             args
           )})`
         )

@@ -37,7 +37,7 @@ describe('Compilation', () => {
     (equal (Array 1 2 (Array 1 2)) (Array 1 2 (Array 1 2)))))`,
       `(cdr (Array 1 2 3 4))`,
       `(car (Array 1 2 3 4))`,
-      `(defvar x -1) (trace x (-))`,
+      `(defvar x -1) (go x (-))`,
       `(defvar x -1) (- x)`,
       `(- 1)`,
       `(Array 10 length)`,
@@ -75,7 +75,7 @@ describe('Compilation', () => {
             (push right-arr current))
         (if (< i bounds) (iterate (+ i 1) bounds))))
         (iterate 1 (- (length arr) 1))
-    (trace 
+    (go 
       left-arr (sort) 
       (push pivot) 
       (concat (sort right-arr)))
@@ -89,7 +89,7 @@ describe('Compilation', () => {
       (set reversed (- offset i) (get array i))
       (if (< i bounds) (iterate (+ i 1) bounds) reversed)))
     (iterate 0 offset)))
-    (trace 
+    (go 
       (Array 1 0 8 -2 3)
       (sort)
       (reverse))`,
@@ -136,7 +136,7 @@ describe('Compilation', () => {
       array1
       ))))
     (interate 0 (- (length array2) 1)))))
-    (trace 
+    (go 
       (Array 1 2 3)
       (push -1)
       (concat (type "abc" Array))
@@ -144,7 +144,7 @@ describe('Compilation', () => {
       (concat (Array 5 6 7))
     )`,
 
-      `(trace 1 
+      `(go 1 
       (+ 2) 
         (* 3 4)
          (- 3 2))`,
@@ -231,7 +231,7 @@ describe('Compilation', () => {
 (defvar mult_2 (lambda x i (* x 2)))
 (defvar sum (lambda a x i (+ a x)))
 
-(trace 
+(go 
 (Array 1 2 3 4 5 6 7 101) 
 (remove is-odd)
 (map mult_2)
@@ -275,7 +275,7 @@ describe('Compilation', () => {
   (defvar mult_2 (lambda x i (* x 2)))
   (defvar sum (lambda a x i (+ a x)))
   
-  (trace 
+  (go 
     (Array 1 2 3 4 5 6 7 101) 
     (remove is-odd)
     (map mult_2)
