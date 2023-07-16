@@ -14,7 +14,7 @@
 
 (defun occ_to_numbers x _ _ (do x (split-by "-") (map (lambda y _ _ (type y Number)))))
 
-(function *solve1* string letter (block
+(defun *solve1* string letter (block
   (let 
     array (type string Array) 
     bitmask 0
@@ -34,7 +34,7 @@
       (+ count has-at-least-one))))
       (iterate 0 (- (length array) 1))))
 
-(function *solve2* array letter x y (block 
+(defun *solve2* array letter x y (block 
   (let 
     a (get array (- x 1))
     b (get array (- y 1))

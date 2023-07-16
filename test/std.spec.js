@@ -29,6 +29,10 @@ const programs = [
   (do inp (adjacent-difference (lambda a b (greatest-common-divisor a b))) (cdr) (every (lambda x _ _ (= x 1))))))
   (Array (is-array-of-coprime-pairs (Array 7 13 59 31 19)))
   `,
+  `
+  (import std "reduce" "map" "cartesian-product")
+  (cartesian-product (Array "x" "y") (Array 1 2))
+  `,
 ]
 describe('Standart Library', () => {
   it('Should compile matching interpretation', () =>
@@ -49,6 +53,12 @@ describe('Standart Library', () => {
         [5, 4, 3, 2, 1],
         [4],
         [1],
+        [
+          ['x', 1],
+          ['x', 2],
+          ['y', 1],
+          ['y', 2],
+        ],
       ]
     ))
 })

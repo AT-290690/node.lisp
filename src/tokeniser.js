@@ -586,14 +586,14 @@ const tokens = {
 
     return apply(rest, env)
   },
-  ['let']: (args, env) => {
+  ['defvar']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        'Invalid number of arguments to (let) (> 2 required)'
+        'Invalid number of arguments to (defvar) (> 2 required)'
       )
     if (args.length % 2 === 1)
       throw new RangeError(
-        'Invalid number of arguments to (let) (pairs of 2 required)'
+        'Invalid number of arguments to (defvar) (pairs of 2 required)'
       )
     let name
     for (let i = 0; i < args.length; ++i) {
@@ -601,33 +601,33 @@ const tokens = {
         const word = args[i]
         if (word.type !== 'word')
           throw new SyntaxError(
-            `First argument of (let) must be word but got ${word.type}`
+            `First argument of (defvar) must be word but got ${word.type}`
           )
         name = word.value
       } else env[name] = evaluate(args[i], env)
     }
     return env[name]
   },
-  ['let*']: (args, env) => {
+  ['setq']: (args, env) => {
     if (args.length !== 2)
-      throw new RangeError('Invalid number of arguments to (let*) (2 required)')
+      throw new RangeError('Invalid number of arguments to (setq) (2 required)')
     const entityName = args[0].value
     const value = evaluate(args[1], env)
     for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
       if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
         if (typeof scope[entityName] !== typeof value)
           throw new TypeError(
-            `Invalid use of (let*), variable must be assigned to the same type (${typeof scope[
+            `Invalid use of (setq), variable must be assigned to the same type (${typeof scope[
               entityName
             ]}) but attempted to assign to (${
               Array.isArray(value) ? 'Array' : typeof value
-            }) (let* ${stringifyArgs(args)})`
+            }) (setq ${stringifyArgs(args)})`
           )
         scope[entityName] = value
         return value
       }
     throw new ReferenceError(
-      `Tried setting an undefined variable: ${entityName} using (let*)`
+      `Tried setting an undefined variable: ${entityName} using (setq)`
     )
   },
   ['boole']: (args, env) => {
@@ -888,7 +888,8 @@ const tokens = {
   },
   ['module']: () => 'WAT module',
 }
-
+tokens['let*'] = tokens['setq']
+tokens['let'] = tokens['defvar']
 tokens['first'] = tokens['car']
 tokens['rest'] = tokens['cdr']
 tokens['∞'] =
@@ -896,7 +897,7 @@ tokens['∞'] =
   tokens['ƒ'] =
   tokens['function'] =
     tokens['defun']
-tokens['∘'] = tokens['do']
+tokens['∘'] = tokens['|>'] = tokens['do']
 tokens['λ'] = tokens['lambda']
 tokens['void'] = tokens['block']
 export { tokens }

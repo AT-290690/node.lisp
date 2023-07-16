@@ -142,6 +142,7 @@ const compile = (tree, Locals) => {
             : apply
         }(${parseArgs(rest, Locals)})`
       }
+      case 'defvar':
       case 'let': {
         let name,
           out = '(('
@@ -156,6 +157,7 @@ const compile = (tree, Locals) => {
         out += `),${name});`
         return out
       }
+      case 'setq':
       case 'let*':
       case 'boole': {
         const res = compile(Arguments[1], Locals)
@@ -350,6 +352,7 @@ const compile = (tree, Locals) => {
           Locals
         )})`
       case 'do':
+      case '|>':
       case '∘': {
         let inp = Arguments[0]
         for (let i = 1; i < Arguments.length; ++i)
