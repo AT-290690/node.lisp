@@ -19,12 +19,12 @@ F11")
   (push "F0") ; TODO delete this later
   (map (lambda x _ _
     (block 
-      (defvar str (. x))
+      (defvar str (type x Array))
       (Array (car str) (do str (cdr) (join "") (type Number))))))
   (reverse)))
 
   (defvar 
-    moves (. *stack*)
+    moves (type *stack* Array)
     cursor (apply (move moves))
     x 0
     y 0
@@ -99,11 +99,11 @@ F11")
     *input* 
     (split-by "\n") 
     (map (lambda x _ _ (block 
-        (defvar str (. x))
+        (defvar str (type x Array))
         (Array (car str) (do str (cdr) (join "") (type Number))))))
     (reverse)))
   (defvar 
-    moves (. *stack*)
+    moves (type *stack* Array)
     cursor (apply (move moves))
     x 0
     y 0

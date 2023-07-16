@@ -79,7 +79,7 @@ describe('Compilation', () => {
           (block
             (defvar total 0)
             (defvar prime-num 31)
-            (defvar key-arr (. (type key String)))
+            (defvar key-arr (conjugate (type key String)))
             (loop find-hash-index i bounds (block 
               (defvar letter (get key-arr i))
               (defvar value (- (char letter 0) 96))
@@ -202,7 +202,7 @@ describe('Compilation', () => {
 (defun product-array array (reduce array (lambda a b i o (* a b)) 1))
 (defun split-by-lines string (regex-match string "[^\n]+"))
 (defun string_to_array string delim 
-                    (reduce (. string) 
+                    (reduce (conjugate string) 
                       (lambda a x i o (block
                                 (if (= x delim) (push a ()) (block 
                                   (push (get a -1) x) a))))(push () ())))
@@ -336,7 +336,7 @@ left-arr (quick-sort)
     (defvar inputs (regex-match input "(?<=:[ ])(.*)"))
     
     (defun solve1 string letter (block
-      (defvar array (. string))
+      (defvar array (conjugate string))
       (defvar bitmask 0)
       (defvar zero (char "a" 0))
       (defvar count 0)
@@ -382,7 +382,7 @@ left-arr (quick-sort)
                 (push (get policy i)) 
                 (push (get inputs i)))))
        (map (lambda x i o 
-        (push x (solve2 (. (get x 3)) (get x 2) (get x 0) (get x 1)))
+        (push x (solve2 (conjugate (get x 3)) (get x 2) (get x 0) (get x 1)))
        ))
        (reduce (lambda a x i o (+ a (get x -1))) 0)
     ))`,
@@ -483,7 +483,7 @@ left-arr (quick-sort)
     (do
       (Array 1 2 3)
       (push -1)
-      (concat (. "abc"))
+      (concat (conjugate "abc"))
       (concat (Array 1 2 3 4))
       (concat (Array 5 6 7))
     )`,
@@ -521,7 +521,7 @@ left-arr (quick-sort)
       (interate 0 (- (length array) 1)))))
       (defvar join (lambda array delim (reduce array (lambda a x i (concatenate a delim x)) "")))
       (defvar string_to_array (lambda string delim 
-      (reduce (. string) (lambda a x i (block
+      (reduce (conjugate string) (lambda a x i (block
           (if (= x delim) 
             (push a ()) 
             (block (push (get a -1) x) a)

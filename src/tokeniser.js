@@ -59,10 +59,10 @@ const tokens = {
       )
     return 1 / number
   },
-  ['.']: (args, env) => {
+  ['conjugate']: (args, env) => {
     if (!args.length)
       throw new RangeError(
-        'Invalid number of arguments for (.) (>= 1 required)'
+        'Invalid number of arguments for (conjugate) (>= 1 required)'
       )
     const iterables = args.map((arg) => evaluate(arg, env))
     if (
@@ -71,7 +71,9 @@ const tokens = {
       )
     )
       throw new TypeError(
-        `Arguments are not iterable for (.) (. ${stringifyArgs(args)}).`
+        `Arguments are not iterable for (conjugate) (conjugate ${stringifyArgs(
+          args
+        )}).`
       )
     return iterables.reduce((a, b) => [...a, ...b], [])
   },

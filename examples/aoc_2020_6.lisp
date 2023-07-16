@@ -18,7 +18,7 @@ b")
 (defvar *input* sample)
 ; (defvar *input* (open "./playground/src/aoc_2020/6/input.txt"))
 
-(defun remove-duplicates string (do (. string) (remove (lambda item pos self (= (index-of self item) pos)))))
+(defun remove-duplicates string (do (type string Array) (remove (lambda item pos self (= (index-of self item) pos)))))
 
 (defvar *lines* (do *input* (split-by-n-lines 2)))
 (defvar *unique_chars* (do *lines* (map (lambda x _ _ (do x (join "") (remove-duplicates))))))

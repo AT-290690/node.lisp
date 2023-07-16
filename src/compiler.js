@@ -204,9 +204,7 @@ const compile = (tree, Locals) => {
           Arguments[1].value === 'length'
           ? `(new Array(${compile(Arguments[0], Locals)}).fill(0))`
           : `[${parseArgs(Arguments, Locals)}];`
-      case "'":
-        return `[${parseArgs(Arguments, Locals)}];`
-      case '.':
+      case 'conjugate':
         return `[...${parseArgs(Arguments, Locals, ',...')}];`
       case 'length':
         return `(${compile(Arguments[0], Locals)}).length`

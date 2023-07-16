@@ -62,7 +62,7 @@ hgt:76in")
                       (if (= units "in") (and (>= num 59) (<= num 76))))))
           (= key "hcl") (block 
                   (defvar color (regex-match value "#.+[0-9a-f]"))
-                    (and (length color) (= (length (. (car color))) 7)))
+                    (and (length color) (= (length (type (car color) Array)) 7)))
           (= key "ecl") (and (= (length arr) 3) (length (regex-match value "amb|blu|brn|gry|grn|hzl|oth")))
           (= key "pid") 
                       (and 
