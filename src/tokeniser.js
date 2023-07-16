@@ -374,10 +374,10 @@ const tokens = {
     console.log(...expressions)
     return expressions.at(-1)
   },
-  ['block']: (args, env) => {
+  ['do']: (args, env) => {
     if (!args.length)
       throw new RangeError(
-        'Invalid number of arguments to (block) (>= 1 required)'
+        'Invalid number of arguments to (do) (>= 1 required)'
       )
     return args.reduce((_, x) => evaluate(x, env), 0)
   },
@@ -880,5 +880,5 @@ const tokens = {
   },
   ['module']: () => 'WAT module',
 }
-tokens['void'] = tokens['block']
+tokens['void'] = tokens['do']
 export { tokens }

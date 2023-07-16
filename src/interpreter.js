@@ -25,5 +25,4 @@ export const evaluate = (expression, env) => {
       throw new TypeError(`Trying to access a null pointer.`)
   }
 }
-export const run = (tree, env = {}) =>
-  tokens['block'](tree, { ...tokens, ...env })
+export const run = (tree, env = {}) => tokens['do'](tree, { ...tokens, ...env })

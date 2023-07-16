@@ -52,7 +52,7 @@
 (defvar *weakness* ())
 (trace (range 2 (- (length *numbers*) 1))
     (some (lambda n . .
-    (some (window *numbers* n) (lambda x . . (block 
+    (some (window *numbers* n) (lambda x . . (do 
     (and (= (sum-array x) *preamble*) (setf *weakness* x))))))))
 
 (Array 

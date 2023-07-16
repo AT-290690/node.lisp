@@ -121,7 +121,7 @@ const compile = (tree, Locals) => {
   const token = first.value
   if (first.type === 'apply') {
     switch (token) {
-      case 'block': {
+      case 'do': {
         if (Arguments.length > 1) {
           return `(${Arguments.map((x) =>
             compile(x, Locals).toString().trimStart()

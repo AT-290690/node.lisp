@@ -55,27 +55,27 @@
 
 ; part 2
 (defun combinations inp index memo
-      (if (array-in-bounds-p memo index) (get memo index) (block 
+      (if (array-in-bounds-p memo index) (get memo index) (do 
         (defvar result 0)
-        (loop defun iterate j (block 
+        (loop defun iterate j (do 
           (if (and (>= j 0) (<= (- (get inp index) (get inp j)) 3)) 
-            (block
+            (do
               (setf result (+ result (combinations inp j memo)))
               (iterate (- j 1))))))
           (iterate (- index 1))
           (set memo index result)
           result)))
 
-(defun iterative-solution inp (block
+(defun iterative-solution inp (do
   (defvar 
     memo (Array 1)
     size (length inp))
-  (loop defun iterate-i i (block
+  (loop defun iterate-i i (do
     (if (< i size) 
-      (block 
+      (do 
         (set memo i 0) 
         (loop defun iterate-j j (if (and (>= j 0) (<= (- (get inp i) (get inp j)) 3)) 
-          (block
+          (do
             (set memo i (+ (get memo i) (get memo j)))
             (iterate-j (- j 1)))))
         (iterate-j (- i 1))

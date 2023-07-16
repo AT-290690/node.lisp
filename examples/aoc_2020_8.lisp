@@ -15,11 +15,11 @@ acc +6")
 
 (defvar *stack* (trace *input* 
   (split-by "\n")
-  (map (lambda x . . (block 
+  (map (lambda x . . (do 
     (defvar cmd (trace x (split-by " ")))
     (set cmd 1 (type (get cmd 1) Number)))))))
 
-(loop defun *solve1* instructions offset accumulator (block 
+(loop defun *solve1* instructions offset accumulator (do 
    
    (defvar 
       instruction (get instructions offset)
@@ -33,7 +33,7 @@ acc +6")
         (if (= cmd "acc") (+ accumulator value) accumulator))
        accumulator)))
 
-(loop defun *solve2* instructions offset accumulator (unless (= offset (length instructions)) (block 
+(loop defun *solve2* instructions offset accumulator (unless (= offset (length instructions)) (do 
    
    (defvar 
       instruction (get instructions offset)
@@ -45,11 +45,11 @@ acc +6")
        (set instructions offset (Array cmd value (Array offset accumulator)))
        (+ offset (if (= cmd "jmp") value 1)) 
        (if (= cmd "acc") (+ accumulator value) accumulator)) 
-        (block
+        (do
           (trace 
             instructions
             (remove (lambda x i . (and (= (length x) 3) (or (= (car x) "nop") (= (car x) "jmp")))))
-            (map (lambda x . . (block 
+            (map (lambda x . . (do 
               (defvar 
                 cmd (if (= (car x) "jmp") "nop" "jmp")
                 value (car (cdr x))
@@ -65,7 +65,7 @@ acc +6")
     (*solve2* 0 0)
     (reduce 
       (lambda acc x . . 
-        (block 
+        (do 
           (defvar 
             cmd (car x)
             value (car (cdr x))

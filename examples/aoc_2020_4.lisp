@@ -44,7 +44,7 @@ hgt:76in")
      (without_invalid_fields)
      (remove (lambda x . . (= (length x) 7)))
      (map (lambda x . . (trace x     
-      (map (lambda y . . (block
+      (map (lambda y . . (do
         (defvar key (car y))
         (defvar value (car (cdr y)))
         (defvar arr (type value Array))
@@ -53,14 +53,14 @@ hgt:76in")
           (= key "byr") (and (= (length arr) 4) (>= (type value Number) 1920) (<= (type value Number) 2002)) 
           (= key "iyr") (and (= (length arr) 4) (>= (type value Number) 2010) (<= (type value Number) 2020))
           (= key "eyr") (and (= (length arr) 4) (>= (type value Number) 2020) (<= (type value Number) 2030))
-          (= key "hgt") (and (>= (length arr) 3) (block 
+          (= key "hgt") (and (>= (length arr) 3) (do 
                   (defvar units (concatenate (get arr -2) (get arr -1)))
                   (defvar num (type (join (set arr -2) "") Number))
                     ; If cm, the number must be at least 150 and at most 193.
                     (if (= units "cm") (and (>= num 150) (<= num 193))
                       ; If in, the number must be at least 59 and at most 76.
                       (if (= units "in") (and (>= num 59) (<= num 76))))))
-          (= key "hcl") (block 
+          (= key "hcl") (do 
                   (defvar color (regex-match value "#.+[0-9a-f]"))
                     (and (length color) (= (length (type (car color) Array)) 7)))
           (= key "ecl") (and (= (length arr) 3) (length (regex-match value "amb|blu|brn|gry|grn|hzl|oth")))

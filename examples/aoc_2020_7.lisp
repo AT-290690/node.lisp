@@ -65,7 +65,7 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
               ))))
       (map 
         (lambda bag . . 
-          (block
+          (do
             (defvar 
               left (car (car bag))
               right (car (cdr bag))
@@ -74,17 +74,17 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
                 (trace right  
                   (map 
                     (lambda x . . 
-                      (block 
+                      (do 
                         (defvar current (split x " "))
                         (trace current 
                           (set 0 (type (car current) Number)) 
                           (set -1)))))))
             (Array head tail))))))
 
-(defun *solve1* bags target (block 
+(defun *solve1* bags target (do 
   (defvar 
     count 0
-    traverse-bags (lambda left right (block
+    traverse-bags (lambda left right (do
     (for-each bags 
       (lambda bag . . 
         (and 
@@ -107,7 +107,7 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
               (= (car (cdr (car x))) right)))))
       
 (defun *solve2* initial all-bags 
-  (reduce initial (lambda output current . . (block 
+  (reduce initial (lambda output current . . (do 
     (defvar next (*find-bag* all-bags (car (cdr current)) (car (cdr (cdr current)))))
     (+ output (if next (* (car current) (*solve2* (car (cdr next)) all-bags)) (car current))))) 1))
 

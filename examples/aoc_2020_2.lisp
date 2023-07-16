@@ -12,14 +12,14 @@
 (defvar *inputs* (regex-match *input* "(?<=:[ ])(.*)"))
 (defun occ_to_numbers x . . (trace x (split-by "-") (map (lambda y . . (type y Number)))))
 
-(defun *solve1* string letter (block
+(defun *solve1* string letter (do
   (defvar 
     array (type string Array) 
     bitmask 0
     zero (char "a" 0)
     count 0
     has-at-least-one 0)
-  (loop defun iterate i bounds (block
+  (loop defun iterate i bounds (do
       (defvar 
         ch (get array i)
         code (- (char ch 0) zero)
@@ -32,7 +32,7 @@
       (+ count has-at-least-one))))
       (iterate 0 (- (length array) 1))))
 
-(defun *solve2* array letter x y (block 
+(defun *solve2* array letter x y (do 
   (defvar 
     a (get array (- x 1))
     b (get array (- y 1))

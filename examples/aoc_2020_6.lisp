@@ -28,7 +28,7 @@ b")
   (sum-array))
 
 (trace *lines* 
-  (map (lambda line i . (block 
+  (map (lambda line i . (do 
     (defvar *unique-char* (get *unique_chars* i))
     (trace line 
       (map (lambda ch . . (trace *unique-char* (map (lambda *ch* . . (character-occurances-in-string ch *ch*))) (join "") (type Bit))))

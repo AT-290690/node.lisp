@@ -11,15 +11,15 @@
 ; (defvar *input* (open "./playground/src/aoc_2020/1/input.txt"))
 
 (defun *solve1* array cb 
-     (reduce array (lambda a x . array (block
+     (reduce array (lambda a x . array (do
         (defvar res (binary-search array (cb x)))
         (if res (push a res) a))) 
      ()))
 
 (defun *solve2* array cb 
     (reduce array
-      (lambda accumulator y i array (block
-          (loop defun iterate j bounds (block 
+      (lambda accumulator y i array (do
+          (loop defun iterate j bounds (do 
               (defvar x (get array j))
               (defvar res (binary-search array (cb x y)))
               (if res (push accumulator res))

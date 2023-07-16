@@ -18,7 +18,7 @@
 (defun to_bit_array array 
   (map array (lambda line . . (trace line (type Array) (map (lambda x . . (= x "#")))))))
 
-(defun *solve* array slopeX slopeY (block 
+(defun *solve* array slopeX slopeY (do 
   (defvar 
     h (length array)
     w (length (car array)))
@@ -30,7 +30,7 @@
           (get (* index slopeY))
           (get (mod (* index slopeX) w))))))))
 
-(defun task *input* (block 
+(defun task *input* (do 
   (defvar matrix (trace *input* 
               (split-by-lines)
               (to_bit_array)))

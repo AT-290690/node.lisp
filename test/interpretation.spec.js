@@ -38,9 +38,9 @@ describe('Interpration', () => {
     )
     deepStrictEqual(
       runFromInterpreted(`
-    (defun some array callback (block
+    (defun some array callback (do
       (defvar bol 1)
-      (loop defun iterate i bounds (block
+      (loop defun iterate i bounds (do
         (defvar res (callback (get array i) i array))
         (boole bol (type res Boolean))
         (if (and (not res) (< i bounds)) (iterate (+ i 1) bounds) bol)))
@@ -102,17 +102,17 @@ describe('Interpration', () => {
 (defun min a b (if (< a b) a b))
 (defun push array value (set array (length array) value))
 (defun euclidean-mod a b (mod (+ (mod a b) b) b))
-(defun find array callback (block
-  (loop defun iterate i bounds (block
+(defun find array callback (do
+  (loop defun iterate i bounds (do
     (defvar current (get array i))
     (if (and (not (callback current i array)) (< i bounds))
       (iterate (+ i 1) bounds) 
       current)))
       (iterate 0 (- (length array) 1))))
-(defun find-index array callback (block
+(defun find-index array callback (do
   (defvar idx -1)
   (defvar has-found 0)
-  (loop defun iterate i bounds (block
+  (loop defun iterate i bounds (do
     (defvar current (get array i))
     (setf has-found (callback current i array))
     (if (and (not has-found) (< i bounds))
@@ -121,20 +121,20 @@ describe('Interpration', () => {
       (iterate 0 (- (length array) 1))
       (if has-found idx -1)))
 (defun array-in-bounds-p array index (and (< index (length array)) (>= index 0)))
-(defun map array callback (block 
+(defun map array callback (do 
   (defvar new-array ())
   (defvar i 0)
-  (loop defun iterate i bounds (block
+  (loop defun iterate i bounds (do
     (set new-array i (callback (get array i) i array))
     (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
   (iterate 0 (- (length array) 1))))
     (defun hash-index 
       table key 
-        (block
+        (do
           (defvar total 0)
           (defvar prime-num 31)
           (defvar key-arr (type (type key String) Array))
-          (loop defun find-hash-index i bounds (block 
+          (loop defun find-hash-index i bounds (do 
             (defvar letter (get key-arr i))
             (defvar value (- (char letter 0) 96))
             (setf total (euclidean-mod (+ (* total prime-num) value) (length table)))
@@ -143,7 +143,7 @@ describe('Interpration', () => {
       ; hash-table-set
     (defun hash-table-set 
       table key value 
-        (block
+        (do
           (defvar idx (hash-index table key))
           (unless (array-in-bounds-p table idx) (set table idx ()))
           (defvar current (get table idx))
@@ -159,10 +159,10 @@ describe('Interpration', () => {
       (and (array-in-bounds-p table (defvar idx (hash-index table key))) (length (get table idx))))
     (defun hash-table-get
       table key 
-        (block
+        (do
           (defvar idx (hash-index table key))
           (if (array-in-bounds-p table idx) 
-            (block
+            (do
               (defvar current (get table idx))
               (trace current
                 (find (lambda x i o (= key 
@@ -173,10 +173,10 @@ describe('Interpration', () => {
         (map (Array size length) (lambda x i o ())))
     (defun hash-table-make 
       items 
-        (block
+        (do
           (defvar len (- (length items) 1))
           (defvar table (hash-table (* len len)))
-          (loop defun add i (block
+          (loop defun add i (do
             (defvar item (get items i))
             (hash-table-set table (get item 0) (get item 1))
           (if (< i len) (add (+ i 1)) table)))
@@ -254,40 +254,40 @@ describe('Interpration', () => {
 (defun split-by-lines string (regex-match string "[^\n]+"))
 (defun string_to_array string delim 
                       (reduce (type string Array) 
-                        (lambda a x i o (block
-                                  (if (= x delim) (push a ()) (block 
+                        (lambda a x i o (do
+                                  (if (= x delim) (push a ()) (do 
                                     (push (get a -1) x) a))))(push () ())))
 (defun join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
 
-(defun concat array1 array2 (block
-  (loop defun iterate i bounds (block
+(defun concat array1 array2 (do
+  (loop defun iterate i bounds (do
   (if (< i (length array2)) (push array1 (get array2 i)))
   (if (< i bounds) 
     (iterate (+ i 1) bounds)
   array1)))
 (iterate 0 (- (length array2) 1))))
 
-(defun map array callback (block 
+(defun map array callback (do 
   (defvar new-array ())
   (defvar i 0)
-  (loop defun iterate i bounds (block
+  (loop defun iterate i bounds (do
     (set new-array i (callback (get array i) i))
     (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
   (iterate 0 (- (length array) 1))))
 
-(defun reduce array callback initial (block
-  (loop defun iterate i bounds (block
+(defun reduce array callback initial (do
+  (loop defun iterate i bounds (do
     (setf initial (callback initial (get array i) i array))
     (if (< i bounds) (iterate (+ i 1) bounds) initial)))
   (iterate 0 (- (length array) 1))))
 
-(defun quick-sort arr (block
+(defun quick-sort arr (do
   (if (<= (length arr) 1) arr
-  (block
+  (do
     (defvar pivot (get arr 0))
     (defvar left-arr ())
     (defvar right-arr ())
-(loop defun iterate i bounds (block
+(loop defun iterate i bounds (do
     (defvar current (get arr i))
     (if (< current pivot) 
         (push left-arr current)
@@ -300,10 +300,10 @@ describe('Interpration', () => {
   (concat (quick-sort right-arr)))))))
 
 (defun binary-search 
-        array target (block
+        array target (do
   (loop defun search 
-        arr target start end (block
-    (if (<= start end) (block 
+        arr target start end (do
+    (if (<= start end) (do 
         (defvar index (floor (* (+ start end) 0.5)))
         (defvar current (get arr index))
         (if (= target current) target
@@ -322,15 +322,15 @@ describe('Interpration', () => {
 (defvar input sample)
 
 (defun solve1 array cb 
-     (reduce array (lambda a x i array (block
+     (reduce array (lambda a x i array (do
         (defvar res (binary-search array (cb x)))
         (if res (push a res) a))) 
      ()))
 
 (defun solve2 array cb 
     (reduce array
-      (lambda accumulator y i array (block
-          (loop defun iterate j bounds (block 
+      (lambda accumulator y i array (do
+          (loop defun iterate j bounds (do 
               (defvar x (get array j))
               (defvar res (binary-search array (cb x y)))
               (if res (push accumulator res))
@@ -368,21 +368,21 @@ describe('Interpration', () => {
     deepStrictEqual(
       runFromInterpreted(`
     (defun push array value (set array (length array) value))
-    (defun concat array1 array2 (block
-      (loop defun iterate i bounds (block
+    (defun concat array1 array2 (do
+      (loop defun iterate i bounds (do
       (if (< i (length array2)) (push array1 (get array2 i)))
       (if (< i bounds) 
         (iterate (+ i 1) bounds)
       array1
       )))
     (iterate 0 (- (length array2) 1))))
-    (defun quick-sort arr (block
+    (defun quick-sort arr (do
       (if (<= (length arr) 1) arr
-      (block
+      (do
         (defvar pivot (get arr 0))
         (defvar left-arr ())
         (defvar right-arr ())
-    (loop defun iterate i bounds (block
+    (loop defun iterate i bounds (do
         (defvar current (get arr i))
         (if (< current pivot) 
             (push left-arr current)
@@ -393,11 +393,11 @@ describe('Interpration', () => {
       left-arr (quick-sort) 
       (push pivot) 
       (concat (quick-sort right-arr)))))))
-    (defun reverse array (block
+    (defun reverse array (do
       (defvar len (length array))
       (defvar reversed (Array len length))
       (defvar offset (- len 1))
-      (loop defun iterate i bounds (block
+      (loop defun iterate i bounds (do
         (set reversed (- offset i) (get array i))
         (if (< i bounds) (iterate (+ i 1) bounds) reversed)))
       (iterate 0 offset)
@@ -411,8 +411,8 @@ describe('Interpration', () => {
       [8, 3, 1, 0, -2]
     )
     strictEqual(
-      runFromInterpreted(`(defvar find (lambda array callback (block
-      (loop defun iterate i bounds (block
+      runFromInterpreted(`(defvar find (lambda array callback (do
+      (loop defun iterate i bounds (do
         (defvar current (get array i))
         (if (and (not (callback current i)) (< i bounds))
           (iterate (+ i 1) bounds) 
@@ -424,12 +424,12 @@ describe('Interpration', () => {
     deepStrictEqual(
       runFromInterpreted(`
     (defvar push (lambda array value (set array (length array) value)))
-    (defvar for-each (lambda array callback (block
-      (loop defun iterate i bounds (block
+    (defvar for-each (lambda array callback (do
+      (loop defun iterate i bounds (do
         (callback (get array i) i)
         (if (< i bounds) (iterate (+ i 1) bounds) array)))
       (iterate 0 (- (length array) 1)))))
-    (defvar deep-flat (lambda arr (block 
+    (defvar deep-flat (lambda arr (do 
       (defvar new-array ()) 
       (loop defun flatten item (if (Arrayp item) (for-each item (lambda x . (flatten x))) 
       (push new-array item)))
@@ -456,8 +456,8 @@ describe('Interpration', () => {
     )
     deepStrictEqual(
       runFromInterpreted(`(defvar push (lambda array value (set array (length array) value)))
-  (defvar concat (lambda array1 array2 (block
-    (defvar iterate (lambda i bounds (block
+  (defvar concat (lambda array1 array2 (do
+    (defvar iterate (lambda i bounds (do
     (push array1 (get array2 i))
     (if (< i bounds) 
       (iterate (+ i 1) bounds)
@@ -475,28 +475,28 @@ describe('Interpration', () => {
       [1, 2, 3, -1, 'a', 'b', 'c', 1, 2, 3, 4, 5, 6, 7]
     )
     strictEqual(
-      runFromInterpreted(`(defvar range (lambda start end (block 
+      runFromInterpreted(`(defvar range (lambda start end (do 
   (defvar array ())
-  (defvar iterate (lambda i bounds (block
+  (defvar iterate (lambda i bounds (do
     (set array i (+ i start))
     (if (< i bounds) (iterate (+ i 1) bounds) array)
   )))
   (iterate 0 (- end start)))))
   
   
-  (defvar map (lambda array callback (block 
+  (defvar map (lambda array callback (do 
   (defvar new-array ())
   (defvar i 0)
-  (defvar iterate (lambda i bounds (block
+  (defvar iterate (lambda i bounds (do
     (set new-array i (callback (get array i) i))
     (if (< i bounds) (iterate (+ i 1) bounds) new-array)
   )))
   (iterate 0 (- (length array) 1)))))
   
   
-  (defvar remove (lambda array callback (block 
+  (defvar remove (lambda array callback (do 
   (defvar new-array ())
-  (defvar iterate (lambda i bounds (block
+  (defvar iterate (lambda i bounds (do
     (defvar current (get array i))
     (if (callback current i) 
       (set new-array (length new-array) current))
@@ -504,8 +504,8 @@ describe('Interpration', () => {
   )))
   (iterate 0 (- (length array) 1)))))
   
-  (defvar reduce (lambda array callback initial (block
-    (defvar iterate (lambda i bounds (block
+  (defvar reduce (lambda array callback initial (do
+    (defvar iterate (lambda i bounds (do
       (setf initial (callback initial (get array i) i))
       (if (< i bounds) (iterate (+ i 1) bounds) initial)
     )))
@@ -541,26 +541,26 @@ describe('Interpration', () => {
     (defvar max (lambda a b (if (> a b) a b)))
     (defvar min (lambda a b (if (< a b) a b)))
     
-    (defvar map (lambda array callback (block 
+    (defvar map (lambda array callback (do 
     (defvar new-array ())
     (defvar i 0)
-    (defvar iterate (lambda i bounds (block
+    (defvar iterate (lambda i bounds (do
       (set new-array i (callback (get array i) i))
       (if (< i bounds) (iterate (+ i 1) bounds) new-array)
     )))
     (iterate 0 (- (length array) 1)))))
     
-    (defvar reduce (lambda array callback initial (block
-      (defvar iterate (lambda i bounds (block
+    (defvar reduce (lambda array callback initial (do
+      (defvar iterate (lambda i bounds (do
         (setf initial (callback initial (get array i) i))
         (if (< i bounds) (iterate (+ i 1) bounds) initial))))
     (iterate 0 (- (length array) 1)))))
     (defvar join (lambda array delim (reduce array (lambda a x i (concatenate a delim x)) "")))
     (defvar string_to_array (lambda string delim 
-    (reduce (type string Array) (lambda a x i (block
+    (reduce (type string Array) (lambda a x i (do
         (if (= x delim) 
           (push a ()) 
-          (block (push (get a -1) x) a)
+          (do (push (get a -1) x) a)
         )))(push () ()))))
     
      (defvar split-by-lines (lambda string (map (string_to_array string "\n") (lambda x i (join x "")))))

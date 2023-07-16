@@ -7,10 +7,10 @@ F11")
 (defvar *input* sample)
 ; (defvar *input* (open "./playground/src/aoc_2020/12/input.txt"))
 
-(defun yoink stack (unless (not (length stack)) (block (defvar last (get stack -1)) (set stack -1) last)))
+(defun yoink stack (unless (not (length stack)) (do (defvar last (get stack -1)) (set stack -1) last)))
 (defun move stack (defvar f (lambda (Array (yoink stack) f))))
 ; 362
-(defun solve1 (block 
+(defun solve1 (do 
 
 (defun normalize value min max (* (- value min) (/ (- max min))))
 (defvar *stack* (trace 
@@ -18,7 +18,7 @@ F11")
   (split-by "\n") 
   (push "F0") ; TODO delete this later
   (map (lambda x . .
-    (block 
+    (do 
       (defvar str (type x Array))
       (Array (car str) (trace str (cdr) (join "") (type Number))))))
   (reverse)))
@@ -30,7 +30,7 @@ F11")
     y 0
     compass (Array "N" "E" "S" "W")
     arrow 1)
-  (defun go (block 
+  (defun go (do 
     (defvar 
       action (car (car cursor))
       value (car (cdr (car cursor))))
@@ -51,12 +51,12 @@ F11")
       (= action "R") (set moves (length moves) (Array (get compass (setf arrow (mod (+ arrow (trace value (normalize 0 90) (floor))) (length compass)))) 0))
       (= action "F") (set moves (length moves) (Array (get compass arrow) value)))
     (setf cursor (apply (car (cdr cursor))))))
-  (defun next (if (length moves) (block (go) (next)) (block (go))))
+  (defun next (if (length moves) (do (go) (next)) (do (go))))
   (next)
   (abs (+ x y))))
 
 ; 29895
-(defun solve2 (block 
+(defun solve2 (do 
 
 (defun factorial n (if (<= n 0) 1 (* n (factorial (- n 1)))))
 
@@ -69,10 +69,10 @@ F11")
         (if (= exp 1) base
           (* base (power base (- exp 1)))))))
 
-(defun sin rad terms (block
+(defun sin rad terms (do
     (defvar sine 0)
     (loop defun inc i 
-    (block 
+    (do 
       (setf sine 
         (+ sine 
           (* 
@@ -82,10 +82,10 @@ F11")
       (if (< i terms) (inc (+ i 1)) sine)))
     (inc 0)))
    ; cos 
-  (defun cos rad terms (block
+  (defun cos rad terms (do
     (defvar cosine 0)
     (loop defun inc i 
-    (block 
+    (do 
       (setf cosine 
         (+ cosine 
           (* 
@@ -98,7 +98,7 @@ F11")
   (defvar *stack* (trace 
     *input* 
     (split-by "\n") 
-    (map (lambda x . . (block 
+    (map (lambda x . . (do 
         (defvar str (type x Array))
         (Array (car str) (trace str (cdr) (join "") (type Number))))))
     (reverse)))
@@ -111,7 +111,7 @@ F11")
     dy 1
     TERM 17
     compass (Array "N" "E" "S" "W"))
-  (defun go (block 
+  (defun go (do 
     (defvar 
       action (car (car cursor))
       value (car (cdr (car cursor))))
@@ -126,25 +126,25 @@ F11")
       (= action "E") (setf dx (+ dx value))
       (= action "S") (setf dy (- dy value))
       (= action "W") (setf dx (- dx value))
-      (= action "L") (block 
+      (= action "L") (do 
                     (defvar 
                       rad (radians value)
                       dx1 (- (* dx (cos rad TERM)) (* dy (sin rad TERM)))
                       dy1 (+ (* dx (sin rad TERM)) (* dy (cos rad TERM))))
                     (setf dx dx1)
                     (setf dy dy1))
-      (= action "R") (block
+      (= action "R") (do
                     (defvar 
                       rad (- (radians value))
                       dx1 (- (* dx (cos rad TERM)) (* dy (sin rad TERM)))
                       dy1 (+ (* dx (sin rad TERM)) (* dy (cos rad TERM))))
                     (setf dx dx1)
                     (setf dy dy1))
-      (= action "F") (block 
+      (= action "F") (do 
                   (setf x (+ x (* dx value))) 
                   (setf y (+ y (* dy value)))))
     (setf cursor (apply (car (cdr cursor))))))
-  (defun next (if (length moves) (block (go) (next)) (block (go))))
+  (defun next (if (length moves) (do (go) (next)) (do (go))))
   (next)
   (+ (abs x) (abs y))))
 

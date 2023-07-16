@@ -20,7 +20,7 @@ BBFFBBFRLL")
 ; (defvar *input* (open "./playground/src/aoc_2020/5/input.txt"))
 (defun binary_boarding inp bounds lower upper 
   (trace inp 
-      (reduce (lambda a b . . (block 
+      (reduce (lambda a b . . (do 
             (defvar half (* (+ (car a) (car (cdr a))) 0.5))
             (if (= b lower) (set a 1 (floor half))
             (if (= b upper) (set a 0 (round half)))))) bounds) 
@@ -29,7 +29,7 @@ BBFFBBFRLL")
 (defvar *prepare-input* (trace 
     *input* 
     (split-by "\n")
-    (map (lambda directions . . (block 
+    (map (lambda directions . . (do 
       (defvar 
             array (type directions Array)
             fb (binary_boarding (slice-if-index array (lambda i (< i 7))) (Array 0 127) "F" "B")

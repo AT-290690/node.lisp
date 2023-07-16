@@ -220,7 +220,7 @@ const cli = async () => {
             prompt: '',
             eval: (input) => {
               try {
-                let out = `${source}\n${file}\n(block ${input})`
+                let out = `${source}\n${file}\n(do ${input})`
                 const result = run(parse(out), env)
                 if (typeof result === 'function') {
                   console.log(inpColor, `(λ)`)

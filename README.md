@@ -25,10 +25,10 @@ A Lisp for Node
 ```lisp
 ; Define reusable modules
 (defun binary-search
-        array target (block
+        array target (do
   (loop defun search
-        arr target start end (block
-    (if (<= start end) (block
+        arr target start end (do
+    (if (<= start end) (do
         (defvar index (floor (* (+ start end) 0.5)))
         (defvar current (get arr index))
         (if (= target current) target
@@ -153,7 +153,7 @@ reduce(
 
 ```lisp
 ; Tail Call Optimization
-(loop defun sum-below number sum (block
+(loop defun sum-below number sum (do
 (if (= number 0) sum (sum-below (- number 1) (+ sum number)))))
 (log (sum-below 10000 0))
 ```
