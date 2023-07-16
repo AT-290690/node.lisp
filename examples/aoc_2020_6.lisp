@@ -21,17 +21,17 @@ b")
 (defun remove-duplicates string (do (type string Array) (remove (lambda item pos self (= (index-of self item) pos)))))
 
 (defvar *lines* (do *input* (split-by-n-lines 2)))
-(defvar *unique_chars* (do *lines* (map (lambda x _ _ (do x (join "") (remove-duplicates))))))
+(defvar *unique_chars* (do *lines* (map (lambda x . . (do x (join "") (remove-duplicates))))))
 
 (Array (do *unique_chars* 
-  (map (lambda x _ _ (length x)))
+  (map (lambda x . . (length x)))
   (sum-array))
 
 (do *lines* 
-  (map (lambda line i _ (block 
+  (map (lambda line i . (block 
     (defvar *unique-char* (get *unique_chars* i))
     (do line 
-      (map (lambda ch _ _ (do *unique-char* (map (lambda *ch* _ _ (character-occurances-in-string ch *ch*))) (join "") (type Bit))))
-      (accumulate (lambda a b _ _ (& a b)))))))
-      (map (lambda y _ _ (do y (Bit) (type Array) (array-of-numbers) (sum-array))))
+      (map (lambda ch . . (do *unique-char* (map (lambda *ch* . . (character-occurances-in-string ch *ch*))) (join "") (type Bit))))
+      (accumulate (lambda a b . . (& a b)))))))
+      (map (lambda y . . (do y (Bit) (type Array) (array-of-numbers) (sum-array))))
       (sum-array)))

@@ -20,7 +20,7 @@ BBFFBBFRLL")
 ; (defvar *input* (open "./playground/src/aoc_2020/5/input.txt"))
 (defun binary_boarding inp bounds lower upper 
   (do inp 
-      (reduce (lambda a b _ _ (block 
+      (reduce (lambda a b . . (block 
             (defvar half (* (+ (car a) (car (cdr a))) 0.5))
             (if (= b lower) (set a 1 (floor half))
             (if (= b upper) (set a 0 (round half)))))) bounds) 
@@ -29,7 +29,7 @@ BBFFBBFRLL")
 (defvar *prepare-input* (do 
     *input* 
     (split-by "\n")
-    (map (lambda directions _ _ (block 
+    (map (lambda directions . . (block 
       (defvar 
             array (type directions Array)
             fb (binary_boarding (slice-if-index array (lambda i (< i 7))) (Array 0 127) "F" "B")
@@ -38,18 +38,18 @@ BBFFBBFRLL")
 
 (defvar *res1* (do 
       *prepare-input*
-      (reduce (lambda a b _ _ (max a b)) 0)))
+      (reduce (lambda a b . . (max a b)) 0)))
 
 (defvar *sorted* (do 
       *prepare-input*
       (quick-sort)))
 
-(defvar *maxSeat* (reduce *sorted* (lambda a b _ _  (max a b)) 0))
-(defvar *minSeat* (reduce *sorted* (lambda a b _ _  (min a b)) *maxSeat*))
+(defvar *maxSeat* (reduce *sorted* (lambda a b . .  (max a b)) 0))
+(defvar *minSeat* (reduce *sorted* (lambda a b . .  (min a b)) *maxSeat*))
 
 (defvar *res2* (do 
   *sorted*
-  (find-index (lambda x i _ (= (- x *minSeat* i) 1)))
+  (find-index (lambda x i . (= (- x *minSeat* i) 1)))
   (+ *minSeat*)))
 
 (Array *res1* *res2*)

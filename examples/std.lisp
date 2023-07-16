@@ -64,14 +64,14 @@
   (defun can-sum t values 
     (if (< t 0) 0 
       (if (= t 0) 1 
-        (some values (lambda x _ _ (can-sum (- t x) values))))))
+        (some values (lambda x . . (can-sum (- t x) values))))))
   ; how-can-sum
   (defun how-can-sum t values 
     (if (< t 0) 0 
       (if (= t 0) () 
         (block 
           (defvar res 0)
-          (some values (lambda x _ _ (block 
+          (some values (lambda x . . (block 
             (setf res (how-can-sum (- t x) values))
             (if (and (Arrayp res) (= -1 (array-index-of res x))) (push res x))))) 
           res))))
@@ -106,7 +106,7 @@
           (* base (power base (- exp 1)))))))
 ; neighborhood
  (defun neighborhood array directions y x callback
-    (reduce directions (lambda sum dir _ _ 
+    (reduce directions (lambda sum dir . . 
         (block
           (defvar dy (+ (car dir) y)
                dx (+ (car (cdr dir)) x))
@@ -156,7 +156,7 @@
   ; join
   (defun join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
   ; repeat
-  (defun repeat n x (map (Array n length) (lambda _ _ _ x)))
+  (defun repeat n x (map (Array n length) (lambda . . . x)))
   ; split-by-lines
   (defun split-by-lines string (regex-match string "[^\n]+"))
   ; split-by
@@ -231,7 +231,7 @@
       (if (< i bounds) (iterate (+ i 1) bounds) amount)))
     (iterate 0 (- (length array) 1))))
   ; partition 
-  (defun partition array n (reduce array (lambda a x i _ (block 
+  (defun partition array n (reduce array (lambda a x i . (block 
         (if (mod i n) (push (get a -1) x) (push a (Array x))) a)) 
         ()))
   ; filter
@@ -273,15 +273,15 @@
     (if (< i bounds) (iterate (+ i 1) bounds) initial)))
   (iterate 0 (- (length array) 1))))
   ; sum-array
-  (defun sum-array array (reduce array (lambda a b _ _ (+ a b)) 0))
+  (defun sum-array array (reduce array (lambda a b . . (+ a b)) 0))
   ; product-array
-  (defun product-array array (reduce array (lambda a b _ _ (* a b)) 1))
+  (defun product-array array (reduce array (lambda a b . . (* a b)) 1))
   ; deep-flat
   (defun deep-flat arr (block 
     (defvar new-array ()) 
     (defvar flatten (lambda item 
       (if (and (Arrayp item) (length item)) 
-            (for-each item (lambda x _ _ (flatten x))) 
+            (for-each item (lambda x . . (flatten x))) 
             (unless (Arrayp item) (push new-array item)))))
     (flatten arr) 
     new-array))
@@ -428,13 +428,13 @@
           (block
             (defvar current (get table idx))
             (do current
-              (find (lambda x _ _ (= key 
+              (find (lambda x . . (= key 
                       (do x (get 0)))))
               (get 1))))))
   ; hash-table
   (defun hash-table 
     size 
-      (map (Array size length) (lambda _ _ _ ())))
+      (map (Array size length) (lambda . . . ())))
   ; hash-table-make
   (defun hash-table-make 
     items 
@@ -475,11 +475,11 @@
           (block
             (defvar current (get table idx))
             (do current
-              (find (lambda x _ _ (= key x))))))))
+              (find (lambda x . . (= key x))))))))
   ; hash-set
   (defun hash-set 
     size 
-      (map (Array size length) (lambda _ _ _ ())))
+      (map (Array size length) (lambda . . . ())))
   ; hash-set-make
   (defun hash-set-make 
     items 
@@ -551,7 +551,7 @@
         (+ count has-at-least-one))))
         (iterate 0 (- (length array) 1))))
 ; split-by-n-lines
-(defun split-by-n-lines string n (do string (regex-replace (concatenate "(\n){" n "}") "௮") (regex-match "[^௮]+") (map (lambda x _ _ (regex-match x "[^\n]+")))))
+(defun split-by-n-lines string n (do string (regex-replace (concatenate "(\n){" n "}") "௮") (regex-match "[^௮]+") (map (lambda x . . (regex-match x "[^\n]+")))))
 ; split
 (defun split string separator (block 
     (defvar 
@@ -560,7 +560,7 @@
       array (type string Array)
       skip (length sepArr))
     (loop iterate result i bounds
-      (if (< (if (every sepArr (lambda y j _ (= (get array (+ i j)) y)))
+      (if (< (if (every sepArr (lambda y j . (= (get array (+ i j)) y)))
             (block 
               (setf i (+ i skip -1))
               (push result cursor)
@@ -581,17 +581,17 @@
            out))
           (iterate 0)))
   ; slice-if-index
-  (defun slice-if-index array callback (reduce array (lambda a b i _ (if (callback i) (push a b) a)) ()))
+  (defun slice-if-index array callback (reduce array (lambda a b i . (if (callback i) (push a b) a)) ()))
   ; slice-if
-  (defun slice-if array callback (reduce array (lambda a b i _ (if (callback b i) (push a b) a)) ()))
+  (defun slice-if array callback (reduce array (lambda a b i . (if (callback b i) (push a b) a)) ()))
   ; cartesian-product
-  (defun cartesian-product a b (reduce a (lambda p x _ _ (conjugate p (map b (lambda y _ _ (Array x y))))) ()))
+  (defun cartesian-product a b (reduce a (lambda p x . . (merge p (map b (lambda y . . (Array x y))))) ()))
   ; equal 
   (defun equal a b 
    (or (and (atom a) (atom b) (= a b)) 
    (and (Arrayp a) 
         (= (length a) (length b)) 
-          (not (some a (lambda _ i _ (not (equal (get a i) (get b i)))))))))
+          (not (some a (lambda . i . (not (equal (get a i) (get b i)))))))))
   ; adjacent-difference
   (defun adjacent-difference array callback (block 
     (defvar len (length array))

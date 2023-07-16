@@ -59,24 +59,6 @@ const tokens = {
       )
     return 1 / number
   },
-  ['conjugate']: (args, env) => {
-    if (!args.length)
-      throw new RangeError(
-        'Invalid number of arguments for (conjugate) (>= 1 required)'
-      )
-    const iterables = args.map((arg) => evaluate(arg, env))
-    if (
-      iterables.some(
-        (iterable) => typeof iterable[Symbol.iterator] !== 'function'
-      )
-    )
-      throw new TypeError(
-        `Arguments are not iterable for (conjugate) (conjugate ${stringifyArgs(
-          args
-        )}).`
-      )
-    return iterables.reduce((a, b) => [...a, ...b], [])
-  },
   ['length']: (args, env) => {
     if (args.length !== 1)
       throw new RangeError(

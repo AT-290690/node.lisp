@@ -16,7 +16,7 @@
 ; (defvar *input* (open "./playground/src/aoc_2020/3/input.txt"))
 
 (defun to_bit_array array 
-  (map array (lambda line _ _ (do line (type Array) (map (lambda x _ _ (= x "#")))))))
+  (map array (lambda line . . (do line (type Array) (map (lambda x . . (= x "#")))))))
 
 (defun *solve* array slopeX slopeY (block 
   (defvar 
@@ -25,7 +25,7 @@
   (do (* h (/ slopeY))
       (floor)
       (Array length)
-      (map (lambda _ index _ 
+      (map (lambda . index . 
         (do array 
           (get (* index slopeY))
           (get (mod (* index slopeX) w))))))))
@@ -47,7 +47,7 @@
     (Array 5 1) 
     (Array 7 1) 
     (Array 1 2)) 
-    (map (lambda x _ _ (do matrix (*solve* (car x) (car (cdr x))) (sum-array))))
+    (map (lambda x . . (do matrix (*solve* (car x) (car (cdr x))) (sum-array))))
     (product-array)))))
 
 (task *input*)

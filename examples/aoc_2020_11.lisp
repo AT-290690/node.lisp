@@ -13,26 +13,26 @@ L.LLLLL.LL")
 (defvar *input* sample)
 ; (defvar *input* (open "./playground/src/aoc_2020/11/input.txt"))
 (defun count-seats matrix (block
-  (reduce matrix (lambda a row _ _ (+ a (count-of row (lambda x _ _ (> x 0))))) 0)))
+  (reduce matrix (lambda a row . . (+ a (count-of row (lambda x . . (> x 0))))) 0)))
 
 (defun parse-input input (do 
   input
   (split-by-lines)
-  (map (lambda row _ _ 
+  (map (lambda row . . 
     (do row 
       (type Array) 
-      (map (lambda col _ _ (- (= col "L") 1))))))))
+      (map (lambda col . . (- (= col "L") 1))))))))
 
 (defun solve-1 matrix tolerance (block 
   (defvar 
     height (- (length matrix) 1)
     width (- (length (car matrix)) 1)
     directions (Array (Array 0 1) (Array 1 0) (Array -1 0) (Array 0 -1) (Array 1 -1) (Array -1 -1) (Array 1 1) (Array -1 1))
-    copy (map (Array (+ height 1) length) (lambda _ _ _ (Array (+ width 1) length))))
+    copy (map (Array (+ height 1) length) (lambda . . . (Array (+ width 1) length))))
   (for-n height (lambda y 
     (for-n width (lambda x (block 
       (defvar current (get (get matrix y) x)
-        sum (neighborhood matrix directions y x (lambda neighbor _ (and (not (= neighbor -1)) neighbor))))
+        sum (neighborhood matrix directions y x (lambda neighbor . (and (not (= neighbor -1)) neighbor))))
       (set (get copy y) x 
         (if (and (= sum 0) (= current 0)) 1
           (if (and (>= sum tolerance) (= current 1)) 0 current))))))))
@@ -42,7 +42,7 @@ L.LLLLL.LL")
   (defvar 
     height (- (length matrix) 1)
     width (- (length (car matrix)) 1)
-    copy (map (Array (+ height 1) length) (lambda _ _ _ (Array (+ width 1) length)))
+    copy (map (Array (+ height 1) length) (lambda . . . (Array (+ width 1) length)))
     directions (Array (Array 0 1) (Array 1 0) (Array -1 0) (Array 0 -1) (Array 1 -1) (Array -1 -1) (Array 1 1) (Array -1 1)))
   (for-n height (lambda y 
     (for-n width (lambda x 
@@ -58,20 +58,20 @@ L.LLLLL.LL")
                   (if (= seat -1) (seek-seat Y X (+ i 1))
                   (if (= seat 1) (setf sum (+ sum seat))))
                 ))))
-        (for-each directions (lambda dir _ _ (seek-seat (car dir) (car (cdr dir)) 1)))
+        (for-each directions (lambda dir . . (seek-seat (car dir) (car (cdr dir)) 1)))
           ; L = 0
           ; # = 1
           ; . = -1
-          ; (defvar moore (lambda neighbor _ (and (not (= neighbor -1)) neighbor)))
+          ; (defvar moore (lambda neighbor . (and (not (= neighbor -1)) neighbor)))
           (set (get copy y) x 
             (if (and (= sum 0) (= current 0)) 1
               (if (and (>= sum tolerance) (= current 1)) 0 current))))))))
               copy))
 
 (defun format-matrix matrix (do matrix 
-                                  (map (lambda row _ _ 
+                                  (map (lambda row . . 
                                     (do row 
-                                      (map (lambda col _ _ (if (= col 1) "#" (if (= col 0) "L"  "."))))
+                                      (map (lambda col . . (if (= col 1) "#" (if (= col 0) "L"  "."))))
                                       (join ""))))
                                   (join "\n")))
 

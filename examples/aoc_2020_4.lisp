@@ -12,11 +12,11 @@ hgt:76in")
 ; (defvar *input* (open "./playground/src/aoc_2020/4/input.txt"))
 
 ; 190
-(defun validate_fields fields (do fields (map (lambda x _ _ 
-                        (do x (map (lambda y _ _ 
+(defun validate_fields fields (do fields (map (lambda x . . 
+                        (do x (map (lambda y . . 
                           (do y (regex-match "byr|iyr|eyr|hgt|hcl|ecl|pid")))) 
                                 (deep-flat))))
-                  (remove (lambda x _ _ (= (length x) 7)))))
+                  (remove (lambda x . . (= (length x) 7)))))
 
 ; byr (Birth Year) - four digits; at least 1920 and at most 2002.
 ; iyr (Issue Year) - four digits; at least 2010 and at most 2020.
@@ -28,10 +28,10 @@ hgt:76in")
 ; ecl (Eye Color) - exactly one of: amb blu brn gry grn hzl oth.
 ; pid (Passport ID) - a nine-digit number, including leading zeroes.
 ; cid (Country ID) - ignored, missing or not.
-(defun to_entries array (map array (lambda x _ _ (do x (map (lambda y _ _ (do y (split-by " ")))) (deep-flat) (map (lambda x _ _ (split-by x ":")))))))
+(defun to_entries array (map array (lambda x . . (do x (map (lambda y . . (do y (split-by " ")))) (deep-flat) (map (lambda x . . (split-by x ":")))))))
 (defun without_invalid_fields fields (do fields 
-                                            (map (lambda x _ _  (do x 
-                                             (remove (lambda y _ _ (and (not (= (car y) "cid")) (regex-match (car y) "byr|iyr|eyr|hgt|hcl|ecl|pid")))))))))
+                                            (map (lambda x . .  (do x 
+                                             (remove (lambda y . . (and (not (= (car y) "cid")) (regex-match (car y) "byr|iyr|eyr|hgt|hcl|ecl|pid")))))))))
 
 
 (Array 
@@ -42,9 +42,9 @@ hgt:76in")
      (split-by-n-lines 2)
      (to_entries)
      (without_invalid_fields)
-     (remove (lambda x _ _ (= (length x) 7)))
-     (map (lambda x _ _ (do x     
-      (map (lambda y _ _ (block
+     (remove (lambda x . . (= (length x) 7)))
+     (map (lambda x . . (do x     
+      (map (lambda y . . (block
         (defvar key (car y))
         (defvar value (car (cdr y)))
         (defvar arr (type value Array))
@@ -68,6 +68,6 @@ hgt:76in")
                       (and 
                         (= (length arr) 9) 
                         (length (regex-match value "[0-9]{9}")))))))))))
-       (remove (lambda x _ _ (every x (lambda y _ _ (= (get y -1) 1)))))
-      ; (map (lambda x _ _ (log x)))
+       (remove (lambda x . . (every x (lambda y . . (= (get y -1) 1)))))
+      ; (map (lambda x . . (log x)))
       (length)))

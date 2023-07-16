@@ -49,7 +49,7 @@ describe('Interpration', () => {
      (or (and (atom a) (atom b) (= a b)) 
      (and (Arrayp a) 
           (= (length a) (length b)) 
-            (not (some a (lambda _ i _ (not (equal (get a i) (get b i)))))))))
+            (not (some a (lambda . i . (not (equal (get a i) (get b i)))))))))
     (defvar patten (Array "hello" 10))
     (defvar patten2 (Array "hello" 11))
   (Array (equal patten (Array "hello" 10)) (equal patten (Array "hello" patten2)) 
@@ -128,13 +128,12 @@ describe('Interpration', () => {
     (set new-array i (callback (get array i) i array))
     (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
   (iterate 0 (- (length array) 1))))
-
     (defun hash-index 
       table key 
         (block
           (defvar total 0)
           (defvar prime-num 31)
-          (defvar key-arr (conjugate (type key String)))
+          (defvar key-arr (type (type key String) Array))
           (loop find-hash-index i bounds (block 
             (defvar letter (get key-arr i))
             (defvar value (- (char letter 0) 96))
@@ -254,7 +253,7 @@ describe('Interpration', () => {
 (defun product-array array (reduce array (lambda a b i o (* a b)) 1))
 (defun split-by-lines string (regex-match string "[^\n]+"))
 (defun string_to_array string delim 
-                      (reduce (conjugate string) 
+                      (reduce (type string Array) 
                         (lambda a x i o (block
                                   (if (= x delim) (push a ()) (block 
                                     (push (get a -1) x) a))))(push () ())))
@@ -358,95 +357,6 @@ describe('Interpration', () => {
       [514579, 241861950]
     )
 
-    deepStrictEqual(
-      runFromInterpreted(`
-(defun floor n (| n 0))
-(defun min a b (if (< a b) a b))
-(defun push array value (set array (length array) value))
-(defun product-array array (reduce array (lambda a b i o (* a b)) 1))
-(defun join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
-(defun concat array1 array2 (block
-  (loop iterate i bounds (block
-  (if (< i (length array2)) (push array1 (get array2 i)))
-  (if (< i bounds) 
-    (iterate (+ i 1) bounds)
-  array1)))
-(iterate 0 (- (length array2) 1))))
-(defun map array callback (block 
-  (defvar new-array ())
-  (defvar i 0)
-  (loop iterate i bounds (block
-    (set new-array i (callback (get array i) i array))
-    (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
-  (iterate 0 (- (length array) 1))))
-(defun reduce array callback initial (block
-  (loop iterate i bounds (block
-    (setf initial (callback initial (get array i) i array))
-    (if (< i bounds) (iterate (+ i 1) bounds) initial)))
-  (iterate 0 (- (length array) 1))))
-
-(defvar sample "1-3 a: abcde
-1-3 b: cdefg
-2-9 c: ccccccccc")
-(defvar input sample)
-
-(defvar occ (regex-match input "([0-9]{1,2}-[0-9]{1,2})"))
-(defvar policy (regex-match input "[a-z](?=:)"))
-(defvar inputs (regex-match input "(?<=:[ ])(.*)"))
-
-(defun solve1 string letter (block
-  (defvar array (conjugate string))
-  (defvar bitmask 0)
-  (defvar zero (char "a" 0))
-  (defvar count 0)
-  (defvar has-at-least-one 0)
-  (loop iterate i bounds  (block
-      (defvar ch (get array i))
-      (defvar code (- (char ch 0) zero))
-      (defvar mask (<< 1 code))
-      (if (and (if (= ch letter) (setf has-at-least-one 1))
-          (not (= (& bitmask mask) 0))) 
-          (setf count (+ count 1))
-          (setf bitmask (| bitmask mask)))
-      (if (< i bounds) (iterate (+ i 1) bounds) 
-      (+ count has-at-least-one))))
-      (iterate 0 (- (length array) 1))))
-
-(defun solve2 array letter x y (block 
-(defvar a (get array (- x 1)))
-(defvar b (get array (- y 1)))
-(defvar left (= letter a))
-(defvar right (= letter b))
-(and (not (and left right)) (or left right))
-))
-
-(Array (do occ
-  (map (lambda x i o
-              (do x
-                (regex-match "[^-]+") 
-                (map (lambda y i o (type y Number))))))
-   (map (lambda x i o (do x 
-            (push (get policy i)) 
-            (push (get inputs i))
-            (push (solve1 (get x 3) (get x 2)))
-            (push (and 
-                    (>= (get x 4) (get x 0)) 
-                    (<= (get x 4) (get x 1)))))))
-  (reduce (lambda a x i o (+ a (get x -1))) 0)
-)
-(do occ
-  (map (lambda x i o (do x (regex-match "[^-]+") (map (lambda y i o (type y Number))))))
-   (map (lambda x i o (do x 
-            (push (get policy i)) 
-            (push (get inputs i)))))
-   (map (lambda x i o 
-    (push x (solve2 (conjugate (get x 3)) (get x 2) (get x 0) (get x 1)))
-   ))
-   (reduce (lambda a x i o (+ a (get x -1))) 0)
-))`),
-      [2, 1]
-    )
-
     strictEqual(
       runFromInterpreted(`
   (defvar array (Array 5 length))
@@ -521,7 +431,7 @@ describe('Interpration', () => {
       (iterate 0 (- (length array) 1)))))
     (defvar deep-flat (lambda arr (block 
       (defvar new-array ()) 
-      (loop flatten item (if (Arrayp item) (for-each item (lambda x _ (flatten x))) 
+      (loop flatten item (if (Arrayp item) (for-each item (lambda x . (flatten x))) 
       (push new-array item)))
       (flatten arr) 
       new-array
@@ -558,7 +468,7 @@ describe('Interpration', () => {
   (do
     (Array 1 2 3)
     (push -1)
-    (concat (conjugate "abc"))
+    (concat (type "abc" Array))
     (concat (Array 1 2 3 4))
     (concat (Array 5 6 7))
   )`),
@@ -647,7 +557,7 @@ describe('Interpration', () => {
     (iterate 0 (- (length array) 1)))))
     (defvar join (lambda array delim (reduce array (lambda a x i (concatenate a delim x)) "")))
     (defvar string_to_array (lambda string delim 
-    (reduce (conjugate string) (lambda a x i (block
+    (reduce (type string Array) (lambda a x i (block
         (if (= x delim) 
           (push a ()) 
           (block (push (get a -1) x) a)

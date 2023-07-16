@@ -17,7 +17,7 @@ F11")
   *input* 
   (split-by "\n") 
   (push "F0") ; TODO delete this later
-  (map (lambda x _ _
+  (map (lambda x . .
     (block 
       (defvar str (type x Array))
       (Array (car str) (do str (cdr) (join "") (type Number))))))
@@ -98,7 +98,7 @@ F11")
   (defvar *stack* (do 
     *input* 
     (split-by "\n") 
-    (map (lambda x _ _ (block 
+    (map (lambda x . . (block 
         (defvar str (type x Array))
         (Array (car str) (do str (cdr) (join "") (type Number))))))
     (reverse)))

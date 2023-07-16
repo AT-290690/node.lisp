@@ -36,7 +36,7 @@
   (defun can-sum-some t values 
     (if (< t 0) 0 
       (if (= t 0) 1 
-        (some values (lambda x _ _ (can-sum-some (- t x) values))))))
+        (some values (lambda x . . (can-sum-some (- t x) values))))))
   
   (defun find-preamble inp n (do inp 
     (find (lambda current i all 
@@ -51,12 +51,12 @@
 
 (defvar *weakness* ())
 (do (range 2 (- (length *numbers*) 1))
-    (some (lambda n _ _
-    (some (window *numbers* n) (lambda x _ _ (block 
+    (some (lambda n . .
+    (some (window *numbers* n) (lambda x . . (block 
     (and (= (sum-array x) *preamble*) (setf *weakness* x))))))))
 
 (Array 
   ; 21806024
   *preamble* 
   ; 2986195
-  (+ (reduce *weakness* (lambda a b _ _ (max a b)) -1) (reduce *weakness* (lambda a b _ _ (min a b)) *preamble*)))
+  (+ (reduce *weakness* (lambda a b . . (max a b)) -1) (reduce *weakness* (lambda a b . . (min a b)) *preamble*)))

@@ -10,7 +10,7 @@
 (defvar *occ* (regex-match *input* "([0-9]{1,2}-[0-9]{1,2})"))
 (defvar *policy* (regex-match *input* "[a-z](?=:)"))
 (defvar *inputs* (regex-match *input* "(?<=:[ ])(.*)"))
-(defun occ_to_numbers x _ _ (do x (split-by "-") (map (lambda y _ _ (type y Number)))))
+(defun occ_to_numbers x . . (do x (split-by "-") (map (lambda y . . (type y Number)))))
 
 (defun *solve1* string letter (block
   (defvar 
@@ -43,7 +43,7 @@
 (Array 
 (do *occ*
    (map occ_to_numbers)
-   (map (lambda x i _ (do x 
+   (map (lambda x i . (do x 
             (push (get *policy* i)) 
             (push (get *inputs* i))
             (push (*solve1* (get x 3) (get x 2)))
@@ -55,12 +55,12 @@
 )
 (do *occ*
    (map occ_to_numbers)
-   (map (lambda x i _ (do x 
+   (map (lambda x i . (do x 
             (push (get *policy* i)) 
             (push (get *inputs* i)))))
-   (map (lambda x _ _ 
+   (map (lambda x . . 
           (push x (*solve2* (type (get x 3) Array) (get x 2) (get x 0) (get x 1)))))
-   (reduce (lambda a x _ _ (+ a (get x -1))) 0)
+   (reduce (lambda a x . . (+ a (get x -1))) 0)
   ; (map (lambda x i o (log x)))
 ))
 

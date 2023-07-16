@@ -51,20 +51,20 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
     (do 
       input 
       (split-by "\n") 
-      (map (lambda x _ _ (do x (regex-match "^(.*(?= bags contain))|(?<=(contain )).*(?=(,|.))") 
+      (map (lambda x . . (do x (regex-match "^(.*(?= bags contain))|(?<=(contain )).*(?=(,|.))") 
       (map 
-        (lambda y _ _ 
+        (lambda y . . 
           (do y 
             (split ", ")))))))
       (remove 
-        (lambda bag _ _ 
+        (lambda bag . . 
           (not 
             (or 
               (= (car (car bag)) (concatenate (car *target*) (car (cdr *target*))))
               (= (car (car (cdr bag))) "no other bags")
               ))))
       (map 
-        (lambda bag _ _ 
+        (lambda bag . . 
           (block
             (defvar 
               left (car (car bag))
@@ -73,7 +73,7 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
               tail 
                 (do right  
                   (map 
-                    (lambda x _ _ 
+                    (lambda x . . 
                       (block 
                         (defvar current (split x " "))
                         (do current 
@@ -86,11 +86,11 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
     count 0
     traverse-bags (lambda left right (block
     (for-each bags 
-      (lambda bag _ _ 
+      (lambda bag . . 
         (and 
           (not (= (get (car bag) -1) 1)) 
             (some (car (cdr bag)) 
-              (lambda x _ _ 
+              (lambda x . . 
                 (and 
                   (= left (car (cdr x)))
                   (= right (car (cdr (cdr x))))
@@ -102,12 +102,12 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
 
 (defun *find-bag* bags left right 
           (find bags 
-            (lambda x _ _ (and 
+            (lambda x . . (and 
               (= (car (car x)) left)
               (= (car (cdr (car x))) right)))))
       
 (defun *solve2* initial all-bags 
-  (reduce initial (lambda output current _ _ (block 
+  (reduce initial (lambda output current . . (block 
     (defvar next (*find-bag* all-bags (car (cdr current)) (car (cdr (cdr current)))))
     (+ output (if next (* (car current) (*solve2* (car (cdr next)) all-bags)) (car current))))) 1))
 

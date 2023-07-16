@@ -232,7 +232,7 @@ const compile = (tree, Locals) => {
         const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
         return `((${parseArgs(
           functionArgs.map(({ type, value }, index) =>
-            value === '_' ? { type, value: `_${index}` } : { type, value }
+            value === '.' ? { type, value: `_${index}` } : { type, value }
           ),
           Locals
         )})=>{${vars}return ${evaluatedBody.toString().trimStart()}});`
@@ -275,7 +275,7 @@ const compile = (tree, Locals) => {
         const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
         out += `${name}=(${parseArgs(
           functionArgs.map(({ type, value }, index) =>
-            value === '_' ? { type, value: `_${index}` } : { type, value }
+            value === '.' ? { type, value: `_${index}` } : { type, value }
           ),
           Locals
         )})=>{${vars}return ${evaluatedBody.toString().trimStart()}};`

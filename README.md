@@ -129,9 +129,9 @@ Compiles to JavaScript
 (import std "remove" "map" "reduce")
 (do
   (Array 1 2 3 4 5 6 7 101)
-  (remove (lambda x _ _ (= (mod x 2) 1)))
-  (map (lambda x _ _ (* x 2)))
-  (reduce (lambda a x _ _ (+ a x)) 0))
+  (remove (lambda x . . (= (mod x 2) 1)))
+  (map (lambda x . . (* x 2)))
+  (reduce (lambda a x . . (+ a x)) 0))
 ```
 
 ```js

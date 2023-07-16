@@ -15,7 +15,7 @@ acc +6")
 
 (defvar *stack* (do *input* 
   (split-by "\n")
-  (map (lambda x _ _ (block 
+  (map (lambda x . . (block 
     (defvar cmd (do x (split-by " ")))
     (set cmd 1 (type (get cmd 1) Number)))))))
 
@@ -48,8 +48,8 @@ acc +6")
         (block
           (do 
             instructions
-            (remove (lambda x i _ (and (= (length x) 3) (or (= (car x) "nop") (= (car x) "jmp")))))
-            (map (lambda x _ _ (block 
+            (remove (lambda x i . (and (= (length x) 3) (or (= (car x) "nop") (= (car x) "jmp")))))
+            (map (lambda x . . (block 
               (defvar 
                 cmd (if (= (car x) "jmp") "nop" "jmp")
                 value (car (cdr x))
@@ -64,7 +64,7 @@ acc +6")
     *stack*
     (*solve2* 0 0)
     (reduce 
-      (lambda acc x _ _ 
+      (lambda acc x . . 
         (block 
           (defvar 
             cmd (car x)

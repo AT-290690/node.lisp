@@ -99,10 +99,10 @@
   (* 
     (do 
       diffs 
-      (count-of (lambda x _ _ (= x 1))))
+      (count-of (lambda x . . (= x 1))))
       (+ (do 
           diffs
-          (count-of (lambda x _ _ (= x 3)))) 1))
+          (count-of (lambda x . . (= x 3)))) 1))
 ; part 2
 ; recursive
  (do  

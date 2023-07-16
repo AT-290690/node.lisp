@@ -11,7 +11,7 @@
 ; (defvar *input* (open "./playground/src/aoc_2020/1/input.txt"))
 
 (defun *solve1* array cb 
-     (reduce array (lambda a x _ array (block
+     (reduce array (lambda a x . array (block
         (defvar res (binary-search array (cb x)))
         (if res (push a res) a))) 
      ()))
