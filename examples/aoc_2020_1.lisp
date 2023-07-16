@@ -19,7 +19,7 @@
 (defun *solve2* array cb 
     (reduce array
       (lambda accumulator y i array (block
-          (loop iterate j bounds (block 
+          (loop defun iterate j bounds (block 
               (defvar x (get array j))
               (defvar res (binary-search array (cb x y)))
               (if res (push accumulator res))
@@ -30,7 +30,7 @@
 
 (Array 
 ; 514579 for sample
-(do *input*
+(trace *input*
   (split-by-lines)
   (array-of-numbers)
   (quick-sort)
@@ -38,7 +38,7 @@
   (product-array))
 
 ; 241861950 for sample
-(do *input*
+(trace *input*
   (split-by-lines)
   (array-of-numbers)
   (quick-sort)

@@ -40,7 +40,7 @@ describe('Interpration', () => {
       runFromInterpreted(`
     (defun some array callback (block
       (defvar bol 1)
-      (loop iterate i bounds (block
+      (loop defun iterate i bounds (block
         (defvar res (callback (get array i) i array))
         (boole bol (type res Boolean))
         (if (and (not res) (< i bounds)) (iterate (+ i 1) bounds) bol)))
@@ -79,20 +79,20 @@ describe('Interpration', () => {
     )
     strictEqual(
       runFromInterpreted(
-        `(do (Array (Array 1 2 3 4 5) 2 3 4) (car) (cdr) (car))`
+        `(trace (Array (Array 1 2 3 4 5) 2 3 4) (car) (cdr) (car))`
       ),
       2
     )
     deepStrictEqual(runFromInterpreted(`(cdr (Array 1 2 3 4))`), [2, 3, 4])
     strictEqual(runFromInterpreted(`(car (Array 1 2 3 4))`), 1)
     strictEqual(
-      runFromInterpreted(`(do 1 
+      runFromInterpreted(`(trace 1 
     (+ 2) 
       (* 3 4)
        (- 3 2))`),
       31
     )
-    strictEqual(runFromInterpreted(`(defvar x -1) (do x (-))`), 1)
+    strictEqual(runFromInterpreted(`(defvar x -1) (trace x (-))`), 1)
     strictEqual(runFromInterpreted(`(defvar x -1) (- x)`), 1)
     strictEqual(runFromInterpreted(`(- 1)`), -1)
     strictEqual(runFromInterpreted(`(if (< 1 2) 42 69)`), 42)
@@ -103,7 +103,7 @@ describe('Interpration', () => {
 (defun push array value (set array (length array) value))
 (defun euclidean-mod a b (mod (+ (mod a b) b) b))
 (defun find array callback (block
-  (loop iterate i bounds (block
+  (loop defun iterate i bounds (block
     (defvar current (get array i))
     (if (and (not (callback current i array)) (< i bounds))
       (iterate (+ i 1) bounds) 
@@ -112,7 +112,7 @@ describe('Interpration', () => {
 (defun find-index array callback (block
   (defvar idx -1)
   (defvar has-found 0)
-  (loop iterate i bounds (block
+  (loop defun iterate i bounds (block
     (defvar current (get array i))
     (setf has-found (callback current i array))
     (if (and (not has-found) (< i bounds))
@@ -124,7 +124,7 @@ describe('Interpration', () => {
 (defun map array callback (block 
   (defvar new-array ())
   (defvar i 0)
-  (loop iterate i bounds (block
+  (loop defun iterate i bounds (block
     (set new-array i (callback (get array i) i array))
     (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
   (iterate 0 (- (length array) 1))))
@@ -134,7 +134,7 @@ describe('Interpration', () => {
           (defvar total 0)
           (defvar prime-num 31)
           (defvar key-arr (type (type key String) Array))
-          (loop find-hash-index i bounds (block 
+          (loop defun find-hash-index i bounds (block 
             (defvar letter (get key-arr i))
             (defvar value (- (char letter 0) 96))
             (setf total (euclidean-mod (+ (* total prime-num) value) (length table)))
@@ -164,9 +164,9 @@ describe('Interpration', () => {
           (if (array-in-bounds-p table idx) 
             (block
               (defvar current (get table idx))
-              (do current
+              (trace current
                 (find (lambda x i o (= key 
-                        (do x (get 0)))))
+                        (trace x (get 0)))))
                 (get 1))))))
     (defun hash-table 
       size 
@@ -176,13 +176,13 @@ describe('Interpration', () => {
         (block
           (defvar len (- (length items) 1))
           (defvar table (hash-table (* len len)))
-          (loop add i (block
+          (loop defun add i (block
             (defvar item (get items i))
             (hash-table-set table (get item 0) (get item 1))
           (if (< i len) (add (+ i 1)) table)))
           (add 0)))
     
-    (defvar tabl  (do
+    (defvar tabl  (trace
     (hash-table-make (Array 
       (Array "name" "Anthony") 
       (Array "age" 32) 
@@ -216,13 +216,13 @@ describe('Interpration', () => {
                     tree node (set tree 2 node)) 
     (defun binary-tree-get-value
                     node (get node 0))
-  (do 
+  (trace 
     (binary-tree-node 1)
     (binary-tree-set-left 
-          (do 
+          (trace 
             (binary-tree-node 2) 
             (binary-tree-set-left 
-              (do (binary-tree-node 4) 
+              (trace (binary-tree-node 4) 
                   (binary-tree-set-right 
                   (binary-tree-node 5))))))
     (binary-tree-set-right (binary-tree-node 3))
@@ -239,7 +239,7 @@ describe('Interpration', () => {
     strictEqual(
       runFromInterpreted(`(defvar add_seq (lambda x (+ x 1 2 3)))
   (defun mult_10 x (* x 10))
-  (defvar do_thing (lambda (do 100 
+  (defvar do_thing (lambda (trace 100 
                         (add_seq) 
                         (mult_10))))
   (do_thing)`),
@@ -260,7 +260,7 @@ describe('Interpration', () => {
 (defun join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
 
 (defun concat array1 array2 (block
-  (loop iterate i bounds (block
+  (loop defun iterate i bounds (block
   (if (< i (length array2)) (push array1 (get array2 i)))
   (if (< i bounds) 
     (iterate (+ i 1) bounds)
@@ -270,13 +270,13 @@ describe('Interpration', () => {
 (defun map array callback (block 
   (defvar new-array ())
   (defvar i 0)
-  (loop iterate i bounds (block
+  (loop defun iterate i bounds (block
     (set new-array i (callback (get array i) i))
     (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
   (iterate 0 (- (length array) 1))))
 
 (defun reduce array callback initial (block
-  (loop iterate i bounds (block
+  (loop defun iterate i bounds (block
     (setf initial (callback initial (get array i) i array))
     (if (< i bounds) (iterate (+ i 1) bounds) initial)))
   (iterate 0 (- (length array) 1))))
@@ -287,21 +287,21 @@ describe('Interpration', () => {
     (defvar pivot (get arr 0))
     (defvar left-arr ())
     (defvar right-arr ())
-(loop iterate i bounds (block
+(loop defun iterate i bounds (block
     (defvar current (get arr i))
     (if (< current pivot) 
         (push left-arr current)
         (push right-arr current))
     (if (< i bounds) (iterate (+ i 1) bounds))))
     (iterate 1 (- (length arr) 1))
-(do 
+(trace 
   left-arr (quick-sort) 
   (push pivot) 
   (concat (quick-sort right-arr)))))))
 
 (defun binary-search 
         array target (block
-  (loop search 
+  (loop defun search 
         arr target start end (block
     (if (<= start end) (block 
         (defvar index (floor (* (+ start end) 0.5)))
@@ -330,7 +330,7 @@ describe('Interpration', () => {
 (defun solve2 array cb 
     (reduce array
       (lambda accumulator y i array (block
-          (loop iterate j bounds (block 
+          (loop defun iterate j bounds (block 
               (defvar x (get array j))
               (defvar res (binary-search array (cb x y)))
               (if res (push accumulator res))
@@ -341,13 +341,13 @@ describe('Interpration', () => {
 
 
 (Array
-  (do input
+  (trace input
   (split-by-lines)
   (array-of-numbers)
   (quick-sort)
   (solve1 (lambda x (- 2020 x)))
   (product-array))
-(do input
+(trace input
   (split-by-lines)
   (array-of-numbers)
   (quick-sort)
@@ -369,7 +369,7 @@ describe('Interpration', () => {
       runFromInterpreted(`
     (defun push array value (set array (length array) value))
     (defun concat array1 array2 (block
-      (loop iterate i bounds (block
+      (loop defun iterate i bounds (block
       (if (< i (length array2)) (push array1 (get array2 i)))
       (if (< i bounds) 
         (iterate (+ i 1) bounds)
@@ -382,14 +382,14 @@ describe('Interpration', () => {
         (defvar pivot (get arr 0))
         (defvar left-arr ())
         (defvar right-arr ())
-    (loop iterate i bounds (block
+    (loop defun iterate i bounds (block
         (defvar current (get arr i))
         (if (< current pivot) 
             (push left-arr current)
             (push right-arr current))
         (if (< i bounds) (iterate (+ i 1) bounds))))
         (iterate 1 (- (length arr) 1))
-    (do 
+    (trace 
       left-arr (quick-sort) 
       (push pivot) 
       (concat (quick-sort right-arr)))))))
@@ -397,13 +397,13 @@ describe('Interpration', () => {
       (defvar len (length array))
       (defvar reversed (Array len length))
       (defvar offset (- len 1))
-      (loop iterate i bounds (block
+      (loop defun iterate i bounds (block
         (set reversed (- offset i) (get array i))
         (if (< i bounds) (iterate (+ i 1) bounds) reversed)))
       (iterate 0 offset)
       ))
     
-      (do
+      (trace
         (Array 1 0 8 -2 3)
         (quick-sort)
         (reverse))
@@ -412,7 +412,7 @@ describe('Interpration', () => {
     )
     strictEqual(
       runFromInterpreted(`(defvar find (lambda array callback (block
-      (loop iterate i bounds (block
+      (loop defun iterate i bounds (block
         (defvar current (get array i))
         (if (and (not (callback current i)) (< i bounds))
           (iterate (+ i 1) bounds) 
@@ -425,13 +425,13 @@ describe('Interpration', () => {
       runFromInterpreted(`
     (defvar push (lambda array value (set array (length array) value)))
     (defvar for-each (lambda array callback (block
-      (loop iterate i bounds (block
+      (loop defun iterate i bounds (block
         (callback (get array i) i)
         (if (< i bounds) (iterate (+ i 1) bounds) array)))
       (iterate 0 (- (length array) 1)))))
     (defvar deep-flat (lambda arr (block 
       (defvar new-array ()) 
-      (loop flatten item (if (Arrayp item) (for-each item (lambda x . (flatten x))) 
+      (loop defun flatten item (if (Arrayp item) (for-each item (lambda x . (flatten x))) 
       (push new-array item)))
       (flatten arr) 
       new-array
@@ -448,7 +448,7 @@ describe('Interpration', () => {
       [1, 2, 1, 2, 1, 3, 1, 4, 4, 'x', 'y', 1, 2]
     )
     strictEqual(
-      runFromInterpreted(`(loop iterate i (if (< i 100) 
+      runFromInterpreted(`(loop defun iterate i (if (< i 100) 
   (iterate (+ i 1)) i))
 (iterate 0)
 `),
@@ -465,7 +465,7 @@ describe('Interpration', () => {
     ))))
   (iterate 0 (- (length array2) 1)))))
 
-  (do
+  (trace
     (Array 1 2 3)
     (push -1)
     (concat (type "abc" Array))
@@ -516,7 +516,7 @@ describe('Interpration', () => {
   (defvar mult_2 (lambda x i (* x 2)))
   (defvar sum (lambda a x i (+ a x)))
   
-  (do 
+  (trace 
   (Array 1 2 3 4 5 6 7 101) 
   (remove is-odd)
   (map mult_2)

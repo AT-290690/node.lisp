@@ -5,13 +5,13 @@ const STD = std.split(`; exports`)[0].split('; modules')[1]
 const programs = [
   `
   (import std "is-prime" "sqrt" "map")
-  (do
+  (trace 
     (Array 2 3 5 7 11 10 2563 1 48 1729) 
     (map (lambda x . . (is-prime x))))
 `,
   `
 (import std "push" "concat" "quick-sort")
-(do
+(trace 
   (Array 3 0 5 3 2 4 1) 
   (quick-sort))
 `,
@@ -25,8 +25,8 @@ const programs = [
 `,
   `(import std "greatest-common-divisor" "every" "adjacent-difference" "is-prime" "sqrt") 
 (defun is-array-of-coprime-pairs inp (and 
-  (do inp (every (lambda x . . (is-prime x)))) 
-  (do inp (adjacent-difference (lambda a b (greatest-common-divisor a b))) (cdr) (every (lambda x . . (= x 1))))))
+  (trace inp (every (lambda x . . (is-prime x)))) 
+  (trace inp (adjacent-difference (lambda a b (greatest-common-divisor a b))) (cdr) (every (lambda x . . (= x 1))))))
   (Array (is-array-of-coprime-pairs (Array 7 13 59 31 19)))
   `,
   `

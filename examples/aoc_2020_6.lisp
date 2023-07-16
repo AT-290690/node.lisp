@@ -18,20 +18,20 @@ b")
 (defvar *input* sample)
 ; (defvar *input* (open "./playground/src/aoc_2020/6/input.txt"))
 
-(defun remove-duplicates string (do (type string Array) (remove (lambda item pos self (= (index-of self item) pos)))))
+(defun remove-duplicates string (trace (type string Array) (remove (lambda item pos self (= (index-of self item) pos)))))
 
-(defvar *lines* (do *input* (split-by-n-lines 2)))
-(defvar *unique_chars* (do *lines* (map (lambda x . . (do x (join "") (remove-duplicates))))))
+(defvar *lines* (trace *input* (split-by-n-lines 2)))
+(defvar *unique_chars* (trace *lines* (map (lambda x . . (trace x (join "") (remove-duplicates))))))
 
-(Array (do *unique_chars* 
+(Array (trace *unique_chars* 
   (map (lambda x . . (length x)))
   (sum-array))
 
-(do *lines* 
+(trace *lines* 
   (map (lambda line i . (block 
     (defvar *unique-char* (get *unique_chars* i))
-    (do line 
-      (map (lambda ch . . (do *unique-char* (map (lambda *ch* . . (character-occurances-in-string ch *ch*))) (join "") (type Bit))))
+    (trace line 
+      (map (lambda ch . . (trace *unique-char* (map (lambda *ch* . . (character-occurances-in-string ch *ch*))) (join "") (type Bit))))
       (accumulate (lambda a b . . (& a b)))))))
-      (map (lambda y . . (do y (Bit) (type Array) (array-of-numbers) (sum-array))))
+      (map (lambda y . . (trace y (Bit) (type Array) (array-of-numbers) (sum-array))))
       (sum-array)))

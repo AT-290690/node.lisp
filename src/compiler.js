@@ -223,8 +223,7 @@ const compile = (tree, Locals) => {
         )});`
       case 'set':
         return `_set(${parseArgs(Arguments, Locals)});`
-      case 'lambda':
-      case 'λ': {
+      case 'lambda': {
         const functionArgs = Arguments
         const body = Arguments.pop()
         const localVars = new Set()
@@ -237,17 +236,16 @@ const compile = (tree, Locals) => {
           Locals
         )})=>{${vars}return ${evaluatedBody.toString().trimStart()}});`
       }
-      case 'loop':
-      case '∞': {
+      case 'loop': {
         let name,
           newName,
           out = '(('
-        const arg = Arguments[0]
+        const arg = Arguments[1]
         name = lispToJavaScriptVariableName(arg.value)
         newName = `rec_${performance.now().toString().replace('.', 7)}`
         Locals.add(name)
         Locals.add(newName)
-        const functionArgs = Arguments.slice(1)
+        const functionArgs = Arguments.slice(2)
         const body = functionArgs.pop()
         const localVars = new Set()
         deepRename(arg.value, newName, body)
@@ -260,9 +258,7 @@ const compile = (tree, Locals) => {
         out += `, ${newName}))), ${name});`
         return out
       }
-      case 'defun':
-      case 'function':
-      case 'ƒ': {
+      case 'defun': {
         let name,
           out = '(('
         const arg = Arguments[0]
@@ -349,9 +345,7 @@ const compile = (tree, Locals) => {
           Arguments[0],
           Locals
         )})`
-      case 'do':
-      case '|>':
-      case '∘': {
+      case 'trace': {
         let inp = Arguments[0]
         for (let i = 1; i < Arguments.length; ++i)
           inp = [Arguments[i].shift(), inp, ...Arguments[i]]

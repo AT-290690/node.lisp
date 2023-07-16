@@ -47,9 +47,9 @@
 ; (defvar *input* (open "./playground/src/aoc_2020/10/input.txt"))
 
 ; part 1
-(defvar *parsed-input* (do *input* (split-by "\n") (array-of-numbers)))
+(defvar *parsed-input* (trace *input* (split-by "\n") (array-of-numbers)))
 
-(defvar diffs (do *parsed-input* 
+(defvar diffs (trace *parsed-input* 
    (quick-sort) 
    (adjacent-difference (lambda a b (- b a)))))
 
@@ -57,7 +57,7 @@
 (defun combinations inp index memo
       (if (array-in-bounds-p memo index) (get memo index) (block 
         (defvar result 0)
-        (loop iterate j (block 
+        (loop defun iterate j (block 
           (if (and (>= j 0) (<= (- (get inp index) (get inp j)) 3)) 
             (block
               (setf result (+ result (combinations inp j memo)))
@@ -70,11 +70,11 @@
   (defvar 
     memo (Array 1)
     size (length inp))
-  (loop iterate-i i (block
+  (loop defun iterate-i i (block
     (if (< i size) 
       (block 
         (set memo i 0) 
-        (loop iterate-j j (if (and (>= j 0) (<= (- (get inp i) (get inp j)) 3)) 
+        (loop defun iterate-j j (if (and (>= j 0) (<= (- (get inp i) (get inp j)) 3)) 
           (block
             (set memo i (+ (get memo i) (get memo j)))
             (iterate-j (- j 1)))))
@@ -86,29 +86,29 @@
 (defun transform-input input
                           (set 
                             (defvar sorted 
-                              (do input 
+                              (trace input 
                                 (set (length input) 0) 
                                 (quick-sort))) 
                             (length sorted) 
                             (+ (get sorted -1) 3)))
 
-(defvar *transformed-input* (do *parsed-input* (transform-input)))
+(defvar *transformed-input* (trace *parsed-input* (transform-input)))
 
 (Array
 ; part 1
   (* 
-    (do 
+    (trace 
       diffs 
       (count-of (lambda x . . (= x 1))))
-      (+ (do 
+      (+ (trace 
           diffs
           (count-of (lambda x . . (= x 3)))) 1))
 ; part 2
 ; recursive
- (do  
+ (trace  
   *transformed-input*
   (combinations (- (length *transformed-input*) 1) (Array 1)))
  ; iterative 
- (do 
+ (trace 
     *transformed-input*
     (iterative-solution)))

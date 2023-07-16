@@ -13,14 +13,14 @@ F11")
 (defun solve1 (block 
 
 (defun normalize value min max (* (- value min) (/ (- max min))))
-(defvar *stack* (do 
+(defvar *stack* (trace 
   *input* 
   (split-by "\n") 
   (push "F0") ; TODO delete this later
   (map (lambda x . .
     (block 
       (defvar str (type x Array))
-      (Array (car str) (do str (cdr) (join "") (type Number))))))
+      (Array (car str) (trace str (cdr) (join "") (type Number))))))
   (reverse)))
 
   (defvar 
@@ -47,8 +47,8 @@ F11")
       (= action "E") (setf x (+ x value))
       (= action "S") (setf y (+ y value))
       (= action "W") (setf x (- x value))
-      (= action "L") (set moves (length moves) (Array (get compass (setf arrow (mod (- arrow (do value (normalize 0 90) (floor))) (length compass)))) 0))
-      (= action "R") (set moves (length moves) (Array (get compass (setf arrow (mod (+ arrow (do value (normalize 0 90) (floor))) (length compass)))) 0))
+      (= action "L") (set moves (length moves) (Array (get compass (setf arrow (mod (- arrow (trace value (normalize 0 90) (floor))) (length compass)))) 0))
+      (= action "R") (set moves (length moves) (Array (get compass (setf arrow (mod (+ arrow (trace value (normalize 0 90) (floor))) (length compass)))) 0))
       (= action "F") (set moves (length moves) (Array (get compass arrow) value)))
     (setf cursor (apply (car (cdr cursor))))))
   (defun next (if (length moves) (block (go) (next)) (block (go))))
@@ -71,7 +71,7 @@ F11")
 
 (defun sin rad terms (block
     (defvar sine 0)
-    (loop inc i 
+    (loop defun inc i 
     (block 
       (setf sine 
         (+ sine 
@@ -84,7 +84,7 @@ F11")
    ; cos 
   (defun cos rad terms (block
     (defvar cosine 0)
-    (loop inc i 
+    (loop defun inc i 
     (block 
       (setf cosine 
         (+ cosine 
@@ -95,12 +95,12 @@ F11")
       (if (< i terms) (inc (+ i 1)) cosine)))
     (inc 0)))
 
-  (defvar *stack* (do 
+  (defvar *stack* (trace 
     *input* 
     (split-by "\n") 
     (map (lambda x . . (block 
         (defvar str (type x Array))
-        (Array (car str) (do str (cdr) (join "") (type Number))))))
+        (Array (car str) (trace str (cdr) (join "") (type Number))))))
     (reverse)))
   (defvar 
     moves (type *stack* Array)

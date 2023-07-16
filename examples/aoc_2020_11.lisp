@@ -15,11 +15,11 @@ L.LLLLL.LL")
 (defun count-seats matrix (block
   (reduce matrix (lambda a row . . (+ a (count-of row (lambda x . . (> x 0))))) 0)))
 
-(defun parse-input input (do 
+(defun parse-input input (trace 
   input
   (split-by-lines)
   (map (lambda row . . 
-    (do row 
+    (trace row 
       (type Array) 
       (map (lambda col . . (- (= col "L") 1))))))))
 
@@ -49,7 +49,7 @@ L.LLLLL.LL")
       (block 
         (defvar current (get (get matrix y) x))
         (defvar sum 0)
-        (loop seek-seat Y X i (block 
+        (loop defun seek-seat Y X i (block 
               (defvar dy (+ y (* Y i)))
               (defvar dx (+ x (* X i)))
               (if (and (array-in-bounds-p matrix dy) (array-in-bounds-p (get matrix dy) dx)) 
@@ -68,9 +68,9 @@ L.LLLLL.LL")
               (if (and (>= sum tolerance) (= current 1)) 0 current))))))))
               copy))
 
-(defun format-matrix matrix (do matrix 
+(defun format-matrix matrix (trace matrix 
                                   (map (lambda row . . 
-                                    (do row 
+                                    (trace row 
                                       (map (lambda col . . (if (= col 1) "#" (if (= col 0) "L"  "."))))
                                       (join ""))))
                                   (join "\n")))
@@ -83,7 +83,7 @@ L.LLLLL.LL")
 ; (log "PART 1")
 ; (log (format-matrix *matrix*))
 ; (log "\n----------")
-; (do *matrix* 
+; (trace *matrix* 
 ;   (solve-1 4) 
 ;   (print-matrix) 
 ;   (solve-1 4)
@@ -97,7 +97,7 @@ L.LLLLL.LL")
 ; (log "\n----------")
 
   
-  ; (do 
+  ; (trace 
   ; *matrix* 
   ; (solve-1 4) 
   ; (solve-1 4)
@@ -111,7 +111,7 @@ L.LLLLL.LL")
 ; (log "PART 2")
 ; (log (format-matrix *matrix*))
 ; (log "\n----------")
-; (do *matrix* 
+; (trace *matrix* 
 ;   (solve-2 5) 
 ;   (print-matrix) 
 ;   (solve-2 5) 
@@ -127,11 +127,11 @@ L.LLLLL.LL")
 ;   )
 ; (log "\n----------")
 
-  (loop rotate matrix prev n (block 
+  (loop defun rotate matrix prev n (block 
     (defvar next-matrix (if n (solve-2 matrix 5) (solve-1 matrix 4)))
     (defvar next (count-seats next-matrix))
     (unless (= prev next) 
       (rotate next-matrix next n)
       next)))
 
-(Array (do *matrix* (rotate -1 0)) (do *matrix* (rotate -1 1)))
+(Array (trace *matrix* (rotate -1 0)) (trace *matrix* (rotate -1 1)))

@@ -26,7 +26,7 @@ A Lisp for Node
 ; Define reusable modules
 (defun binary-search
         array target (block
-  (loop search
+  (loop defun search
         arr target start end (block
     (if (<= start end) (block
         (defvar index (floor (* (+ start end) 0.5)))
@@ -44,7 +44,7 @@ A Lisp for Node
 (defvar sum (lambda a x i o (+ a x)))
 ; Pipe the first to a series of composed functions
 ; (arg (arg .. ) (arg .. ) (ar . . . . ))
-(do
+(trace
   (Array 1 2 3 4 5 6 7 101)
   (remove is-odd)
   (map mult_2)
@@ -54,7 +54,7 @@ A Lisp for Node
 ```lisp
 (import std "range" "push" "factorial" "product-array" "reduce")
 (defun factorial n
-  (do
+  (trace
     (range 1 n)
     (product-array)))
 (factorial 10)
@@ -127,7 +127,7 @@ Compiles to JavaScript
 
 ```lisp
 (import std "remove" "map" "reduce")
-(do
+(trace
   (Array 1 2 3 4 5 6 7 101)
   (remove (lambda x . . (= (mod x 2) 1)))
   (map (lambda x . . (* x 2)))
@@ -153,7 +153,7 @@ reduce(
 
 ```lisp
 ; Tail Call Optimization
-(loop sum-below number sum (block
+(loop defun sum-below number sum (block
 (if (= number 0) sum (sum-below (- number 1) (+ sum number)))))
 (log (sum-below 10000 0))
 ```

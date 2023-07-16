@@ -28,7 +28,7 @@
 
 (defvar *input* sample)
 ; (defvar *input* (open "./playground/src/aoc_2020/9/input.txt"))
-(defvar *numbers* (do 
+(defvar *numbers* (trace 
   *input* 
   (split-by "\n") 
   (array-of-numbers)))
@@ -38,19 +38,19 @@
       (if (= t 0) 1 
         (some values (lambda x . . (can-sum-some (- t x) values))))))
   
-  (defun find-preamble inp n (do inp 
+  (defun find-preamble inp n (trace inp 
     (find (lambda current i all 
       (if (>= i n) 
        (not (can-sum-some current (slice all (- i n) i))))))))
 
 (defvar *preamble* (find-preamble *numbers* (if (> (length *numbers*) 25) 25 5)))
-(defun window inp n (do inp 
+(defun window inp n (trace inp 
   (reduce (lambda acc current i all 
     (if (>= i n) 
       (push acc (slice all (- i n) i)) acc)) ())))
 
 (defvar *weakness* ())
-(do (range 2 (- (length *numbers*) 1))
+(trace (range 2 (- (length *numbers*) 1))
     (some (lambda n . .
     (some (window *numbers* n) (lambda x . . (block 
     (and (= (sum-array x) *preamble*) (setf *weakness* x))))))))

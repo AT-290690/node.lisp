@@ -12,9 +12,9 @@ hgt:76in")
 ; (defvar *input* (open "./playground/src/aoc_2020/4/input.txt"))
 
 ; 190
-(defun validate_fields fields (do fields (map (lambda x . . 
-                        (do x (map (lambda y . . 
-                          (do y (regex-match "byr|iyr|eyr|hgt|hcl|ecl|pid")))) 
+(defun validate_fields fields (trace fields (map (lambda x . . 
+                        (trace x (map (lambda y . . 
+                          (trace y (regex-match "byr|iyr|eyr|hgt|hcl|ecl|pid")))) 
                                 (deep-flat))))
                   (remove (lambda x . . (= (length x) 7)))))
 
@@ -28,22 +28,22 @@ hgt:76in")
 ; ecl (Eye Color) - exactly one of: amb blu brn gry grn hzl oth.
 ; pid (Passport ID) - a nine-digit number, including leading zeroes.
 ; cid (Country ID) - ignored, missing or not.
-(defun to_entries array (map array (lambda x . . (do x (map (lambda y . . (do y (split-by " ")))) (deep-flat) (map (lambda x . . (split-by x ":")))))))
-(defun without_invalid_fields fields (do fields 
-                                            (map (lambda x . .  (do x 
+(defun to_entries array (map array (lambda x . . (trace x (map (lambda y . . (trace y (split-by " ")))) (deep-flat) (map (lambda x . . (split-by x ":")))))))
+(defun without_invalid_fields fields (trace fields 
+                                            (map (lambda x . .  (trace x 
                                              (remove (lambda y . . (and (not (= (car y) "cid")) (regex-match (car y) "byr|iyr|eyr|hgt|hcl|ecl|pid")))))))))
 
 
 (Array 
-(do *input* (split-by-n-lines 2)
+(trace *input* (split-by-n-lines 2)
                 (validate_fields)
                   (length))
-(do *input* 
+(trace *input* 
      (split-by-n-lines 2)
      (to_entries)
      (without_invalid_fields)
      (remove (lambda x . . (= (length x) 7)))
-     (map (lambda x . . (do x     
+     (map (lambda x . . (trace x     
       (map (lambda y . . (block
         (defvar key (car y))
         (defvar value (car (cdr y)))

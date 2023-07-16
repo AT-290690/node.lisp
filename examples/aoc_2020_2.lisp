@@ -10,7 +10,7 @@
 (defvar *occ* (regex-match *input* "([0-9]{1,2}-[0-9]{1,2})"))
 (defvar *policy* (regex-match *input* "[a-z](?=:)"))
 (defvar *inputs* (regex-match *input* "(?<=:[ ])(.*)"))
-(defun occ_to_numbers x . . (do x (split-by "-") (map (lambda y . . (type y Number)))))
+(defun occ_to_numbers x . . (trace x (split-by "-") (map (lambda y . . (type y Number)))))
 
 (defun *solve1* string letter (block
   (defvar 
@@ -19,7 +19,7 @@
     zero (char "a" 0)
     count 0
     has-at-least-one 0)
-  (loop iterate i bounds (block
+  (loop defun iterate i bounds (block
       (defvar 
         ch (get array i)
         code (- (char ch 0) zero)
@@ -41,9 +41,9 @@
   (and (not (and left right)) (or left right))))
 
 (Array 
-(do *occ*
+(trace *occ*
    (map occ_to_numbers)
-   (map (lambda x i . (do x 
+   (map (lambda x i . (trace x 
             (push (get *policy* i)) 
             (push (get *inputs* i))
             (push (*solve1* (get x 3) (get x 2)))
@@ -53,9 +53,9 @@
   (reduce (lambda a x i o (+ a (get x -1))) 0)
   ; (map (lambda x i o (log x)))
 )
-(do *occ*
+(trace *occ*
    (map occ_to_numbers)
-   (map (lambda x i . (do x 
+   (map (lambda x i . (trace x 
             (push (get *policy* i)) 
             (push (get *inputs* i)))))
    (map (lambda x . . 

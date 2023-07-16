@@ -14,7 +14,7 @@ describe('Compilation', () => {
     (Array bol (boole bol 1) (boole bol 0) (boole bol 1) (boole bol 0))`,
       `(defun some array callback (block
       (defvar bol 1)
-      (loop iterate i bounds (block
+      (loop defun iterate i bounds (block
         (defvar res (callback (get array i) i array))
         (boole bol (type res Boolean))
         (if (and (not res) (< i bounds)) (iterate (+ i 1) bounds) bol)))
@@ -37,7 +37,7 @@ describe('Compilation', () => {
     (equal (Array 1 2 (Array 1 2)) (Array 1 2 (Array 1 2)))))`,
       `(cdr (Array 1 2 3 4))`,
       `(car (Array 1 2 3 4))`,
-      `(defvar x -1) (do x (-))`,
+      `(defvar x -1) (trace x (-))`,
       `(defvar x -1) (- x)`,
       `(- 1)`,
       `(Array 10 length)`,
@@ -55,7 +55,7 @@ describe('Compilation', () => {
     (length array)`,
       `(defun push array value (set array (length array) value))
     (defun concat array1 array2 (block
-    (loop iterate i bounds (block
+    (loop defun iterate i bounds (block
     (if (< i (length array2)) (push array1 (get array2 i)))
     (if (< i bounds) 
       (iterate (+ i 1) bounds)
@@ -68,14 +68,14 @@ describe('Compilation', () => {
         (defvar pivot (get arr 0))
         (defvar left-arr ())
         (defvar right-arr ())
-    (loop iterate i bounds (block
+    (loop defun iterate i bounds (block
         (defvar current (get arr i))
         (if (< current pivot) 
             (push left-arr current)
             (push right-arr current))
         (if (< i bounds) (iterate (+ i 1) bounds))))
         (iterate 1 (- (length arr) 1))
-    (do 
+    (trace 
       left-arr (sort) 
       (push pivot) 
       (concat (sort right-arr)))
@@ -85,17 +85,17 @@ describe('Compilation', () => {
     (defvar len (length array))
     (defvar reversed (Array len length))
     (defvar offset (- len 1))
-    (loop iterate i bounds (block
+    (loop defun iterate i bounds (block
       (set reversed (- offset i) (get array i))
       (if (< i bounds) (iterate (+ i 1) bounds) reversed)))
     (iterate 0 offset)))
-    (do
+    (trace 
       (Array 1 0 8 -2 3)
       (sort)
       (reverse))`,
 
       `(defvar find (lambda array callback (block
-    (loop interate i bounds (block
+    (loop defun interate i bounds (block
       (defvar current (get array i))
       (if (and (not (callback current i)) (< i bounds))
         (interate (+ i 1) bounds) 
@@ -104,7 +104,7 @@ describe('Compilation', () => {
   (find (Array 1 2 3 4 5 6) (lambda x i (= i 2)))`,
       `(defvar push (lambda array value (set array (length array) value)))
   (defvar for-each (lambda array callback (block 
-    (loop interate i bounds (block
+    (loop defun interate i bounds (block
       (callback (get array i) i)
       (if (< i bounds) (interate (+ i 1) bounds) array)))
     (interate 0 (- (length array) 1)))))
@@ -123,7 +123,7 @@ describe('Compilation', () => {
   (Array 1 2))
 )
 (deep-flat arr)`,
-      `(loop interate i (if (< i 100) 
+      `(loop defun interate i (if (< i 100) 
   (interate (+ i 1)) i))
 (interate 0)
 `,
@@ -136,7 +136,7 @@ describe('Compilation', () => {
       array1
       ))))
     (interate 0 (- (length array2) 1)))))
-    (do
+    (trace 
       (Array 1 2 3)
       (push -1)
       (concat (type "abc" Array))
@@ -144,7 +144,7 @@ describe('Compilation', () => {
       (concat (Array 5 6 7))
     )`,
 
-      `(do 1 
+      `(trace 1 
       (+ 2) 
         (* 3 4)
          (- 3 2))`,
@@ -231,7 +231,7 @@ describe('Compilation', () => {
 (defvar mult_2 (lambda x i (* x 2)))
 (defvar sum (lambda a x i (+ a x)))
 
-(do 
+(trace 
 (Array 1 2 3 4 5 6 7 101) 
 (remove is-odd)
 (map mult_2)
@@ -240,7 +240,7 @@ describe('Compilation', () => {
 
       `(defvar range (lambda start end (block
         (defvar array ())
-        (loop interate i bounds (block
+        (loop defun interate i bounds (block
           (set array i (+ i start))
           (if (< i bounds) (interate (+ i 1) bounds) array)))
         (interate 0 (- end start)))))
@@ -249,7 +249,7 @@ describe('Compilation', () => {
         (defvar map (lambda array callback (block 
         (defvar new-array ())
         (defvar i 0)
-        (loop interate i bounds (block
+        (loop defun interate i bounds (block
           (set new-array i (callback (get array i) i))
           (if (< i bounds) (interate (+ i 1) bounds) new-array)))
         (interate 0 (- (length array) 1)))))
@@ -257,7 +257,7 @@ describe('Compilation', () => {
         
         (defvar remove (lambda array callback (block 
         (defvar new-array ())
-        (loop interate i bounds (block
+        (loop defun interate i bounds (block
           (defvar current (get array i))
           (if (callback current i) 
             (set new-array (length new-array) current))
@@ -265,7 +265,7 @@ describe('Compilation', () => {
         (interate 0 (- (length array) 1)))))
         
         (defvar reduce (lambda array callback initial (block
-          (loop interate i bounds (block
+          (loop defun interate i bounds (block
             (setf initial (callback initial (get array i) i))
             (if (< i bounds) (interate (+ i 1) bounds) initial)))
         (interate 0 (- (length array) 1)))))
@@ -275,7 +275,7 @@ describe('Compilation', () => {
   (defvar mult_2 (lambda x i (* x 2)))
   (defvar sum (lambda a x i (+ a x)))
   
-  (do 
+  (trace 
     (Array 1 2 3 4 5 6 7 101) 
     (remove is-odd)
     (map mult_2)

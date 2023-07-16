@@ -837,16 +837,16 @@ const tokens = {
     const operands = args.map((a) => evaluate(a, env))
     return operands.reduce((acc, x) => acc >>> x)
   },
-  ['do']: (args, env) => {
+  ['trace']: (args, env) => {
     if (args.length < 1)
       throw new RangeError(
-        'Invalid number of arguments to (do) (>= 1 required).'
+        'Invalid number of arguments to (trace) (>= 1 required).'
       )
     let inp = args[0]
     for (let i = 1; i < args.length; ++i) {
       if (!Array.isArray(args[i]))
         throw new TypeError(
-          `Argument at position (${i}) of (do) is not a (function). (do ${stringifyArgs(
+          `Argument at position (${i}) of (trace) is not a (function). (trace ${stringifyArgs(
             args
           )})`
         )
@@ -870,18 +870,15 @@ const tokens = {
       )
     throw new Error(string)
   },
+  ['loop']: (args, env) => {
+    if (!args.length)
+      throw new RangeError(
+        'Invalid number of arguments to (loop) (>= 2 required).'
+      )
+    // TODO: Add validation for TCO recursion
+    return tokens['defun'](args.slice(1), env)
+  },
   ['module']: () => 'WAT module',
 }
-tokens['let*'] = tokens['setf']
-tokens['let'] = tokens['defvar']
-tokens['first'] = tokens['car']
-tokens['rest'] = tokens['cdr']
-tokens['∞'] =
-  tokens['loop'] =
-  tokens['ƒ'] =
-  tokens['function'] =
-    tokens['defun']
-tokens['∘'] = tokens['|>'] = tokens['do']
-tokens['λ'] = tokens['lambda']
 tokens['void'] = tokens['block']
 export { tokens }

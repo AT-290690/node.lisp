@@ -48,13 +48,13 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
 
 (defvar *target* (Array "shiny" "gold"))
 (defun *read-input* input
-    (do 
+    (trace 
       input 
       (split-by "\n") 
-      (map (lambda x . . (do x (regex-match "^(.*(?= bags contain))|(?<=(contain )).*(?=(,|.))") 
+      (map (lambda x . . (trace x (regex-match "^(.*(?= bags contain))|(?<=(contain )).*(?=(,|.))") 
       (map 
         (lambda y . . 
-          (do y 
+          (trace y 
             (split ", ")))))))
       (remove 
         (lambda bag . . 
@@ -71,12 +71,12 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
               right (car (cdr bag))
               head (split left " ")
               tail 
-                (do right  
+                (trace right  
                   (map 
                     (lambda x . . 
                       (block 
                         (defvar current (split x " "))
-                        (do current 
+                        (trace current 
                           (set 0 (type (car current) Number)) 
                           (set -1)))))))
             (Array head tail))))))
@@ -112,12 +112,12 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
     (+ output (if next (* (car current) (*solve2* (car (cdr next)) all-bags)) (car current))))) 1))
 
 (Array
-  (do (*read-input* sample1) (*solve1* *target*))
-  (do (*read-input* sample2) (*solve1* *target*))
-  (do (*read-input* sample1) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample1)) (- 1))
-  (do (*read-input* sample2) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample2)) (- 1))
-  (do (*read-input* sample3) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample3)) (- 1))
-  (do (*read-input* sample4) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample4)) (- 1))
-  (do (*read-input* sample5) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample5)) (- 1))
-  (do (*read-input* sample6) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample6)) (- 1))
-  (do (*read-input* sample7) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample7)) (- 1)))
+  (trace (*read-input* sample1) (*solve1* *target*))
+  (trace (*read-input* sample2) (*solve1* *target*))
+  (trace (*read-input* sample1) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample1)) (- 1))
+  (trace (*read-input* sample2) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample2)) (- 1))
+  (trace (*read-input* sample3) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample3)) (- 1))
+  (trace (*read-input* sample4) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample4)) (- 1))
+  (trace (*read-input* sample5) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample5)) (- 1))
+  (trace (*read-input* sample6) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample6)) (- 1))
+  (trace (*read-input* sample7) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample7)) (- 1)))

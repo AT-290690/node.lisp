@@ -13,13 +13,13 @@ acc +6")
 (defvar *input* sample)
 ; (defvar *input* (open "./playground/src/aoc_2020/8/input.txt"))
 
-(defvar *stack* (do *input* 
+(defvar *stack* (trace *input* 
   (split-by "\n")
   (map (lambda x . . (block 
-    (defvar cmd (do x (split-by " ")))
+    (defvar cmd (trace x (split-by " ")))
     (set cmd 1 (type (get cmd 1) Number)))))))
 
-(loop *solve1* instructions offset accumulator (block 
+(loop defun *solve1* instructions offset accumulator (block 
    
    (defvar 
       instruction (get instructions offset)
@@ -33,7 +33,7 @@ acc +6")
         (if (= cmd "acc") (+ accumulator value) accumulator))
        accumulator)))
 
-(loop *solve2* instructions offset accumulator (unless (= offset (length instructions)) (block 
+(loop defun *solve2* instructions offset accumulator (unless (= offset (length instructions)) (block 
    
    (defvar 
       instruction (get instructions offset)
@@ -46,7 +46,7 @@ acc +6")
        (+ offset (if (= cmd "jmp") value 1)) 
        (if (= cmd "acc") (+ accumulator value) accumulator)) 
         (block
-          (do 
+          (trace 
             instructions
             (remove (lambda x i . (and (= (length x) 3) (or (= (car x) "nop") (= (car x) "jmp")))))
             (map (lambda x . . (block 
@@ -56,11 +56,11 @@ acc +6")
                 options (get x -1))
               (Array cmd value options)))))))) accumulator))
 (Array 
-  (do 
+  (trace 
     *stack*
     (*solve1* 0 0))
 
-  (do 
+  (trace 
     *stack*
     (*solve2* 0 0)
     (reduce 
