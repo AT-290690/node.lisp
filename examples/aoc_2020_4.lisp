@@ -1,6 +1,6 @@
 (import std  "remove" "for-each" "push" "map" "regex-match" "split-by-n-lines" "deep-flat" "split-by" "join" "every" "reduce" "sum-array")
 
-(let sample "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
+(defvar sample "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
 byr:1937 iyr:2017 cid:147 hgt:183cm
 
 hcl:#7d3b0c iyr:2013
@@ -8,8 +8,8 @@ eyr:2026
 ecl:oth pid:920076943 byr:1929
 hgt:76in")
 
-(let *input* sample)
-; (let *input* (open "./playground/src/aoc_2020/4/input.txt"))
+(defvar *input* sample)
+; (defvar *input* (open "./playground/src/aoc_2020/4/input.txt"))
 
 ; 190
 (defun validate_fields fields (do fields (map (lambda x _ _ 
@@ -45,23 +45,23 @@ hgt:76in")
      (remove (lambda x _ _ (= (length x) 7)))
      (map (lambda x _ _ (do x     
       (map (lambda y _ _ (block
-        (let key (car y))
-        (let value (car (cdr y)))
-        (let arr (type value Array))
+        (defvar key (car y))
+        (defvar value (car (cdr y)))
+        (defvar arr (type value Array))
        (Array key value
         (cond 
           (= key "byr") (and (= (length arr) 4) (>= (type value Number) 1920) (<= (type value Number) 2002)) 
           (= key "iyr") (and (= (length arr) 4) (>= (type value Number) 2010) (<= (type value Number) 2020))
           (= key "eyr") (and (= (length arr) 4) (>= (type value Number) 2020) (<= (type value Number) 2030))
           (= key "hgt") (and (>= (length arr) 3) (block 
-                  (let units (concatenate (get arr -2) (get arr -1)))
-                  (let num (type (join (set arr -2) "") Number))
+                  (defvar units (concatenate (get arr -2) (get arr -1)))
+                  (defvar num (type (join (set arr -2) "") Number))
                     ; If cm, the number must be at least 150 and at most 193.
                     (if (= units "cm") (and (>= num 150) (<= num 193))
                       ; If in, the number must be at least 59 and at most 76.
                       (if (= units "in") (and (>= num 59) (<= num 76))))))
           (= key "hcl") (block 
-                  (let color (regex-match value "#.+[0-9a-f]"))
+                  (defvar color (regex-match value "#.+[0-9a-f]"))
                     (and (length color) (= (length (. (car color))) 7)))
           (= key "ecl") (and (= (length arr) 3) (length (regex-match value "amb|blu|brn|gry|grn|hzl|oth")))
           (= key "pid") 

@@ -174,7 +174,7 @@ const cli = async () => {
           ;(value
             ? mods.flat(1).filter(([, x]) => x.value.includes(value))
             : mods.flat(1)
-          ).forEach(([_, name, ...rest]) => {
+          ).forEach(([, name, ...rest]) => {
             console.log(
               `(\x1b[35mƒ\x1b[33m ${name.value}\x1b[36m ${rest
                 .map((x) => x.value)

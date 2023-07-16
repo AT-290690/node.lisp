@@ -7,7 +7,7 @@
 A Lisp for Node
 
 ```lisp
-(let hello "Hello World")
+(defvar hello "Hello World")
 (log (concatenate hello "!!!"))
 ```
 
@@ -29,8 +29,8 @@ A Lisp for Node
   (loop search
         arr target start end (block
     (if (<= start end) (block
-        (let index (floor (* (+ start end) 0.5)))
-        (let current (get arr index))
+        (defvar index (floor (* (+ start end) 0.5)))
+        (defvar current (get arr index))
         (if (= target current) target
           (if (> current target)
             (search arr target start (- index 1))
@@ -39,9 +39,9 @@ A Lisp for Node
 ```
 
 ```lisp
-(let is-odd (lambda x i o (= (mod x 2) 1)))
-(let mult_2 (lambda x i o (* x 2)))
-(let sum (lambda a x i o (+ a x)))
+(defvar is-odd (lambda x i o (= (mod x 2) 1)))
+(defvar mult_2 (lambda x i o (* x 2)))
+(defvar sum (lambda a x i o (+ a x)))
 ; Pipe the first to a series of composed functions
 ; (arg (arg .. ) (arg .. ) (ar . . . . ))
 (do

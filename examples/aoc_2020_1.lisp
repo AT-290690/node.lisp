@@ -1,18 +1,18 @@
 (import std "quick-sort" "binary-search" "floor" "push" "map" "join" "reduce" "product-array" "concat" "array-of-numbers" "split-by-lines")
 
-(let sample "1721
+(defvar sample "1721
 979
 366
 299
 675
 1456")
 
-(let *input* sample)
-; (let *input* (open "./playground/src/aoc_2020/1/input.txt"))
+(defvar *input* sample)
+; (defvar *input* (open "./playground/src/aoc_2020/1/input.txt"))
 
 (defun *solve1* array cb 
      (reduce array (lambda a x _ array (block
-        (let res (binary-search array (cb x)))
+        (defvar res (binary-search array (cb x)))
         (if res (push a res) a))) 
      ()))
 
@@ -20,8 +20,8 @@
     (reduce array
       (lambda accumulator y i array (block
           (loop iterate j bounds (block 
-              (let x (get array j))
-              (let res (binary-search array (cb x y)))
+              (defvar x (get array j))
+              (defvar res (binary-search array (cb x y)))
               (if res (push accumulator res))
             (if (< j bounds) (iterate (+ j 1) bounds)
         accumulator)))

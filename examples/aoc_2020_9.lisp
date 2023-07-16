@@ -5,7 +5,7 @@
 ; Example: A larger sequence is given with a preamble of length 5.
 ; After the preamble, almost every number is the sum of two of the previous 5 *numbers* except for one number.
 ; The task is to find the first number in the list (after the preamble) that does not follow this rule.
-(let sample "35
+(defvar sample "35
 20
 15
 25
@@ -26,9 +26,9 @@
 309
 576")
 
-(let *input* sample)
-; (let *input* (open "./playground/src/aoc_2020/9/input.txt"))
-(let *numbers* (do 
+(defvar *input* sample)
+; (defvar *input* (open "./playground/src/aoc_2020/9/input.txt"))
+(defvar *numbers* (do 
   *input* 
   (split-by "\n") 
   (array-of-numbers)))
@@ -43,17 +43,17 @@
       (if (>= i n) 
        (not (can-sum-some current (slice all (- i n) i))))))))
 
-(let *preamble* (find-preamble *numbers* (if (> (length *numbers*) 25) 25 5)))
+(defvar *preamble* (find-preamble *numbers* (if (> (length *numbers*) 25) 25 5)))
 (defun window inp n (do inp 
   (reduce (lambda acc current i all 
     (if (>= i n) 
       (push acc (slice all (- i n) i)) acc)) ())))
 
-(let *weakness* ())
+(defvar *weakness* ())
 (do (range 2 (- (length *numbers*) 1))
     (some (lambda n _ _
     (some (window *numbers* n) (lambda x _ _ (block 
-    (and (= (sum-array x) *preamble*) (let* *weakness* x))))))))
+    (and (= (sum-array x) *preamble*) (setf *weakness* x))))))))
 
 (Array 
   ; 21806024

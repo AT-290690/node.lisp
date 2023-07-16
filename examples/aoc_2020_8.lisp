@@ -1,6 +1,6 @@
 (import std "split-by" "map" "find" "remove" "push" "reduce")
 
-(let sample "nop +0
+(defvar sample "nop +0
 acc +1
 jmp +4
 acc +3
@@ -10,18 +10,18 @@ acc +1
 jmp -4
 acc +6")
 
-(let *input* sample)
-; (let *input* (open "./playground/src/aoc_2020/8/input.txt"))
+(defvar *input* sample)
+; (defvar *input* (open "./playground/src/aoc_2020/8/input.txt"))
 
-(let *stack* (do *input* 
+(defvar *stack* (do *input* 
   (split-by "\n")
   (map (lambda x _ _ (block 
-    (let cmd (do x (split-by " ")))
+    (defvar cmd (do x (split-by " ")))
     (set cmd 1 (type (get cmd 1) Number)))))))
 
 (loop *solve1* instructions offset accumulator (block 
    
-   (let 
+   (defvar 
       instruction (get instructions offset)
       cmd (car instruction)
       value (car (cdr instruction)))
@@ -35,7 +35,7 @@ acc +6")
 
 (loop *solve2* instructions offset accumulator (unless (= offset (length instructions)) (block 
    
-   (let 
+   (defvar 
       instruction (get instructions offset)
       cmd (car instruction)
       value (car (cdr instruction)))
@@ -50,7 +50,7 @@ acc +6")
             instructions
             (remove (lambda x i _ (and (= (length x) 3) (or (= (car x) "nop") (= (car x) "jmp")))))
             (map (lambda x _ _ (block 
-              (let 
+              (defvar 
                 cmd (if (= (car x) "jmp") "nop" "jmp")
                 value (car (cdr x))
                 options (get x -1))
@@ -66,7 +66,7 @@ acc +6")
     (reduce 
       (lambda acc x _ _ 
         (block 
-          (let 
+          (defvar 
             cmd (car x)
             value (car (cdr x))
             options (get x -1)

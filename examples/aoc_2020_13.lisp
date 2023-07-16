@@ -8,12 +8,12 @@
   (block
     (defun parse inp 
       (block 
-        (let 
+        (defvar 
           INP (do inp (split "\n"))
           time (type (car INP) Number)
           buses (do (car (cdr INP)) (split ",") (map (lambda x _ _ (if (= x "x") 0 (type x Number)))) (remove (lambda x _ _ (> x 0)))))
       (Array time buses)))
-    (let 
+    (defvar 
       *INP* (parse inp)
       *time* (car *INP*)
       *buses* (car (cdr *INP*)))
@@ -29,17 +29,17 @@
 
 (defun chinese-remainder-theorem buses 
   (block 
-    (let result (car (car buses)))
+    (defvar result (car (car buses)))
       (reduce 
         (cdr buses) 
         (lambda step bus _ _ (block 
-        (let id (car bus)
+        (defvar id (car bus)
             index (car (cdr bus)))
         (loop crt time
           (unless (= (mod (+ time index) id) 0) 
             (crt (+ time step)) 
             time))
-        (setq result (crt result))
+        (setf result (crt result))
         (* step id))) 
         result)
       result))
@@ -48,12 +48,12 @@
   (block
     (defun parse inp 
       (block 
-        (let 
+        (defvar 
           INP (do inp (split "\n"))
           time (type (car INP) Number)
           buses (do (car (cdr INP)) (split ",") (reduce (lambda acc x i _ (unless (= x "x") (set acc (length acc) (Array (type x Number) i)) acc)) ())))
         (Array time buses)))
-      (let inp (car (cdr (parse input))))
+      (defvar inp (car (cdr (parse input))))
       (unless (is-array-of-coprime-pairs (map inp (lambda x _ _ (car x)))) 
         (error "Chinese remainder theorem only works if all numbers are pairwise coprime")
         (chinese-remainder-theorem inp))))

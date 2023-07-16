@@ -157,7 +157,7 @@ const compile = (tree, Locals) => {
         out += `),${name});`
         return out
       }
-      case 'setq':
+      case 'setf':
       case 'let*':
       case 'boole': {
         const res = compile(Arguments[1], Locals)

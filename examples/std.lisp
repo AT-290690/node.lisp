@@ -21,10 +21,10 @@
   (defun radians deg (* deg 3.141592653589793 (/ 180)))
   ; sin
   (defun sin rad terms (block
-    (let sine 0)
+    (defvar sine 0)
     (loop inc i 
     (block 
-      (let* sine 
+      (setf sine 
         (+ sine 
           (* 
             (/ (factorial (+ (* 2 i) 1))) 
@@ -34,10 +34,10 @@
     (inc 0)))
    ; cos 
   (defun cos rad terms (block
-    (let cosine 0)
+    (defvar cosine 0)
     (loop inc i 
     (block 
-      (let* cosine 
+      (setf cosine 
         (+ cosine 
           (* 
             (/ (factorial (* 2 i))) 
@@ -51,7 +51,7 @@
   (defun average x y (* (+ x y) 0.5))
  ; sqrt
   (defun sqrt x (block 
-    (let is-good-enough (lambda g x (< (abs (- (square g) x)) 0.01))
+    (defvar is-good-enough (lambda g x (< (abs (- (square g) x)) 0.01))
          improve-guess (lambda g x (average g (* x (/ g)))))
     (loop sqrt-iter g x 
         (if (is-good-enough g x) 
@@ -70,9 +70,9 @@
     (if (< t 0) 0 
       (if (= t 0) () 
         (block 
-          (let res 0)
+          (defvar res 0)
           (some values (lambda x _ _ (block 
-            (let* res (how-can-sum (- t x) values))
+            (setf res (how-can-sum (- t x) values))
             (if (and (Arrayp res) (= -1 (array-index-of res x))) (push res x))))) 
           res))))
   ; push
@@ -93,7 +93,7 @@
   (defun euclidean-mod a b (mod (+ (mod a b) b) b))
   ; euclidean-div
   (defun euclidean-div a b (block 
-                      (let q (* a (/ b)))
+                      (defvar q (* a (/ b)))
                       (if (< (mod a b) 0) (if (> b 0) (- q 1) (+ q 1)) q)))
 ; power
 (defun power base exp 
@@ -108,7 +108,7 @@
  (defun neighborhood array directions y x callback
     (reduce directions (lambda sum dir _ _ 
         (block
-          (let dy (+ (car dir) y)
+          (defvar dy (+ (car dir) y)
                dx (+ (car (cdr dir)) x))
            (+ sum (if (and (array-in-bounds-p array dy) (array-in-bounds-p (get array dy) dx)) (callback (get (get array dy) dx) dir))))) 0))
   ; greatest-common-divisor
@@ -124,13 +124,13 @@
     (block 
       (loop iter i end 
         (block 
-          (let it-is (not (= (mod n i) 0)))
+          (defvar it-is (not (= (mod n i) 0)))
           (if (and (<= i end) it-is) (iter (+ i 1) end) it-is)))
     (or (= n 2) (iter 2 (sqrt n)))))
   ; euclid-inverse-mod
   (defun euclid-inverse-mod a m 
     (block 
-        (let 
+        (defvar 
             m0 m 
             x0 0 
             x1 1)
@@ -138,20 +138,20 @@
             ; Apply extended Euclid Algorithm
             (loop euclid a (if (> a 1) (block
             ; q is quotient
-            (let 
+            (defvar 
                 q (floor (* a (/ m))) 
                 t m)
             ; m is remainder now, process
             ; same as euclid's algo
-            (let* m (mod a m))
-            (let* a t)
-            (let* t x0)
-            (let* x0 (- x1 (* q x0)))
-            (let* x1 t)
+            (setf m (mod a m))
+            (setf a t)
+            (setf t x0)
+            (setf x0 (- x1 (* q x0)))
+            (setf x1 t)
             (euclid a))))
             (euclid a)
             ; Make x1 positive
-            (if (< x1 0) (let* x1 (+ x1 m0)))
+            (if (< x1 0) (setf x1 (+ x1 m0)))
             x1))))
   ; join
   (defun join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
@@ -185,21 +185,21 @@
   (iterate 0 (- (length array2) 1))))
   ; range
   (defun range start end (block
-    (let array ())
+    (defvar array ())
     (loop iterate i bounds (block
       (push array (+ i start))
       (if (< i bounds) (iterate (+ i 1) bounds) array)))
     (iterate 0 (- end start))))
  ; sequance
   (defun sequance end start step (block
-    (let array ())
+    (defvar array ())
     (loop iterate i bounds (block
       (push array (+ i start))
       (if (< i bounds) (iterate (+ i step) bounds) array)))
     (iterate 0 (- end start))))
   ; map
   (defun map array callback (block 
-    (let new-array () i 0)
+    (defvar new-array () i 0)
     (loop iterate i bounds (block
       (set new-array i (callback (get array i) i array))
       (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
@@ -213,21 +213,21 @@
   ; for-n
   (defun for-n N callback (block
     (loop iterate i (block 
-        (let res (callback i))
+        (defvar res (callback i))
         (if (< i N) (iterate (+ i 1)) res))) 
         (iterate 0)))
   ; for-range
   (defun for-range start end callback (block
     (loop iterate i (block 
-        (let res (callback i))
+        (defvar res (callback i))
         (if (< i end) (iterate (+ i 1)) res))) 
         (iterate start)))
   ; count-of
   (defun count-of array callback (block
-    (let amount 0)
+    (defvar amount 0)
     (loop iterate i bounds (block
-      (let current (get array i))
-      (if (callback current i array) (let* amount (+ amount 1)))
+      (defvar current (get array i))
+      (if (callback current i array) (setf amount (+ amount 1)))
       (if (< i bounds) (iterate (+ i 1) bounds) amount)))
     (iterate 0 (- (length array) 1))))
   ; partition 
@@ -236,40 +236,40 @@
         ()))
   ; filter
   (defun remove array callback (block
-    (let new-array ())
+    (defvar new-array ())
     (loop iterate i bounds (block
-      (let current (get array i))
+      (defvar current (get array i))
       (if (callback current i array) 
         (push new-array current))
       (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
     (iterate 0 (- (length array) 1))))
 ; every
 (defun every array callback (block
-    (let bol 1)
+    (defvar bol 1)
     (loop iterate i bounds (block
-      (let res (callback (get array i) i array))
+      (defvar res (callback (get array i) i array))
       (boole bol (type res Boolean))
       (if (and res (< i bounds)) (iterate (+ i 1) bounds) bol)))
     (iterate 0 (- (length array) 1))))
 ; some
 (defun some array callback (block
-    (let bol 1)
+    (defvar bol 1)
     (loop iterate i bounds (block
-      (let res (callback (get array i) i array))
+      (defvar res (callback (get array i) i array))
       (boole bol (type res Boolean))
       (if (and (not res) (< i bounds)) (iterate (+ i 1) bounds) bol)))
     (iterate 0 (- (length array) 1))))
   ; reduce
   (defun reduce array callback initial (block
     (loop iterate i bounds (block
-      (let* initial (callback initial (get array i) i array))
+      (setf initial (callback initial (get array i) i array))
       (if (< i bounds) (iterate (+ i 1) bounds) initial)))
     (iterate 0 (- (length array) 1))))
       ; reduce
 (defun accumulate array callback (block
-  (let initial (get array 0))
+  (defvar initial (get array 0))
   (loop iterate i bounds (block
-    (let* initial (callback initial (get array i) i array))
+    (setf initial (callback initial (get array i) i array))
     (if (< i bounds) (iterate (+ i 1) bounds) initial)))
   (iterate 0 (- (length array) 1))))
   ; sum-array
@@ -278,8 +278,8 @@
   (defun product-array array (reduce array (lambda a b _ _ (* a b)) 1))
   ; deep-flat
   (defun deep-flat arr (block 
-    (let new-array ()) 
-    (let flatten (lambda item 
+    (defvar new-array ()) 
+    (defvar flatten (lambda item 
       (if (and (Arrayp item) (length item)) 
             (for-each item (lambda x _ _ (flatten x))) 
             (unless (Arrayp item) (push new-array item)))))
@@ -288,7 +288,7 @@
   ; find
 (defun find array callback (block
         (loop iterate i bounds (block
-          (let 
+          (defvar 
             current (get array i) 
             has (callback current i array))
           (if (and (not has) (< i bounds))
@@ -297,24 +297,24 @@
             (iterate 0 (- (length array) 1))))
   ; find-index
   (defun find-index array callback (block
-    (let idx -1 has-found 0)
+    (defvar idx -1 has-found 0)
     (loop iterate i bounds (block
-      (let current (get array i))
+      (defvar current (get array i))
       (boole has-found (callback current i array))
       (if (and (not has-found) (< i bounds))
         (iterate (+ i 1) bounds) 
-        (let* idx i))))
+        (setf idx i))))
         (iterate 0 (- (length array) 1))
         (if has-found idx -1)))
 ; index-of
   (defun index-of array target (block
-    (let idx -1 has-found 0)
+    (defvar idx -1 has-found 0)
     (loop iterate i bounds (block
-      (let current (get array i))
+      (defvar current (get array i))
       (boole has-found (= target current))
       (if (and (not has-found) (< i bounds))
         (iterate (+ i 1) bounds) 
-        (let* idx i))))
+        (setf idx i))))
         (iterate 0 (- (length array) 1))
         (if has-found idx -1)))
    ; array-index-of
@@ -322,25 +322,25 @@
     (block
       (if (= (length array) 0) -1 
         (block 
-          (let idx -1 has-found 0)
+          (defvar idx -1 has-found 0)
           (loop iterate i bounds (block
-            (let current (get array i))
+            (defvar current (get array i))
             (boole has-found (= target current))
             (if (and (not has-found) (< i bounds))
               (iterate (+ i 1) bounds) 
-              (let* idx i))))
+              (setf idx i))))
               (iterate 0 (- (length array) 1))
               (if has-found idx -1)))))
   ; quick-sort
   (defun quick-sort arr (block
     (if (<= (length arr) 1) arr
     (block
-      (let 
+      (defvar 
         pivot (get arr 0) 
         left-arr () 
         right-arr ())
   (loop iterate i bounds (block
-      (let current (get arr i))
+      (defvar current (get arr i))
       (if (< current pivot) 
           (push left-arr current)
           (push right-arr current))
@@ -352,7 +352,7 @@
     (concat (quick-sort right-arr)))))))
   ; reverse 
   (defun reverse array (block
-    (let 
+    (defvar 
       len (length array)
       reversed (Array len length)
       offset (- len 1))
@@ -366,7 +366,7 @@
     (loop search 
           arr target start end (block
       (if (<= start end) (block 
-          (let 
+          (defvar 
             index (floor (* (+ start end) 0.5))
              current (get arr index))
           (if (= target current) target
@@ -379,15 +379,15 @@
   (defun hash-index 
     table key 
       (block
-        (let 
+        (defvar 
           total 0
           prime-num 31
           key-arr (. (type key String)))
         (loop find-hash-index i bounds (block 
-          (let 
+          (defvar 
             letter (get key-arr i) 
             value (- (char letter 0) 96))
-          (let* total (euclidean-mod (+ (* total prime-num) value) (length table)))
+          (setf total (euclidean-mod (+ (* total prime-num) value) (length table)))
           (if (< i bounds) (find-hash-index (+ i 1) bounds) total)))
         (find-hash-index 0 (min (- (length key-arr) 1) 100))))
 
@@ -404,9 +404,9 @@
   (defun hash-table-set 
     table key value 
       (block
-        (let idx (hash-index table key))
+        (defvar idx (hash-index table key))
         (unless (array-in-bounds-p table idx) (set table idx ()))
-        (let 
+        (defvar 
           current (get table idx)
           len (length current)
           index (if len (find-index current (lambda x i o (= (get x 0) key))) -1)
@@ -418,15 +418,15 @@
         table))
   ; hash table_has 
   (defun hash-table-has table key 
-    (and (array-in-bounds-p table (let idx (hash-index table key))) (and (length (let current (get table idx))) (>= (index-of (car current) key) 0))))
+    (and (array-in-bounds-p table (defvar idx (hash-index table key))) (and (length (defvar current (get table idx))) (>= (index-of (car current) key) 0))))
   ; hash-table-get
   (defun hash-table-get
     table key 
       (block
-        (let idx (hash-index table key))
+        (defvar idx (hash-index table key))
         (if (array-in-bounds-p table idx) 
           (block
-            (let current (get table idx))
+            (defvar current (get table idx))
             (do current
               (find (lambda x _ _ (= key 
                       (do x (get 0)))))
@@ -439,11 +439,11 @@
   (defun hash-table-make 
     items 
       (block
-        (let 
+        (defvar 
           len (- (length items) 1)
           table (hash-table (* len len)))
         (loop add i (block
-          (let item (get items i))
+          (defvar item (get items i))
           (hash-table-set table (get item 0) (get item 1))
         (if (< i len) (add (+ i 1)) table)))
         (add 0)))
@@ -451,9 +451,9 @@
   (defun hash-set-set 
     table key 
       (block
-        (let idx (hash-index table key))
+        (defvar idx (hash-index table key))
         (unless (array-in-bounds-p table idx) (set table idx ()))
-        (let 
+        (defvar 
           current (get table idx)
           len (length current)
           index (if len (find-index current (lambda x i o (= x key))) -1)
@@ -465,15 +465,15 @@
         table))
   ; hash table_has 
   (defun hash-set-has table key 
-    (and (array-in-bounds-p table (let idx (hash-index table key))) (and (length (let current (get table idx))) (>= (index-of current key) 0))))
+    (and (array-in-bounds-p table (defvar idx (hash-index table key))) (and (length (defvar current (get table idx))) (>= (index-of current key) 0))))
   ; hash-set-get
   (defun hash-set-get
     table key 
       (block
-        (let idx (hash-index table key))
+        (defvar idx (hash-index table key))
         (if (array-in-bounds-p table idx) 
           (block
-            (let current (get table idx))
+            (defvar current (get table idx))
             (do current
               (find (lambda x _ _ (= key x))))))))
   ; hash-set
@@ -484,11 +484,11 @@
   (defun hash-set-make 
     items 
       (block
-        (let 
+        (defvar 
           len (- (length items) 1)
           table (hash-set (* len len)))
         (loop add i (block
-          (let item (get items i))
+          (defvar item (get items i))
           (hash-set-set table item)
         (if (< i len) (add (+ i 1)) table)))
         (add 0)))
@@ -532,21 +532,21 @@
   
   ; occurances_count
   (defun character-occurances-in-string string letter (block
-    (let 
+    (defvar 
       array (. string)
       bitmask 0
       zero (char "a" 0)
       count 0
       has-at-least-one 0)
     (loop iterate i bounds  (block
-        (let 
+        (defvar 
           ch (get array i)
           code (- (char ch 0) zero)
           mask (<< 1 code))
         (if (and (if (= ch letter) (boole has-at-least-one 1))
             (not (= (& bitmask mask) 0))) 
-            (let* count (+ count 1))
-            (let* bitmask (| bitmask mask)))
+            (setf count (+ count 1))
+            (setf bitmask (| bitmask mask)))
         (if (< i bounds) (iterate (+ i 1) bounds) 
         (+ count has-at-least-one))))
         (iterate 0 (- (length array) 1))))
@@ -554,7 +554,7 @@
 (defun split-by-n-lines string n (do string (regex-replace (concatenate "(\n){" n "}") "௮") (regex-match "[^௮]+") (map (lambda x _ _ (regex-match x "[^\n]+")))))
 ; split
 (defun split string separator (block 
-    (let 
+    (defvar 
       cursor ""
       sepArr (. separator)
       array (. string)
@@ -562,17 +562,17 @@
     (loop iterate result i bounds
       (if (< (if (every sepArr (lambda y j _ (= (get array (+ i j)) y)))
             (block 
-              (let* i (+ i skip -1))
+              (setf i (+ i skip -1))
               (push result cursor)
-              (let* cursor "")
+              (setf cursor "")
               i)
-            (block (let* cursor (concatenate cursor (get array i))) i)) bounds) 
+            (block (setf cursor (concatenate cursor (get array i))) i)) bounds) 
                 (iterate result (+ i 1) bounds) result))
     (push (iterate () 0 (- (length array) 1)) cursor)))
 
   ; slice 
   (defun slice array start end (block 
-    (let bounds (- end start) out (Array bounds length))
+    (defvar bounds (- end start) out (Array bounds length))
     (loop iterate i 
       (if (< i bounds) 
           (block 
@@ -594,9 +594,9 @@
           (not (some a (lambda _ i _ (not (equal (get a i) (get b i)))))))))
   ; adjacent-difference
   (defun adjacent-difference array callback (block 
-    (let len (length array))
+    (defvar len (length array))
     (unless (= len 1) 
-    (block (let result (Array (car array)))
+    (block (defvar result (Array (car array)))
     (loop iterate i (if (< i len) (block 
     (set result i (callback (get array (- i 1)) (get array i)))
     (iterate (+ i 1))) result))

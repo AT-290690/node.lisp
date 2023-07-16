@@ -3,19 +3,19 @@ import { runFromCompiled, runFromInterpreted } from '../src/utils.js'
 describe('Compilation', () => {
   it('Should match interpretation', () =>
     [
-      `(let x 8)
+      `(defvar x 8)
 (or (cond 
 (= x 10) "Ten"
 (= x 9) "Nine"
 (= x 8) "Eight") "NaN")`,
-      `(let T (lambda x (lambda y (lambda (* 5 x y)))))
+      `(defvar T (lambda x (lambda y (lambda (* 5 x y)))))
   (apply (apply (apply T 10) 3))`,
-      ` (let bol (Boolean))
+      ` (defvar bol (Boolean))
     (Array bol (boole bol 1) (boole bol 0) (boole bol 1) (boole bol 0))`,
       `(defun some array callback (block
-      (let bol 1)
+      (defvar bol 1)
       (loop iterate i bounds (block
-        (let res (callback (get array i) i array))
+        (defvar res (callback (get array i) i array))
         (boole bol (type res Boolean))
         (if (and (not res) (< i bounds)) (iterate (+ i 1) bounds) bol)))
       (iterate 0 (- (length array) 1))))
@@ -24,8 +24,8 @@ describe('Compilation', () => {
      (and (Arrayp a) 
           (= (length a) (length b)) 
             (not (some a (lambda _ i _ (not (equal (get a i) (get b i)))))))))
-    (let patten (Array "hello" 10))
-    (let patten2 (Array "hello" 11))
+    (defvar patten (Array "hello" 10))
+    (defvar patten2 (Array "hello" 11))
   (Array (equal patten (Array "hello" 10)) (equal patten (Array "hello" patten2)) 
   (Array 
     (equal 1 1) 
@@ -37,8 +37,8 @@ describe('Compilation', () => {
     (equal (Array 1 2 (Array 1 2)) (Array 1 2 (Array 1 2)))))`,
       `(cdr (Array 1 2 3 4))`,
       `(car (Array 1 2 3 4))`,
-      `(let x -1) (do x (-))`,
-      `(let x -1) (- x)`,
+      `(defvar x -1) (do x (-))`,
+      `(defvar x -1) (- x)`,
       `(- 1)`,
       `(Array 10 length)`,
       `(Array 10)`,
@@ -49,26 +49,26 @@ describe('Compilation', () => {
   (defun euclidean-mod a b (mod (+ (mod a b) b) b))
   (defun find array callback (block
     (loop iterate i bounds (block
-      (let current (get array i))
+      (defvar current (get array i))
       (if (and (not (callback current i array)) (< i bounds))
         (iterate (+ i 1) bounds) 
         current)))
         (iterate 0 (- (length array) 1))))
   (defun find-index array callback (block
-    (let idx -1)
-    (let has-found 0)
+    (defvar idx -1)
+    (defvar has-found 0)
     (loop iterate i bounds (block
-      (let current (get array i))
-      (let* has-found (callback current i array))
+      (defvar current (get array i))
+      (setf has-found (callback current i array))
       (if (and (not has-found) (< i bounds))
         (iterate (+ i 1) bounds) 
-        (let* idx i))))
+        (setf idx i))))
         (iterate 0 (- (length array) 1))
         (if has-found idx -1)))
   (defun array-in-bounds-p array index (and (< index (length array)) (>= index 0)))
   (defun map array callback (block 
-    (let new-array ())
-    (let i 0)
+    (defvar new-array ())
+    (defvar i 0)
     (loop iterate i bounds (block
       (set new-array i (callback (get array i) i array))
       (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
@@ -77,39 +77,39 @@ describe('Compilation', () => {
       (defun hash-index 
         table key 
           (block
-            (let total 0)
-            (let prime-num 31)
-            (let key-arr (. (type key String)))
+            (defvar total 0)
+            (defvar prime-num 31)
+            (defvar key-arr (. (type key String)))
             (loop find-hash-index i bounds (block 
-              (let letter (get key-arr i))
-              (let value (- (char letter 0) 96))
-              (let* total (euclidean-mod (+ (* total prime-num) value) (length table)))
+              (defvar letter (get key-arr i))
+              (defvar value (- (char letter 0) 96))
+              (setf total (euclidean-mod (+ (* total prime-num) value) (length table)))
               (if (< i bounds) (find-hash-index (+ i 1) bounds) total)))
             (find-hash-index 0 (min (- (length key-arr) 1) 100))))
         ; hash-table-set
       (defun hash-table-set 
         table key value 
           (block
-            (let idx (hash-index table key))
+            (defvar idx (hash-index table key))
             (unless (array-in-bounds-p table idx) (set table idx ()))
-            (let current (get table idx))
-            (let len (length current))
-            (let index (if len (find-index current (lambda x i o (= (get x 0) key))) -1))
-            (let entry (Array key value))
+            (defvar current (get table idx))
+            (defvar len (length current))
+            (defvar index (if len (find-index current (lambda x i o (= (get x 0) key))) -1))
+            (defvar entry (Array key value))
             (if (= index -1)
               (push current entry)
               (set current index entry)
             )
             table))
       (defun hash-table-has table key 
-        (and (array-in-bounds-p table (let idx (hash-index table key))) (length (get table idx))))
+        (and (array-in-bounds-p table (defvar idx (hash-index table key))) (length (get table idx))))
       (defun hash-table-get
         table key 
           (block
-            (let idx (hash-index table key))
+            (defvar idx (hash-index table key))
             (if (array-in-bounds-p table idx) 
               (block
-                (let current (get table idx))
+                (defvar current (get table idx))
                 (do current
                   (find (lambda x i o (= key 
                           (do x (get 0)))))
@@ -120,15 +120,15 @@ describe('Compilation', () => {
       (defun hash-table-make 
         items 
           (block
-            (let len (- (length items) 1))
-            (let table (hash-table (* len len)))
+            (defvar len (- (length items) 1))
+            (defvar table (hash-table (* len len)))
             (loop add i (block
-              (let item (get items i))
+              (defvar item (get items i))
               (hash-table-set table (get item 0) (get item 1))
             (if (< i len) (add (+ i 1)) table)))
             (add 0)))
       
-      (let tabl  (do
+      (defvar tabl  (do
       (hash-table-make (Array 
         (Array "name" "Anthony") 
         (Array "age" 32) 
@@ -163,9 +163,9 @@ describe('Compilation', () => {
 (binary-tree-get-left)
 (binary-tree-get-left)
 (binary-tree-get-right))`,
-      `(let add_seq (lambda x (+ x 1 2 3)))
+      `(defvar add_seq (lambda x (+ x 1 2 3)))
   (defun mult_10 x (* x 10))
-  (let do_thing (lambda (do 100 
+  (defvar do_thing (lambda (do 100 
                         (add_seq) 
                         (mult_10))))
   (do_thing)`,
@@ -217,8 +217,8 @@ array1)))
 (iterate 0 (- (length array2) 1))))
 
 (defun map array callback (block 
-(let new-array ())
-(let i 0)
+(defvar new-array ())
+(defvar i 0)
 (loop iterate i bounds (block
   (set new-array i (callback (get array i) i))
   (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
@@ -226,18 +226,18 @@ array1)))
 
 (defun reduce array callback initial (block
 (loop iterate i bounds (block
-  (let* initial (callback initial (get array i) i array))
+  (setf initial (callback initial (get array i) i array))
   (if (< i bounds) (iterate (+ i 1) bounds) initial)))
 (iterate 0 (- (length array) 1))))
 
 (defun quick-sort arr (block
 (if (<= (length arr) 1) arr
 (block
-  (let pivot (get arr 0))
-  (let left-arr ())
-  (let right-arr ())
+  (defvar pivot (get arr 0))
+  (defvar left-arr ())
+  (defvar right-arr ())
 (loop iterate i bounds (block
-  (let current (get arr i))
+  (defvar current (get arr i))
   (if (< current pivot) 
       (push left-arr current)
       (push right-arr current))
@@ -253,26 +253,26 @@ left-arr (quick-sort)
 (loop search 
       arr target start end (block
   (if (<= start end) (block 
-      (let index (floor (* (+ start end) 0.5)))
-      (let current (get arr index))
+      (defvar index (floor (* (+ start end) 0.5)))
+      (defvar current (get arr index))
       (if (= target current) target
         (if (> current target) 
           (search arr target start (- index 1))
           (search arr target (+ index 1) end))))))) 
  (search array target 0 (length array))))
 
-(let sample "1721
+(defvar sample "1721
 979
 366
 299
 675
 1456")
 
-(let input sample)
+(defvar input sample)
 
 (defun solve1 array cb 
    (reduce array (lambda a x i array (block
-      (let res (binary-search array (cb x)))
+      (defvar res (binary-search array (cb x)))
       (if res (push a res) a))) 
    ()))
 
@@ -280,8 +280,8 @@ left-arr (quick-sort)
   (reduce array
     (lambda accumulator y i array (block
         (loop iterate j bounds (block 
-            (let x (get array j))
-            (let res (binary-search array (cb x y)))
+            (defvar x (get array j))
+            (defvar res (binary-search array (cb x y)))
             (if res (push accumulator res))
           (if (< j bounds) (iterate (+ j 1) bounds)
       accumulator)))
@@ -314,50 +314,50 @@ left-arr (quick-sort)
       array1)))
     (iterate 0 (- (length array2) 1))))
     (defun map array callback (block 
-      (let new-array ())
-      (let i 0)
+      (defvar new-array ())
+      (defvar i 0)
       (loop iterate i bounds (block
         (set new-array i (callback (get array i) i array))
         (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
       (iterate 0 (- (length array) 1))))
     (defun reduce array callback initial (block
       (loop iterate i bounds (block
-        (let* initial (callback initial (get array i) i array))
+        (setf initial (callback initial (get array i) i array))
         (if (< i bounds) (iterate (+ i 1) bounds) initial)))
       (iterate 0 (- (length array) 1))))
     
-    (let sample "1-3 a: abcde
+    (defvar sample "1-3 a: abcde
     1-3 b: cdefg
     2-9 c: ccccccccc")
-    (let input sample)
+    (defvar input sample)
     
-    (let occ (regex-match input "([0-9]{1,2}-[0-9]{1,2})"))
-    (let policy (regex-match input "[a-z](?=:)"))
-    (let inputs (regex-match input "(?<=:[ ])(.*)"))
+    (defvar occ (regex-match input "([0-9]{1,2}-[0-9]{1,2})"))
+    (defvar policy (regex-match input "[a-z](?=:)"))
+    (defvar inputs (regex-match input "(?<=:[ ])(.*)"))
     
     (defun solve1 string letter (block
-      (let array (. string))
-      (let bitmask 0)
-      (let zero (char "a" 0))
-      (let count 0)
-      (let has-at-least-one 0)
+      (defvar array (. string))
+      (defvar bitmask 0)
+      (defvar zero (char "a" 0))
+      (defvar count 0)
+      (defvar has-at-least-one 0)
       (loop iterate i bounds  (block
-          (let ch (get array i))
-          (let code (- (char ch 0) zero))
-          (let mask (<< 1 code))
-          (if (and (if (= ch letter) (let* has-at-least-one 1))
+          (defvar ch (get array i))
+          (defvar code (- (char ch 0) zero))
+          (defvar mask (<< 1 code))
+          (if (and (if (= ch letter) (setf has-at-least-one 1))
               (not (= (& bitmask mask) 0))) 
-              (let* count (+ count 1))
-              (let* bitmask (| bitmask mask)))
+              (setf count (+ count 1))
+              (setf bitmask (| bitmask mask)))
           (if (< i bounds) (iterate (+ i 1) bounds) 
           (+ count has-at-least-one))))
           (iterate 0 (- (length array) 1))))
     
     (defun solve2 array letter x y (block 
-    (let a (get array (- x 1)))
-    (let b (get array (- y 1)))
-    (let left (= letter a))
-    (let right (= letter b))
+    (defvar a (get array (- x 1)))
+    (defvar b (get array (- y 1)))
+    (defvar left (= letter a))
+    (defvar right (= letter b))
     (and (not (and left right)) (or left right))
     ))
     
@@ -387,13 +387,13 @@ left-arr (quick-sort)
        (reduce (lambda a x i o (+ a (get x -1))) 0)
     ))`,
 
-      `(let array (Array 5 length))
+      `(defvar array (Array 5 length))
     (set array -1)
     (length array)`,
-      `(let array (Array 5 length))
+      `(defvar array (Array 5 length))
     (set array -4)
     (length array)`,
-      `(let array (Array 5 length))
+      `(defvar array (Array 5 length))
     (set array -5)
     (length array)`,
       `(defun push array value (set array (length array) value))
@@ -408,11 +408,11 @@ left-arr (quick-sort)
     (defun sort arr (block
       (if (<= (length arr) 1) arr
       (block
-        (let pivot (get arr 0))
-        (let left-arr ())
-        (let right-arr ())
+        (defvar pivot (get arr 0))
+        (defvar left-arr ())
+        (defvar right-arr ())
     (loop iterate i bounds (block
-        (let current (get arr i))
+        (defvar current (get arr i))
         (if (< current pivot) 
             (push left-arr current)
             (push right-arr current))
@@ -425,9 +425,9 @@ left-arr (quick-sort)
     ))))
     
     (defun reverse array (block
-    (let len (length array))
-    (let reversed (Array len length))
-    (let offset (- len 1))
+    (defvar len (length array))
+    (defvar reversed (Array len length))
+    (defvar offset (- len 1))
     (loop iterate i bounds (block
       (set reversed (- offset i) (get array i))
       (if (< i bounds) (iterate (+ i 1) bounds) reversed)))
@@ -437,27 +437,27 @@ left-arr (quick-sort)
       (sort)
       (reverse))`,
 
-      `(let find (lambda array callback (block
+      `(defvar find (lambda array callback (block
     (loop interate i bounds (block
-      (let current (get array i))
+      (defvar current (get array i))
       (if (and (not (callback current i)) (< i bounds))
         (interate (+ i 1) bounds) 
         current)))
         (interate 0 (- (length array) 1)))))
   (find (Array 1 2 3 4 5 6) (lambda x i (= i 2)))`,
-      `(let push (lambda array value (set array (length array) value)))
-  (let for-each (lambda array callback (block 
+      `(defvar push (lambda array value (set array (length array) value)))
+  (defvar for-each (lambda array callback (block 
     (loop interate i bounds (block
       (callback (get array i) i)
       (if (< i bounds) (interate (+ i 1) bounds) array)))
     (interate 0 (- (length array) 1)))))
-    (let deep-flat (lambda arr (block 
-      (let new-array ()) 
-      (let flatten (lambda item (if (Arrayp item) (for-each item (lambda x _ (flatten x))) 
+    (defvar deep-flat (lambda arr (block 
+      (defvar new-array ()) 
+      (defvar flatten (lambda item (if (Arrayp item) (for-each item (lambda x _ (flatten x))) 
       (push new-array item))))
       new-array
     )))
-  (let arr (
+  (defvar arr (
   Array 
   (Array 1 2) 
   (Array 1 2) 
@@ -470,9 +470,9 @@ left-arr (quick-sort)
   (interate (+ i 1)) i))
 (interate 0)
 `,
-      `(let push (lambda array value (set array (length array) value)))
-    (let concat (lambda array1 array2 (block
-      (let interate (lambda i bounds (block
+      `(defvar push (lambda array value (set array (length array) value)))
+    (defvar concat (lambda array1 array2 (block
+      (defvar interate (lambda i bounds (block
       (push array1 (get array2 i))
       (if (< i bounds) 
         (interate (+ i 1) bounds)
@@ -492,7 +492,7 @@ left-arr (quick-sort)
       (+ 2) 
         (* 3 4)
          (- 3 2))`,
-      `(let sample 
+      `(defvar sample 
       "1721
       979
       366
@@ -500,80 +500,80 @@ left-arr (quick-sort)
       675
       1456")
       
-      (let push (lambda array value (set array (length array) value)))
+      (defvar push (lambda array value (set array (length array) value)))
       
-      (let max (lambda a b (if (> a b) a b)))
-      (let min (lambda a b (if (< a b) a b)))
+      (defvar max (lambda a b (if (> a b) a b)))
+      (defvar min (lambda a b (if (< a b) a b)))
       
-      (let map (lambda array callback (block 
-      (let new-array ())
-      (let i 0)
-      (let interate (lambda i bounds (block
+      (defvar map (lambda array callback (block 
+      (defvar new-array ())
+      (defvar i 0)
+      (defvar interate (lambda i bounds (block
         (set new-array i (callback (get array i) i))
         (if (< i bounds) (interate (+ i 1) bounds) new-array)
       )))
       (interate 0 (- (length array) 1)))))
       
-      (let reduce (lambda array callback initial (block
-        (let interate (lambda i bounds (block
-          (let* initial (callback initial (get array i) i))
+      (defvar reduce (lambda array callback initial (block
+        (defvar interate (lambda i bounds (block
+          (setf initial (callback initial (get array i) i))
           (if (< i bounds) (interate (+ i 1) bounds) initial))))
       (interate 0 (- (length array) 1)))))
-      (let join (lambda array delim (reduce array (lambda a x i (concatenate a delim x)) "")))
-      (let string_to_array (lambda string delim 
+      (defvar join (lambda array delim (reduce array (lambda a x i (concatenate a delim x)) "")))
+      (defvar string_to_array (lambda string delim 
       (reduce (. string) (lambda a x i (block
           (if (= x delim) 
             (push a ()) 
             (block (push (get a -1) x) a)
           )))(push () ()))))
       
-       (let split-by-lines (lambda string (map (string_to_array string "\n") (lambda x i (join x "")))))
+       (defvar split-by-lines (lambda string (map (string_to_array string "\n") (lambda x i (join x "")))))
        
        (map (map 
         (split-by-lines sample) 
           (lambda x i (type x Number))) 
           (lambda x i (- 2020 x)))
     `,
-      `(let range (lambda start end (block
-      (let array ())
-      (let interate (lambda i bounds (block
+      `(defvar range (lambda start end (block
+      (defvar array ())
+      (defvar interate (lambda i bounds (block
         (set array i (+ i start))
         (if (< i bounds) (interate (+ i 1) bounds) array)
       )))
       (interate 0 (- end start)))))
       
       
-      (let map (lambda array callback (block 
-      (let new-array ())
-      (let i 0)
-      (let interate (lambda i bounds (block
+      (defvar map (lambda array callback (block 
+      (defvar new-array ())
+      (defvar i 0)
+      (defvar interate (lambda i bounds (block
         (set new-array i (callback (get array i) i))
         (if (< i bounds) (interate (+ i 1) bounds) new-array)
       )))
       (interate 0 (- (length array) 1)))))
       
       
-      (let remove (lambda array callback (block
-      (let new-array ())
-      (let interate (lambda i bounds (block
-        (let current (get array i))
+      (defvar remove (lambda array callback (block
+      (defvar new-array ())
+      (defvar interate (lambda i bounds (block
+        (defvar current (get array i))
         (if (callback current i) 
           (set new-array (length new-array) current))
         (if (< i bounds) (interate (+ i 1) bounds) new-array)
       )))
       (interate 0 (- (length array) 1)))))
       
-      (let reduce (lambda array callback initial (block
-        (let interate (lambda i bounds (block
-          (let* initial (callback initial (get array i) i))
+      (defvar reduce (lambda array callback initial (block
+        (defvar interate (lambda i bounds (block
+          (setf initial (callback initial (get array i) i))
           (if (< i bounds) (interate (+ i 1) bounds) initial)
         )))
       (interate 0 (- (length array) 1)))))
       
 
-(let is-odd (lambda x i (= (mod x 2) 1)))
-(let mult_2 (lambda x i (* x 2)))
-(let sum (lambda a x i (+ a x)))
+(defvar is-odd (lambda x i (= (mod x 2) 1)))
+(defvar mult_2 (lambda x i (* x 2)))
+(defvar sum (lambda a x i (+ a x)))
 
 (do 
 (Array 1 2 3 4 5 6 7 101) 
@@ -582,42 +582,42 @@ left-arr (quick-sort)
 (reduce sum 0))
       `,
 
-      `(let range (lambda start end (block
-        (let array ())
+      `(defvar range (lambda start end (block
+        (defvar array ())
         (loop interate i bounds (block
           (set array i (+ i start))
           (if (< i bounds) (interate (+ i 1) bounds) array)))
         (interate 0 (- end start)))))
         
         
-        (let map (lambda array callback (block 
-        (let new-array ())
-        (let i 0)
+        (defvar map (lambda array callback (block 
+        (defvar new-array ())
+        (defvar i 0)
         (loop interate i bounds (block
           (set new-array i (callback (get array i) i))
           (if (< i bounds) (interate (+ i 1) bounds) new-array)))
         (interate 0 (- (length array) 1)))))
         
         
-        (let remove (lambda array callback (block 
-        (let new-array ())
+        (defvar remove (lambda array callback (block 
+        (defvar new-array ())
         (loop interate i bounds (block
-          (let current (get array i))
+          (defvar current (get array i))
           (if (callback current i) 
             (set new-array (length new-array) current))
           (if (< i bounds) (interate (+ i 1) bounds) new-array)))
         (interate 0 (- (length array) 1)))))
         
-        (let reduce (lambda array callback initial (block
+        (defvar reduce (lambda array callback initial (block
           (loop interate i bounds (block
-            (let* initial (callback initial (get array i) i))
+            (setf initial (callback initial (get array i) i))
             (if (< i bounds) (interate (+ i 1) bounds) initial)))
         (interate 0 (- (length array) 1)))))
         
   
-  (let is-odd (lambda x i (= (mod x 2) 1)))
-  (let mult_2 (lambda x i (* x 2)))
-  (let sum (lambda a x i (+ a x)))
+  (defvar is-odd (lambda x i (= (mod x 2) 1)))
+  (defvar mult_2 (lambda x i (* x 2)))
+  (defvar sum (lambda a x i (+ a x)))
   
   (do 
     (Array 1 2 3 4 5 6 7 101) 

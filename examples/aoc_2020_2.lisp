@@ -1,41 +1,39 @@
 (import std "push" "map" "reduce" "split-by")
 
-(let sample "1-3 a: abcde
+(defvar sample "1-3 a: abcde
 1-3 b: cdefg
 2-9 c: ccccccccc")
-; (let sample "3-4 b: jbmb")
-; (let sample "2-3 f: fvwc")
-(let *input* sample)
-; (let *input* (open "./playground/src/aoc_2020/2/input.txt"))
-
-(let *occ* (regex-match *input* "([0-9]{1,2}-[0-9]{1,2})"))
-(let *policy* (regex-match *input* "[a-z](?=:)"))
-(let *inputs* (regex-match *input* "(?<=:[ ])(.*)"))
-
+; (defvar sample "3-4 b: jbmb")
+; (defvar sample "2-3 f: fvwc")
+(defvar *input* sample)
+; (defvar *input* (open "./playground/src/aoc_2020/2/input.txt"))
+(defvar *occ* (regex-match *input* "([0-9]{1,2}-[0-9]{1,2})"))
+(defvar *policy* (regex-match *input* "[a-z](?=:)"))
+(defvar *inputs* (regex-match *input* "(?<=:[ ])(.*)"))
 (defun occ_to_numbers x _ _ (do x (split-by "-") (map (lambda y _ _ (type y Number)))))
 
 (defun *solve1* string letter (block
-  (let 
+  (defvar 
     array (type string Array) 
     bitmask 0
     zero (char "a" 0)
     count 0
     has-at-least-one 0)
-  (loop iterate i bounds  (block
-      (let 
+  (loop iterate i bounds (block
+      (defvar 
         ch (get array i)
         code (- (char ch 0) zero)
         mask (<< 1 code))
       (if (and (if (= ch letter) (boole has-at-least-one 1))
           (not (= (& bitmask mask) 0))) 
-          (let* count (+ count 1))
-          (let* bitmask (| bitmask mask)))
+          (setf count (+ count 1))
+          (setf bitmask (| bitmask mask)))
       (if (< i bounds) (iterate (+ i 1) bounds) 
       (+ count has-at-least-one))))
       (iterate 0 (- (length array) 1))))
 
 (defun *solve2* array letter x y (block 
-  (let 
+  (defvar 
     a (get array (- x 1))
     b (get array (- y 1))
     left (= letter a)

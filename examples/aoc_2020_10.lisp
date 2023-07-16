@@ -1,5 +1,5 @@
 (import std "split-by" "array-of-numbers" "reduce" "max" "quick-sort" "map" "concat" "push" "adjacent-difference" "count-of" "join" "array-in-bounds-p")
-(let sample "16
+(defvar sample "16
 10
 15
 5
@@ -11,7 +11,7 @@
 12
 4")
 
-(let sample2 "28
+(defvar sample2 "28
 33
 18
 42
@@ -43,31 +43,31 @@
 10
 3")
 
-(let *input* sample)
-; (let *input* (open "./playground/src/aoc_2020/10/input.txt"))
+(defvar *input* sample)
+; (defvar *input* (open "./playground/src/aoc_2020/10/input.txt"))
 
 ; part 1
-(let *parsed-input* (do *input* (split-by "\n") (array-of-numbers)))
+(defvar *parsed-input* (do *input* (split-by "\n") (array-of-numbers)))
 
-(let diffs (do *parsed-input* 
+(defvar diffs (do *parsed-input* 
    (quick-sort) 
    (adjacent-difference (lambda a b (- b a)))))
 
 ; part 2
 (defun combinations inp index memo
       (if (array-in-bounds-p memo index) (get memo index) (block 
-        (let result 0)
+        (defvar result 0)
         (loop iterate j (block 
           (if (and (>= j 0) (<= (- (get inp index) (get inp j)) 3)) 
             (block
-              (let* result (+ result (combinations inp j memo)))
+              (setf result (+ result (combinations inp j memo)))
               (iterate (- j 1))))))
           (iterate (- index 1))
           (set memo index result)
           result)))
 
 (defun iterative-solution inp (block
-  (let 
+  (defvar 
     memo (Array 1)
     size (length inp))
   (loop iterate-i i (block
@@ -85,14 +85,14 @@
 
 (defun transform-input input
                           (set 
-                            (let sorted 
+                            (defvar sorted 
                               (do input 
                                 (set (length input) 0) 
                                 (quick-sort))) 
                             (length sorted) 
                             (+ (get sorted -1) 3)))
 
-(let *transformed-input* (do *parsed-input* (transform-input)))
+(defvar *transformed-input* (do *parsed-input* (transform-input)))
 
 (Array
 ; part 1
