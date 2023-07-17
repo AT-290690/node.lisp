@@ -30,7 +30,7 @@ hgt:76in")
 ; cid (Country ID) - ignored, missing or not.
 (defun to_entries array (map array (lambda x . . (go x (map (lambda y . . (go y (split-by " ")))) (deep-flat) (map (lambda x . . (split-by x ":")))))))
 (defun without_invalid_fields fields (go fields 
-                                            (map (lambda x . .  (go x 
+                                            (map (lambda x . . (go x 
                                              (remove (lambda y . . (and (not (= (car y) "cid")) (regex-match (car y) "byr|iyr|eyr|hgt|hcl|ecl|pid")))))))))
 
 

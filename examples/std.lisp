@@ -245,7 +245,7 @@
     (defun partition array n (reduce array (lambda a x i . (do 
           (if (mod i n) (push (get a -1) x) (push a (Array x))) a)) 
           ()))
-    ; filter
+    ; remove
     (defun remove array callback (do
       (defvar new-array ())
       (loop defun iterate i bounds (do
@@ -623,6 +623,7 @@
       (Array "concat" concat)
       (Array "merge" merge)
       (Array "range" range)
+      (Array "sequance" sequance)
       (Array "arithmetic-progression" arithmetic-progression)
       (Array "map" map)
       (Array "for-each" for-each)

@@ -44,8 +44,8 @@ BBFFBBFRLL")
       *prepare-input*
       (quick-sort)))
 
-(defvar *maxSeat* (reduce *sorted* (lambda a b . .  (max a b)) 0))
-(defvar *minSeat* (reduce *sorted* (lambda a b . .  (min a b)) *maxSeat*))
+(defvar *maxSeat* (reduce *sorted* (lambda a b . . (max a b)) 0))
+(defvar *minSeat* (reduce *sorted* (lambda a b . . (min a b)) *maxSeat*))
 
 (defvar *res2* (go 
   *sorted*

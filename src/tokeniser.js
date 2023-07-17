@@ -653,17 +653,17 @@ const tokens = {
       throw new TypeError(
         `First argument of (import) must be an (function) but got (${first.value}).`
       )
-    const methods = rest.map((arg) => evaluate(arg, env))
-    if (methods.some((arg) => typeof arg !== 'string'))
+    const functions = rest.map((arg) => evaluate(arg, env))
+    if (functions.some((arg) => typeof arg !== 'string'))
       throw new TypeError(
         'Following arguments of (import) must all be (String).'
       )
-    const records = methods.reduce((a, b) => (a.add(b), a), new Set())
+    const records = functions.reduce((a, b) => (a.add(b), a), new Set())
     module()
       .filter(([n]) => records.has(n))
       .forEach(([key, fn]) => (env[key] = fn))
 
-    return methods
+    return functions
   },
   ['regex-match']: (args, env) => {
     if (args.length !== 2)

@@ -19,7 +19,7 @@
       *buses* (car (cdr *INP*)))
     (go 
       *buses*
-      (map (lambda x . .  (Array x (- x (mod *time* x)))))
+      (map (lambda x . . (Array x (- x (mod *time* x)))))
       (reduce (lambda a b . . (if (> (car (cdr a)) (car (cdr b))) b a)) (Array 0 100000))
       (product-array))))
 
