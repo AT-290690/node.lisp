@@ -1,4 +1,4 @@
-(import std "split-by" "range" "min" "max" "map" "array-of-numbers" "push" "reduce" "sum-array" "some" "find" "slice")
+(import std "split-by" "minimum" "maximum" "range" "min" "max" "map" "array-of-numbers" "push" "reduce" "sum-array" "some" "find" "slice")
 ; The data is encrypted with the eXchange-Masking Addition System (XMAS).
 ; XMAS transmits a preamble of 25 *numbers* and each subsequent number should be the sum of any two of the 25 immediately previous *numbers*.
 ; The first number that is not the sum of two of the 25 *numbers* before it needs to be found.
@@ -52,11 +52,13 @@
 (defvar *weakness* ())
 (go (range 2 (- (length *numbers*) 1))
     (some (lambda n . .
-    (some (window *numbers* n) (lambda x . . (do 
-    (and (= (sum-array x) *preamble*) (setf *weakness* x))))))))
+      (some (window *numbers* n) (lambda x . . (do 
+        (and (= (sum-array x) *preamble*) (setf *weakness* x))))))))
 
 (Array 
   ; 21806024
   *preamble* 
   ; 2986195
-  (+ (reduce *weakness* (lambda a b . . (max a b)) -1) (reduce *weakness* (lambda a b . . (min a b)) *preamble*)))
+  (+ 
+    (minimum *weakness*)
+    (maximum *weakness*)))

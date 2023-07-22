@@ -27,19 +27,19 @@
         (go inp (every (lambda x . . (is-prime x)))) 
         (go inp (adjacent-difference (lambda a b (greatest-common-divisor a b))) (cdr) (every (lambda x . . (= x 1))))))
 
-(defun chinese-remainder-theorem buses 
+(defun chinese-remainder-theorem items
   (do 
-    (defvar result (car (car buses)))
+    (defvar result (car (car items)))
       (reduce 
-        (cdr buses) 
-        (lambda step bus . . (do 
-        (defvar id (car bus)
-            index (car (cdr bus)))
-        (loop defun crt time
+        (cdr items) 
+        (lambda step item . . (do 
+        (defvar id (car item)
+            index (car (cdr item)))
+        (loop defun rem time
           (unless (= (mod (+ time index) id) 0) 
-            (crt (+ time step)) 
+            (rem (+ time step)) 
             time))
-        (setf result (crt result))
+        (setf result (rem result))
         (* step id))) 
         result)
       result))
@@ -55,11 +55,11 @@
         (Array time buses)))
       (defvar inp (car (cdr (parse input))))
       (unless (is-array-of-coprime-pairs (map inp (lambda x . . (car x)))) 
-        (error "Chinese remainder theorem only works if all numbers are pairwise coprime")
+        (throw "Chinese remainder theorem only works if all numbers are pairwise coprime")
         (chinese-remainder-theorem inp))))
 
 (Array 
  (*solve1* sample)
  (*solve1* input)
  (*solve2* sample)
- (*solve2* input)) 
+ (*solve2* input))

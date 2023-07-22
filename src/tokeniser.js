@@ -28,9 +28,7 @@ const tokens = {
     const [a, b] = args.map((x) => evaluate(x, env))
     if (typeof a !== 'number' || typeof b !== 'number')
       throw new TypeError(
-        `Incorrect number of arguments for (mod) are (numbers) (mod ${stringifyArgs(
-          args
-        )}).`
+        `Not all arguments of (mod) are (numbers) (mod ${stringifyArgs(args)}).`
       )
     if (b === 0)
       throw new TypeError(
@@ -88,6 +86,13 @@ const tokens = {
       )
     return +(typeof evaluate(args[0], env) === 'number')
   },
+  ['Integer']: (args, env) => {
+    if (args.length !== 1)
+      throw new RangeError(
+        'Invalid number of arguments for (Integerp) (1 required)'
+      )
+    return +(typeof evaluate(args[0], env) === 'bigint')
+  },
   ['Stringp']: (args, env) => {
     if (args.length !== 1)
       throw new RangeError(
@@ -122,11 +127,9 @@ const tokens = {
         `Invalid number of arguments for (+), expected > 1 but got ${args.length}.`
       )
     const operands = args.map((x) => evaluate(x, env))
-    if (!operands.every((x) => typeof x === 'number'))
+    if (!operands.every((x) => typeof x === 'number' || typeof x === 'bigint'))
       throw new TypeError(
-        `Incorrect number of arguments for (+) are (numbers) (+ ${stringifyArgs(
-          args
-        )}).`
+        `Not all arguments of (+) are (numbers) (+ ${stringifyArgs(args)}).`
       )
     return operands.reduce((a, b) => a + b)
   },
@@ -136,11 +139,9 @@ const tokens = {
         `Invalid number of arguments for (*), expected > 1 but got ${args.length}.`
       )
     const operands = args.map((x) => evaluate(x, env))
-    if (!operands.every((x) => typeof x === 'number'))
+    if (!operands.every((x) => typeof x === 'number' || typeof x === 'bigint'))
       throw new TypeError(
-        `Incorrect number of arguments for (*) are (numbers) (* ${stringifyArgs(
-          args
-        )}).`
+        `Not all arguments of (*) are (numbers) (* ${stringifyArgs(args)}).`
       )
     return operands.reduce((a, b) => a * b)
   },
@@ -150,11 +151,9 @@ const tokens = {
         `Invalid number of arguments for (-), expected >= 1 but got ${args.length}.`
       )
     const operands = args.map((x) => evaluate(x, env))
-    if (!operands.every((x) => typeof x === 'number'))
+    if (!operands.every((x) => typeof x === 'number' || typeof x === 'bigint'))
       throw new TypeError(
-        `Incorrect number of arguments for (-) are (numbers) (- ${stringifyArgs(
-          args
-        )}).`
+        `Not all arguments of (-) are (numbers) (- ${stringifyArgs(args)}).`
       )
     return args.length === 1 ? -operands[0] : operands.reduce((a, b) => a - b)
   },
@@ -223,7 +222,11 @@ const tokens = {
     if (args[0].type === 'atom') return 1
     else {
       const atom = evaluate(args[0], env)
-      return +(typeof atom === 'number' || typeof atom === 'string')
+      return +(
+        typeof atom === 'number' ||
+        typeof atom === 'bigint' ||
+        typeof atom === 'string'
+      )
     }
   },
   ['car']: (args, env) => {
@@ -761,6 +764,8 @@ const tokens = {
           )}).`
         )
       return num
+    } else if (type.value === 'Integer') {
+      return BigInt(value)
     } else if (type.value === 'String') return value.toString()
     else if (type.value === 'Bit') return parseInt(value, 2)
     else if (type.value === 'Boolean') return +!!value
@@ -856,7 +861,7 @@ const tokens = {
     }
     return evaluate(inp, env)
   },
-  ['error']: (args, env) => {
+  ['throw']: (args, env) => {
     if (!args.length)
       throw new RangeError(
         'Invalid number of arguments to (error) (1 required).'
@@ -864,7 +869,7 @@ const tokens = {
     const string = evaluate(args[0], env)
     if (typeof string !== 'string')
       throw new TypeError(
-        `First argument of (error) must be an (String) (error ${stringifyArgs(
+        `First argument of (error) must be an (String) (throw ${stringifyArgs(
           args
         )}).`
       )

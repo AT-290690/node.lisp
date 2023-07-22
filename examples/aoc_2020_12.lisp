@@ -63,7 +63,7 @@ F11")
 (defun power base exp 
   (if (< exp 0) 
       (if (= base 0) 
-      (error "Attempting to divide by 0 in (power)")
+      (throw "Attempting to divide by 0 in (power)")
       (/ (* base (power base (- (* exp -1) 1))))) 
       (if (= exp 0) 1
         (if (= exp 1) base

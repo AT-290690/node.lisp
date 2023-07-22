@@ -49,7 +49,7 @@ const Helpers = {
     has: true,
   },
   atom: {
-    source: `_isAtom = (value) => typeof value === 'number' || typeof value === 'string'`,
+    source: `_isAtom = (value) => typeof value === 'number' ||  typeof value === 'bigint' || typeof value === 'string'`,
     has: true,
   },
   set: {
@@ -70,15 +70,17 @@ const Helpers = {
   },
   cast: {
     source: `_cast = (type, value) => {
-      switch (type){
-       case 'String':
-         return value.toString()
-       case 'Number':
+    switch (type) {
+      case 'Number':
          return Number(value)
-       case 'Array':
+      case 'Integer':
+         return BigInt(value)
+      case 'String':
+         return value.toString()
+      case 'Array':
          return [...value]
-       case 'Bit':
-        return parseInt(value, 2)
+      case 'Bit':
+         return parseInt(value, 2)
       case 'Boolean':
           return +!!value
        default:
@@ -189,6 +191,10 @@ const compile = (tree, Locals) => {
       case 'Numberp':
         return handleBoolean(
           `(typeof(${compile(Arguments[0], Locals)})==='number');`
+        )
+      case 'Integerp':
+        return handleBoolean(
+          `(typeof(${compile(Arguments[0], Locals)})==='bigint');`
         )
       case 'Arrayp':
         return `(Array.isArray(${compile(Arguments[0], Locals)}));`
@@ -353,7 +359,7 @@ const compile = (tree, Locals) => {
           Locals
         )});`
       }
-      case 'error': {
+      case 'throw': {
         return `_error(${compile(Arguments[0], Locals)})`
       }
       case 'import':

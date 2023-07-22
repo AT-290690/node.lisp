@@ -1,4 +1,4 @@
-(import std "slice-if-index" "reduce" "floor" "round" "map" "push" "min" "max" "split-by" "quick-sort" "concat" "find-index")
+(import std "slice-if-index" "minimum" "reduce" "floor" "round" "map" "push" "min" "max" "split-by" "quick-sort" "concat" "find-index")
 
 ; Start by considering the whole range, rows 0 through 127.
 ; F means to take the lower half, keeping rows 0 through 63.
@@ -44,8 +44,7 @@ BBFFBBFRLL")
       *prepare-input*
       (quick-sort)))
 
-(defvar *maxSeat* (reduce *sorted* (lambda a b . . (max a b)) 0))
-(defvar *minSeat* (reduce *sorted* (lambda a b . . (min a b)) *maxSeat*))
+(defvar *minSeat* (minimum *sorted*))
 
 (defvar *res2* (go 
   *sorted*

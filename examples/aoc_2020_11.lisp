@@ -1,4 +1,4 @@
-(import std "neighborhood" "split-by" "split-by-lines" "for-n" "for-each" "deep-flat" "array-of-numbers" "reduce" "max" "quick-sort" "map" "concat" "push" "adjacent-difference" "count-of" "join" "array-in-bounds-p")
+(import std "neighborhood" "split-by" "split-by-lines" "for-n" "for-each" "array-of-numbers" "reduce" "max" "quick-sort" "map" "concat" "push" "adjacent-difference" "count-of" "join" "array-in-bounds-p")
 (defvar sample 
 "L.LL.LL.LL
 LLLLLLL.LL

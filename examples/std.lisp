@@ -5,6 +5,10 @@
   (defun max a b (if (> a b) a b))
   ; min
   (defun min a b (if (< a b) a b))
+  ; maximum
+  (defun maximum array (reduce array (lambda a b . . (max a b)) -9007199254740991))
+  ; minimum
+  (defun minimum array (reduce array (lambda a b . . (min a b)) 9007199254740991))
   ; normalize 
   (defun normalize value min max (* (- value min) (/ (- max min))))
   ; linear-interpolation
@@ -12,9 +16,9 @@
   ; clamp
   (defun clamp x limit (if (> x limit) limit x))
   ; is-odd
-  (defun is-odd x i (= (mod x 2) 1))
+  (defun is-odd x (= (mod x 2) 1))
   ; is-even
-  (defun is-even x i (= (mod x 2) 0))
+  (defun is-even x (= (mod x 2) 0))
   ; sign 
   (defun sign n (if (< n 0) -1 1))
   ; radians
@@ -105,7 +109,7 @@
   (defun power base exp 
     (if (< exp 0) 
         (if (= base 0) 
-        (error "Attempting to divide by 0 in (power)")
+        (throw "Attempting to divide by 0 in (power)")
         (/ (* base (power base (- (* exp -1) 1))))) 
         (if (= exp 0) 1
           (if (= exp 1) base
@@ -132,6 +136,23 @@
             (defvar it-is (not (= (mod n i) 0)))
             (if (and (<= i end) it-is) (iter (+ i 1) end) it-is)))
       (or (= n 2) (iter 2 (sqrt n)))))
+    ; chinese-remainder-theorem
+    (defun chinese-remainder-theorem items
+      (do 
+        (defvar result (car (car items)))
+          (reduce 
+            (cdr items) 
+            (lambda step item . . (do 
+            (defvar id (car item)
+                index (car (cdr item)))
+            (loop defun rem time
+              (unless (= (mod (+ time index) id) 0) 
+                (rem (+ time step)) 
+                time))
+            (setf result (rem result))
+            (* step id))) 
+            result)
+          result))
     ; euclid-inverse-mod
     (defun euclid-inverse-mod a m (do 
           (defvar 
@@ -603,6 +624,8 @@
     (Array 
       (Array "max" max)
       (Array "min" min) 
+      (Array "maximum" maximum)
+      (Array "minimum" minimum) 
       (Array "is-odd" is-odd) 
       (Array "is-even" is-even) 
       (Array "push" push)
@@ -693,6 +716,7 @@
       (Array "is-prime" is-prime)
       (Array "euclid-inverse-mod" euclid-inverse-mod)
       (Array "cartesian-product" cartesian-product)
+      (Array "chinese-remainder-theorem" chinese-remainder-theorem)
     )
 ))
 ; (/ std lib)
