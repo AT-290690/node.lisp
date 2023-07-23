@@ -1,4 +1,4 @@
-(import std "quick-sort" "binary-search" "floor" "push" "map" "join" "reduce" "product-array" "concat" "array-of-numbers" "split-by-lines")
+(import std "quick-sort" "binary-search" "floor" "push" "map" "reduce" "product-array" "concat" "array-of-numbers" "split-by-lines")
 
 (defvar sample "1721
 979

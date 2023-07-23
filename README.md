@@ -63,32 +63,57 @@ A Lisp for Node
 Simple CLI usage - create main.js
 
 ```js
-import lisp from './node-lisper'
+import lisp from 'node-lisper'
 lisp.cli()
 ```
 
 ```json
+"type": "module",
 "scripts": {
-  "lisp": "node main.js"
+  "lisp": "node index.js"
 }
 ```
 
 interpred
 
+yarn
+
 ```
 yarn lisp -file <filepath> -r
 ```
 
+npm
+
+```
+npm run lisp -- -file <filepath> -r
+```
+
 or compile
+
+yarn
 
 ```
 yarn lisp -s <filepath lisp> -d <filepath js> -c
 ```
 
+npm
+
+```
+npm run lisp -- -s <filepath lisp> -d <filepath js> -c
+```
+
 show help
+
+yarn
 
 ```
 yarn lisp -help
+```
+
+npm
+
+```
+npm run lisp -- -help
 ```
 
 ```
@@ -116,7 +141,7 @@ yarn lisp -help
 Parse, Interpred & Compile
 
 ```js
-import lisp from './node-lisper'
+import lisp from 'node-lisper'
 lisp.parse('(+ 1 2)') // [[{  type: 'apply', value: '+' }, { type: 'atom', value: 1 }, { type: 'atom', value: 2 }]]
 lisp.interpred('(+ 1 2)') // 3
 lisp.compile('(+ 1 2)') // 3 but faster!

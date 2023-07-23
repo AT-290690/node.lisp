@@ -176,7 +176,7 @@ const cli = async () => {
             : mods.flat(1)
           ).forEach(([, name, ...rest]) => {
             console.log(
-              `(\x1b[35mƒ\x1b[33m ${name.value}\x1b[36m ${rest
+              `(\x1b[33m${name.value}\x1b[36m ${rest
                 .map((x) => x.value)
                 .join(' ')
                 .trimRight()}\x1b[0m)`

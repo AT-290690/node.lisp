@@ -881,7 +881,8 @@ const tokens = {
         'Invalid number of arguments to (loop) (>= 2 required).'
       )
     // TODO: Add validation for TCO recursion
-    return tokens['defun'](args.slice(1), env)
+    const [definition, ...functionArgs] = args
+    return tokens[definition.value](functionArgs, env)
   },
   ['module']: () => 'WAT module',
 }

@@ -296,7 +296,10 @@ const compile = (tree, Locals) => {
       case '-':
         return Arguments.length === 1
           ? `(-${compile(Arguments[0], Locals)});`
-          : `(${parseArgs(Arguments, Locals, token)});`
+          : `(${parse(Arguments, Locals)
+              // Add space so it doesn't consider it 2--1 but 2- -1
+              .map((x) => (typeof x === 'number' && x < 0 ? ` ${x}` : x))
+              .join(token)});`
       case '+':
       case '*':
       case '&&':
@@ -318,9 +321,9 @@ const compile = (tree, Locals) => {
       case 'Bit':
         return `(${compile(Arguments[0], Locals)}>>>0).toString(2)`
       case '~':
-        return `~${compile(Arguments[0], Locals)}`
+        return `~(${compile(Arguments[0], Locals)})`
       case 'not':
-        return handleBoolean(`!${compile(Arguments[0], Locals)}`)
+        return `(${handleBoolean(`!${compile(Arguments[0], Locals)}`)})`
       case 'if': {
         return `(${compile(Arguments[0], Locals)}?${compile(
           Arguments[1],
