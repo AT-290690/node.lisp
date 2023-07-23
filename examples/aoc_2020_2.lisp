@@ -40,7 +40,7 @@
     right (= letter b))
   (and (not (and left right)) (or left right))))
 
-(Array 
+(Number 
 (go *occ*
    (map occ_to_numbers)
    (map (lambda x i . (go x 

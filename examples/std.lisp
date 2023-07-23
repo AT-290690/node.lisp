@@ -91,7 +91,9 @@
             (setf res (how-can-sum (- t x) values))
             (if (and (Arrayp res) (= -1 (array-index-of res x))) (push res x))))) 
           res))))
-  ; push
+  ; typep
+  (defun typep array value (setq array (length array) value))
+  ; push  
   (defun push array value (set array (length array) value))
   ; pop
   (defun pop array (set array -1))
@@ -775,6 +777,7 @@
       (Array "levenshtein-distance" levenshtein-distance)
       (Array "binomial-coefficient" binomial-coefficient)
       (Array "window" window)
+      (Array "typep" typep)
    )
 ))
 ; (/ std lib)

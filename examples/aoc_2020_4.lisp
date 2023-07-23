@@ -34,7 +34,7 @@ hgt:76in")
                                              (remove (lambda y . . (and (not (= (car y) "cid")) (regex-match (car y) "byr|iyr|eyr|hgt|hcl|ecl|pid")))))))))
 
 
-(Array 
+(Number 
 (go *input* (split-by-n-lines 2)
                 (validate_fields)
                   (length))

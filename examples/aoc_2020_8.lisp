@@ -56,7 +56,7 @@ acc +6")
               value (car (cdr x))
               options (get x -1))
             (Array cmd value options)))))))) accumulator))
-(Array 
+(Number 
   (go 
     *stack*
     (find-infinite-loop 0 0))

@@ -35,7 +35,7 @@
               (split-by-lines)
               (to_bit_array)))
   ; 7 for sample
-  (Array 
+  (Number 
   (go matrix
     (*solve* 3 1)
     (sum-array)) 

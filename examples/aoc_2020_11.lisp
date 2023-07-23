@@ -134,4 +134,4 @@ L.LLLLL.LL")
       (rotate next-matrix next n)
       next)))
 
-(Array (go *matrix* (rotate -1 0)) (go *matrix* (rotate -1 1)))
+(Number (go *matrix* (rotate -1 0)) (go *matrix* (rotate -1 1)))

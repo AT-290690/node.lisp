@@ -199,11 +199,13 @@ const compile = (tree, Locals) => {
       case 'Arrayp':
         return `(Array.isArray(${compile(Arguments[0], Locals)}));`
       case 'Number':
-        return '0'
+        return Arguments.length ? `[${parseArgs(Arguments, Locals)}];` : '0'
+      case 'Integer':
+        return Arguments.length ? `[${parseArgs(Arguments, Locals)}];` : '0n'
       case 'Boolean':
-        return '1'
+        return Arguments.length ? `[${parseArgs(Arguments, Locals)}];` : '1'
       case 'String':
-        return ''
+        return Arguments.length ? `[${parseArgs(Arguments, Locals)}];` : ''
       case 'Array':
         return Arguments.length === 2 &&
           Arguments[1].type === 'word' &&
@@ -224,6 +226,7 @@ const compile = (tree, Locals) => {
           Locals
         )});`
       case 'set':
+      case 'setq':
         return `_set(${parseArgs(Arguments, Locals)});`
       case 'lambda': {
         const functionArgs = Arguments

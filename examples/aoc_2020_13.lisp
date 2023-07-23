@@ -58,7 +58,7 @@
         (throw "Chinese remainder theorem only works if all numbers are pairwise coprime")
         (chinese-remainder-theorem inp))))
 
-(Array 
+(Number 
  (*solve1* sample)
  (*solve1* input)
  (*solve2* sample)

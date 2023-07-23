@@ -86,7 +86,7 @@ const tokens = {
       )
     return +(typeof evaluate(args[0], env) === 'number')
   },
-  ['Integer']: (args, env) => {
+  ['Integerp']: (args, env) => {
     if (args.length !== 1)
       throw new RangeError(
         'Invalid number of arguments for (Integerp) (1 required)'
@@ -206,7 +206,7 @@ const tokens = {
         )
       if (!Number.isInteger(N))
         throw new TypeError(
-          `Size argument for (Array) has to be an integer (Array ${stringifyArgs(
+          `Size argument for (Array) has to be an (integer) (Array ${stringifyArgs(
             args
           )})`
         )
@@ -283,7 +283,7 @@ const tokens = {
     const index = evaluate(args[1], env)
     if (!Number.isInteger(index))
       throw new TypeError(
-        `Second argument of (get) must be an integer (${index}) (get ${stringifyArgs(
+        `Second argument of (get) must be an (integer) (${index}) (get ${stringifyArgs(
           args
         )}).`
       )
@@ -317,7 +317,7 @@ const tokens = {
     const index = evaluate(args[1], env)
     if (!Number.isInteger(index))
       throw new TypeError(
-        `Second argument of (set) must be an integer (${index}) (set ${stringifyArgs(
+        `Second argument of (set) must be an (integer) (${index}) (set ${stringifyArgs(
           args
         )}).`
       )
@@ -725,25 +725,56 @@ const tokens = {
       )
     return setTimeout(callback, time)
   },
-  ['String']: (args) => {
-    if (args.length)
-      throw new RangeError(
-        `Invalid number of arguments for (String) ${args.length}`
-      )
+  ['String']: (args, env) => {
+    if (args.length) {
+      const params = args.map((x) => evaluate(x, env))
+      if (params.some((x) => typeof x !== 'string'))
+        throw new TypeError(
+          `Not all arguments of (String) are Strings (String ${stringifyArgs(
+            args
+          )})`
+        )
+      return params
+    }
     return ''
   },
-  ['Number']: (args) => {
-    if (args.length)
-      throw new RangeError(
-        `Invalid number of arguments for (Number) ${args.length}`
-      )
+  ['Number']: (args, env) => {
+    if (args.length) {
+      const params = args.map((x) => evaluate(x, env))
+      if (params.some((x) => typeof x !== 'number'))
+        throw new TypeError(
+          `Not all arguments of (Number) are Numbers (Number ${stringifyArgs(
+            args
+          )})`
+        )
+      return params
+    }
     return 0
   },
-  ['Boolean']: (args) => {
-    if (args.length)
-      throw new RangeError(
-        `Invalid number of arguments for (Boolean) ${args.length}`
-      )
+  ['Integer']: (args, env) => {
+    if (args.length) {
+      const params = args.map((x) => evaluate(x, env))
+      if (params.some((x) => typeof x !== 'bigint'))
+        throw new TypeError(
+          `Not all arguments of (Integer) are Integers (Integer ${stringifyArgs(
+            args
+          )})`
+        )
+      return params
+    }
+    return 0n
+  },
+  ['Boolean']: (args, env) => {
+    if (args.length) {
+      const params = args.map((x) => evaluate(x, env))
+      if (params.some((x) => x < 0 || x > 1))
+        throw new TypeError(
+          `Not all arguments of (Boolean) are 0 or 1 (Boolean ${stringifyArgs(
+            args
+          )})`
+        )
+      return params
+    }
     return 1
   },
   ['type']: (args, env) => {
@@ -883,6 +914,17 @@ const tokens = {
     // TODO: Add validation for TCO recursion
     const [definition, ...functionArgs] = args
     return tokens[definition.value](functionArgs, env)
+  },
+  ['setq']: (args, env) => {
+    const a = evaluate(args[0], env)
+    const b = evaluate(args[2], env)
+    if (a.length && typeof a[0] !== typeof b)
+      throw new TypeError(
+        `Argument of (set) is expected to be (${a}) but instead is (${b}) (setq ${stringifyArgs(
+          args
+        )}).`
+      )
+    return tokens['set'](args, env)
   },
   ['module']: () => 'WAT module',
 }

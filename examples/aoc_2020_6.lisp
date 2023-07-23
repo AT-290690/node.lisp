@@ -23,7 +23,7 @@ b")
 (defvar *lines* (go *input* (split-by-n-lines 2)))
 (defvar *unique_chars* (go *lines* (map (lambda x . . (go x (join "") (remove-duplicates))))))
 
-(Array (go *unique_chars* 
+(Number (go *unique_chars* 
   (map (lambda x . . (length x)))
   (sum-array))
 

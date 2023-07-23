@@ -51,4 +51,4 @@ BBFFBBFRLL")
   (find-index (lambda x i . (= (- x *minSeat* i) 1)))
   (+ *minSeat*)))
 
-(Array *res1* *res2*)
+(Number *res1* *res2*)

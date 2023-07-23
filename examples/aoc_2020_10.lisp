@@ -94,7 +94,7 @@
 
 (defvar *transformed-input* (go *parsed-input* (transform-input)))
 
-(Array
+(Number
 ; part 1
   (* 
     (go 
