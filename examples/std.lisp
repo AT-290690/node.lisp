@@ -103,6 +103,35 @@
   (defun is-array-of-atoms array (if (not (length array)) 1 (if (atom (car array)) (is-array-of-atoms (cdr array)) 0)))
   ; abs
   (defun abs n (- (^ n (>> n 31)) (>> n 31)))
+  ; max-bit
+  (defun max-bit a b (- a (& (- a b) (>> (- a b) 31))))
+  ; max-bit
+  (defun min-bit a b (- a (& (- a b) (>> (- b a) 31))))
+  ; clamp-bit
+  (defun clamp-bit x min max (do 
+     (setf x (- x (& (- x max) (>> (- max x) 31))))
+     (- x (& (- x min) (>> (- x min) 31)))))
+  ; is-bit-power-of-two
+  (defun is-bit-power-of-two value 
+    (and 
+      (= (& value (- value 1)) 0) 
+      (not (= value 0))))
+   ; average-bit 
+  (defun average-bit a b (>> (+ a b) 1))
+  ; toggle-bit
+  (defun toggle-bit n a b (^ a b n))
+  ; is-odd-bit
+  (defun is-odd-bit n (= (& n 1) 1))
+  ; is-same-sign-bit 
+  (defun is-same-sign-bit a b (>= (^ a b) 0))
+  ; modulo-bit
+  (defun modulo-bit numerator divisor (& numerator (- divisor 1)))
+  ; set-bit
+  (defun set-bit n bit (| n (<< 1 bit)))
+  ; clear-bit
+  (defun clear-bit n bit (& n (~ (<< 1 bit))))
+  ; power-of-two-bit
+  (defun power-of-two-bit n (<< 2 (- n 1)))
   ; floor
   (defun floor n (| n 0))
   ; round a number
@@ -141,11 +170,11 @@
       ) (do 
         (defvar arr ())
         (loop defun iterate-i i (if (<= i (length s)) (do
-          (set arr i (Array i))
+          (set arr i (Number i))
           (loop defun iterate-j j (if (<= j (length t)) (do 
             (set (get arr i) j 
               (if (= i 0) j 
-                (minimum (Array 
+                (minimum (Number 
                   (+ (get (get arr (- i 1)) j) 1)
                   (+ (get (get arr i) (- j 1)) 1)
                   (+ (get (get arr (- i 1)) (- j 1)) (not (= (get s (- j 1)) (get t (- i 1)))))))))
@@ -263,14 +292,14 @@
       (defun range start end (do
         (defvar array ())
         (loop defun iterate i bounds (do
-          (push array (+ i start))
+          (typep array (+ i start))
           (if (< i bounds) (iterate (+ i 1) bounds) array)))
         (iterate 0 (- end start))))
     ; sequance
       (defun sequance end start step (do
         (defvar array ())
         (loop defun iterate i bounds (do
-          (push array (+ i start))
+          (typep array (+ i start))
           (if (< i bounds) (iterate (+ i step) bounds) array)))
         (iterate 0 (- end start))))
       ; arithmetic-progression
@@ -425,13 +454,13 @@
         (loop defun iterate i bounds (do
           (defvar current (get arr i))
           (if (< current pivot) 
-              (push left-arr current)
-              (push right-arr current))
+              (typep left-arr current)
+              (typep right-arr current))
           (if (< i bounds) (iterate (+ i 1) bounds))))
           (iterate 1 (- (length arr) 1))
       (go 
         left-arr (quick-sort) 
-        (push pivot) 
+        (typep pivot) 
         (concat (quick-sort right-arr)))))))
       ; reverse 
       (defun reverse array (do
@@ -669,9 +698,9 @@
       (defun adjacent-difference array callback (do 
         (defvar len (length array))
         (unless (= len 1) 
-        (do (defvar result (Array (car array)))
+        (do (defvar result (Number (car array)))
         (loop defun iterate i (if (< i len) (do 
-        (set result i (callback (get array (- i 1)) (get array i)))
+        (setq result i (callback (get array (- i 1)) (get array i)))
         (iterate (+ i 1))) result))
         (iterate 1)) array)))
     ; exports
@@ -778,6 +807,18 @@
       (Array "binomial-coefficient" binomial-coefficient)
       (Array "window" window)
       (Array "typep" typep)
+      (Array "max-bit" max-bit)
+      (Array "min-bit" min-bit)
+      (Array "clamp-bit" clamp-bit)
+      (Array "is-bit-power-of-two" is-bit-power-of-two)
+      (Array "average-bit" average-bit)
+      (Array "toggle-bit" toggle-bit)
+      (Array "is-odd-bit" is-odd-bit)
+      (Array "is-same-sign-bit" is-same-sign-bit)
+      (Array "modulo-bit" modulo-bit)
+      (Array "set-bit" set-bit)
+      (Array "clear-bit" clear-bit)
+      (Array "power-of-two-bit" power-of-two-bit)
    )
 ))
 ; (/ std lib)

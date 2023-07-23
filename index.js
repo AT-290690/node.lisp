@@ -227,7 +227,9 @@ const cli = async () => {
                 } else if (Array.isArray(result)) {
                   console.log(
                     outColor,
-                    JSON.stringify(result)
+                    JSON.stringify(result, (_, value) =>
+                      typeof value === 'bigint' ? Number(value) : value
+                    )
                       .replace(new RegExp(/\[/g), '(')
                       .replace(new RegExp(/\]/g), ')')
                       .replace(new RegExp(/\,/g), ' '),
