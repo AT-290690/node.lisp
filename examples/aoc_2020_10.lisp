@@ -63,7 +63,7 @@
               (setf result (+ result (combinations inp j memo)))
               (iterate (- j 1))))))
           (iterate (- index 1))
-          (set memo index result)
+          (setq memo index result)
           result)))
 
 (defun iterative-solution inp (do
@@ -73,10 +73,10 @@
   (loop defun iterate-i i (do
     (if (< i size) 
       (do 
-        (set memo i 0) 
+        (setq memo i 0) 
         (loop defun iterate-j j (if (and (>= j 0) (<= (- (get inp i) (get inp j)) 3)) 
           (do
-            (set memo i (+ (get memo i) (get memo j)))
+            (setq memo i (+ (get memo i) (get memo j)))
             (iterate-j (- j 1)))))
         (iterate-j (- i 1))
         (iterate-i (+ i 1))))))
@@ -87,7 +87,7 @@
                           (set 
                             (defvar sorted 
                               (go input 
-                                (set (length input) 0) 
+                                (setq (length input) 0) 
                                 (quick-sort))) 
                             (length sorted) 
                             (+ (get sorted -1) 3)))
@@ -107,7 +107,7 @@
 ; recursive
  (go  
   *transformed-input*
-  (combinations (- (length *transformed-input*) 1) (Array 1)))
+  (combinations (- (length *transformed-input*) 1) (Number 1)))
  ; iterative 
  (go 
     *transformed-input*

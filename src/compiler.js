@@ -78,7 +78,7 @@ const Helpers = {
       case 'String':
          return value.toString()
       case 'Array':
-         return [...value]
+        return typeof value === 'number' || typeof value === 'bigint' ? [...Number(value).toString()].map(Number) : [...value]
       case 'Bit':
          return parseInt(value, 2)
       case 'Boolean':
@@ -126,7 +126,7 @@ const compile = (tree, Locals) => {
       case 'do': {
         if (Arguments.length > 1) {
           return `(${Arguments.map((x) =>
-            compile(x, Locals).toString().trimStart()
+            (compile(x, Locals) ?? '').toString().trimStart()
           )
             .filter(Boolean)
             .join(',')});`

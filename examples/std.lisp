@@ -91,8 +91,6 @@
             (setf res (how-can-sum (- t x) values))
             (if (and (Arrayp res) (= -1 (array-index-of res x))) (push res x))))) 
           res))))
-  ; typep
-  (defun typep array value (setq array (length array) value))
   ; push  
   (defun push array value (set array (length array) value))
   ; pop
@@ -292,14 +290,14 @@
       (defun range start end (do
         (defvar array ())
         (loop defun iterate i bounds (do
-          (typep array (+ i start))
+          (push array (+ i start))
           (if (< i bounds) (iterate (+ i 1) bounds) array)))
         (iterate 0 (- end start))))
     ; sequance
       (defun sequance end start step (do
         (defvar array ())
         (loop defun iterate i bounds (do
-          (typep array (+ i start))
+          (push array (+ i start))
           (if (< i bounds) (iterate (+ i step) bounds) array)))
         (iterate 0 (- end start))))
       ; arithmetic-progression
@@ -377,7 +375,7 @@
       (setf initial (callback initial (get array i) i array))
       (if (< i bounds) (iterate (+ i 1) bounds) initial)))
     (iterate 0 (- (length array) 1))))
-    ; reduce
+    ; accumulate
     (defun accumulate array callback (do
       (defvar initial (get array 0))
       (loop defun iterate i bounds (do
@@ -454,13 +452,13 @@
         (loop defun iterate i bounds (do
           (defvar current (get arr i))
           (if (< current pivot) 
-              (typep left-arr current)
-              (typep right-arr current))
+              (push left-arr current)
+              (push right-arr current))
           (if (< i bounds) (iterate (+ i 1) bounds))))
           (iterate 1 (- (length arr) 1))
       (go 
         left-arr (quick-sort) 
-        (typep pivot) 
+        (push pivot) 
         (concat (quick-sort right-arr)))))))
       ; reverse 
       (defun reverse array (do
@@ -806,7 +804,6 @@
       (Array "levenshtein-distance" levenshtein-distance)
       (Array "binomial-coefficient" binomial-coefficient)
       (Array "window" window)
-      (Array "typep" typep)
       (Array "max-bit" max-bit)
       (Array "min-bit" min-bit)
       (Array "clamp-bit" clamp-bit)

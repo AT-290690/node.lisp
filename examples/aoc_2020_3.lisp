@@ -42,11 +42,11 @@
   ; 336 for sample
   (go 
   (Array 
-    (Array 1 1) 
-    (Array 3 1) 
-    (Array 5 1) 
-    (Array 7 1) 
-    (Array 1 2)) 
+    (Number 1 1) 
+    (Number 3 1) 
+    (Number 5 1) 
+    (Number 7 1) 
+    (Number 1 2)) 
     (map (lambda x . . (go matrix (*solve* (car x) (car (cdr x))) (sum-array))))
     (product-array)))))
 

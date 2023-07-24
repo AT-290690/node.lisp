@@ -22,8 +22,8 @@ BBFFBBFRLL")
   (go inp 
       (reduce (lambda a b . . (do 
             (defvar half (* (+ (car a) (car (cdr a))) 0.5))
-            (if (= b lower) (set a 1 (floor half))
-            (if (= b upper) (set a 0 (round half)))))) bounds) 
+            (if (= b lower) (setq a 1 (floor half))
+            (if (= b upper) (setq a 0 (round half)))))) bounds) 
       (get (= (get inp -1) upper))))
 
 (defvar *prepare-input* (go 
@@ -32,8 +32,8 @@ BBFFBBFRLL")
     (map (lambda directions . . (do 
       (defvar 
             array (type directions Array)
-            fb (binary_boarding (slice-if-index array (lambda i (< i 7))) (Array 0 127) "F" "B")
-            lr (binary_boarding (slice-if-index array (lambda i (>= i 7))) (Array 0 7) "L" "R"))
+            fb (binary_boarding (slice-if-index array (lambda i (< i 7))) (Number 0 127) "F" "B")
+            lr (binary_boarding (slice-if-index array (lambda i (>= i 7))) (Number 0 7) "L" "R"))
       (+ (* fb 8) lr))))))
 
 (defvar *res1* (go 

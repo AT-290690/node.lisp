@@ -1,4 +1,4 @@
-(import std "quick-sort" "binary-search" "floor" "push" "typep" "map" "reduce" "product-array" "concat" "array-of-numbers" "split-by-lines")
+(import std "quick-sort" "binary-search" "floor" "map" "reduce" "product-array" "concat" "array-of-numbers" "split-by-lines")
 
 (defvar sample "1721
 979
@@ -13,7 +13,7 @@
 (defun *solve1* array cb 
      (reduce array (lambda a x . array (do
         (defvar res (binary-search array (cb x)))
-        (if res (typep a res) a))) 
+        (if res (setq a (length a) res) a))) 
      ()))
 
 (defun *solve2* array cb 
@@ -22,7 +22,7 @@
           (loop defun iterate j bounds (do 
               (defvar x (get array j))
               (defvar res (binary-search array (cb x y)))
-              (if res (typep accumulator res))
+              (if res (setq accumulator (length accumulator) res))
             (if (< j bounds) (iterate (+ j 1) bounds)
         accumulator)))
         (iterate i (- (length array) 1)))) 

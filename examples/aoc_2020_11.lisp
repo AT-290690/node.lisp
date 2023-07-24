@@ -33,7 +33,7 @@ L.LLLLL.LL")
     (for-n width (lambda x (do 
       (defvar current (get (get matrix y) x)
         sum (neighborhood matrix directions y x (lambda neighbor . (and (not (= neighbor -1)) neighbor))))
-      (set (get copy y) x 
+      (setq (get copy y) x 
         (if (and (= sum 0) (= current 0)) 1
           (if (and (>= sum tolerance) (= current 1)) 0 current))))))))
           copy))
@@ -43,7 +43,7 @@ L.LLLLL.LL")
     height (- (length matrix) 1)
     width (- (length (car matrix)) 1)
     copy (map (Array (+ height 1) length) (lambda . . . (Array (+ width 1) length)))
-    directions (Array (Array 0 1) (Array 1 0) (Array -1 0) (Array 0 -1) (Array 1 -1) (Array -1 -1) (Array 1 1) (Array -1 1)))
+    directions (Array (Number 0 1) (Number 1 0) (Number -1 0) (Number 0 -1) (Number 1 -1) (Number -1 -1) (Number 1 1) (Number -1 1)))
   (for-n height (lambda y 
     (for-n width (lambda x 
       (do 
@@ -63,7 +63,7 @@ L.LLLLL.LL")
           ; # = 1
           ; . = -1
           ; (defvar moore (lambda neighbor . (and (not (= neighbor -1)) neighbor)))
-          (set (get copy y) x 
+          (setq (get copy y) x 
             (if (and (= sum 0) (= current 0)) 1
               (if (and (>= sum tolerance) (= current 1)) 0 current))))))))
               copy))

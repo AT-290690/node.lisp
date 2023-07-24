@@ -310,7 +310,7 @@ const tokens = {
     const array = evaluate(args[0], env)
     if (!Array.isArray(array))
       throw new TypeError(
-        `First argument of (set) must be an (Array) (set ${stringifyArgs(
+        `First argument of (set) must be an (Array) but got (${array}) (set ${stringifyArgs(
           args
         )}).`
       )
@@ -604,10 +604,12 @@ const tokens = {
       if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
         if (typeof scope[entityName] !== typeof value)
           throw new TypeError(
-            `Invalid use of (setf), variable must be assigned to the same type (${typeof scope[
-              entityName
-            ]}) but attempted to assign to (${
-              Array.isArray(value) ? 'Array' : typeof value
+            `Invalid use of (setf), variable must be assigned to the same type (${
+              Array.isArray(scope[entityName])
+                ? `array`
+                : `${typeof scope[entityName]}`
+            }) but attempted to assign to (${
+              Array.isArray(value) ? 'array' : typeof value
             }) (setf ${stringifyArgs(args)})`
           )
         scope[entityName] = value
@@ -801,7 +803,9 @@ const tokens = {
     else if (type.value === 'Bit') return parseInt(value, 2)
     else if (type.value === 'Boolean') return +!!value
     else if (type.value === 'Array') {
-      if (typeof value[Symbol.iterator] !== 'function')
+      if (typeof value === 'number' || typeof value === 'bigint')
+        return [...Number(value).toString()].map(Number)
+      else if (typeof value[Symbol.iterator] !== 'function')
         throw new TypeError(
           `Arguments are not iterable for Array at (type) (type ${stringifyArgs(
             args
@@ -920,11 +924,49 @@ const tokens = {
     const b = evaluate(args[2], env)
     if (a.length && typeof a[0] !== typeof b)
       throw new TypeError(
-        `Argument of (set) is expected to be (${a}) but instead is (${b}) (setq ${stringifyArgs(
+        `Argument of (setq) is expected to be (${typeof a[0]} like ${
+          a[0]
+        }) but instead is (${
+          Array.isArray(b) ? `array as (${b.join(' ')})` : `${typeof b} as ${b}`
+        }) (setq ${stringifyArgs(args)}).`
+      )
+    if (args.length !== 2 && args.length !== 3)
+      throw new RangeError(
+        'Invalid number of arguments for (setq) (or 2 3) required'
+      )
+    const array = evaluate(args[0], env)
+    if (!Array.isArray(array))
+      throw new TypeError(
+        `First argument of (setq) must be an (Array) (set ${stringifyArgs(
           args
         )}).`
       )
-    return tokens['set'](args, env)
+    const index = evaluate(args[1], env)
+    if (!Number.isInteger(index))
+      throw new TypeError(
+        `Second argument of (setq) must be an (integer) (${index}) (setq ${stringifyArgs(
+          args
+        )}).`
+      )
+    if (index > array.length)
+      throw new RangeError(
+        `Second argument of (setq) is outside of the (Array) bounds (index ${index} bounds ${
+          array.length
+        }) (set ${stringifyArgs(args)}).`
+      )
+    if (args.length !== 3)
+      throw new RangeError(
+        'Invalid number of arguments for (setq) (if index is >= 0 then 3 required)'
+      )
+    const value = evaluate(args[2], env)
+    if (value == undefined)
+      throw new RangeError(
+        `Trying to set a null value in (Array) at (setq). (setq ${stringifyArgs(
+          args
+        )})`
+      )
+    array[index] = value
+    return array
   },
   ['module']: () => 'WAT module',
 }

@@ -50,7 +50,7 @@
             (push (and 
                     (>= (get x 4) (get x 0)) 
                     (<= (get x 4) (get x 1)))))))
-  (reduce (lambda a x i o (+ a (get x -1))) 0)
+  (reduce (lambda a x . . (+ a (get x -1))) 0)
   ; (map (lambda x i o (log x)))
 )
 (go *occ*

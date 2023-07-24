@@ -30,7 +30,7 @@ acc +6")
 
    (unless (= (length instruction) 3) 
      (find-infinite-loop 
-        (set instructions offset (Array cmd value (Array offset accumulator)))
+        (set instructions offset (Array cmd value (Number offset accumulator)))
         (+ offset (if (= cmd "jmp") value 1)) 
         (if (= cmd "acc") (+ accumulator value) accumulator))
        accumulator)))
@@ -44,7 +44,7 @@ acc +6")
 
    (unless (= (length instruction) 3) 
      (fix-infinite-loop 
-       (set instructions offset (Array cmd value (Array offset accumulator)))
+       (set instructions offset (Array cmd value (Number offset accumulator)))
        (+ offset (if (= cmd "jmp") value 1)) 
        (if (= cmd "acc") (+ accumulator value) accumulator)) (do
         (go 
