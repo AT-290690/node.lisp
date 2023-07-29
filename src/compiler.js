@@ -144,8 +144,8 @@ const compile = (tree, Locals) => {
             : apply
         }(${parseArgs(rest, Locals)})`
       }
-      case 'defvar':
-      case 'let': {
+      case 'defconstant':
+      case 'defvar': {
         let name,
           out = '(('
         for (let i = 0, len = Arguments.length; i < len; ++i) {
@@ -160,7 +160,6 @@ const compile = (tree, Locals) => {
         return out
       }
       case 'setf':
-      case 'let*':
       case 'boole': {
         const res = compile(Arguments[1], Locals)
         const arg = Arguments[0]
@@ -333,10 +332,22 @@ const compile = (tree, Locals) => {
           Locals
         )}:${Arguments.length === 3 ? compile(Arguments[2], Locals) : 0});`
       }
+      case 'when': {
+        return `(${compile(Arguments[0], Locals)}?${compile(
+          Arguments[1],
+          Locals
+        )}:0);`
+      }
       case 'unless': {
         return `(${compile(Arguments[0], Locals)}?${
           Arguments.length === 3 ? compile(Arguments[2], Locals) : 0
         }:${compile(Arguments[1], Locals)});`
+      }
+      case 'otherwise': {
+        return `(${compile(Arguments[0], Locals)}?0:${compile(
+          Arguments[1],
+          Locals
+        )});`
       }
       case 'cond': {
         let out = '('

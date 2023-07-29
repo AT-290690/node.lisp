@@ -39,7 +39,7 @@ const programs = [
         (or (< k 0) (> k n)) 0
         (or (= k 0) (= k n)) 1
         (or (= k 1) (= k (- n 1))) n) (do 
-          (if (< (- n k) k) (setf k (- n k)))
+          (when (< (- n k) k) (setf k (- n k)))
           (loop defun iterate i res (if (<= i k) (iterate (+ i 1) (* res (- n i -1) (/ i))) res))
           (round (iterate 2 n)))))
       (Array (binomial-coefficient 8 2))`,
@@ -48,8 +48,10 @@ const programs = [
   `(import std "max-bit" "min-bit" "clamp-bit") 
     (Number (max-bit 1 2) (min-bit 1 2) (clamp-bit 100 2 50) (clamp-bit 10 0 20))
     `,
-  `(import std "is-bit-power-of-two" "map") 
-  (Array (map (Array 2 4 8 16 32 64 1 3 7 40 49) (lambda x . . (is-bit-power-of-two x))))`,
+  `(import std "is-bit-power-of-two" "map" "count-number-of-ones-bit") 
+  (Array (map (Array 2 4 8 16 32 64 1 3 7 40 49) (lambda x . . (is-bit-power-of-two x))) (count-number-of-ones-bit 23))`,
+  `(import std "possible-subsets-bit")
+  (Array (possible-subsets-bit (Array "a" "b" "c")))`,
 ]
 describe('Standart Library', () => {
   it('Should compile matching interpretation', () =>
@@ -102,7 +104,19 @@ describe('Standart Library', () => {
           ],
         ],
         [2, 1, 50, 10],
-        [[1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0]],
+        [[1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0], 4],
+        [
+          [
+            [],
+            ['a'],
+            ['b'],
+            ['a', 'b'],
+            ['c'],
+            ['a', 'c'],
+            ['b', 'c'],
+            ['a', 'b', 'c'],
+          ],
+        ],
       ]
     ))
 })

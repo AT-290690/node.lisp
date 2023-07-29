@@ -1,6 +1,6 @@
 (import std "split-by" "map" "find" "remove" "push" "reduce")
 
-(defvar sample "nop +0
+(defconstant sample "nop +0
 acc +1
 jmp +4
 acc +3
@@ -10,10 +10,10 @@ acc +1
 jmp -4
 acc +6")
 
-(defvar *input* sample)
+(defconstant *input* sample)
 ; (defvar *input* (open "./playground/src/aoc_2020/8/input.txt"))
 
-(defvar *stack* 
+(defconstant *stack* 
   (go 
     *input* 
     (split-by "\n")
@@ -23,7 +23,7 @@ acc +6")
 
 (loop defun find-infinite-loop instructions offset accumulator (do 
    
-   (defvar 
+   (defconstant 
       instruction (get instructions offset)
       cmd (car instruction)
       value (car (cdr instruction)))
@@ -51,7 +51,7 @@ acc +6")
           instructions
           (remove (lambda x i . (and (= (length x) 3) (or (= (car x) "nop") (= (car x) "jmp")))))
           (map (lambda x . . (do 
-            (defvar 
+            (defconstant 
               cmd (if (= (car x) "jmp") "nop" "jmp")
               value (car (cdr x))
               options (get x -1))
@@ -66,7 +66,7 @@ acc +6")
     (fix-infinite-loop 0 0)
     (reduce 
       (lambda acc x . . (do 
-          (defvar 
+          (defconstant 
             cmd (car x)
             value (car (cdr x))
             options (get x -1)

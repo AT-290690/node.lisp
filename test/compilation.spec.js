@@ -56,7 +56,7 @@ describe('Compilation', () => {
       `(defun push array value (set array (length array) value))
     (defun concat array1 array2 (do
     (loop defun iterate i bounds (do
-    (if (< i (length array2)) (push array1 (get array2 i)))
+    (when (< i (length array2)) (push array1 (get array2 i)))
     (if (< i bounds) 
       (iterate (+ i 1) bounds)
     array1
@@ -73,7 +73,7 @@ describe('Compilation', () => {
         (if (< current pivot) 
             (push left-arr current)
             (push right-arr current))
-        (if (< i bounds) (iterate (+ i 1) bounds))))
+        (when (< i bounds) (iterate (+ i 1) bounds))))
         (iterate 1 (- (length arr) 1))
     (go 
       left-arr (sort) 
@@ -213,7 +213,7 @@ describe('Compilation', () => {
       (defvar new-array ())
       (defvar interate (lambda i bounds (do
         (defvar current (get array i))
-        (if (callback current i) 
+        (when (callback current i) 
           (set new-array (length new-array) current))
         (if (< i bounds) (interate (+ i 1) bounds) new-array)
       )))
@@ -259,7 +259,7 @@ describe('Compilation', () => {
         (defvar new-array ())
         (loop defun interate i bounds (do
           (defvar current (get array i))
-          (if (callback current i) 
+          (when (callback current i) 
             (set new-array (length new-array) current))
           (if (< i bounds) (interate (+ i 1) bounds) new-array)))
         (interate 0 (- (length array) 1)))))

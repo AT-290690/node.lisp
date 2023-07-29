@@ -1,5 +1,5 @@
 (import std "split-by" "array-of-numbers" "reduce" "max" "quick-sort" "map" "concat" "push" "adjacent-difference" "count-of" "join" "array-in-bounds-p")
-(defvar sample "16
+(defconstant sample "16
 10
 15
 5
@@ -11,7 +11,7 @@
 12
 4")
 
-(defvar sample2 "28
+(defconstant sample2 "28
 33
 18
 42
@@ -43,13 +43,13 @@
 10
 3")
 
-(defvar *input* sample)
-; (defvar *input* (open "./playground/src/aoc_2020/10/input.txt"))
+(defconstant *input* sample)
+; (defconstant *input* (open "./playground/src/aoc_2020/10/input.txt"))
 
 ; part 1
-(defvar *parsed-input* (go *input* (split-by "\n") (array-of-numbers)))
+(defconstant *parsed-input* (go *input* (split-by "\n") (array-of-numbers)))
 
-(defvar diffs (go *parsed-input* 
+(defconstant diffs (go *parsed-input* 
    (quick-sort) 
    (adjacent-difference (lambda a b (- b a)))))
 
@@ -58,7 +58,7 @@
       (if (array-in-bounds-p memo index) (get memo index) (do 
         (defvar result 0)
         (loop defun iterate j (do 
-          (if (and (>= j 0) (<= (- (get inp index) (get inp j)) 3)) 
+          (when (and (>= j 0) (<= (- (get inp index) (get inp j)) 3)) 
             (do
               (setf result (+ result (combinations inp j memo)))
               (iterate (- j 1))))))
@@ -67,14 +67,14 @@
           result)))
 
 (defun iterative-solution inp (do
-  (defvar 
+  (defconstant 
     memo (Array 1)
     size (length inp))
   (loop defun iterate-i i (do
-    (if (< i size) 
+    (when (< i size) 
       (do 
         (setq memo i 0) 
-        (loop defun iterate-j j (if (and (>= j 0) (<= (- (get inp i) (get inp j)) 3)) 
+        (loop defun iterate-j j (when (and (>= j 0) (<= (- (get inp i) (get inp j)) 3)) 
           (do
             (setq memo i (+ (get memo i) (get memo j)))
             (iterate-j (- j 1)))))
@@ -92,7 +92,7 @@
                             (length sorted) 
                             (+ (get sorted -1) 3)))
 
-(defvar *transformed-input* (go *parsed-input* (transform-input)))
+(defconstant *transformed-input* (go *parsed-input* (transform-input)))
 
 (Number
 ; part 1

@@ -34,7 +34,7 @@
         (or (< k 0) (> k n)) 0
         (or (= k 0) (= k n)) 1
         (or (= k 1) (= k (- n 1))) n) (do 
-          (if (< (- n k) k) (setf k (- n k)))
+          (when (< (- n k) k) (setf k (- n k)))
           (loop defun iterate i res (if (<= i k) (iterate (+ i 1) (* res (- n i -1) (/ i))) res))
           (round (iterate 2 n)))))
   ; sin
@@ -69,7 +69,7 @@
   (defun average x y (* (+ x y) 0.5))
  ; sqrt
   (defun sqrt x (do 
-    (defvar is-good-enough (lambda g x (< (abs (- (square g) x)) 0.01))
+    (defconstant is-good-enough (lambda g x (< (abs (- (square g) x)) 0.01))
          improve-guess (lambda g x (average g (* x (/ g)))))
     (loop defun sqrt-iter g x 
         (if (is-good-enough g x) 
@@ -109,7 +109,7 @@
   (defun clamp-bit x min max (do 
      (setf x (- x (& (- x max) (>> (- max x) 31))))
      (- x (& (- x min) (>> (- x min) 31)))))
-  ; is-bit-power-of-two
+  ; is-bit-power-of-two ; (and x (not (& x (- x 1)))
   (defun is-bit-power-of-two value 
     (and 
       (= (& value (- value 1)) 0) 
@@ -130,6 +130,38 @@
   (defun clear-bit n bit (& n (~ (<< 1 bit))))
   ; power-of-two-bit
   (defun power-of-two-bit n (<< 2 (- n 1)))
+  ; count-number-of-ones-bit
+  (defun count-number-of-ones-bit n (do 
+    (defvar count 0)
+    (loop defun iter 
+      (if n (do 
+        (setf n (& n (- n 1)))
+        (setf count (+ count 1))
+        (iter)) count))
+    (iter)))
+  ; check-n-is-one-bit
+  (defun check-n-is-one-bit N nth (type (& N (<< 1 nth)) Boolean))
+  (defun possible-subsets-bit A (do 
+    (defconstant items ())
+    (defconstant N (length A))
+    (defun iter-i i (do
+      (when (< i (<< 1 N)) (do 
+        (defconstant current ())
+        (set items (length items) current)
+        (iter-j 0 (lambda j (do (when (& i (<< 1 j)) (set current (length current) (get A j))))))
+        (iter-i (+ i 1)))))) 
+    (defun iter-j j cb (when (< j N) (do (cb j) (iter-j (+ j 1) cb)))) (iter-i 0) items))
+  ; largest-power 
+  (defun largest-power N (do 
+    ; changing all right side bits to 1.
+    (setf N (| N (>> N 1)))
+    (setf N (| N (>> N 2)))
+    (setf N (| N (>> N 4)))
+    (setf N (| N (>> N 8)))
+    ; as now the number is 2 * x-1,
+    ; where x is required answer,
+    ; so adding 1 and dividing it by
+    (>> (+ N 1) 1)))
   ; floor
   (defun floor n (| n 0))
   ; round a number
@@ -138,11 +170,11 @@
   (defun euclidean-mod a b (mod (+ (mod a b) b) b))
   ; euclidean-div
   (defun euclidean-div a b (do 
-                      (defvar q (* a (/ b)))
+                      (defconstant q (* a (/ b)))
                       (if (< (mod a b) 0) (if (> b 0) (- q 1) (+ q 1)) q)))
   ; euclidean-distance
   (defun euclidean-distance x1 y1 x2 y2 (do
-    (defvar 
+    (defconstant 
       a (- x1 x2) 
       b (- y1 y2))
     (sqrt (+ (* a a) (* b b)))))
@@ -159,17 +191,17 @@
             (* base (power base (- exp 1)))))))
   ; levenshtein-distance
   (defun levenshtein-distance a b (do 
-    (defvar s (type a Array) 
+    (defconstant s (type a Array) 
             t (type b Array)) 
       
       (or (cond 
         (not (length s)) (length t)
         (not (length t)) (length a)
       ) (do 
-        (defvar arr ())
-        (loop defun iterate-i i (if (<= i (length s)) (do
+        (defconstant arr ())
+        (loop defun iterate-i i (when (<= i (length s)) (do
           (set arr i (Number i))
-          (loop defun iterate-j j (if (<= j (length t)) (do 
+          (loop defun iterate-j j (when (<= j (length t)) (do 
             (set (get arr i) j 
               (if (= i 0) j 
                 (minimum (Number 
@@ -184,9 +216,10 @@
   ; neighborhood
   (defun neighborhood array directions y x callback
       (reduce directions (lambda sum dir . . (do
-          (defvar dy (+ (car dir) y)
+          (defconstant
+              dy (+ (car dir) y)
               dx (+ (car (cdr dir)) x))
-          (+ sum (if (and (array-in-bounds-p array dy) (array-in-bounds-p (get array dy) dx)) (callback (get (get array dy) dx) dir))))) 0))
+          (+ sum (when (and (array-in-bounds-p array dy) (array-in-bounds-p (get array dy) dx)) (callback (get (get array dy) dx) dir))))) 0))
     ; greatest-common-divisor
     (defun greatest-common-divisor a b (do (loop defun gcd a b (if (= b 0) a (gcd b (mod a b)))) (gcd a b)))
     ; least-common-divisor
@@ -200,7 +233,7 @@
     ; is-prime
     (defun is-prime n (do 
         (loop defun iter i end (do 
-            (defvar it-is (not (= (mod n i) 0)))
+            (defconstant it-is (not (= (mod n i) 0)))
             (if (and (<= i end) it-is) (iter (+ i 1) end) it-is)))
       (or (= n 2) (iter 2 (sqrt n)))))
   ; prime-factors
@@ -254,7 +287,7 @@
               (euclid a))))
               (euclid a)
               ; Make x1 positive
-              (if (< x1 0) (setf x1 (+ x1 m0)))
+              (when (< x1 0) (setf x1 (+ x1 m0)))
               x1))))
       ; join
       (defun join array delim (reduce array (lambda a x i . (if (> i 0) (concatenate a delim x) (type x String))) ""))
@@ -271,7 +304,7 @@
       ; concat
       (defun concat array1 array2 (do
         (loop defun iterate i bounds (do
-        (if (< i (length array2)) (push array1 (get array2 i)))
+        (when (< i (length array2)) (push array1 (get array2 i)))
         (if (< i bounds) 
           (iterate (+ i 1) bounds)
         array1
@@ -288,28 +321,29 @@
       (iterate 0 (- (length array2) 1))))
       ; range
       (defun range start end (do
-        (defvar array ())
+        (defconstant array ())
         (loop defun iterate i bounds (do
           (push array (+ i start))
           (if (< i bounds) (iterate (+ i 1) bounds) array)))
         (iterate 0 (- end start))))
     ; sequance
       (defun sequance end start step (do
-        (defvar array ())
+        (defconstant array ())
         (loop defun iterate i bounds (do
           (push array (+ i start))
           (if (< i bounds) (iterate (+ i step) bounds) array)))
         (iterate 0 (- end start))))
       ; arithmetic-progression
       (defun arithmetic-progression n lim (do
-        (defvar array ())
+        (defconstant array ())
         (loop defun iterate i bounds (do
           (push array (+ i n))
           (if (< i bounds) (iterate (+ i n) bounds) array)))
         (iterate 0 (- lim n))))
       ; map
       (defun map array callback (do 
-        (defvar new-array () i 0)
+        (defconstant new-array ())
+        (defvar i 0)
         (loop defun iterate i bounds (do
           (set new-array i (callback (get array i) i array))
           (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
@@ -323,21 +357,21 @@
   ; for-n
   (defun for-n N callback (do
     (loop defun iterate i (do 
-        (defvar res (callback i))
+        (defconstant res (callback i))
         (if (< i N) (iterate (+ i 1)) res))) 
         (iterate 0)))
   ; for-range
   (defun for-range start end callback (do
     (loop defun iterate i (do 
-        (defvar res (callback i))
+        (defconstant res (callback i))
         (if (< i end) (iterate (+ i 1)) res))) 
         (iterate start)))
   ; count-of
   (defun count-of array callback (do
     (defvar amount 0)
     (loop defun iterate i bounds (do
-      (defvar current (get array i))
-      (if (callback current i array) (setf amount (+ amount 1)))
+      (defconstant current (get array i))
+      (when (callback current i array) (setf amount (+ amount 1)))
       (if (< i bounds) (iterate (+ i 1) bounds) amount)))
     (iterate 0 (- (length array) 1))))
   ; partition 
@@ -346,10 +380,10 @@
         ()))
   ; remove
   (defun remove array callback (do
-    (defvar new-array ())
+    (defconstant new-array ())
     (loop defun iterate i bounds (do
-      (defvar current (get array i))
-      (if (callback current i array) 
+      (defconstant current (get array i))
+      (when (callback current i array) 
         (push new-array current))
       (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
     (iterate 0 (- (length array) 1))))
@@ -357,7 +391,7 @@
   (defun every array callback (do
       (defvar bol 1)
       (loop defun iterate i bounds (do
-        (defvar res (callback (get array i) i array))
+        (defconstant res (callback (get array i) i array))
         (boole bol (type res Boolean))
         (if (and res (< i bounds)) (iterate (+ i 1) bounds) bol)))
       (iterate 0 (- (length array) 1))))
@@ -365,7 +399,7 @@
   (defun some array callback (do
       (defvar bol 1)
       (loop defun iterate i bounds (do
-        (defvar res (callback (get array i) i array))
+        (defconstant res (callback (get array i) i array))
         (boole bol (type res Boolean))
         (if (and (not res) (< i bounds)) (iterate (+ i 1) bounds) bol)))
       (iterate 0 (- (length array) 1))))
@@ -388,28 +422,28 @@
     (defun product-array array (reduce array (lambda a b . . (* a b)) 1))
     ; deep-flat
     (defun deep-flat arr (do 
-      (defvar new-array ()) 
-      (defvar flatten (lambda item 
+      (defconstant new-array ()) 
+      (defconstant flatten (lambda item 
         (if (and (Arrayp item) (length item)) 
               (for-each item (lambda x . . (flatten x))) 
-              (unless (Arrayp item) (push new-array item)))))
+              (otherwise (Arrayp item) (push new-array item)))))
       (flatten arr) 
       new-array))
     ; find
     (defun find array callback (do
             (loop defun iterate i bounds (do
-              (defvar 
+              (defconstant 
                 current (get array i) 
                 has (callback current i array))
               (if (and (not has) (< i bounds))
                 (iterate (+ i 1) bounds) 
-                (if has current))))
+                (when has current))))
                 (iterate 0 (- (length array) 1))))
     ; find-index
       (defun find-index array callback (do
         (defvar idx -1 has-found 0)
         (loop defun iterate i bounds (do
-          (defvar current (get array i))
+          (defconstant current (get array i))
           (boole has-found (callback current i array))
           (if (and (not has-found) (< i bounds))
             (iterate (+ i 1) bounds) 
@@ -420,7 +454,7 @@
       (defun index-of array target (do
         (defvar idx -1 has-found 0)
         (loop defun iterate i bounds (do
-          (defvar current (get array i))
+          (defconstant current (get array i))
           (boole has-found (= target current))
           (if (and (not has-found) (< i bounds))
             (iterate (+ i 1) bounds) 
@@ -434,7 +468,7 @@
             (do 
               (defvar idx -1 has-found 0)
               (loop defun iterate i bounds (do
-                (defvar current (get array i))
+                (defconstant current (get array i))
                 (boole has-found (= target current))
                 (if (and (not has-found) (< i bounds))
                   (iterate (+ i 1) bounds) 
@@ -445,16 +479,16 @@
       (defun quick-sort arr (do
         (if (<= (length arr) 1) arr
         (do
-          (defvar 
+          (defconstant 
             pivot (get arr 0) 
             left-arr () 
             right-arr ())
         (loop defun iterate i bounds (do
-          (defvar current (get arr i))
+          (defconstant current (get arr i))
           (if (< current pivot) 
               (push left-arr current)
               (push right-arr current))
-          (if (< i bounds) (iterate (+ i 1) bounds))))
+          (when (< i bounds) (iterate (+ i 1) bounds))))
           (iterate 1 (- (length arr) 1))
       (go 
         left-arr (quick-sort) 
@@ -462,7 +496,7 @@
         (concat (quick-sort right-arr)))))))
       ; reverse 
       (defun reverse array (do
-        (defvar 
+        (defconstant 
           len (length array)
           reversed (Array len length)
           offset (- len 1))
@@ -475,8 +509,8 @@
               array target (do
         (loop defun search 
               arr target start end (do
-          (if (<= start end) (do 
-              (defvar 
+          (when (<= start end) (do 
+              (defconstant 
                 index (floor (* (+ start end) 0.5))
                 current (get arr index))
               (if (= target current) target
@@ -493,7 +527,7 @@
               prime-num 31
               key-arr (type (type key String) Array))
             (loop defun find-hash-index i bounds (do 
-              (defvar 
+              (defconstant 
                 letter (get key-arr i) 
                 value (- (char letter 0) 96))
               (setf total (euclidean-mod (+ (* total prime-num) value) (length table)))
@@ -513,9 +547,9 @@
       (defun hash-table-set 
         table key value 
           (do
-            (defvar idx (hash-index table key))
-            (unless (array-in-bounds-p table idx) (set table idx ()))
-            (defvar 
+            (defconstant idx (hash-index table key))
+            (otherwise (array-in-bounds-p table idx) (set table idx ()))
+            (defconstant 
               current (get table idx)
               len (length current)
               index (if len (find-index current (lambda x i o (= (get x 0) key))) -1)
@@ -527,15 +561,15 @@
             table))
       ; hash table_has 
       (defun hash-table-has table key 
-        (and (array-in-bounds-p table (defvar idx (hash-index table key))) (and (length (defvar current (get table idx))) (>= (index-of (car current) key) 0))))
+        (and (array-in-bounds-p table (defconstant idx (hash-index table key))) (and (length (defconstant current (get table idx))) (>= (index-of (car current) key) 0))))
       ; hash-table-get
       (defun hash-table-get
         table key 
           (do
-            (defvar idx (hash-index table key))
+            (defconstant idx (hash-index table key))
             (if (array-in-bounds-p table idx) 
               (do
-                (defvar current (get table idx))
+                (defconstant current (get table idx))
                 (go current
                   (find (lambda x . . (= key 
                           (go x (get 0)))))
@@ -548,11 +582,11 @@
       (defun hash-table-make 
         items 
           (do
-            (defvar 
+            (defconstant 
               len (- (length items) 1)
               table (hash-table (* len len)))
             (loop defun add i (do
-              (defvar item (get items i))
+              (defconstant item (get items i))
               (hash-table-set table (get item 0) (get item 1))
             (if (< i len) (add (+ i 1)) table)))
             (add 0)))
@@ -560,9 +594,9 @@
       (defun hash-set-set 
         table key 
           (do
-            (defvar idx (hash-index table key))
-            (unless (array-in-bounds-p table idx) (set table idx ()))
-            (defvar 
+            (defconstant idx (hash-index table key))
+            (otherwise (array-in-bounds-p table idx) (set table idx ()))
+            (defconstant 
               current (get table idx)
               len (length current)
               index (if len (find-index current (lambda x i o (= x key))) -1)
@@ -574,23 +608,23 @@
             table))
       ; hash table_has 
       (defun hash-set-has table key 
-        (and (array-in-bounds-p table (defvar idx (hash-index table key))) (and (length (defvar current (get table idx))) (>= (index-of current key) 0))))
+        (and (array-in-bounds-p table (defconstant idx (hash-index table key))) (and (length (defconstant current (get table idx))) (>= (index-of current key) 0))))
       ; hash-set-get
       (defun hash-set-get table key (do
-            (defvar idx (hash-index table key))
+            (defconstant idx (hash-index table key))
             (if (array-in-bounds-p table idx) (do
-                (defvar current (get table idx))
+                (defconstant current (get table idx))
                 (go current
                   (find (lambda x . . (= key x))))))))
       ; hash-set
       (defun hash-set size (map (Array size length) (lambda . . . ())))
       ; hash-set-make
       (defun hash-set-make items (do
-          (defvar 
+          (defconstant 
             len (- (length items) 1)
             table (hash-set (* len len)))
           (loop defun add i (do
-            (defvar item (get items i))
+            (defconstant item (get items i))
             (hash-set-set table item)
           (if (< i len) (add (+ i 1)) table)))
           (add 0)))
@@ -635,11 +669,11 @@
           count 0
           has-at-least-one 0)
         (loop defun iterate i bounds  (do
-            (defvar 
+            (defconstant 
               ch (get array i)
               code (- (char ch 0) zero)
               mask (<< 1 code))
-            (if (and (if (= ch letter) (boole has-at-least-one 1))
+            (if (and (when (= ch letter) (boole has-at-least-one 1))
                 (not (= (& bitmask mask) 0))) 
                 (setf count (+ count 1))
                 (setf bitmask (| bitmask mask)))
@@ -650,11 +684,11 @@
     (defun split-by-n-lines string n (go string (regex-replace (concatenate "(\n){" n "}") "௮") (regex-match "[^௮]+") (map (lambda x . . (regex-match x "[^\n]+")))))
     ; split
     (defun split string separator (do 
-        (defvar 
-          cursor ""
+        (defconstant 
           sepArr (type separator Array)
           array (type string Array)
           skip (length sepArr))
+        (defvar cursor "")
         (loop defun iterate result i bounds
           (if (< (if (every sepArr (lambda y j . (= (get array (+ i j)) y)))
                 (do 
@@ -667,7 +701,7 @@
         (push (iterate () 0 (- (length array) 1)) cursor)))
       ; slice 
       (defun slice array start end (do 
-        (defvar bounds (- end start) out (Array bounds length))
+        (defconstant bounds (- end start) out (Array bounds length))
         (loop defun iterate i 
           (if (< i bounds) 
               (do 
@@ -694,9 +728,9 @@
               (not (some a (lambda . i . (not (equal (get a i) (get b i)))))))))
       ; adjacent-difference
       (defun adjacent-difference array callback (do 
-        (defvar len (length array))
+        (defconstant len (length array))
         (unless (= len 1) 
-        (do (defvar result (Number (car array)))
+        (do (defconstant result (Number (car array)))
         (loop defun iterate i (if (< i len) (do 
         (setq result i (callback (get array (- i 1)) (get array i)))
         (iterate (+ i 1))) result))
@@ -816,6 +850,10 @@
       (Array "set-bit" set-bit)
       (Array "clear-bit" clear-bit)
       (Array "power-of-two-bit" power-of-two-bit)
+      (Array "count-number-of-ones-bit" count-number-of-ones-bit)
+      (Array "check-n-is-one-bit" check-n-is-one-bit)
+      (Array "possible-subsets-bit" possible-subsets-bit)
+      (Array "largest-power" largest-power)
    )
 ))
 ; (/ std lib)

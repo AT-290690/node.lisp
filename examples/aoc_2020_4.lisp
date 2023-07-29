@@ -1,6 +1,6 @@
 (import std  "remove" "for-each" "push" "map" "regex-match" "split-by-n-lines" "deep-flat" "split-by" "join" "every" "reduce" "sum-array")
 
-(defvar sample "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
+(defconstant sample "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
 byr:1937 iyr:2017 cid:147 hgt:183cm
 
 hcl:#7d3b0c iyr:2013
@@ -8,7 +8,7 @@ eyr:2026
 ecl:oth pid:920076943 byr:1929
 hgt:76in")
 
-(defvar *input* sample)
+(defconstant *input* sample)
 ; (defvar *input* (open "./playground/src/aoc_2020/4/input.txt"))
 
 ; 190
@@ -45,21 +45,23 @@ hgt:76in")
      (remove (lambda x . . (= (length x) 7)))
      (map (lambda x . . (go x     
       (map (lambda y . . (do
-        (defvar key (car y))
-        (defvar value (car (cdr y)))
-        (defvar arr (type value Array))
+        (defconstant 
+          key (car y)
+          value (car (cdr y))
+          arr (type value Array))
        (Array key value
         (cond 
           (= key "byr") (and (= (length arr) 4) (>= (type value Number) 1920) (<= (type value Number) 2002)) 
           (= key "iyr") (and (= (length arr) 4) (>= (type value Number) 2010) (<= (type value Number) 2020))
           (= key "eyr") (and (= (length arr) 4) (>= (type value Number) 2020) (<= (type value Number) 2030))
           (= key "hgt") (and (>= (length arr) 3) (do 
-                  (defvar units (concatenate (get arr -2) (get arr -1)))
-                  (defvar num (type (join (set arr -2) "") Number))
+                  (defconstant 
+                    units (concatenate (get arr -2) (get arr -1))
+                    num (type (join (set arr -2) "") Number))
                     ; If cm, the number must be at least 150 and at most 193.
                     (if (= units "cm") (and (>= num 150) (<= num 193))
                       ; If in, the number must be at least 59 and at most 76.
-                      (if (= units "in") (and (>= num 59) (<= num 76))))))
+                      (when (= units "in") (and (>= num 59) (<= num 76))))))
           (= key "hcl") (do 
                   (defvar color (regex-match value "#.+[0-9a-f]"))
                     (and (length color) (= (length (type (car color) Array)) 7)))

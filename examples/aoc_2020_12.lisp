@@ -1,19 +1,19 @@
 (import std "split-by" "reduce"  "push" "map" "join" "reverse" "floor" "abs" "radians")
-(defvar sample "F10
+(defconstant sample "F10
 N3
 F7
 R90
 F11")
-(defvar *input* sample)
+(defconstant *input* sample)
 ; (defvar *input* (open "./playground/src/aoc_2020/12/input.txt"))
 
-(defun yoink stack (unless (not (length stack)) (do (defvar last (get stack -1)) (set stack -1) last)))
-(defun move stack (defvar f (lambda (Array (yoink stack) f))))
+(defun yoink stack (when (length stack) (do (defconstant last (get stack -1)) (set stack -1) last)))
+(defun move stack (defconstant f (lambda (Array (yoink stack) f))))
 ; 362
 (defun solve1 (do 
 
 (defun normalize value min max (* (- value min) (/ (- max min))))
-(defvar *stack* (go 
+(defconstant *stack* (go 
   *input* 
   (split-by "\n") 
   (push "F0") ; TODO delete this later
@@ -22,16 +22,16 @@ F11")
       (defvar str (type x Array))
       (Array (car str) (go str (cdr) (join "") (type Number))))))
   (reverse)))
-
-  (defvar 
+  (defconstant 
     moves (type *stack* Array)
-    cursor (apply (move moves))
+    compass (Array "N" "E" "S" "W"))
+  (defvar
     x 0
     y 0
-    compass (Array "N" "E" "S" "W")
+    cursor (apply (move moves))
     arrow 1)
   (defun lazy (do 
-    (defvar 
+    (defconstant 
       action (car (car cursor))
       value (car (cdr (car cursor))))
     ; (log (Array action value (Array x y)))
@@ -95,24 +95,25 @@ F11")
       (if (< i terms) (inc (+ i 1)) cosine)))
     (inc 0)))
 
-  (defvar *stack* (go 
+  (defconstant *stack* (go 
     *input* 
     (split-by "\n") 
     (map (lambda x . . (do 
-        (defvar str (type x Array))
+        (defconstant str (type x Array))
         (Array (car str) (go str (cdr) (join "") (type Number))))))
     (reverse)))
-  (defvar 
+  (defconstant 
     moves (type *stack* Array)
+    TERM 17
+    compass (Array "N" "E" "S" "W"))
+  (defvar 
     cursor (apply (move moves))
     x 0
     y 0
     dx 10
-    dy 1
-    TERM 17
-    compass (Array "N" "E" "S" "W"))
+    dy 1)
   (defun lazy (do 
-    (defvar 
+    (defconstant 
       action (car (car cursor))
       value (car (cdr (car cursor))))
     ; (log (Array action value (Array x y) (Array dx dy)))
@@ -127,14 +128,14 @@ F11")
       (= action "S") (setf dy (- dy value))
       (= action "W") (setf dx (- dx value))
       (= action "L") (do 
-                    (defvar 
+                    (defconstant 
                       rad (radians value)
                       dx1 (- (* dx (cos rad TERM)) (* dy (sin rad TERM)))
                       dy1 (+ (* dx (sin rad TERM)) (* dy (cos rad TERM))))
                     (setf dx dx1)
                     (setf dy dy1))
       (= action "R") (do
-                    (defvar 
+                    (defconstant 
                       rad (- (radians value))
                       dx1 (- (* dx (cos rad TERM)) (* dy (sin rad TERM)))
                       dy1 (+ (* dx (sin rad TERM)) (* dy (cos rad TERM))))

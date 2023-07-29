@@ -28,7 +28,7 @@ A Lisp for Node
         array target (do
   (loop defun search
         arr target start end (do
-    (if (<= start end) (do
+    (when (<= start end) (do
         (defvar index (floor (* (+ start end) 0.5)))
         (defvar current (get arr index))
         (if (= target current) target

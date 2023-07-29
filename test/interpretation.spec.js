@@ -145,7 +145,7 @@ describe('Interpration', () => {
       table key value 
         (do
           (defvar idx (hash-index table key))
-          (unless (array-in-bounds-p table idx) (set table idx ()))
+          (otherwise (array-in-bounds-p table idx) (set table idx ()))
           (defvar current (get table idx))
           (defvar len (length current))
           (defvar index (if len (find-index current (lambda x i o (= (get x 0) key))) -1))
@@ -261,7 +261,7 @@ describe('Interpration', () => {
 
 (defun concat array1 array2 (do
   (loop defun iterate i bounds (do
-  (if (< i (length array2)) (push array1 (get array2 i)))
+  (when (< i (length array2)) (push array1 (get array2 i)))
   (if (< i bounds) 
     (iterate (+ i 1) bounds)
   array1)))
@@ -292,7 +292,7 @@ describe('Interpration', () => {
     (if (< current pivot) 
         (push left-arr current)
         (push right-arr current))
-    (if (< i bounds) (iterate (+ i 1) bounds))))
+    (when (< i bounds) (iterate (+ i 1) bounds))))
     (iterate 1 (- (length arr) 1))
 (go 
   left-arr (quick-sort) 
@@ -303,9 +303,9 @@ describe('Interpration', () => {
         array target (do
   (loop defun search 
         arr target start end (do
-    (if (<= start end) (do 
-        (defvar index (floor (* (+ start end) 0.5)))
-        (defvar current (get arr index))
+    (when (<= start end) (do 
+        (defconstant index (floor (* (+ start end) 0.5)))
+        (defconstant current (get arr index))
         (if (= target current) target
           (if (> current target) 
             (search arr target start (- index 1))
@@ -333,7 +333,7 @@ describe('Interpration', () => {
           (loop defun iterate j bounds (do 
               (defvar x (get array j))
               (defvar res (binary-search array (cb x y)))
-              (if res (push accumulator res))
+              (when res (push accumulator res))
             (if (< j bounds) (iterate (+ j 1) bounds)
         accumulator)))
         (iterate i (- (length array) 1)))) 
@@ -370,7 +370,7 @@ describe('Interpration', () => {
     (defun push array value (set array (length array) value))
     (defun concat array1 array2 (do
       (loop defun iterate i bounds (do
-      (if (< i (length array2)) (push array1 (get array2 i)))
+      (when (< i (length array2)) (push array1 (get array2 i)))
       (if (< i bounds) 
         (iterate (+ i 1) bounds)
       array1
@@ -387,7 +387,7 @@ describe('Interpration', () => {
         (if (< current pivot) 
             (push left-arr current)
             (push right-arr current))
-        (if (< i bounds) (iterate (+ i 1) bounds))))
+        (when (< i bounds) (iterate (+ i 1) bounds))))
         (iterate 1 (- (length arr) 1))
     (go 
       left-arr (quick-sort) 
@@ -498,7 +498,7 @@ describe('Interpration', () => {
   (defvar new-array ())
   (defvar iterate (lambda i bounds (do
     (defvar current (get array i))
-    (if (callback current i) 
+    (when (callback current i) 
       (set new-array (length new-array) current))
     (if (< i bounds) (iterate (+ i 1) bounds) new-array)
   )))

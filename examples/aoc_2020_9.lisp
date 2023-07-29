@@ -1,11 +1,11 @@
-(import std "split-by" "minimum" "maximum" "range" "min" "max" "map" "array-of-numbers" "push" "reduce" "sum-array" "some" "find" "slice")
+(import std "split-by" "minimum" "maximum" "window" "can-sum" "range" "min" "max" "map" "array-of-numbers" "push" "reduce" "sum-array" "some" "find" "slice")
 ; The data is encrypted with the eXchange-Masking Addition System (XMAS).
 ; XMAS transmits a preamble of 25 *numbers* and each subsequent number should be the sum of any two of the 25 immediately previous *numbers*.
 ; The first number that is not the sum of two of the 25 *numbers* before it needs to be found.
 ; Example: A larger sequence is given with a preamble of length 5.
 ; After the preamble, almost every number is the sum of two of the previous 5 *numbers* except for one number.
 ; The task is to find the first number in the list (after the preamble) that does not follow this rule.
-(defvar sample "35
+(defconstant sample "35
 20
 15
 25
@@ -26,35 +26,25 @@
 309
 576")
 
-(defvar *input* sample)
+(defconstant *input* sample)
 ; (defvar *input* (open "./playground/src/aoc_2020/9/input.txt"))
-(defvar *numbers* (go 
+(defconstant *numbers* (go 
   *input* 
   (split-by "\n") 
   (array-of-numbers)))
-
-  (defun can-sum-some t values 
-    (if (< t 0) 0 
-      (if (= t 0) 1 
-        (some values (lambda x . . (can-sum-some (- t x) values))))))
   
   (defun find-preamble inp n (go inp 
     (find (lambda current i all 
-      (if (>= i n) 
-       (not (can-sum-some current (slice all (- i n) i))))))))
+      (when (>= i n) 
+       (not (can-sum current (slice all (- i n) i))))))))
 
-(defvar *preamble* (find-preamble *numbers* (if (> (length *numbers*) 25) 25 5)))
-(defun window inp n (go inp 
-  (reduce (lambda acc current i all 
-    (if (>= i n) 
-      (push acc (slice all (- i n) i)) acc)) ())))
+(defconstant *preamble* (find-preamble *numbers* (if (> (length *numbers*) 25) 25 5)))
 
 (defvar *weakness* ())
 (go (range 2 (- (length *numbers*) 1))
     (some (lambda n . .
       (some (window *numbers* n) (lambda x . . (do 
         (and (= (sum-array x) *preamble*) (setf *weakness* x))))))))
-
 (Number 
   ; 21806024
   *preamble* 

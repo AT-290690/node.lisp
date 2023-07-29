@@ -1,5 +1,5 @@
 (import std "neighborhood" "split-by" "split-by-lines" "for-n" "for-each" "array-of-numbers" "reduce" "max" "quick-sort" "map" "concat" "push" "count-of" "join" "array-in-bounds-p")
-(defvar sample 
+(defconstant sample 
 "L.LL.LL.LL
 LLLLLLL.LL
 L.L.L..L..
@@ -10,8 +10,8 @@ L.LLLLL.LL
 LLLLLLLLLL
 L.LLLLLL.L
 L.LLLLL.LL")
-(defvar *input* sample)
-; (defvar *input* (open "./playground/src/aoc_2020/11/input.txt"))
+(defconstant *input* sample)
+; (defconstant *input* (open "./playground/src/aoc_2020/11/input.txt"))
 (defun count-seats matrix (do
   (reduce matrix (lambda a row . . (+ a (count-of row (lambda x . . (> x 0))))) 0)))
 
@@ -24,14 +24,15 @@ L.LLLLL.LL")
       (map (lambda col . . (- (= col "L") 1))))))))
 
 (defun solve-1 matrix tolerance (do 
-  (defvar 
+  (defconstant 
     height (- (length matrix) 1)
     width (- (length (car matrix)) 1)
     directions (Array (Array 0 1) (Array 1 0) (Array -1 0) (Array 0 -1) (Array 1 -1) (Array -1 -1) (Array 1 1) (Array -1 1))
     copy (map (Array (+ height 1) length) (lambda . . . (Array (+ width 1) length))))
   (for-n height (lambda y 
     (for-n width (lambda x (do 
-      (defvar current (get (get matrix y) x)
+      (defconstant 
+        current (get (get matrix y) x)
         sum (neighborhood matrix directions y x (lambda neighbor . (and (not (= neighbor -1)) neighbor))))
       (setq (get copy y) x 
         (if (and (= sum 0) (= current 0)) 1
@@ -39,7 +40,7 @@ L.LLLLL.LL")
           copy))
           
 (defun solve-2 matrix tolerance (do 
-  (defvar 
+  (defconstant 
     height (- (length matrix) 1)
     width (- (length (car matrix)) 1)
     copy (map (Array (+ height 1) length) (lambda . . . (Array (+ width 1) length)))
@@ -47,16 +48,18 @@ L.LLLLL.LL")
   (for-n height (lambda y 
     (for-n width (lambda x 
       (do 
-        (defvar current (get (get matrix y) x))
+        (defconstant current (get (get matrix y) x))
         (defvar sum 0)
         (loop defun seek-seat Y X i (do 
-              (defvar dy (+ y (* Y i)))
-              (defvar dx (+ x (* X i)))
-              (if (and (array-in-bounds-p matrix dy) (array-in-bounds-p (get matrix dy) dx)) 
+              (defconstant 
+                dy (+ y (* Y i))
+                dx (+ x (* X i)))
+              (when (and (array-in-bounds-p matrix dy) (array-in-bounds-p (get matrix dy) dx)) 
                 (do 
-                  (defvar seat (get (get matrix dy) dx))
-                  (if (= seat -1) (seek-seat Y X (+ i 1))
-                  (if (= seat 1) (setf sum (+ sum seat))))
+                  (defconstant seat (get (get matrix dy) dx))
+                  (cond 
+                    (= seat -1) (seek-seat Y X (+ i 1))
+                    (= seat 1) (setf sum (+ sum seat)))
                 ))))
         (for-each directions (lambda dir . . (seek-seat (car dir) (car (cdr dir)) 1)))
           ; L = 0
@@ -71,13 +74,18 @@ L.LLLLL.LL")
 (defun format-matrix matrix (go matrix 
                                   (map (lambda row . . 
                                     (go row 
-                                      (map (lambda col . . (if (= col 1) "#" (if (= col 0) "L"  "."))))
+                                      (map (lambda col . . 
+                                        (or 
+                                          (cond 
+                                            (= col 1) "#" 
+                                            (= col 0) "L")
+                                        ".")))
                                       (join ""))))
                                   (join "\n")))
 
 (defun print-matrix matrix (and (log (format-matrix matrix)) matrix))
 
-(defvar *matrix* (parse-input *input*))
+(defconstant *matrix* (parse-input *input*))
 
 ; (log "----------")
 ; (log "PART 1")
@@ -128,8 +136,9 @@ L.LLLLL.LL")
 ; (log "\n----------")
 
   (loop defun rotate matrix prev n (do 
-    (defvar next-matrix (if n (solve-2 matrix 5) (solve-1 matrix 4)))
-    (defvar next (count-seats next-matrix))
+    (defconstant 
+      next-matrix (if n (solve-2 matrix 5) (solve-1 matrix 4))
+      next (count-seats next-matrix))
     (unless (= prev next) 
       (rotate next-matrix next n)
       next)))

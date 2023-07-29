@@ -1,4 +1,4 @@
-(import std "slice-if-index" "minimum" "reduce" "floor" "round" "map" "push" "min" "max" "split-by" "quick-sort" "concat" "find-index")
+(import std "slice-if-index" "minimum" "maximum" "reduce" "floor" "round" "map" "push" "min" "max" "split-by" "quick-sort" "concat" "find-index")
 
 ; Start by considering the whole range, rows 0 through 127.
 ; F means to take the lower half, keeping rows 0 through 63.
@@ -13,40 +13,41 @@
 ; BFFFBBFRRR
 ; FFFBBBFRRR
 ; BBFFBBFRLL")
-(defvar *sample* "BFFFBBFRRR
+(defconstant *sample* "BFFFBBFRRR
 FFFBBBFRRR
 BBFFBBFRLL")
-(defvar *input* *sample*)
+(defconstant *input* *sample*)
 ; (defvar *input* (open "./playground/src/aoc_2020/5/input.txt"))
 (defun binary_boarding inp bounds lower upper 
   (go inp 
       (reduce (lambda a b . . (do 
-            (defvar half (* (+ (car a) (car (cdr a))) 0.5))
-            (if (= b lower) (setq a 1 (floor half))
-            (if (= b upper) (setq a 0 (round half)))))) bounds) 
+            (defconstant half (* (+ (car a) (car (cdr a))) 0.5))
+            (cond 
+                  (= b lower) (setq a 1 (floor half))
+                  (= b upper) (setq a 0 (round half))))) bounds) 
       (get (= (get inp -1) upper))))
 
-(defvar *prepare-input* (go 
+(defconstant *prepare-input* (go 
     *input* 
     (split-by "\n")
     (map (lambda directions . . (do 
-      (defvar 
+      (defconstant 
             array (type directions Array)
             fb (binary_boarding (slice-if-index array (lambda i (< i 7))) (Number 0 127) "F" "B")
             lr (binary_boarding (slice-if-index array (lambda i (>= i 7))) (Number 0 7) "L" "R"))
       (+ (* fb 8) lr))))))
 
-(defvar *res1* (go 
+(defconstant *res1* (go 
       *prepare-input*
-      (reduce (lambda a b . . (max a b)) 0)))
+      (maximum)))
 
-(defvar *sorted* (go 
+(defconstant *sorted* (go 
       *prepare-input*
       (quick-sort)))
 
-(defvar *minSeat* (minimum *sorted*))
+(defconstant *minSeat* (minimum *sorted*))
 
-(defvar *res2* (go 
+(defconstant *res2* (go 
   *sorted*
   (find-index (lambda x i . (= (- x *minSeat* i) 1)))
   (+ *minSeat*)))

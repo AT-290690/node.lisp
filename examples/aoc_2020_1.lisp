@@ -1,13 +1,13 @@
-(import std "quick-sort" "binary-search" "floor" "map" "reduce" "product-array" "concat" "array-of-numbers" "split-by-lines")
+(import std "quick-sort" "push" "binary-search" "floor" "map" "reduce" "product-array" "concat" "array-of-numbers" "split-by-lines")
 
-(defvar sample "1721
+(defconstant sample "1721
 979
 366
 299
 675
 1456")
 
-(defvar *input* sample)
+(defconstant *input* sample)
 ; (defvar *input* (open "./playground/src/aoc_2020/1/input.txt"))
 
 (defun *solve1* array cb 
@@ -22,9 +22,8 @@
           (loop defun iterate j bounds (do 
               (defvar x (get array j))
               (defvar res (binary-search array (cb x y)))
-              (if res (setq accumulator (length accumulator) res))
-            (if (< j bounds) (iterate (+ j 1) bounds)
-        accumulator)))
+              (when res (setq accumulator (length accumulator) res))
+            (if (< j bounds) (iterate (+ j 1) bounds) accumulator)))
         (iterate i (- (length array) 1)))) 
      ()))
 

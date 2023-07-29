@@ -18,7 +18,7 @@
       (map (lambda x . . (split-by x " = ")))
       (reduce (lambda a b . . (do
         (if (= (car b) "mask") (do
-          (defvar mask (go (car (cdr b)) (type Array)))
+          (defconstant mask (go (car (cdr b)) (type Array)))
           (push a (Array (Integer (to-mask-of mask "X") (to-mask-of mask "1")))))
           (push (get a -1) 
                 (Array (go b
@@ -69,7 +69,7 @@
     (reduce (lambda memory fields . .
             (reduce (cdr (cdr fields)) (lambda memory x . .
                 (do 
-                (defvar 
+                (defconstant 
                   variants (go (car (cdr fields)) (map (lambda x . . (go (Int 1) (<< x)))))
                   MASK (car fields))
                 (go (concat 

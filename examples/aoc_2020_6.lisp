@@ -1,5 +1,5 @@
 (import std "accumulate" "array-of-numbers" "split-by-n-lines" "character-occurances-in-string" "join" "sum-array" "reduce" "index-of" "push" "map" "remove")
-(defvar sample "abc
+(defconstant sample "abc
 
 a
 b
@@ -15,13 +15,13 @@ a
 
 b")
 
-(defvar *input* sample)
+(defconstant *input* sample)
 ; (defvar *input* (open "./playground/src/aoc_2020/6/input.txt"))
 
 (defun remove-duplicates string (go (type string Array) (remove (lambda item pos self (= (index-of self item) pos)))))
 
-(defvar *lines* (go *input* (split-by-n-lines 2)))
-(defvar *unique_chars* (go *lines* (map (lambda x . . (go x (join "") (remove-duplicates))))))
+(defconstant *lines* (go *input* (split-by-n-lines 2)))
+(defconstant *unique_chars* (go *lines* (map (lambda x . . (go x (join "") (remove-duplicates))))))
 
 (Number (go *unique_chars* 
   (map (lambda x . . (length x)))
@@ -29,7 +29,7 @@ b")
 
 (go *lines* 
   (map (lambda line i . (do 
-    (defvar *unique-char* (get *unique_chars* i))
+    (defconstant *unique-char* (get *unique_chars* i))
     (go line 
       (map (lambda ch . . (go *unique-char* (map (lambda *ch* . . (character-occurances-in-string ch *ch*))) (join "") (type Bit))))
       (accumulate (lambda a b . . (& a b)))))))

@@ -1,18 +1,18 @@
 (import std "adjacent-difference" "abs" "average" "square" "cartesian-product" "slice-if-index" "remove" "greatest-common-divisor" "every" "sqrt" "is-prime" "find" "split" "map" "quick-sort" "adjacent-difference" "push" "every" "remove" "min" "max" "reduce" "round" "floor" "product-array" "sum-array" "for-each")
-(defvar sample "939
+(defconstant sample "939
 7,13,x,x,59,x,31,19")
-(defvar input "1001171
+(defconstant input "1001171
 17,x,x,x,x,x,x,41,x,x,x,37,x,x,x,x,x,367,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,19,x,x,x,23,x,x,x,x,x,29,x,613,x,x,x,x,x,x,x,x,x,x,x,x,13")
 (defun *solve1* inp 
   (do
     (defun parse inp 
       (do 
-        (defvar 
+        (defconstant 
           INP (go inp (split "\n"))
           time (type (car INP) Number)
           buses (go (car (cdr INP)) (split ",") (map (lambda x . . (if (= x "x") 0 (type x Number)))) (remove (lambda x . . (> x 0)))))
       (Array time buses)))
-    (defvar 
+    (defconstant 
       *INP* (parse inp)
       *time* (car *INP*)
       *buses* (car (cdr *INP*)))
@@ -32,7 +32,8 @@
       (reduce 
         (cdr items) 
         (lambda step item . . (do 
-        (defvar id (car item)
+        (defconstant
+            id (car item)
             index (car (cdr item)))
         (loop defun rem time
           (unless (= (mod (+ time index) id) 0) 
@@ -47,12 +48,12 @@
   (do
     (defun parse inp 
       (do 
-        (defvar 
+        (defconstant 
           INP (go inp (split "\n"))
           time (type (car INP) Number)
           buses (go (car (cdr INP)) (split ",") (reduce (lambda acc x i . (unless (= x "x") (setq acc (length acc) (Number (type x Number) i)) acc)) ())))
         (Array time buses)))
-      (defvar inp (car (cdr (parse input))))
+      (defconstant inp (car (cdr (parse input))))
       (unless (is-array-of-coprime-pairs (map inp (lambda x . . (car x)))) 
         (throw "Chinese remainder theorem only works if all numbers are pairwise coprime")
         (chinese-remainder-theorem inp))))

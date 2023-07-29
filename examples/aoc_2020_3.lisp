@@ -1,5 +1,5 @@
 (import std "map" "reduce" "floor" "split-by-lines" "sum-array" "product-array")
-(defvar sample 
+(defconstant sample 
 "..##.......
 #...#...#..
 .#....#..#.
@@ -12,14 +12,14 @@
 #...##....#
 .#..#...#.#")
 
-(defvar *input* sample)
+(defconstant *input* sample)
 ; (defvar *input* (open "./playground/src/aoc_2020/3/input.txt"))
 
 (defun to_bit_array array 
   (map array (lambda line . . (go line (type Array) (map (lambda x . . (= x "#")))))))
 
 (defun *solve* array slopeX slopeY (do 
-  (defvar 
+  (defconstant 
     h (length array)
     w (length (car array)))
   (go (* h (/ slopeY))
@@ -31,7 +31,7 @@
           (get (mod (* index slopeX) w))))))))
 
 (defun task *input* (do 
-  (defvar matrix (go *input* 
+  (defconstant matrix (go *input* 
               (split-by-lines)
               (to_bit_array)))
   ; 7 for sample

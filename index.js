@@ -227,12 +227,25 @@ const cli = async () => {
                 } else if (Array.isArray(result)) {
                   console.log(
                     outColor,
-                    JSON.stringify(result, (_, value) =>
-                      typeof value === 'bigint' ? Number(value) : value
-                    )
+                    JSON.stringify(result, (_, value) => {
+                      switch (typeof value) {
+                        case 'bigint':
+                          return Number(value)
+                        case 'function':
+                          return 'λ'
+                        case 'undefined':
+                        case 'symbol':
+                          return 0
+                        case 'boolean':
+                          return +value
+                        default:
+                          return value
+                      }
+                    })
                       .replace(new RegExp(/\[/g), '(')
                       .replace(new RegExp(/\]/g), ')')
-                      .replace(new RegExp(/\,/g), ' '),
+                      .replace(new RegExp(/\,/g), ' ')
+                      .replace(new RegExp(/"λ"/g), 'λ'),
                     inpColor
                   )
                 } else if (typeof result === 'string') {

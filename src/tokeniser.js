@@ -179,6 +179,26 @@ const tokens = {
       ? evaluate(args[2], env)
       : evaluate(args[1], env)
   },
+  ['when']: (args, env) => {
+    if (args.length !== 2)
+      throw new RangeError(
+        `Invalid number of arguments for (when), expected 2 but got ${
+          args.length
+        } (when ${stringifyArgs(args)}).`
+      )
+    if (evaluate(args[0], env)) return evaluate(args[1], env)
+    return 0
+  },
+  ['otherwise']: (args, env) => {
+    if (args.length !== 2)
+      throw new RangeError(
+        `Invalid number of arguments for (otherwise), expected 2 but got ${
+          args.length
+        } (otherwise ${stringifyArgs(args)}).`
+      )
+    if (evaluate(args[0], env)) return 0
+    return evaluate(args[1], env)
+  },
   ['cond']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
@@ -199,14 +219,14 @@ const tokens = {
     const isCapacity =
       args.length === 2 && args[1].type === 'word' && args[1].value === 'length'
     if (isCapacity) {
-      const N = evaluate(args[0], env)
       if (args.length !== 2)
         throw new RangeError(
           'Invalid number of arguments for (Array) (= 2 required)'
         )
+      const N = evaluate(args[0], env)
       if (!Number.isInteger(N))
         throw new TypeError(
-          `Size argument for (Array) has to be an (integer) (Array ${stringifyArgs(
+          `Size argument for (Array) has to be an (32 bit integer) (Array ${stringifyArgs(
             args
           )})`
         )
@@ -283,7 +303,7 @@ const tokens = {
     const index = evaluate(args[1], env)
     if (!Number.isInteger(index))
       throw new TypeError(
-        `Second argument of (get) must be an (integer) (${index}) (get ${stringifyArgs(
+        `Second argument of (get) must be an (32 bit integer) (${index}) (get ${stringifyArgs(
           args
         )}).`
       )
@@ -317,7 +337,7 @@ const tokens = {
     const index = evaluate(args[1], env)
     if (!Number.isInteger(index))
       throw new TypeError(
-        `Second argument of (set) must be an (integer) (${index}) (set ${stringifyArgs(
+        `Second argument of (set) must be an (32 bit integer) (${index}) (set ${stringifyArgs(
           args
         )}).`
       )
@@ -412,9 +432,13 @@ const tokens = {
             props.length
           })`
         )
+
       const localEnv = Object.create(env)
       for (let i = 0; i < props.length; ++i)
-        localEnv[params[i].value] = evaluate(props[i], scope)
+        Object.defineProperty(localEnv, params[i].value, {
+          value: evaluate(props[i], scope),
+          writable: true,
+        })
       return evaluate(body, localEnv)
     }
     env[name] = fn
@@ -572,6 +596,32 @@ const tokens = {
       )
 
     return apply(rest, env)
+  },
+  ['defconstant']: (args, env) => {
+    if (args.length < 2)
+      throw new RangeError(
+        'Invalid number of arguments to (defconstant) (> 2 required)'
+      )
+    if (args.length % 2 === 1)
+      throw new RangeError(
+        'Invalid number of arguments to (defconstant) (pairs of 2 required)'
+      )
+    let name
+    for (let i = 0; i < args.length; ++i) {
+      if (i % 2 === 0) {
+        const word = args[i]
+        if (word.type !== 'word')
+          throw new SyntaxError(
+            `First argument of (defconstant) must be word but got ${word.type}`
+          )
+        name = word.value
+      } else
+        Object.defineProperty(env, name, {
+          value: evaluate(args[i], env),
+          writable: false,
+        })
+    }
+    return env[name]
   },
   ['defvar']: (args, env) => {
     if (args.length < 2)
@@ -944,7 +994,7 @@ const tokens = {
     const index = evaluate(args[1], env)
     if (!Number.isInteger(index))
       throw new TypeError(
-        `Second argument of (setq) must be an (integer) (${index}) (setq ${stringifyArgs(
+        `Second argument of (setq) must be an (32 bit integer) (${index}) (setq ${stringifyArgs(
           args
         )}).`
       )
