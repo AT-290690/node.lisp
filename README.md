@@ -117,14 +117,17 @@ npm run lisp -- -help
 ```
 
 ```
+
 -------------------------------------
 -help
 -------------------------------------
--std             list std functions
+-std              list std functions
 -------------------------------------
--import          log import for std
+-import           log import for std
 -------------------------------------
--s                   prepare a file
+-bake:std         bake std to an AST
+-------------------------------------
+-s                    prepare a file
 -------------------------------------
 -d               file to compile js
 -------------------------------------

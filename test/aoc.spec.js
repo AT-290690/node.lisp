@@ -1,8 +1,7 @@
 import { deepStrictEqual } from 'assert'
 import { runFromCompiled, runFromInterpreted } from '../src/utils.js'
 import { readFileSync } from 'fs'
-import std from '../lib/std.js'
-const STD = std.split(`; exports`)[0].split('; modules')[1]
+const STD = readFileSync('./lib/std.json', 'utf-8')
 const day = (day) => readFileSync(`./examples/aoc_2020_${day}.lisp`, 'utf-8')
 const problems = [
   day(1),
@@ -22,16 +21,15 @@ const problems = [
 ]
 describe('AOC', () => {
   it('Should compile aoc 2020', () =>
-    problems
-      .map((x) => `(defun std ()) ${STD} ${x}`)
-      .forEach((source) =>
-        deepStrictEqual(runFromInterpreted(source), runFromCompiled(source))
-      ))
+    problems.forEach((source) =>
+      deepStrictEqual(
+        runFromInterpreted(source, JSON.parse(STD)),
+        runFromCompiled(source, JSON.parse(STD))
+      )
+    ))
   it('Should solve aoc 2020 tasks', () =>
     deepStrictEqual(
-      problems
-        .map((x) => `(defun std ()) ${STD} ${x}`)
-        .map((source) => runFromCompiled(source)),
+      problems.map((source) => runFromCompiled(source, JSON.parse(STD))),
       [
         [514579, 241861950],
         [2, 1],
@@ -46,7 +44,7 @@ describe('AOC', () => {
         [37, 26],
         [25, 286],
         [295, 1835, 1068781, 247086664214628],
-        [165n],
+        [165n, 208n],
       ]
     ))
 })

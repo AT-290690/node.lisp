@@ -26,7 +26,7 @@ const Extensions = {}
 const Functions = new Map()
 const Helpers = {
   log: {
-    source: `var log = (msg) => { console.log(msg); return msg }`,
+    source: `// Helper Functions\nvar log = (msg) => { console.log(msg); return msg }`,
     has: true,
   },
   tco: {
@@ -420,7 +420,7 @@ export const compileToJs = (AST, extensions = {}, helpers = {}, tops = []) => {
   const raw = AST.map((x) => compile(x, vars))
     .filter(Boolean)
     .join('\n')
-  let program = ''
+  let program = '// Source Code \n'
   for (let i = 0; i < raw.length; ++i) {
     const current = raw[i]
     const next = raw[i + 1]

@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'fs'
 import { start } from 'repl'
-import { compileToJs, lispToJavaScriptVariableName } from './src/compiler.js'
+import { compileToJs } from './src/compiler.js'
 import { evaluate, run } from './src/interpreter.js'
 import { parse } from './src/parser.js'
 // import wabt from 'wabt'
@@ -10,9 +10,10 @@ import {
   removeNoCode,
   runFromCompiled,
   runFromInterpreted,
+  treeShake,
 } from './src/utils.js'
 import { tokens } from './src/tokeniser.js'
-import std from './lib/std.js'
+const STD = JSON.parse(readFileSync('./lib/std.json', 'utf-8'))
 const cli = async () => {
   const [, , ...argv] = process.argv
   let file = '',
@@ -42,27 +43,7 @@ const cli = async () => {
               Helpers,
               Tops
             )
-            const mods = []
-            for (const [key, value] of deps) {
-              const depSet = new Set(value)
-              const parsed = parse(std).at(-1).at(-1).slice(1)
-              parsed.pop()
-              mods.push(
-                parsed.filter(
-                  ([dec, name]) =>
-                    dec.type === 'apply' &&
-                    dec.value === 'defun' &&
-                    name.type === 'word' &&
-                    depSet.has(lispToJavaScriptVariableName(name.value))
-                )
-              )
-            }
-
-            const JavaScript = `${top}${
-              mods.length
-                ? `${mods.map((x) => compileToJs(x).program).join('\n')}\n`
-                : '\n'
-            }${program}`
+            const JavaScript = `${top}${treeShake(deps, STD)}${program}`
             writeFileSync(
               destination ?? './playground/dist/main.js',
               JavaScript
@@ -149,19 +130,29 @@ const cli = async () => {
         }
         break
       case '-p':
-        run(parse(file), env)
+        try {
+          run(parse(file), env)
+        } catch (err) {
+          logError(err.message)
+        }
         break
       case '-r':
         try {
-          run(parse(`${std}\n${file}`), env)
+          run(STD.concat(parse(file)), env)
         } catch (err) {
           logError(err.message)
+        }
+        break
+      case '-bake:std':
+        {
+          const std = readFileSync('./examples/std.lisp', 'utf-8')
+          writeFileSync('./lib/std.json', JSON.stringify(parse(std)), 'utf-8')
         }
         break
       case '-std':
         {
           const mods = []
-          const parsed = parse(std).at(-1).at(-1).slice(1)
+          const parsed = STD.at(-1).at(-1).slice(1)
           parsed.pop()
           mods.push(
             parsed.filter(
@@ -187,7 +178,7 @@ const cli = async () => {
       case '-import':
         {
           const mods = []
-          const parsed = parse(std).at(-1).at(-1).slice(1)
+          const parsed = STD.at(-1).at(-1).slice(1)
           parsed.pop()
           mods.push(
             parsed.filter(
@@ -211,7 +202,7 @@ const cli = async () => {
         break
       case '-repl':
         {
-          let source = std
+          let source = ''
           const inpColor = '\x1b[32m'
           const outColor = '\x1b[33m'
           const errColor = '\x1b[31m'
@@ -221,7 +212,7 @@ const cli = async () => {
             eval: (input) => {
               try {
                 let out = `${source}\n${file}\n(do ${input})`
-                const result = run(parse(out), env)
+                const result = run(STD.concat(parse(out)), env)
                 if (typeof result === 'function') {
                   console.log(inpColor, `(λ)`)
                 } else if (Array.isArray(result)) {
@@ -270,11 +261,13 @@ const cli = async () => {
 -------------------------------------
 -help
 -------------------------------------
--std             list std functions
+-std              list std functions
 -------------------------------------
--import          log import for std
+-import           log import for std
 -------------------------------------
--s                   prepare a file
+-bake:std         bake std to an AST
+-------------------------------------
+-s                    prepare a file
 -------------------------------------
 -d               file to compile js
 -------------------------------------
@@ -302,5 +295,6 @@ export default {
   balance: isBalancedParenthesis,
   source: removeNoCode,
   run,
-  std,
+  std: STD,
+  treeShake,
 }
