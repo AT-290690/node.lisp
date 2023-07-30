@@ -15,7 +15,7 @@
 (defun *solve1* string letter (do
   (defconstant 
     array (type string Array) 
-    zero (char "a" 0))
+    zero (char-code "a" 0))
   (defvar 
     count 0
     bitmask 0
@@ -23,7 +23,7 @@
   (loop defun iterate i bounds (do
       (defconstant 
         ch (get array i)
-        code (- (char ch 0) zero)
+        code (- (char-code ch 0) zero)
         mask (<< 1 code))
       (if (and (when (= ch letter) (boole has-at-least-one 1))
           (not (= (& bitmask mask) 0))) 

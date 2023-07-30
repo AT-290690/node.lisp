@@ -2,6 +2,7 @@ import { deepStrictEqual } from 'assert'
 import { runFromCompiled, runFromInterpreted } from '../src/utils.js'
 import { STD } from '../lib/std.js'
 const programs = [
+  `(import std "to-upper-case" "to-lower-case") (Array (to-lower-case "Lisp is Cool AT-29") (to-upper-case "Lisp is Cool AT-29"))`,
   `(import std "map") (go (Array 1 2 4) (map (lambda x . . (* x 2))))`,
   `(import std "is-prime" "sqrt" "map" "abs" "square" "average")
   (go
@@ -65,6 +66,7 @@ describe('Standart Library', () => {
     deepStrictEqual(
       programs.map((source) => runFromInterpreted(source, STD)),
       [
+        ['lisp is cool at-29', 'LISP IS COOL AT-29'],
         [2, 4, 8],
         [1, 1, 1, 1, 1, 0, 0, 1, 0, 0],
         [0, 1, 2, 3, 3, 4, 5],

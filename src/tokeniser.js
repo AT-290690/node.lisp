@@ -100,26 +100,52 @@ const tokens = {
       )
     return +(typeof evaluate(args[0], env) === 'string')
   },
-  ['char']: (args, env) => {
+  ['char-code']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError(
-        'Invalid number of arguments for (char) (2 required)'
+        'Invalid number of arguments for (char-code) (2 required)'
       )
     const string = evaluate(args[0], env)
     if (typeof string !== 'string')
       throw new TypeError(
-        `First argument of (char) must be an (String) (char ${stringifyArgs(
+        `First argument of (char-code) must be an (String) (char-code ${stringifyArgs(
           args
         )}).`
       )
     const index = evaluate(args[1], env)
     if (!Number.isInteger(index) || index < 0)
       throw new TypeError(
-        `Second argument of (char) must be an (+ Integer) (char ${stringifyArgs(
+        `Second argument of (char-code) must be an (+ Integer) (char-code ${stringifyArgs(
           args
         )}).`
       )
     return string.charCodeAt(index)
+  },
+  ['char']: (args, env) => {
+    if (args.length !== 1)
+      throw new RangeError(
+        'Invalid number of arguments for (char) (= 1 required)'
+      )
+    const index = evaluate(args[0], env)
+    if (!Number.isInteger(index) || index < 0)
+      throw new TypeError(
+        `Arguments of (char) must be (+ Integer) (char ${stringifyArgs(args)}).`
+      )
+    return String.fromCharCode(index)
+  },
+  ['make-string']: (args, env) => {
+    if (args.length !== 1)
+      throw new RangeError(
+        'Invalid number of arguments for (make-string) (= 1 required)'
+      )
+    const indexes = evaluate(args[0], env)
+    if (indexes.some((index) => !Number.isInteger(index) || index < 0))
+      throw new TypeError(
+        `Arguments of (make-string) must be (+ Integers) (make-string ${stringifyArgs(
+          args
+        )}).`
+      )
+    return String.fromCharCode(...indexes)
   },
   ['+']: (args, env) => {
     if (args.length < 2)

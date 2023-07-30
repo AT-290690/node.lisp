@@ -2,6 +2,12 @@ import { deepStrictEqual, strictEqual } from 'assert'
 import { runFromInterpreted } from '../src/utils.js'
 describe('Interpration', () => {
   it('Should be correct', () => {
+    deepStrictEqual(
+      runFromInterpreted(
+        `(Array (char-code "l" 0) (char-code "i" 0) (char-code "s" 0) (char-code "p" 0) (make-string (Number 108 105 115 112)))`
+      ),
+      [108, 105, 115, 112, 'lisp']
+    )
     strictEqual(
       runFromInterpreted(`(defvar x 8)
   (or (cond 
@@ -136,7 +142,7 @@ describe('Interpration', () => {
           (defvar key-arr (type (type key String) Array))
           (loop defun find-hash-index i bounds (do 
             (defvar letter (get key-arr i))
-            (defvar value (- (char letter 0) 96))
+            (defvar value (- (char-code letter 0) 96))
             (setf total (euclidean-mod (+ (* total prime-num) value) (length table)))
             (if (< i bounds) (find-hash-index (+ i 1) bounds) total)))
           (find-hash-index 0 (min (- (length key-arr) 1) 100))))

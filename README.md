@@ -39,9 +39,9 @@ A Lisp for Node
 ```
 
 ```lisp
-(defvar is-odd (lambda x i o (= (mod x 2) 1)))
-(defvar mult_2 (lambda x i o (* x 2)))
-(defvar sum (lambda a x i o (+ a x)))
+(defconstant is-odd (lambda x . . (= (mod x 2) 1)))
+(defconstant mult_2 (lambda x . . (* x 2)))
+(defconstant sum (lambda a x . . (+ a x)))
 ; Pipe the first to a series of composed functions
 ; (arg (arg .. ) (arg .. ) (ar . . . . ))
 (go
@@ -125,8 +125,6 @@ npm run lisp -- -help
 -------------------------------------
 -import           log import for std
 -------------------------------------
--bake:std         bake std to an AST
--------------------------------------
 -s                    prepare a file
 -------------------------------------
 -d               file to compile js
@@ -205,7 +203,3 @@ var sumBelow, rec_32721849989891052
   sumBelow
 log(sumBelow(10000, 0))
 ```
-
-<p align="center">
-<img width="80" src="./lisp-lizard.svg"/>
-</p>

@@ -143,16 +143,6 @@ const cli = async () => {
           logError(err.message)
         }
         break
-      case '-bake:std':
-        {
-          const std = readFileSync('./lib/std.lisp', 'utf-8')
-          writeFileSync(
-            './lib/std.js',
-            `export const STD = ${JSON.stringify(parse(std))}`,
-            'utf-8'
-          )
-        }
-        break
       case '-std':
         {
           const mods = []
@@ -268,8 +258,6 @@ const cli = async () => {
 -std              list std functions
 -------------------------------------
 -import           log import for std
--------------------------------------
--bake:std         bake std to an AST
 -------------------------------------
 -s                    prepare a file
 -------------------------------------

@@ -529,7 +529,7 @@
             (loop defun find-hash-index i bounds (do 
               (defconstant 
                 letter (get key-arr i) 
-                value (- (char letter 0) 96))
+                value (- (char-code letter 0) 96))
               (setf total (euclidean-mod (+ (* total prime-num) value) (length table)))
               (if (< i bounds) (find-hash-index (+ i 1) bounds) total)))
             (find-hash-index 0 (min (- (length key-arr) 1) 100))))
@@ -660,18 +660,28 @@
       ; binary-tree-get-value
       (defun binary-tree-get-value node (get node 0))  
       ; (/ Binary Tree)
+      ; left-pad
+      (defun left-pad str n ch (do 
+        (setf n (- n (length (type str Array))))
+        (loop defun pad i str (if (< i n) (pad (+ i 1) (setf str (concatenate ch str))) str))
+        (pad 0 str)))
+        ; left-pad
+      (defun right-pad str n ch (do 
+        (setf n (- n (length (type str Array))))
+        (loop defun pad i str (if (< i n) (pad (+ i 1) (setf str (concatenate str ch))) str))
+        (pad 0 str)))
       ; occurances_count
       (defun character-occurances-in-string string letter (do
         (defvar 
           array (type string Array)
           bitmask 0
-          zero (char "a" 0)
+          zero (char-code "a" 0)
           count 0
           has-at-least-one 0)
         (loop defun iterate i bounds  (do
             (defconstant 
               ch (get array i)
-              code (- (char ch 0) zero)
+              code (- (char-code ch 0) zero)
               mask (<< 1 code))
             (if (and (when (= ch letter) (boole has-at-least-one 1))
                 (not (= (& bitmask mask) 0))) 
@@ -680,6 +690,34 @@
             (if (< i bounds) (iterate (+ i 1) bounds) 
             (+ count has-at-least-one))))
             (iterate 0 (- (length array) 1))))
+    ;  to-upper-case
+    (defun to-upper-case str (do
+      (defconstant arr ())
+      (defconstant n (length (type str Array)))
+      (loop defun iter i (if (< i n) (do 
+        (defconstant current-char (char-code str i))
+        (setq arr i 
+          (if (and (>= current-char 97) (<= current-char 122))
+            (- current-char 32)
+            current-char
+        ))
+        (iter (+ i 1))) 
+        (make-string arr)))
+        (iter 0)))
+    ;  to-lower-case
+    (defun to-lower-case str (do
+      (defconstant arr ())
+      (defconstant n (length (type str Array)))
+      (loop defun iter i (if (< i n) (do 
+        (defconstant current-char (char-code str i))
+        (setq arr i 
+          (if (and (>= current-char 65) (<= current-char 90))
+            (+ current-char 32)
+            current-char
+        ))
+        (iter (+ i 1))) 
+        (make-string arr)))
+        (iter 0)))
     ; split-by-n-lines
     (defun split-by-n-lines string n (go string (regex-replace (concatenate "(\n){" n "}") "௮") (regex-match "[^௮]+") (map (lambda x . . (regex-match x "[^\n]+")))))
     ; split
@@ -854,6 +892,10 @@
       (Array "check-n-is-one-bit" check-n-is-one-bit)
       (Array "possible-subsets-bit" possible-subsets-bit)
       (Array "largest-power" largest-power)
+      (Array "left-pad" left-pad)
+      (Array "right-pad" right-pad)
+      (Array "to-upper-case" to-upper-case)
+      (Array "to-lower-case" to-lower-case)
    )
 ))
 ; (/ std lib)

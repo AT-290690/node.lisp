@@ -170,10 +170,14 @@ const compile = (tree, Locals) => {
         return ''
       }
       case 'char':
+        return `(String.fromCharCode(${compile(Arguments[0], Locals)}));`
+      case 'char-code':
         return `((${compile(Arguments[0], Locals)}).charCodeAt(${compile(
           Arguments[1],
           Locals
         )}));`
+      case 'make-string':
+        return `(String.fromCharCode(...${compile(Arguments[0], Locals)}));`
       case 'format':
         return `((${compile(Arguments[0], Locals)}).split(${compile(
           Arguments[1],
