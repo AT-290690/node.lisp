@@ -290,7 +290,7 @@
               (when (< x1 0) (setf x1 (+ x1 m0)))
               x1))))
       ; join
-      (defun join array delim (reduce array (lambda a x i . (if (> i 0) (concatenate a delim x) (type x String))) ""))
+      (defun join array delim (reduce array (lambda a x i . (if (> i 0) (concatenate a delim (type x String)) (type x String))) ""))
       ; repeat
       (defun repeat n x (map (Array n length) (lambda . . . x)))
       ; split-by-lines
@@ -662,12 +662,12 @@
       ; (/ Binary Tree)
       ; left-pad
       (defun left-pad str n ch (do 
-        (setf n (- n (length (type str Array))))
+        (setf n (- n (length str)))
         (loop defun pad i str (if (< i n) (pad (+ i 1) (setf str (concatenate ch str))) str))
         (pad 0 str)))
         ; left-pad
       (defun right-pad str n ch (do 
-        (setf n (- n (length (type str Array))))
+        (setf n (- n (length str)))
         (loop defun pad i str (if (< i n) (pad (+ i 1) (setf str (concatenate str ch))) str))
         (pad 0 str)))
       ; occurances_count
@@ -693,7 +693,7 @@
     ;  to-upper-case
     (defun to-upper-case str (do
       (defconstant arr ())
-      (defconstant n (length (type str Array)))
+      (defconstant n (length str))
       (loop defun iter i (if (< i n) (do 
         (defconstant current-char (char-code str i))
         (setq arr i 
@@ -707,7 +707,7 @@
     ;  to-lower-case
     (defun to-lower-case str (do
       (defconstant arr ())
-      (defconstant n (length (type str Array)))
+      (defconstant n (length str))
       (loop defun iter i (if (< i n) (do 
         (defconstant current-char (char-code str i))
         (setq arr i 
@@ -719,7 +719,7 @@
         (make-string arr)))
         (iter 0)))
     ; split-by-n-lines
-    (defun split-by-n-lines string n (go string (regex-replace (concatenate "(\n){" n "}") "௮") (regex-match "[^௮]+") (map (lambda x . . (regex-match x "[^\n]+")))))
+    (defun split-by-n-lines string n (go string (regex-replace (concatenate "(\n){" (type n String) "}") "௮") (regex-match "[^௮]+") (map (lambda x . . (regex-match x "[^\n]+")))))
     ; split
     (defun split string separator (do 
         (defconstant 
