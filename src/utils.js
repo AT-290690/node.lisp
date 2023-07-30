@@ -67,7 +67,7 @@ export const runFromCompiled = (
   if (Array.isArray(tree)) {
     const compiled = compileToJs(tree, Extensions, helpers)
     const DEPS = topLevel.length
-      ? `\n${treeShake(compiled.deps, topLevel)}\n`
+      ? `\n${treeShake(compiled.deps, JSON.parse(JSON.stringify(topLevel)))}\n`
       : '\n'
     const JavaScript = `${compiled.top}${DEPS}${compiled.program}`
     return eval(JavaScript)

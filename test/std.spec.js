@@ -1,7 +1,6 @@
 import { deepStrictEqual } from 'assert'
 import { runFromCompiled, runFromInterpreted } from '../src/utils.js'
-import { readFileSync } from 'fs'
-const STD = readFileSync('./lib/std.json', 'utf-8')
+import { STD } from '../lib/std.js'
 const programs = [
   `(import std "map") (go (Array 1 2 4) (map (lambda x . . (* x 2))))`,
   `(import std "is-prime" "sqrt" "map" "abs" "square" "average")
@@ -58,13 +57,13 @@ describe('Standart Library', () => {
   it('Should compile matching interpretation', () =>
     programs.forEach((source) =>
       deepStrictEqual(
-        runFromCompiled(source, JSON.parse(STD)),
-        runFromInterpreted(source, JSON.parse(STD))
+        runFromCompiled(source, STD),
+        runFromInterpreted(source, STD)
       )
     ))
   it('Should be correct', () =>
     deepStrictEqual(
-      programs.map((source) => runFromInterpreted(source, JSON.parse(STD))),
+      programs.map((source) => runFromInterpreted(source, STD)),
       [
         [2, 4, 8],
         [1, 1, 1, 1, 1, 0, 0, 1, 0, 0],

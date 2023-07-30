@@ -7,7 +7,7 @@ export const evaluate = (expression, env) => {
     case 'word': {
       const word = env[first.value]
       if (word == undefined)
-        throw new TypeError(`Undefined variable ${first.value}.`)
+        throw new ReferenceError(`Undefined variable ${first.value}.`)
       return word
     }
     case 'apply':

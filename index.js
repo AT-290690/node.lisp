@@ -12,8 +12,8 @@ import {
   runFromInterpreted,
   treeShake,
 } from './src/utils.js'
+import { STD } from './lib/std.js'
 import { tokens } from './src/tokeniser.js'
-const STD = JSON.parse(readFileSync('./lib/std.json', 'utf-8'))
 const cli = async () => {
   const [, , ...argv] = process.argv
   let file = '',
@@ -145,8 +145,12 @@ const cli = async () => {
         break
       case '-bake:std':
         {
-          const std = readFileSync('./examples/std.lisp', 'utf-8')
-          writeFileSync('./lib/std.json', JSON.stringify(parse(std)), 'utf-8')
+          const std = readFileSync('./lib/std.lisp', 'utf-8')
+          writeFileSync(
+            './lib/std.js',
+            `export const STD = ${JSON.stringify(parse(std))}`,
+            'utf-8'
+          )
         }
         break
       case '-std':
