@@ -142,8 +142,9 @@
   ; check-n-is-one-bit
   (defun check-n-is-one-bit N nth (type (& N (<< 1 nth)) Boolean))
   (defun possible-subsets-bit A (do 
-    (defconstant items ())
-    (defconstant N (length A))
+    (defconstant 
+          items () 
+          N (length A))
     (defun iter-i i (do
       (when (< i (<< 1 N)) (do 
         (defconstant current ())
@@ -230,6 +231,13 @@
     (defun factorial n (if (<= n 0) 1 (* n (factorial (- n 1)))))
     ; fibonacci
     (defun fibonacci n (if (< n 2) n (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))
+    ; fibonacci-memoized
+    (defun fibonacci-memoized n memo (if (< n 2) n
+        (if (hash-table-has memo n) (hash-table-get memo n)
+        (do
+          (defconstant cache (+ (fibonacci-memoized (- n 1) memo) (fibonacci-memoized (- n 2) memo)))
+          (hash-table-set memo n cache)
+          cache))))
     ; is-prime
     (defun is-prime n (do 
         (loop defun iter i end (do 
@@ -254,7 +262,8 @@
           (reduce 
             (cdr items) 
             (lambda step item . . (do 
-            (defvar id (car item)
+            (defconstant 
+                id (car item)
                 index (car (cdr item)))
             (loop defun rem time
               (unless (= (mod (+ time index) id) 0) 
@@ -522,10 +531,10 @@
       (defun hash-index 
         table key 
           (do
-            (defvar 
-              total 0
+            (defconstant 
               prime-num 31
               key-arr (type (type key String) Array))
+            (defvar total 0)
             (loop defun find-hash-index i bounds (do 
               (defconstant 
                 letter (get key-arr i) 
@@ -692,8 +701,9 @@
             (iterate 0 (- (length array) 1))))
     ;  to-upper-case
     (defun to-upper-case str (do
-      (defconstant arr ())
-      (defconstant n (length str))
+     (defconstant 
+            arr () 
+            n (length str))
       (loop defun iter i (if (< i n) (do 
         (defconstant current-char (char-code str i))
         (setq arr i 
@@ -706,8 +716,9 @@
         (iter 0)))
     ;  to-lower-case
     (defun to-lower-case str (do
-      (defconstant arr ())
-      (defconstant n (length str))
+      (defconstant 
+            arr () 
+            n (length str))
       (loop defun iter i (if (< i n) (do 
         (defconstant current-char (char-code str i))
         (setq arr i 
@@ -837,6 +848,7 @@
       (Array "remainder" remainder)
       (Array "factorial" factorial)
       (Array "fibonacci" fibonacci)
+      (Array "fibonacci-memoized" fibonacci-memoized)
       (Array "every" every)
       (Array "some" some)
       (Array "index-of" index-of)

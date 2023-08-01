@@ -82,9 +82,10 @@ mem[26] = 1"))
       (map (lambda x . . (split-by x " = ")))
       (reduce (lambda a b . . (do
         (if (= (car b) "mask") (do
-          (defconstant mask (go (car (cdr b)) (type Array)))
-          (defconstant xmask (to-mask-of mask "X"))
-          (defconstant omask (to-mask-of mask "1"))
+          (defconstant 
+                mask (go (car (cdr b)) (type Array))
+                xmask (to-mask-of mask "X")
+                omask (to-mask-of mask "1"))
           (setf n (<< 2 (count-number-of-ones-bit (type xmask Number))))
           (push a (Array (Integer xmask omask))))
           (push (get a -1) 
@@ -96,10 +97,11 @@ mem[26] = 1"))
                   (car (cdr b))))) a)) ())
       (reduce (lambda memory fields . .
         (reduce (cdr fields) (lambda memory x . . (do
-        (defconstant omask (go fields (car) (cdr) (car) (Int)))
-        (defconstant xmask (go fields (car) (car) (Int)))
-        (defconstant addr (& (| (Int (car x)) omask) (~ xmask)))
-        (defconstant value (go x (cdr) (car) (Int)))
+        (defconstant 
+              omask (go fields (car) (cdr) (car) (Int))
+              xmask (go fields (car) (car) (Int))
+              addr (& (| (Int (car x)) omask) (~ xmask))
+              value (go x (cdr) (car) (Int)))
         (for-n n (lambda i (hash-table-set memory (type (| addr (spread-xmask xmask (Int i))) Number) value))) 
         memory)) memory))
         (hash-table 10))

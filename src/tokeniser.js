@@ -465,7 +465,6 @@ const tokens = {
             props.length
           })`
         )
-
       const localEnv = Object.create(env)
       for (let i = 0; i < props.length; ++i)
         Object.defineProperty(localEnv, params[i].value, {
@@ -1055,10 +1054,10 @@ const tokens = {
       throw new RangeError(
         'Invalid number of arguments for (setq) (or 2 3) required'
       )
-    const array = evaluate(args[0], env)
+    const array = a
     if (!Array.isArray(array))
       throw new TypeError(
-        `First argument of (setq) must be an (Array) (set ${stringifyArgs(
+        `First argument of (setq) must be an (Array) (setq ${stringifyArgs(
           args
         )}).`
       )
@@ -1073,7 +1072,7 @@ const tokens = {
       throw new RangeError(
         `Second argument of (setq) is outside of the (Array) bounds (index ${index} bounds ${
           array.length
-        }) (set ${stringifyArgs(args)}).`
+        }) (setq ${stringifyArgs(args)}).`
       )
     if (args.length !== 3)
       throw new RangeError(

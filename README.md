@@ -12,14 +12,28 @@ A Lisp for Node
 ```
 
 ```lisp
+; naive exponential time complexity
 (defun fibonacci n
   (if (< n 2)
       n
       (+ (fibonacci (- n 1))
          (fibonacci (- n 2)))))
 
-(fibonacci 10)
-; 55
+(fibonacci 10) ; 55
+
+; to use memo (hashmap) you need to import ALL of these functions
+(import std "index-of" "find" "find-index" "hash-table-set"
+            "min" "euclidean-mod" "push" "map" "array-in-bounds-p"
+            "hash-index" "hash-table-has" "hash-table-get" "hash-table")
+
+(defun fibonacci-memoized n memo (if (< n 2) n
+  (if (hash-table-has memo n) (hash-table-get memo n)
+  (do
+    (defconstant cache (+ (fibonacci-memoized (- n 1) memo) (fibonacci-memoized (- n 2) memo)))
+    (hash-table-set memo n cache)
+    cache))))
+
+(fibonacci-memoized 10 (hash-table 10)) ; 55
 ```
 
 ```lisp

@@ -54,17 +54,20 @@
    (adjacent-difference (lambda a b (- b a)))))
 
 ; part 2
-(defun combinations inp index memo
-      (if (array-in-bounds-p memo index) (get memo index) (do 
-        (defvar result 0)
-        (loop defun iterate j (do 
-          (when (and (>= j 0) (<= (- (get inp index) (get inp j)) 3)) 
-            (do
-              (setf result (+ result (combinations inp j memo)))
-              (iterate (- j 1))))))
-          (iterate (- index 1))
-          (setq memo index result)
-          result)))
+(defun combinations inp i memo
+      (if (array-in-bounds-p memo i)
+        (get memo i) 
+      ; else 
+        (do
+          (defvar result 0)
+          (loop defun iterate j (do 
+            (when (and (>= j 0) (<= (- (get inp i) (get inp j)) 3)) 
+              (do
+                (setf result (+ result (combinations inp j memo)))
+                (iterate (- j 1))))))
+            (iterate (- i 1))
+            (setq memo i result)
+            result)))
 
 (defun iterative-solution inp (do
   (defconstant 
@@ -83,14 +86,15 @@
   (iterate-i 1)
   (get memo -1)))
 
-(defun transform-input input
-                          (set 
-                            (defvar sorted 
+(defun transform-input input (do 
+                          (defconstant sorted 
                               (go input 
                                 (setq (length input) 0) 
-                                (quick-sort))) 
+                                (quick-sort)))
+                          (setq  
+                            sorted
                             (length sorted) 
-                            (+ (get sorted -1) 3)))
+                            (+ (get sorted -1) 3))))
 
 (defconstant *transformed-input* (go *parsed-input* (transform-input)))
 
@@ -107,7 +111,7 @@
 ; recursive
  (go  
   *transformed-input*
-  (combinations (- (length *transformed-input*) 1) (Number 1)))
+  (combinations (- (length *transformed-input*) 1) (Array 1)))
  ; iterative 
  (go 
     *transformed-input*
