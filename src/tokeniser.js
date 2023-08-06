@@ -414,9 +414,9 @@ const tokens = {
     let total = 0
     for (const item in env) {
       const current = env[item]
-      if (current.count) {
-        total += current.count
-        out[item] = current.count
+      if (current._count) {
+        total += current._count
+        out[item] = current._count
       }
     }
     return [Object.entries(out), ['⏱️ ', total]]
@@ -598,9 +598,12 @@ const tokens = {
       throw new RangeError(
         'Invalid number of arguments for (and) (>= 2 required)'
       )
-    for (let i = 0; i < args.length - 1; ++i)
-      if (evaluate(args[i], env)) continue
-      else return evaluate(args[i], env)
+    let circuit
+    for (let i = 0; i < args.length - 1; ++i) {
+      circuit = evaluate(args[i], env)
+      if (circuit) continue
+      else return circuit
+    }
     return evaluate(args.at(-1), env)
   },
   ['or']: (args, env) => {
@@ -608,9 +611,12 @@ const tokens = {
       throw new RangeError(
         'Invalid number of arguments for (or) (>= 2 required)'
       )
-    for (let i = 0; i < args.length - 1; ++i)
-      if (evaluate(args[i], env)) return evaluate(args[i], env)
+    let circuit
+    for (let i = 0; i < args.length - 1; ++i) {
+      circuit = evaluate(args[i], env)
+      if (circuit) return circuit
       else continue
+    }
     return evaluate(args.at(-1), env)
   },
   ['apply']: (args, env) => {

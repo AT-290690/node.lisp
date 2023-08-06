@@ -309,7 +309,7 @@
       ; trim
       (defun trim string (regex-replace string "^\s+|\s+$" ""))
       ; array-of-numbers
-      (defun array-of-numbers array (map array (lambda x i o (type x Number))))
+      (defun array-of-numbers array (map array (lambda x . . (type x Number))))
       ; concat
       (defun concat array1 array2 (do
         (loop defun iterate i bounds (do
@@ -460,15 +460,48 @@
             (iterate 0 (- (length array) 1))
             (if has-found idx -1)))
     ; index-of
-      (defun index-of array target (do
+    (defun index-of array target (do
+      (defvar idx -1 has-found 0)
+      (loop defun iterate i bounds (do
+        (defconstant current (get array i))
+        (boole has-found (and (atom current) (= target current)))
+        (if (and (not has-found) (< i bounds))
+          (iterate (+ i 1) bounds) 
+          (setf idx i))))
+          (iterate 0 (- (length array) 1))
+          (if has-found idx -1)))
+      ; last-index-of
+      (defun last-index-of array target (do
         (defvar idx -1 has-found 0)
-        (loop defun iterate i bounds (do
+        (loop defun iterate i (do
           (defconstant current (get array i))
           (boole has-found (= target current))
-          (if (and (not has-found) (< i bounds))
-            (iterate (+ i 1) bounds) 
+          (if (and (not has-found) (>= i 0))
+            (iterate (- i 1)) 
             (setf idx i))))
-            (iterate 0 (- (length array) 1))
+            (iterate (- (length array) 1))
+            (if has-found idx -1)))
+      ; index-of-starting-from
+    (defun index-of-starting-from array target start (do
+      (defvar idx -1 has-found 0)
+      (loop defun iterate i bounds (do
+        (defconstant current (get array i))
+        (boole has-found (= target current))
+        (if (and (not has-found) (< i bounds))
+          (iterate (+ i 1) bounds) 
+          (setf idx i))))
+          (iterate start (- (length array) 1))
+          (if has-found idx -1)))
+      ; last-index-of-ending-from
+      (defun last-index-of-ending-from array target end (do
+        (defvar idx -1 has-found 0)
+        (loop defun iterate i (do
+          (defconstant current (get array i))
+          (boole has-found (= target current))
+          (if (and (not has-found) (>= i 0))
+            (iterate (- i 1)) 
+            (setf idx i))))
+            (iterate (- (length array) 1 (* end -1)))
             (if has-found idx -1)))
       ; array-index-of
       (defun array-index-of array target 
@@ -561,7 +594,7 @@
             (defconstant 
               current (get table idx)
               len (length current)
-              index (if len (find-index current (lambda x i o (= (get x 0) key))) -1)
+              index (if len (find-index current (lambda x . . (= (get x 0) key))) -1)
               entry (Array key value))
             (if (= index -1)
               (push current entry)
@@ -608,7 +641,7 @@
             (defconstant 
               current (get table idx)
               len (length current)
-              index (if len (find-index current (lambda x i o (= x key))) -1)
+              index (if len (find-index current (lambda x . . (= x key))) -1)
               entry key)
             (if (= index -1)
               (push current entry)
@@ -779,11 +812,11 @@
       (defun adjacent-difference array callback (do 
         (defconstant len (length array))
         (unless (= len 1) 
-        (do (defconstant result (Number (car array)))
-        (loop defun iterate i (if (< i len) (do 
-        (setq result i (callback (get array (- i 1)) (get array i)))
-        (iterate (+ i 1))) result))
-        (iterate 1)) array)))
+          (do (defconstant result (Number (car array)))
+          (loop defun iterate i (if (< i len) (do 
+          (setq result i (callback (get array (- i 1)) (get array i)))
+          (iterate (+ i 1))) result))
+          (iterate 1)) array)))
     ; exports
     (Array 
       (Array "max" max)
@@ -852,6 +885,9 @@
       (Array "every" every)
       (Array "some" some)
       (Array "index-of" index-of)
+      (Array "last-index-of" last-index-of)
+      (Array "index-of-starting-from" index-of-starting-from)
+      (Array "last-index-of-ending-from" last-index-of-ending-from)
       (Array "array-index-of" array-index-of)
       (Array "accumulate" accumulate)
       (Array "count-of" count-of)

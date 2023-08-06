@@ -14,8 +14,8 @@ export const evaluate = (expression, env) => {
       const apply = env[first.value]
       if (typeof apply !== 'function')
         throw new TypeError(`${first.value} is not a (function).`)
-      if (!apply.count) apply.count = 0
-      apply.count++
+      if (!apply._count) apply._count = 0
+      apply._count++
       return apply(rest, env)
     case 'atom':
       if (rest.length) throw new TypeError(`Atoms can't have arguments.`)
