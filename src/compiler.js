@@ -29,6 +29,10 @@ const Helpers = {
     source: `// Helper Functions\nvar log = (msg) => { console.log(msg); return msg }`,
     has: true,
   },
+  _identity: {
+    source: `_identity = i => { return i }`,
+    has: true,
+  },
   tco: {
     source: `tco = fn => (...args) => {
       let result = fn(...args)
@@ -202,13 +206,13 @@ const compile = (tree, Locals) => {
       case 'Arrayp':
         return `(Array.isArray(${compile(Arguments[0], Locals)}));`
       case 'Number':
-        return Arguments.length ? `[${parseArgs(Arguments, Locals)}];` : '0'
+        return '0'
       case 'Integer':
-        return Arguments.length ? `[${parseArgs(Arguments, Locals)}];` : '0n'
+        return '0n'
       case 'Boolean':
-        return Arguments.length ? `[${parseArgs(Arguments, Locals)}];` : '1'
+        return '1'
       case 'String':
-        return Arguments.length ? `[${parseArgs(Arguments, Locals)}];` : ''
+        return '""'
       case 'Array':
         return Arguments.length === 2 &&
           Arguments[1].type === 'word' &&
@@ -229,7 +233,6 @@ const compile = (tree, Locals) => {
           Locals
         )});`
       case 'set':
-      case 'setq':
         return `_set(${parseArgs(Arguments, Locals)});`
       case 'lambda': {
         const functionArgs = Arguments
@@ -368,6 +371,7 @@ const compile = (tree, Locals) => {
           Arguments[0],
           Locals
         )})`
+
       case 'go': {
         let inp = Arguments[0]
         for (let i = 1; i < Arguments.length; ++i)
@@ -400,8 +404,12 @@ const compile = (tree, Locals) => {
           )
         }
         break
+      case 'identity':
+      case 'check-type':
+        return `_identity(${compile(Arguments[0], Locals)});`
       case 'probe-file':
       case 'void':
+      case 'deftype':
         return ''
       default: {
         const camleCasedToken = lispToJavaScriptVariableName(token)

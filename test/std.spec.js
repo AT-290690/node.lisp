@@ -47,7 +47,7 @@ const programs = [
   `(import std "slice" "window" "push" "reduce")
       (Array (window (Array 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16) 4))`,
   `(import std "max-bit" "min-bit" "clamp-bit")
-      (Number (max-bit 1 2) (min-bit 1 2) (clamp-bit 100 2 50) (clamp-bit 10 0 20))`,
+      (Array (max-bit 1 2) (min-bit 1 2) (clamp-bit 100 2 50) (clamp-bit 10 0 20))`,
   `(import std "is-bit-power-of-two" "map" "count-number-of-ones-bit")
     (Array (map (Array 2 4 8 16 32 64 1 3 7 40 49) (lambda x . . (is-bit-power-of-two x))) (count-number-of-ones-bit 23))`,
   `(import std "possible-subsets-bit")

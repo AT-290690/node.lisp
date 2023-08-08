@@ -4,7 +4,7 @@ describe('Interpration', () => {
   it('Should be correct', () => {
     deepStrictEqual(
       runFromInterpreted(
-        `(Array (char-code "l" 0) (char-code "i" 0) (char-code "s" 0) (char-code "p" 0) (make-string (Number 108 105 115 112)))`
+        `(Array (char-code "l" 0) (char-code "i" 0) (char-code "s" 0) (char-code "p" 0) (make-string (Array 108 105 115 112)))`
       ),
       [108, 105, 115, 112, 'lisp']
     )

@@ -12,7 +12,79 @@ const stringifyArgs = (args) =>
             .replace(new RegExp(/\,/g), ' ')
     })
     .join(' ')
+const atom = (arg, env) => {
+  if (arg.type === 'atom') return 1
+  else {
+    const atom = evaluate(arg, env)
+    return +(
+      typeof atom === 'number' ||
+      typeof atom === 'bigint' ||
+      typeof atom === 'string'
+    )
+  }
+}
+const equal = (a, b) =>
+  ((typeof a === 'number' || typeof a === 'bigint' || typeof a === 'string') &&
+    (typeof b === 'number' || typeof b === 'bigint' || typeof b === 'string') &&
+    typeof a === typeof b) ||
+  (Array.isArray(a) &&
+    (!a.length ||
+      !b.length ||
+      !(a.length > b.length ? a : b).some(
+        (_, i, bigger) =>
+          !equal(
+            bigger.at(i),
+            (a.length > b.length ? b : a).at(
+              i % (a.length > b.length ? b : a).length
+            )
+          )
+      ))) ||
+  false
+const types = {}
 const tokens = {
+  ['deftype']: (args, env) => {
+    if (args.length < 2)
+      throw new RangeError(
+        'Invalid number of arguments to (deftype) (2 required)'
+      )
+    if (args.length !== 2)
+      throw new RangeError(
+        'Invalid number of arguments to (deftype) (2 required)'
+      )
+
+    const word = args[0]
+    if (word.type !== 'word')
+      throw new SyntaxError(
+        `First argument of (deftype) must be word but got ${word.type}`
+      )
+    const name = word.value
+    types[name] = evaluate(args[1], env)
+    return types[name]
+  },
+  ['identity']: (args, env) => {
+    if (args.length !== 1)
+      throw new RangeError(
+        `Invalid number of arguments for (identity), expected 1 but got ${args.length}.`
+      )
+    return evaluate(args[0], env)
+  },
+  ['check-type']: (args, env) => {
+    if (args.length !== 2)
+      throw new RangeError(
+        `Invalid number of arguments for (check-type), expected 2 but got ${args.length}.`
+      )
+    const value = evaluate(args[0], env)
+    const type = args[1].value
+    if (!(type in types))
+      throw new ReferenceError(
+        `Type ${type} doesn't exist at (check-type ${stringifyArgs(args)})`
+      )
+    if (!equal(value, types[type])) {
+      throw new TypeError(
+        `Type doesn't match ${type} (check-type ${stringifyArgs(args)})`
+      )
+    } else return value
+  },
   ['concatenate']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
@@ -272,15 +344,7 @@ const tokens = {
       throw new RangeError(
         'Invalid number of arguments for (Atomp) (1 required)'
       )
-    if (args[0].type === 'atom') return 1
-    else {
-      const atom = evaluate(args[0], env)
-      return +(
-        typeof atom === 'number' ||
-        typeof atom === 'bigint' ||
-        typeof atom === 'string'
-      )
-    }
+    return atom(args[0], env)
   },
   ['car']: (args, env) => {
     if (args.length !== 1)
@@ -819,97 +883,58 @@ const tokens = {
       )
     return setTimeout(callback, time)
   },
-  ['String']: (args, env) => {
-    if (args.length) {
-      const params = args.map((x) => evaluate(x, env))
-      if (params.some((x) => typeof x !== 'string'))
-        throw new TypeError(
-          `Not all arguments of (String) are Strings (String ${stringifyArgs(
-            args
-          )})`
-        )
-      return params
-    }
-    return ''
-  },
-  ['Number']: (args, env) => {
-    if (args.length) {
-      const params = args.map((x) => evaluate(x, env))
-      if (params.some((x) => typeof x !== 'number'))
-        throw new TypeError(
-          `Not all arguments of (Number) are Numbers (Number ${stringifyArgs(
-            args
-          )})`
-        )
-      return params
-    }
-    return 0
-  },
-  ['Integer']: (args, env) => {
-    if (args.length) {
-      const params = args.map((x) => evaluate(x, env))
-      if (params.some((x) => typeof x !== 'bigint'))
-        throw new TypeError(
-          `Not all arguments of (Integer) are Integers (Integer ${stringifyArgs(
-            args
-          )})`
-        )
-      return params
-    }
-    return 0n
-  },
-  ['Boolean']: (args, env) => {
-    if (args.length) {
-      const params = args.map((x) => evaluate(x, env))
-      if (params.some((x) => x < 0 || x > 1))
-        throw new TypeError(
-          `Not all arguments of (Boolean) are 0 or 1 (Boolean ${stringifyArgs(
-            args
-          )})`
-        )
-      return params
-    }
-    return 1
-  },
+  ['String']: () => '',
+  ['Number']: () => 0,
+  ['Integer']: () => 0n,
+  ['Boolean']: () => 1,
   ['type']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError(
         `Invalid number of arguments for (type) ${args.length}`
       )
-    const type = args[1]
+    const type = args[1].value
     const value = evaluate(args[0], env)
     if (value == undefined)
       throw ReferenceError('Trying to access undefined value at (type)')
-    if (type.value === 'Number') {
-      const num = Number(value)
-      if (isNaN(num))
-        throw new TypeError(
-          `Attempting to convert Not a Number ("${value}") to a Number at (type) (type ${stringifyArgs(
-            args
-          )}).`
-        )
-      return num
-    } else if (type.value === 'Integer') {
-      return BigInt(value)
-    } else if (type.value === 'String') return value.toString()
-    else if (type.value === 'Bit') return parseInt(value, 2)
-    else if (type.value === 'Boolean') return +!!value
-    else if (type.value === 'Array') {
-      if (typeof value === 'number' || typeof value === 'bigint')
-        return [...Number(value).toString()].map(Number)
-      else if (typeof value[Symbol.iterator] !== 'function')
-        throw new TypeError(
-          `Arguments are not iterable for Array at (type) (type ${stringifyArgs(
-            args
-          )}).`
-        )
-      return [...value]
-    } else
-      throw new TypeError(
-        `Can only cast (or number string) at (type) (type ${stringifyArgs(
-          args
-        )}).`
-      )
+    if (args.length === 2) {
+      switch (type) {
+        case 'Number': {
+          const num = Number(value)
+          if (isNaN(num))
+            throw new TypeError(
+              `Attempting to convert Not a Number ("${value}") to a Number at (type) (type ${stringifyArgs(
+                args
+              )}).`
+            )
+          return num
+        }
+        case 'Integer':
+          return BigInt(value)
+        case 'String':
+          return value.toString()
+        case 'Bit':
+          return parseInt(value, 2)
+        case 'Boolean':
+          return +!!value
+        case 'Array': {
+          if (typeof value === 'number' || typeof value === 'bigint')
+            return [...Number(value).toString()].map(Number)
+          else if (typeof value[Symbol.iterator] !== 'function')
+            throw new TypeError(
+              `Arguments are not iterable for Array at (type) (type ${stringifyArgs(
+                args
+              )}).`
+            )
+          return [...value]
+        }
+        default:
+          throw new TypeError(
+            `Can only cast (or Number Integer String Array Bit Boolean) at (type) (type ${stringifyArgs(
+              args
+            )}).`
+          )
+      }
+    }
   },
   ['Bit']: (args, env) => {
     if (args.length !== 1)
@@ -1045,56 +1070,7 @@ const tokens = {
     const [definition, ...functionArgs] = args
     return tokens[definition.value](functionArgs, env)
   },
-  ['setq']: (args, env) => {
-    const a = evaluate(args[0], env)
-    const b = evaluate(args[2], env)
-    if (a.length && typeof a[0] !== typeof b)
-      throw new TypeError(
-        `Argument of (setq) is expected to be (${typeof a[0]} like ${
-          a[0]
-        }) but instead is (${
-          Array.isArray(b) ? `array as (${b.join(' ')})` : `${typeof b} as ${b}`
-        }) (setq ${stringifyArgs(args)}).`
-      )
-    if (args.length !== 2 && args.length !== 3)
-      throw new RangeError(
-        'Invalid number of arguments for (setq) (or 2 3) required'
-      )
-    const array = a
-    if (!Array.isArray(array))
-      throw new TypeError(
-        `First argument of (setq) must be an (Array) (setq ${stringifyArgs(
-          args
-        )}).`
-      )
-    const index = evaluate(args[1], env)
-    if (!Number.isInteger(index))
-      throw new TypeError(
-        `Second argument of (setq) must be an (32 bit integer) (${index}) (setq ${stringifyArgs(
-          args
-        )}).`
-      )
-    if (index > array.length)
-      throw new RangeError(
-        `Second argument of (setq) is outside of the (Array) bounds (index ${index} bounds ${
-          array.length
-        }) (setq ${stringifyArgs(args)}).`
-      )
-    if (args.length !== 3)
-      throw new RangeError(
-        'Invalid number of arguments for (setq) (if index is >= 0 then 3 required)'
-      )
-    const value = evaluate(args[2], env)
-    if (value == undefined)
-      throw new RangeError(
-        `Trying to set a null value in (Array) at (setq). (setq ${stringifyArgs(
-          args
-        )})`
-      )
-    array[index] = value
-    return array
-  },
   ['module']: () => 'WAT module',
 }
 tokens['void'] = tokens['do']
-export { tokens }
+export { tokens, types }

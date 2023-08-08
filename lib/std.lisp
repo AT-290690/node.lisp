@@ -1,14 +1,20 @@
 ; (std lib)
-(defun std (do 
+(defun std (do
+  (deftype integer-t (Integer))
+  (deftype number-t (Number))
+  (deftype string-t (String))
+  (deftype array-t ())
+  (deftype array-number-t (Array (Number)))
+  (deftype direction-t (Array (Array (Number) (Number))))
   ; modules
   ; max
   (defun max a b (if (> a b) a b))
   ; min
   (defun min a b (if (< a b) a b))
   ; maximum
-  (defun maximum array (reduce array (lambda a b . . (max a b)) -9007199254740991))
+  (defun maximum array (reduce (check-type array array-number-t) (lambda a b . . (max a b)) -9007199254740991))
   ; minimum
-  (defun minimum array (reduce array (lambda a b . . (min a b)) 9007199254740991))
+  (defun minimum array (reduce (check-type array array-number-t) (lambda a b . . (min a b)) 9007199254740991))
   ; normalize 
   (defun normalize value min max (* (- value min) (/ (- max min))))
   ; linear-interpolation
@@ -80,14 +86,14 @@
   (defun can-sum t values 
     (if (< t 0) 0 
       (if (= t 0) 1 
-        (some values (lambda x . . (can-sum (- t x) values))))))
+        (some (check-type values array-number-t) (lambda x . . (can-sum (- t x) values))))))
   ; how-can-sum
   (defun how-can-sum t values 
     (if (< t 0) 0 
       (if (= t 0) () 
         (do 
           (defvar res 0)
-          (some values (lambda x . . (do 
+          (some (check-type value array-number-t) (lambda x . . (do 
             (setf res (how-can-sum (- t x) values))
             (if (and (Arrayp res) (= -1 (array-index-of res x))) (push res x))))) 
           res))))
@@ -201,11 +207,11 @@
       ) (do 
         (defconstant arr ())
         (loop defun iterate-i i (when (<= i (length s)) (do
-          (set arr i (Number i))
+          (set arr i (Array i))
           (loop defun iterate-j j (when (<= j (length t)) (do 
             (set (get arr i) j 
               (if (= i 0) j 
-                (minimum (Number 
+                (minimum (Array 
                   (+ (get (get arr (- i 1)) j) 1)
                   (+ (get (get arr i) (- j 1)) 1)
                   (+ (get (get arr (- i 1)) (- j 1)) (not (= (get s (- j 1)) (get t (- i 1)))))))))
@@ -216,7 +222,7 @@
         (get (get arr (length t)) (length s))))))
   ; neighborhood
   (defun neighborhood array directions y x callback
-      (reduce directions (lambda sum dir . . (do
+      (reduce (check-type directions direction-t) (lambda sum dir . . (do
           (defconstant
               dy (+ (car dir) y)
               dx (+ (car (cdr dir)) x))
@@ -299,7 +305,7 @@
               (when (< x1 0) (setf x1 (+ x1 m0)))
               x1))))
       ; join
-      (defun join array delim (reduce array (lambda a x i . (if (> i 0) (concatenate a delim (type x String)) (type x String))) ""))
+      (defun join array delim (reduce (check-type array array-t) (lambda a x i . (if (> i 0) (concatenate a delim (type x String)) (type x String))) ""))
       ; repeat
       (defun repeat n x (map (Array n length) (lambda . . . x)))
       ; split-by-lines
@@ -312,6 +318,8 @@
       (defun array-of-numbers array (map array (lambda x . . (type x Number))))
       ; concat
       (defun concat array1 array2 (do
+        (check-type array1 array-t)
+        (check-type array1 array-t)
         (loop defun iterate i bounds (do
         (when (< i (length array2)) (push array1 (get array2 i)))
         (if (< i bounds) 
@@ -426,9 +434,9 @@
         (if (< i bounds) (iterate (+ i 1) bounds) initial)))
       (iterate 0 (- (length array) 1))))
     ; sum-array
-    (defun sum-array array (reduce array (lambda a b . . (+ a b)) 0))
+    (defun sum-array array (reduce (check-type array array-number-t) (lambda a b . . (+ a b)) 0))
     ; product-array
-    (defun product-array array (reduce array (lambda a b . . (* a b)) 1))
+    (defun product-array array (reduce (check-type array array-number-t) (lambda a b . . (* a b)) 1))
     ; deep-flat
     (defun deep-flat arr (do 
       (defconstant new-array ()) 
@@ -519,6 +527,7 @@
                   (if has-found idx -1)))))
       ; quick-sort
       (defun quick-sort arr (do
+        (check-type arr array-number-t)
         (if (<= (length arr) 1) arr
         (do
           (defconstant 
@@ -704,16 +713,24 @@
       ; (/ Binary Tree)
       ; left-pad
       (defun left-pad str n ch (do 
+        (check-type str string-t)
+        (check-type str number-t)
+        (check-type ch string-t)
         (setf n (- n (length str)))
         (loop defun pad i str (if (< i n) (pad (+ i 1) (setf str (concatenate ch str))) str))
         (pad 0 str)))
         ; left-pad
       (defun right-pad str n ch (do 
+        (check-type str string-t)
+        (check-type str number-t)
+        (check-type ch string-t)
         (setf n (- n (length str)))
         (loop defun pad i str (if (< i n) (pad (+ i 1) (setf str (concatenate str ch))) str))
         (pad 0 str)))
       ; occurances_count
       (defun character-occurances-in-string string letter (do
+        (check-type string string-t)
+        (check-type letter string-t)
         (defvar 
           array (type string Array)
           bitmask 0
@@ -734,12 +751,13 @@
             (iterate 0 (- (length array) 1))))
     ;  to-upper-case
     (defun to-upper-case str (do
+    (check-type str string-t)
      (defconstant 
             arr () 
             n (length str))
       (loop defun iter i (if (< i n) (do 
         (defconstant current-char (char-code str i))
-        (setq arr i 
+        (set arr i 
           (if (and (>= current-char 97) (<= current-char 122))
             (- current-char 32)
             current-char
@@ -749,12 +767,13 @@
         (iter 0)))
     ;  to-lower-case
     (defun to-lower-case str (do
+      (check-type str string-t)
       (defconstant 
             arr () 
             n (length str))
       (loop defun iter i (if (< i n) (do 
         (defconstant current-char (char-code str i))
-        (setq arr i 
+        (set arr i 
           (if (and (>= current-char 65) (<= current-char 90))
             (+ current-char 32)
             current-char
@@ -763,9 +782,10 @@
         (make-string arr)))
         (iter 0)))
     ; split-by-n-lines
-    (defun split-by-n-lines string n (go string (regex-replace (concatenate "(\n){" (type n String) "}") "௮") (regex-match "[^௮]+") (map (lambda x . . (regex-match x "[^\n]+")))))
+    (defun split-by-n-lines string n (go string (check-type string-t) (regex-replace (concatenate "(\n){" (type n String) "}") "௮") (regex-match "[^௮]+") (map (lambda x . . (regex-match x "[^\n]+")))))
     ; split
-    (defun split string separator (do 
+    (defun split string separator (do
+        (check-type string string-t) 
         (defconstant 
           sepArr (type separator Array)
           array (type string Array)
@@ -783,6 +803,7 @@
         (push (iterate () 0 (- (length array) 1)) cursor)))
       ; slice 
       (defun slice array start end (do 
+        (check-type array array-t)
         (defconstant bounds (- end start) out (Array bounds length))
         (loop defun iterate i 
           (if (< i bounds) 
@@ -792,11 +813,11 @@
               out))
               (iterate 0)))
       ; slice-if-index
-      (defun slice-if-index array callback (reduce array (lambda a b i . (if (callback i) (push a b) a)) ()))
+      (defun slice-if-index array callback (reduce (check-type array array-t) (lambda a b i . (if (callback i) (push a b) a)) ()))
       ; slice-if
-      (defun slice-if array callback (reduce array (lambda a b i . (if (callback b i) (push a b) a)) ()))
+      (defun slice-if array callback (reduce (check-type array array-t) (lambda a b i . (if (callback b i) (push a b) a)) ()))
       ; window
-      (defun window inp n (go inp 
+      (defun window array n (go array (check-type array-t)
         (reduce (lambda acc current i all 
           (if (>= i n) 
             (push acc (slice all (- i n) i)) acc)) ())))
@@ -810,11 +831,12 @@
               (not (some a (lambda . i . (not (equal (get a i) (get b i)))))))))
       ; adjacent-difference
       (defun adjacent-difference array callback (do 
+        (check-type array array-number-t)
         (defconstant len (length array))
         (unless (= len 1) 
-          (do (defconstant result (Number (car array)))
+          (do (defconstant result (Array (car array)))
           (loop defun iterate i (if (< i len) (do 
-          (setq result i (callback (get array (- i 1)) (get array i)))
+          (set result i (callback (get array (- i 1)) (get array i)))
           (iterate (+ i 1))) result))
           (iterate 1)) array)))
     ; exports

@@ -140,6 +140,15 @@ const cli = async () => {
         try {
           run(STD.concat(parse(file)), env)
         } catch (err) {
+          // console.log('\x1b[40m', err, '\x1b[0m')
+          logError(err.message)
+        }
+        break
+      case '-trace':
+        try {
+          run(STD.concat(parse(file)), env)
+        } catch (err) {
+          console.log('\x1b[40m', err, '\x1b[0m')
           logError(err.message)
         }
         break

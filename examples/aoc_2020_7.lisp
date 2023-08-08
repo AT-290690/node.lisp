@@ -110,7 +110,7 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
     (defconstant next (*find-bag* all-bags (car (cdr current)) (car (cdr (cdr current)))))
     (+ output (if next (* (car current) (*solve2* (car (cdr next)) all-bags)) (car current))))) 1))
 
-(Number
+(Array
   (go (*read-input* sample1) (*solve1* *target*))
   (go (*read-input* sample2) (*solve1* *target*))
   (go (*read-input* sample1) (*find-bag* "shiny" "gold") (cdr) (car) (*solve2* (*read-input* sample1)) (- 1))

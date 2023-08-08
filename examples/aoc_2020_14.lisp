@@ -7,7 +7,7 @@
   "some" "find" "slice" "power"  "concat" "sum-array" "count-number-of-ones-bit" "for-n")
 
 (defconstant *input* 
-(String 
+(Array 
 "mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
 mem[8] = 11
 mem[7] = 101
@@ -29,7 +29,7 @@ mem[26] = 1"))
       (reduce (lambda a b . . (do
         (if (= (car b) "mask") (do
           (defconstant mask (go (car (cdr b)) (type Array)))
-          (push a (Array (Integer (to-mask-of mask "X") (to-mask-of mask "1")))))
+          (push a (Array (Array (to-mask-of mask "X") (to-mask-of mask "1")))))
           (push (get a -1) 
                 (Array (go b
                   (car)
@@ -87,7 +87,7 @@ mem[26] = 1"))
                 xmask (to-mask-of mask "X")
                 omask (to-mask-of mask "1"))
           (setf n (<< 2 (count-number-of-ones-bit (type xmask Number))))
-          (push a (Array (Integer xmask omask))))
+          (push a (Array (Array xmask omask))))
           (push (get a -1) 
                 (Array (go b
                   (car)

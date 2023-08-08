@@ -45,7 +45,7 @@
     (some (lambda n . .
       (some (window *numbers* n) (lambda x . . (do 
         (and (= (sum-array x) *preamble*) (setf *weakness* x))))))))
-(Number 
+(Array 
   ; 21806024
   *preamble* 
   ; 2986195

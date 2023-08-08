@@ -66,7 +66,7 @@
                 (setf result (+ result (combinations inp j memo)))
                 (iterate (- j 1))))))
             (iterate (- i 1))
-            (setq memo i result)
+            (set memo i result)
             result)))
 
 (defun iterative-solution inp (do
@@ -76,10 +76,10 @@
   (loop defun iterate-i i (do
     (when (< i size) 
       (do 
-        (setq memo i 0) 
+        (set memo i 0) 
         (loop defun iterate-j j (when (and (>= j 0) (<= (- (get inp i) (get inp j)) 3)) 
           (do
-            (setq memo i (+ (get memo i) (get memo j)))
+            (set memo i (+ (get memo i) (get memo j)))
             (iterate-j (- j 1)))))
         (iterate-j (- i 1))
         (iterate-i (+ i 1))))))
@@ -89,16 +89,16 @@
 (defun transform-input input (do 
                           (defconstant sorted 
                               (go input 
-                                (setq (length input) 0) 
+                                (set (length input) 0) 
                                 (quick-sort)))
-                          (setq  
+                          (set  
                             sorted
                             (length sorted) 
                             (+ (get sorted -1) 3))))
 
 (defconstant *transformed-input* (go *parsed-input* (transform-input)))
 
-(Number
+(Array
 ; part 1
   (* 
     (go 

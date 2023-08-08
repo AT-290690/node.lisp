@@ -11,7 +11,8 @@
 #.##...#...
 #...##....#
 .#..#...#.#")
-
+(deftype matrix-t (Array (Array (Number))))
+(deftype input-t (String))
 (defconstant *input* sample)
 ; (defvar *input* (open "./playground/src/aoc_2020/3/input.txt"))
 
@@ -32,22 +33,24 @@
 
 (defun task *input* (do 
   (defconstant matrix (go *input* 
+              (check-type input-t) 
               (split-by-lines)
               (to_bit_array)))
   ; 7 for sample
-  (Number 
+  (Array 
   (go matrix
+    (check-type matrix-t)
     (*solve* 3 1)
     (sum-array)) 
   ; 336 for sample
   (go 
   (Array 
-    (Number 1 1) 
-    (Number 3 1) 
-    (Number 5 1) 
-    (Number 7 1) 
-    (Number 1 2)) 
-    (map (lambda x . . (go matrix (*solve* (car x) (car (cdr x))) (sum-array))))
+    (Array 1 1) 
+    (Array 3 1) 
+    (Array 5 1) 
+    (Array 7 1) 
+    (Array 1 2)) 
+    (map (lambda x . . (go matrix (check-type matrix-t) (*solve* (car x) (car (cdr x))) (sum-array))))
     (product-array)))))
 
 (task *input*)

@@ -5,12 +5,13 @@
 2-9 c: ccccccccc")
 ; (defvar sample "3-4 b: jbmb")
 ; (defvar sample "2-3 f: fvwc")
+(deftype string-t (String))
 (defconstant *input* sample)
 ; (defvar *input* (open "./playground/src/aoc_2020/2/input.txt"))
 (defconstant *occ* (regex-match *input* "([0-9]{1,2}-[0-9]{1,2})"))
 (defconstant *policy* (regex-match *input* "[a-z](?=:)"))
 (defconstant *inputs* (regex-match *input* "(?<=:[ ])(.*)"))
-(defun occ_to_numbers x . . (go x (split-by "-") (map (lambda y . . (type y Number)))))
+(defun occ_to_numbers x . . (go x (check-type string-t) (split-by "-") (map (lambda y . . (type y Number)))))
 
 (defun *solve1* string letter (do
   (defconstant 
@@ -41,7 +42,7 @@
     right (= letter b))
   (and (not (and left right)) (or left right))))
 
-(Number 
+(Array 
 (go *occ*
    (map occ_to_numbers)
    (map (lambda x i . (go x 

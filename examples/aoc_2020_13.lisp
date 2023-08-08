@@ -18,7 +18,7 @@
       *buses* (car (cdr *INP*)))
     (go 
       *buses*
-      (map (lambda x . . (Number x (- x (mod *time* x)))))
+      (map (lambda x . . (Array x (- x (mod *time* x)))))
       (reduce (lambda a b . . (if (> (car (cdr a)) (car (cdr b))) b a)) (Array 0 100000))
       (product-array))))
 
@@ -51,14 +51,14 @@
         (defconstant 
           INP (go inp (split "\n"))
           time (type (car INP) Number)
-          buses (go (car (cdr INP)) (split ",") (reduce (lambda acc x i . (unless (= x "x") (setq acc (length acc) (Number (type x Number) i)) acc)) ())))
+          buses (go (car (cdr INP)) (split ",") (reduce (lambda acc x i . (unless (= x "x") (set acc (length acc) (Array (type x Number) i)) acc)) ())))
         (Array time buses)))
       (defconstant inp (car (cdr (parse input))))
       (unless (is-array-of-coprime-pairs (map inp (lambda x . . (car x)))) 
         (throw "Chinese remainder theorem only works if all numbers are pairwise coprime")
         (chinese-remainder-theorem inp))))
 
-(Number 
+(Array 
  (*solve1* sample)
  (*solve1* input)
  (*solve2* sample)

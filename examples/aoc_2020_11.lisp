@@ -10,13 +10,15 @@ L.LLLLL.LL
 LLLLLLLLLL
 L.LLLLLL.L
 L.LLLLL.LL")
+(deftype matrix-t (Array (Array (Number))))
+(deftype input-t (String))
 (defconstant *input* sample)
 ; (defconstant *input* (open "./playground/src/aoc_2020/11/input.txt"))
 (defun count-seats matrix (do
-  (reduce matrix (lambda a row . . (+ a (count-of row (lambda x . . (> x 0))))) 0)))
+  (reduce (check-type matrix matrix-t) (lambda a row . . (+ a (count-of row (lambda x . . (> x 0))))) 0)))
 
 (defun parse-input input (go 
-  input
+  (check-type input input-t)
   (split-by-lines)
   (map (lambda row . . 
     (go row 
@@ -24,27 +26,31 @@ L.LLLLL.LL")
       (map (lambda col . . (- (= col "L") 1))))))))
 
 (defun solve-1 matrix tolerance (do 
+  (check-type matrix matrix-t)
   (defconstant 
     height (- (length matrix) 1)
     width (- (length (car matrix)) 1)
     directions (Array (Array 0 1) (Array 1 0) (Array -1 0) (Array 0 -1) (Array 1 -1) (Array -1 -1) (Array 1 1) (Array -1 1))
     copy (map (Array (+ height 1) length) (lambda . . . (Array (+ width 1) length))))
+  (check-type copy matrix-t)
   (for-n height (lambda y 
     (for-n width (lambda x (do 
       (defconstant 
         current (get (get matrix y) x)
         sum (neighborhood matrix directions y x (lambda neighbor . (and (not (= neighbor -1)) neighbor))))
-      (setq (get copy y) x 
+      (set (get copy y) x 
         (if (and (= sum 0) (= current 0)) 1
           (if (and (>= sum tolerance) (= current 1)) 0 current))))))))
           copy))
           
 (defun solve-2 matrix tolerance (do 
+  (check-type matrix matrix-t)
   (defconstant 
     height (- (length matrix) 1)
     width (- (length (car matrix)) 1)
     copy (map (Array (+ height 1) length) (lambda . . . (Array (+ width 1) length)))
-    directions (Array (Number 0 1) (Number 1 0) (Number -1 0) (Number 0 -1) (Number 1 -1) (Number -1 -1) (Number 1 1) (Number -1 1)))
+    directions (Array (Array 0 1) (Array 1 0) (Array -1 0) (Array 0 -1) (Array 1 -1) (Array -1 -1) (Array 1 1) (Array -1 1)))
+  (check-type copy matrix-t)
   (for-n height (lambda y 
     (for-n width (lambda x 
       (do 
@@ -66,12 +72,12 @@ L.LLLLL.LL")
           ; # = 1
           ; . = -1
           ; (defvar moore (lambda neighbor . (and (not (= neighbor -1)) neighbor)))
-          (setq (get copy y) x 
+          (set (get copy y) x 
             (if (and (= sum 0) (= current 0)) 1
               (if (and (>= sum tolerance) (= current 1)) 0 current))))))))
               copy))
 
-(defun format-matrix matrix (go matrix 
+(defun format-matrix matrix (go matrix (check-type matrix-t) 
                                   (map (lambda row . . 
                                     (go row 
                                       (map (lambda col . . 
@@ -86,7 +92,7 @@ L.LLLLL.LL")
 (defun print-matrix matrix (and (log (format-matrix matrix)) matrix))
 
 (defconstant *matrix* (parse-input *input*))
-
+(check-type *matrix* matrix-t)
 ; (log "----------")
 ; (log "PART 1")
 ; (log (format-matrix *matrix*))
@@ -136,6 +142,7 @@ L.LLLLL.LL")
 ; (log "\n----------")
 
   (loop defun rotate matrix prev n (do 
+    (check-type matrix matrix-t)
     (defconstant 
       next-matrix (if n (solve-2 matrix 5) (solve-1 matrix 4))
       next (count-seats next-matrix))
@@ -143,4 +150,4 @@ L.LLLLL.LL")
       (rotate next-matrix next n)
       next)))
 
-(Number (go *matrix* (rotate -1 0)) (go *matrix* (rotate -1 1)))
+(Array (go *matrix* (rotate -1 0)) (go *matrix* (rotate -1 1)))

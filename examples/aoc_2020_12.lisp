@@ -149,4 +149,4 @@ F11")
   (next)
   (+ (abs x) (abs y))))
 
-(Number (solve1) (solve2))
+(Array (solve1) (solve2))
