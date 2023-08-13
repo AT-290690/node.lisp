@@ -787,12 +787,12 @@
     (defun split string separator (do
         (check-type string string-t) 
         (defconstant 
-          sepArr (type separator Array)
+          sep-arr (type separator Array)
           array (type string Array)
-          skip (length sepArr))
+          skip (length sep-arr))
         (defvar cursor "")
         (loop defun iterate result i bounds
-          (if (< (if (every sepArr (lambda y j . (= (get array (+ i j)) y)))
+          (if (< (if (every sep-arr (lambda y j . (or (<= (length array) (+ i j)) (= (get array (+ i j)) y))))
                 (do 
                   (setf i (+ i skip -1))
                   (push result cursor)

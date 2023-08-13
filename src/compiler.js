@@ -87,6 +87,8 @@ const Helpers = {
          return parseInt(value, 2)
       case 'Boolean':
           return +!!value
+      case 'Function':
+          return () => value
        default:
          return 0
       }
@@ -203,6 +205,8 @@ const compile = (tree, Locals) => {
         return handleBoolean(
           `(typeof(${compile(Arguments[0], Locals)})==='bigint');`
         )
+      case 'Functionp':
+        return `(typeof(${compile(Arguments[0], Locals)})==='function');`
       case 'Arrayp':
         return `(Array.isArray(${compile(Arguments[0], Locals)}));`
       case 'Number':
@@ -219,6 +223,8 @@ const compile = (tree, Locals) => {
           Arguments[1].value === 'length'
           ? `(new Array(${compile(Arguments[0], Locals)}).fill(0))`
           : `[${parseArgs(Arguments, Locals)}];`
+      case 'Function':
+        return '(()=>{});'
       case 'length':
         return `(${compile(Arguments[0], Locals)}).length`
       case 'atom':

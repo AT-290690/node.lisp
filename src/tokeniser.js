@@ -24,10 +24,9 @@ const atom = (arg, env) => {
   }
 }
 const equal = (a, b) =>
-  ((typeof a === 'number' || typeof a === 'bigint' || typeof a === 'string') &&
-    (typeof b === 'number' || typeof b === 'bigint' || typeof b === 'string') &&
-    typeof a === typeof b) ||
+  (typeof a !== 'object' && typeof b !== 'object' && typeof a === typeof b) ||
   (Array.isArray(a) &&
+    Array.isArray(b) &&
     (!a.length ||
       !b.length ||
       !(a.length > b.length ? a : b).some(
@@ -178,6 +177,13 @@ const tokens = {
         'Invalid number of arguments for (Stringp) (1 required)'
       )
     return +(typeof evaluate(args[0], env) === 'string')
+  },
+  ['Functionp']: (args, env) => {
+    if (args.length !== 1)
+      throw new RangeError(
+        'Invalid number of arguments for (Functionp) (1 required)'
+      )
+    return +(typeof evaluate(args[0], env) === 'function')
   },
   ['char-code']: (args, env) => {
     if (args.length !== 2)
@@ -887,6 +893,7 @@ const tokens = {
   ['Number']: () => 0,
   ['Integer']: () => 0n,
   ['Boolean']: () => 1,
+  ['Function']: () => () => {},
   ['type']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError(
@@ -916,6 +923,8 @@ const tokens = {
           return parseInt(value, 2)
         case 'Boolean':
           return +!!value
+        case 'Function':
+          return () => value
         case 'Array': {
           if (typeof value === 'number' || typeof value === 'bigint')
             return [...Number(value).toString()].map(Number)
