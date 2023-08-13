@@ -14,7 +14,7 @@ import {
 } from './src/utils.js'
 import { STD } from './lib/std.js'
 import { tokens } from './src/tokeniser.js'
-import { TYPE, VALUE, WORD } from './src/enums.js'
+import { APPLY, TYPE, VALUE, WORD } from './src/enums.js'
 const cli = async () => {
   const [, , ...argv] = process.argv
   let file = '',
