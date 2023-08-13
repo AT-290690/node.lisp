@@ -1,3 +1,4 @@
+import { APPLY, ATOM, TYPE, VALUE, WORD } from './enums.js'
 import {
   handleUnbalancedParens,
   handleUnbalancedQuotes,
@@ -46,18 +47,18 @@ export const parse = (source) => {
       let token = acc
       acc = ''
       if (token) {
-        if (!head.length) head.push({ type: 'apply', value: token })
+        if (!head.length) head.push({ [TYPE]: APPLY, [VALUE]: token })
         else if (token.match(/^"([^"]*)"/))
           head.push({
-            type: 'atom',
-            value: token.substring(1, token.length - 1),
+            [TYPE]: ATOM,
+            [VALUE]: token.substring(1, token.length - 1),
           })
         else if (token.match(/^-?[0-9]\d*(\.\d+)?$/))
           head.push({
-            type: 'atom',
-            value: Number(token),
+            [TYPE]: ATOM,
+            [VALUE]: Number(token),
           })
-        else head.push({ type: 'word', value: token })
+        else head.push({ [TYPE]: WORD, [VALUE]: token })
       }
       if (cursor === ')') head = stack.pop()
     } else acc += cursor

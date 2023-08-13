@@ -1,25 +1,26 @@
-import { tokens, types } from './tokeniser.js'
+import { APPLY, ATOM, WORD } from './enums.js'
+import { tokens } from './tokeniser.js'
 export const evaluate = (expression, env) => {
   if (expression == undefined) return 0
   const [first, ...rest] = Array.isArray(expression) ? expression : [expression]
   if (first == undefined) return []
-  switch (first.type) {
-    case 'word': {
-      const word = env[first.value]
+  switch (first.t) {
+    case WORD: {
+      const word = env[first.v]
       if (word == undefined)
-        throw new ReferenceError(`Undefined variable ${first.value}.`)
+        throw new ReferenceError(`Undefined variable ${first.v}.`)
       return word
     }
-    case 'apply':
-      const apply = env[first.value]
+    case APPLY:
+      const apply = env[first.v]
       if (typeof apply !== 'function')
-        throw new TypeError(`${first.value} is not a (function).`)
+        throw new TypeError(`${first.v} is not a (function).`)
       if (!apply._count) apply._count = 0
       apply._count++
       return apply(rest, env)
-    case 'atom':
+    case ATOM:
       if (rest.length) throw new TypeError(`Atoms can't have arguments.`)
-      return first.value
+      return first.v
     // default:
     //   console.log(types)
     //   console.log(first)

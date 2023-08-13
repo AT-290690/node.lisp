@@ -1,19 +1,20 @@
+import { APPLY, ATOM, TYPE, VALUE, WORD } from './enums.js'
 import { evaluate } from './interpreter.js'
 const stringifyArgs = (args) =>
   args
     .map((x) => {
       return Array.isArray(x)
         ? `(${stringifyArgs(x)})`
-        : x.type === 'apply' || x.type === 'word'
-        ? x.value
-        : JSON.stringify(x.value)
+        : x[TYPE] === [APPLY] || x[TYPE] === WORD
+        ? x[VALUE]
+        : JSON.stringify(x[VALUE])
             .replace(new RegExp(/\[/g), '(')
             .replace(new RegExp(/\]/g), ')')
             .replace(new RegExp(/\,/g), ' ')
     })
     .join(' ')
 const atom = (arg, env) => {
-  if (arg.type === 'atom') return 1
+  if (arg[TYPE] === ATOM) return 1
   else {
     const atom = evaluate(arg, env)
     return +(
@@ -52,11 +53,11 @@ const tokens = {
       )
 
     const word = args[0]
-    if (word.type !== 'word')
+    if (word[TYPE] !== WORD)
       throw new SyntaxError(
-        `First argument of (deftype) must be word but got ${word.type}`
+        `First argument of (deftype) must be word but got ${word[TYPE]}`
       )
-    const name = word.value
+    const name = word[VALUE]
     types[name] = evaluate(args[1], env)
     return types[name]
   },
@@ -73,7 +74,7 @@ const tokens = {
         `Invalid number of arguments for (check-type), expected 2 but got ${args.length}.`
       )
     const value = evaluate(args[0], env)
-    const type = args[1].value
+    const type = args[1][VALUE]
     if (!(type in types))
       throw new ReferenceError(
         `Type ${type} doesn't exist at (check-type ${stringifyArgs(args)})`
@@ -328,7 +329,7 @@ const tokens = {
         'Invalid number of arguments for (Array) (>= 1 required)'
       )
     const isCapacity =
-      args.length === 2 && args[1].type === 'word' && args[1].value === 'length'
+      args.length === 2 && args[1][TYPE] === WORD && args[1][VALUE] === 'length'
     if (isCapacity) {
       if (args.length !== 2)
         throw new RangeError(
@@ -514,12 +515,12 @@ const tokens = {
       )
     const params = args.slice(1, -1)
     const body = args.at(-1)
-    const name = args[0].value
+    const name = args[0][VALUE]
     const fn = (props = [], scope) => {
       if (props.length > params.length) {
         throw new RangeError(
           `More arguments for (defun ${name} ${params
-            .map((x) => x.value)
+            .map((x) => x[VALUE])
             .join(' ')
             .trim()}) are provided. (expects ${params.length} but got ${
             props.length
@@ -529,7 +530,7 @@ const tokens = {
       if (props.length !== params.length)
         throw new RangeError(
           `Incorrect number of arguments for (defun ${name} ${params
-            .map((x) => x.value)
+            .map((x) => x[VALUE])
             .join(' ')
             .trim()}) are provided. (expects ${params.length} but got ${
             props.length
@@ -537,7 +538,7 @@ const tokens = {
         )
       const localEnv = Object.create(env)
       for (let i = 0; i < props.length; ++i)
-        Object.defineProperty(localEnv, params[i].value, {
+        Object.defineProperty(localEnv, params[i][VALUE], {
           value: evaluate(props[i], scope),
           writable: true,
         })
@@ -557,14 +558,14 @@ const tokens = {
       if (props.length !== params.length)
         throw new RangeError(
           `Incorrect number of arguments for (lambda ${params
-            .map((x) => x.value)
+            .map((x) => x[VALUE])
             .join(' ')}) are provided. (expects ${params.length} but got ${
             props.length
           })`
         )
       const localEnv = Object.create(env)
       for (let i = 0; i < props.length; ++i)
-        localEnv[params[i].value] = evaluate(props[i], scope)
+        localEnv[params[i][VALUE]] = evaluate(props[i], scope)
       return evaluate(body, localEnv)
     }
   },
@@ -695,7 +696,7 @@ const tokens = {
         'Invalid number of arguments to (apply) (>= 1 required)'
       )
     const [first, ...rest] = args
-    if (first.type === 'word' && first.value in tokens)
+    if (first[TYPE] === WORD && first[VALUE] in tokens)
       throw new TypeError(
         `Following argument of (apply) must not be an reserved word (apply ${stringifyArgs(
           args
@@ -722,11 +723,11 @@ const tokens = {
     for (let i = 0; i < args.length; ++i) {
       if (i % 2 === 0) {
         const word = args[i]
-        if (word.type !== 'word')
+        if (word[TYPE] !== WORD)
           throw new SyntaxError(
-            `First argument of (defconstant) must be word but got ${word.type}`
+            `First argument of (defconstant) must be word but got ${word[TYPE]}`
           )
-        name = word.value
+        name = word[VALUE]
       } else
         Object.defineProperty(env, name, {
           value: evaluate(args[i], env),
@@ -748,11 +749,11 @@ const tokens = {
     for (let i = 0; i < args.length; ++i) {
       if (i % 2 === 0) {
         const word = args[i]
-        if (word.type !== 'word')
+        if (word[TYPE] !== WORD)
           throw new SyntaxError(
-            `First argument of (defvar) must be word but got ${word.type}`
+            `First argument of (defvar) must be word but got ${word[TYPE]}`
           )
-        name = word.value
+        name = word[VALUE]
       } else env[name] = evaluate(args[i], env)
     }
     return env[name]
@@ -760,7 +761,7 @@ const tokens = {
   ['setf']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError('Invalid number of arguments to (setf) (2 required)')
-    const entityName = args[0].value
+    const entityName = args[0][VALUE]
     const value = evaluate(args[1], env)
     for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
       if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
@@ -786,7 +787,7 @@ const tokens = {
       throw new RangeError(
         'Invalid number of arguments to (boole) (2 required)'
       )
-    const entityName = args[0].value
+    const entityName = args[0][VALUE]
     const value = evaluate(args[1], env)
     if (value !== 0 && value !== 1)
       throw new TypeError(
@@ -818,7 +819,7 @@ const tokens = {
     const module = evaluate(first, env)
     if (typeof module !== 'function')
       throw new TypeError(
-        `First argument of (import) must be an (function) but got (${first.value}).`
+        `First argument of (import) must be an (function) but got (${first[VALUE]}).`
       )
     const functions = rest.map((arg) => evaluate(arg, env))
     if (functions.some((arg) => typeof arg !== 'string'))
@@ -899,7 +900,7 @@ const tokens = {
       throw new RangeError(
         `Invalid number of arguments for (type) ${args.length}`
       )
-    const type = args[1].value
+    const type = args[1][VALUE]
     const value = evaluate(args[0], env)
     if (value == undefined)
       throw ReferenceError('Trying to access undefined value at (type)')
@@ -1077,7 +1078,7 @@ const tokens = {
       )
     // TODO: Add validation for TCO recursion
     const [definition, ...functionArgs] = args
-    return tokens[definition.value](functionArgs, env)
+    return tokens[definition[VALUE]](functionArgs, env)
   },
   ['module']: () => 'WAT module',
 }

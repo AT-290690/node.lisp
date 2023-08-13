@@ -1,4 +1,5 @@
 import { compileToJs, lispToJavaScriptVariableName } from './compiler.js'
+import { APPLY, TYPE, VALUE, WORD } from './enums.js'
 import { run } from './interpreter.js'
 import { parse } from './parser.js'
 export const logError = (error) => console.log('\x1b[31m', error, '\x1b[0m')
@@ -40,10 +41,10 @@ export const treeShake = (deps, std) => {
     mods.push(
       parsed.filter(
         ([dec, name]) =>
-          dec.type === 'apply' &&
-          dec.value === 'defun' &&
-          name.type === 'word' &&
-          depSet.has(lispToJavaScriptVariableName(name.value))
+          dec[TYPE] === APPLY &&
+          dec[VALUE] === 'defun' &&
+          name[TYPE] === WORD &&
+          depSet.has(lispToJavaScriptVariableName(name[VALUE]))
       )
     )
   }

@@ -1,3 +1,5 @@
+import { APPLY, ATOM, TYPE, VALUE, WORD } from './enums.js'
+
 export const earMuffsToLodashes = (name) => name.replace(new RegExp(/\*/g), '_')
 export const dotNamesToLowerCase = (name) => name.replace(new RegExp(/\./g), '')
 export const toCamelCase = (name) => {
@@ -15,7 +17,7 @@ export const toCamelCase = (name) => {
 export const deepRename = (name, newName, tree) => {
   if (Array.isArray(tree))
     for (const branch of tree) {
-      if (branch.value === name) branch.value = `()=>${newName}`
+      if (branch[VALUE] === name) branch[VALUE] = `()=>${newName}`
       deepRename(name, newName, branch)
     }
 }
@@ -126,8 +128,8 @@ const compile = (tree, Locals) => {
   if (!tree) return ''
   const [first, ...Arguments] = Array.isArray(tree) ? tree : [tree]
   if (first == undefined) return '[];'
-  const token = first.value
-  if (first.type === 'apply') {
+  const token = first[VALUE]
+  if (first[TYPE] === APPLY) {
     switch (token) {
       case 'do': {
         if (Arguments.length > 1) {
@@ -156,8 +158,8 @@ const compile = (tree, Locals) => {
           out = '(('
         for (let i = 0, len = Arguments.length; i < len; ++i) {
           const arg = Arguments[i]
-          if (i % 2 === 0 && arg.type === 'word') {
-            name = lispToJavaScriptVariableName(arg.value)
+          if (i % 2 === 0 && arg[TYPE] === WORD) {
+            name = lispToJavaScriptVariableName(arg[VALUE])
             Locals.add(name)
           } else
             out += `${name}=${compile(arg, Locals)}${i !== len - 1 ? ',' : ''}`
@@ -169,8 +171,8 @@ const compile = (tree, Locals) => {
       case 'boole': {
         const res = compile(Arguments[1], Locals)
         const arg = Arguments[0]
-        if (arg.type === 'word') {
-          const name = lispToJavaScriptVariableName(arg.value)
+        if (arg[TYPE] === WORD) {
+          const name = lispToJavaScriptVariableName(arg[VALUE])
           return `((${name}=${res}),${name});`
         }
         return ''
@@ -219,8 +221,8 @@ const compile = (tree, Locals) => {
         return '""'
       case 'Array':
         return Arguments.length === 2 &&
-          Arguments[1].type === 'word' &&
-          Arguments[1].value === 'length'
+          Arguments[1][TYPE] === WORD &&
+          Arguments[1][VALUE] === 'length'
           ? `(new Array(${compile(Arguments[0], Locals)}).fill(0))`
           : `[${parseArgs(Arguments, Locals)}];`
       case 'Function':
@@ -247,8 +249,10 @@ const compile = (tree, Locals) => {
         const evaluatedBody = compile(body, localVars)
         const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
         return `((${parseArgs(
-          functionArgs.map(({ type, value }, index) =>
-            value === '.' ? { type, value: `_${index}` } : { type, value }
+          functionArgs.map((node, index) =>
+            node[VALUE] === '.'
+              ? { [TYPE]: node[TYPE], [VALUE]: `_${index}` }
+              : { [TYPE]: node[TYPE], [VALUE]: node[VALUE] }
           ),
           Locals
         )})=>{${vars}return ${evaluatedBody.toString().trimStart()}});`
@@ -258,14 +262,14 @@ const compile = (tree, Locals) => {
           newName,
           out = '(('
         const arg = Arguments[1]
-        name = lispToJavaScriptVariableName(arg.value)
+        name = lispToJavaScriptVariableName(arg[VALUE])
         newName = `rec_${performance.now().toString().replace('.', 7)}`
         Locals.add(name)
         Locals.add(newName)
         const functionArgs = Arguments.slice(2)
         const body = functionArgs.pop()
         const localVars = new Set()
-        deepRename(arg.value, newName, body)
+        deepRename(arg[VALUE], newName, body)
         const evaluatedBody = compile(body, localVars)
         const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
         out += `${name}=(tco(${newName}=(${parseArgs(
@@ -279,7 +283,7 @@ const compile = (tree, Locals) => {
         let name,
           out = '(('
         const arg = Arguments[0]
-        name = lispToJavaScriptVariableName(arg.value)
+        name = lispToJavaScriptVariableName(arg[VALUE])
         Locals.add(name)
         const functionArgs = Arguments.slice(1)
         const body = functionArgs.pop()
@@ -287,8 +291,10 @@ const compile = (tree, Locals) => {
         const evaluatedBody = compile(body, localVars)
         const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
         out += `${name}=(${parseArgs(
-          functionArgs.map(({ type, value }, index) =>
-            value === '.' ? { type, value: `_${index}` } : { type, value }
+          functionArgs.map((node, index) =>
+            node[VALUE] === '.'
+              ? { [TYPE]: node[TYPE], [VALUE]: `_${index}` }
+              : { [TYPE]: node[TYPE], [VALUE]: node[VALUE] }
           ),
           Locals
         )})=>{${vars}return ${evaluatedBody.toString().trimStart()}};`
@@ -373,7 +379,7 @@ const compile = (tree, Locals) => {
         return out
       }
       case 'type':
-        return `_cast("${Arguments[1].value}", ${compile(
+        return `_cast("${Arguments[1][VALUE]}", ${compile(
           Arguments[0],
           Locals
         )})`
@@ -424,9 +430,11 @@ const compile = (tree, Locals) => {
         else return `${camleCasedToken}(${parseArgs(Arguments, Locals)});`
       }
     }
-  } else if (first.type === 'atom')
-    return typeof first.value === 'string' ? `\`${first.value}\`` : first.value
-  else if (first.type === 'word') return lispToJavaScriptVariableName(token)
+  } else if (first[TYPE] === ATOM)
+    return typeof first[VALUE] === 'string'
+      ? `\`${first[VALUE]}\``
+      : first[VALUE]
+  else if (first[TYPE] === WORD) return lispToJavaScriptVariableName(token)
 }
 
 export const compileToJs = (AST, extensions = {}, helpers = {}, tops = []) => {

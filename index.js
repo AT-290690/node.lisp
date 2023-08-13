@@ -14,6 +14,7 @@ import {
 } from './src/utils.js'
 import { STD } from './lib/std.js'
 import { tokens } from './src/tokeniser.js'
+import { TYPE, VALUE, WORD } from './src/enums.js'
 const cli = async () => {
   const [, , ...argv] = process.argv
   let file = '',
@@ -160,18 +161,18 @@ const cli = async () => {
           mods.push(
             parsed.filter(
               ([dec, name]) =>
-                dec.type === 'apply' &&
-                dec.value === 'defun' &&
-                name.type === 'word'
+                dec[TYPE] === APPLY &&
+                dec[VALUE] === 'defun' &&
+                name[TYPE] === WORD
             )
           )
           ;(value
-            ? mods.flat(1).filter(([, x]) => x.value.includes(value))
+            ? mods.flat(1).filter(([, x]) => x[VALUE].includes(value))
             : mods.flat(1)
           ).forEach(([, name, ...rest]) => {
             console.log(
-              `(\x1b[33m${name.value}\x1b[36m ${rest
-                .map((x) => x.value)
+              `(\x1b[33m${name[VALUE]}\x1b[36m ${rest
+                .map((x) => x[VALUE])
                 .join(' ')
                 .trimRight()}\x1b[0m)`
             )
@@ -186,18 +187,18 @@ const cli = async () => {
           mods.push(
             parsed.filter(
               ([dec, name]) =>
-                dec.type === 'apply' &&
-                dec.value === 'defun' &&
-                name.type === 'word'
+                dec[TYPE] === APPLY &&
+                dec[VALUE] === 'defun' &&
+                name[TYPE] === WORD
             )
           )
           console.log(
             `\x1b[35m${(value
-              ? mods.flat(1).filter(([, x]) => x.value.includes(value))
+              ? mods.flat(1).filter(([, x]) => x[VALUE].includes(value))
               : mods.flat(1)
             )
               .map(([, name]) => {
-                return `"${name.value.trimRight()}"`
+                return `"${name[VALUE].trimRight()}"`
               })
               .join(' ')}\x1b[0m`
           )

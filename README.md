@@ -157,7 +157,7 @@ Parse, Interpred & Compile
 
 ```js
 import lisp from 'node-lisper'
-lisp.parse('(+ 1 2)') // [[{  type: 'apply', value: '+' }, { type: 'atom', value: 1 }, { type: 'atom', value: 2 }]]
+lisp.parse('(+ 1 2)') // [[{  t: 'f', v: '+' }, { t: 'a', v: 1 }, { t: 'a', v: 2 }]]
 lisp.interpred('(+ 1 2)') // 3
 lisp.compile('(+ 1 2)') // 3 but faster!
 lisp.js(lisp.parse('(+ 1 2)')).program // (1 + 2); as js
