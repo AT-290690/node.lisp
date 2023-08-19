@@ -11,6 +11,7 @@ const stringifyArgs = (args) =>
             .replace(new RegExp(/\[/g), '(')
             .replace(new RegExp(/\]/g), ')')
             .replace(new RegExp(/\,/g), ' ')
+            .replace(new RegExp(/"/g), '')
     })
     .join(' ')
 const atom = (arg, env) => {
@@ -45,17 +46,23 @@ const tokens = {
   ['deftype']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        'Invalid number of arguments to (deftype) (2 required)'
+        `Invalid number of arguments to (deftype) (2 required) (deftype ${stringifyArgs(
+          args
+        )})`
       )
     if (args.length !== 2)
       throw new RangeError(
-        'Invalid number of arguments to (deftype) (2 required)'
+        `Invalid number of arguments to (deftype) (2 required) (deftype ${stringifyArgs(
+          args
+        )})`
       )
 
     const word = args[0]
     if (word[TYPE] !== WORD)
       throw new SyntaxError(
-        `First argument of (deftype) must be word but got ${word[TYPE]}`
+        `First argument of (deftype) must be word but got ${
+          word[TYPE]
+        } (deftype ${stringifyArgs(args)})`
       )
     const name = word[VALUE]
     types[name] = evaluate(args[1], env)
@@ -64,14 +71,18 @@ const tokens = {
   ['identity']: (args, env) => {
     if (args.length !== 1)
       throw new RangeError(
-        `Invalid number of arguments for (identity), expected 1 but got ${args.length}.`
+        `Invalid number of arguments for (identity), expected 1 but got ${
+          args.length
+        }. (identity ${stringifyArgs(args)})`
       )
     return evaluate(args[0], env)
   },
   ['check-type']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError(
-        `Invalid number of arguments for (check-type), expected 2 but got ${args.length}.`
+        `Invalid number of arguments for (check-type), expected 2 but got ${
+          args.length
+        }. (check-type ${stringifyArgs(args)})`
       )
     const value = evaluate(args[0], env)
     const type = args[1][VALUE]
@@ -88,12 +99,14 @@ const tokens = {
   ['concatenate']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        `Invalid number of arguments for (concatenate), expected > 1 but got ${args.length}.`
+        `Invalid number of arguments for (concatenate), expected > 1 but got ${
+          args.length
+        }. (concatenate ${stringifyArgs(args)}).`
       )
     const operands = args.map((x) => evaluate(x, env))
     if (operands.some((x) => typeof x !== 'string'))
       throw new TypeError(
-        `Not all arguments of (concatenate) are (Strings) (+ ${stringifyArgs(
+        `Not all arguments of (concatenate) are (Strings) (concatenate ${stringifyArgs(
           args
         )}).`
       )
@@ -102,7 +115,9 @@ const tokens = {
   ['mod']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        `Invalid number of arguments for (mod), expected > 1 but got ${args.length}.`
+        `Invalid number of arguments for (mod), expected > 1 but got ${
+          args.length
+        }. (mod ${stringifyArgs(args)}).`
       )
     const [a, b] = args.map((x) => evaluate(x, env))
     if (typeof a !== 'number' || typeof b !== 'number')
@@ -121,7 +136,9 @@ const tokens = {
   ['/']: (args, env) => {
     if (args.length !== 1)
       throw new RangeError(
-        `Invalid number of arguments for (/), expected 1 but got ${args.length}.`
+        `Invalid number of arguments for (/), expected 1 but got ${
+          args.length
+        }. (/ ${stringifyArgs(args)}).`
       )
     const number = evaluate(args[0], env)
     if (typeof number !== 'number')
@@ -139,7 +156,9 @@ const tokens = {
   ['length']: (args, env) => {
     if (args.length !== 1)
       throw new RangeError(
-        'Invalid number of arguments for (length) (1 required)'
+        `Invalid number of arguments for (length) (1 required) (length ${stringifyArgs(
+          args
+        )}).`
       )
     const array = evaluate(args[0], env)
     if (!(Array.isArray(array) || typeof array === 'string'))
@@ -153,7 +172,9 @@ const tokens = {
   ['Arrayp']: (args, env) => {
     if (args.length !== 1)
       throw new RangeError(
-        'Invalid number of arguments for (Arrayp) (1 required)'
+        `Invalid number of arguments for (Arrayp) (1 required) (Arrayp ${stringifyArgs(
+          args
+        )}).`
       )
     const array = evaluate(args[0], env)
     return +Array.isArray(array)
@@ -161,35 +182,45 @@ const tokens = {
   ['Numberp']: (args, env) => {
     if (args.length !== 1)
       throw new RangeError(
-        'Invalid number of arguments for (Numberp) (1 required)'
+        `Invalid number of arguments for (Numberp) (1 required) (Numberp ${stringifyArgs(
+          args
+        )}).`
       )
     return +(typeof evaluate(args[0], env) === 'number')
   },
   ['Integerp']: (args, env) => {
     if (args.length !== 1)
       throw new RangeError(
-        'Invalid number of arguments for (Integerp) (1 required)'
+        `Invalid number of arguments for (Integerp) (1 required) (Integerp ${stringifyArgs(
+          args
+        )}).`
       )
     return +(typeof evaluate(args[0], env) === 'bigint')
   },
   ['Stringp']: (args, env) => {
     if (args.length !== 1)
       throw new RangeError(
-        'Invalid number of arguments for (Stringp) (1 required)'
+        `Invalid number of arguments for (Stringp) (1 required) (Stringp ${stringifyArgs(
+          args
+        )}).`
       )
     return +(typeof evaluate(args[0], env) === 'string')
   },
   ['Functionp']: (args, env) => {
     if (args.length !== 1)
       throw new RangeError(
-        'Invalid number of arguments for (Functionp) (1 required)'
+        `Invalid number of arguments for (Functionp) (1 required) (Functionp ${stringifyArgs(
+          args
+        )}).`
       )
     return +(typeof evaluate(args[0], env) === 'function')
   },
   ['char-code']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError(
-        'Invalid number of arguments for (char-code) (2 required)'
+        `Invalid number of arguments for (char-code) (2 required) (char-code ${stringifyArgs(
+          args
+        )}).`
       )
     const string = evaluate(args[0], env)
     if (typeof string !== 'string')
@@ -210,7 +241,9 @@ const tokens = {
   ['char']: (args, env) => {
     if (args.length !== 1)
       throw new RangeError(
-        'Invalid number of arguments for (char) (= 1 required)'
+        `Invalid number of arguments for (char) (= 1 required) (char ${stringifyArgs(
+          args
+        )}).`
       )
     const index = evaluate(args[0], env)
     if (!Number.isInteger(index) || index < 0)
@@ -222,7 +255,9 @@ const tokens = {
   ['make-string']: (args, env) => {
     if (args.length !== 1)
       throw new RangeError(
-        'Invalid number of arguments for (make-string) (= 1 required)'
+        `Invalid number of arguments for (make-string) (= 1 required) (make-string ${stringifyArgs(
+          args
+        )}).`
       )
     const indexes = evaluate(args[0], env)
     if (indexes.some((index) => !Number.isInteger(index) || index < 0))
@@ -236,7 +271,9 @@ const tokens = {
   ['+']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        `Invalid number of arguments for (+), expected > 1 but got ${args.length}.`
+        `Invalid number of arguments for (+), expected > 1 but got ${
+          args.length
+        }. (+ ${stringifyArgs(args)}).`
       )
     const operands = args.map((x) => evaluate(x, env))
     if (operands.some((x) => typeof x !== 'number' && typeof x !== 'bigint'))
@@ -260,7 +297,9 @@ const tokens = {
   ['-']: (args, env) => {
     if (!args.length)
       throw new RangeError(
-        `Invalid number of arguments for (-), expected >= 1 but got ${args.length}.`
+        `Invalid number of arguments for (-), expected >= 1 but got ${
+          args.length
+        }. (- ${stringifyArgs(args)}).`
       )
     const operands = args.map((x) => evaluate(x, env))
     if (operands.some((x) => typeof x !== 'number' && typeof x !== 'bigint'))
@@ -326,14 +365,18 @@ const tokens = {
   ['Array']: (args, env) => {
     if (!args.length)
       throw new RangeError(
-        'Invalid number of arguments for (Array) (>= 1 required)'
+        `Invalid number of arguments for (Array) (>= 1 required) (Array ${stringifyArgs(
+          args
+        )})`
       )
     const isCapacity =
       args.length === 2 && args[1][TYPE] === WORD && args[1][VALUE] === 'length'
     if (isCapacity) {
       if (args.length !== 2)
         throw new RangeError(
-          'Invalid number of arguments for (Array) (= 2 required)'
+          `Invalid number of arguments for (Array) (= 2 required) (Array ${stringifyArgs(
+            args
+          )})`
         )
       const N = evaluate(args[0], env)
       if (!Number.isInteger(N))
@@ -349,13 +392,19 @@ const tokens = {
   ['atom']: (args, env) => {
     if (args.length !== 1)
       throw new RangeError(
-        'Invalid number of arguments for (Atomp) (1 required)'
+        `Invalid number of arguments for (Atomp) (1 required) (atom ${stringifyArgs(
+          args
+        )}).`
       )
     return atom(args[0], env)
   },
   ['car']: (args, env) => {
     if (args.length !== 1)
-      throw new RangeError('Invalid number of arguments for (car) (1 required)')
+      throw new RangeError(
+        `Invalid number of arguments for (car) (1 required) (car ${stringifyArgs(
+          args
+        )}).`
+      )
     const array = evaluate(args[0], env)
     if (!Array.isArray(array))
       throw new TypeError(
@@ -376,7 +425,11 @@ const tokens = {
   },
   ['cdr']: (args, env) => {
     if (args.length !== 1)
-      throw new RangeError('Invalid number of arguments for (cdr) (1 required)')
+      throw new RangeError(
+        `Invalid number of arguments for (cdr) (1 required) (cdr ${stringifyArgs(
+          args
+        )})`
+      )
     const array = evaluate(args[0], env)
     if (!Array.isArray(array))
       throw new TypeError(
@@ -390,7 +443,11 @@ const tokens = {
   },
   ['get']: (args, env) => {
     if (args.length !== 2)
-      throw new RangeError('Invalid number of arguments for (get) (2 required)')
+      throw new RangeError(
+        `Invalid number of arguments for (get) (2 required) (get ${stringifyArgs(
+          args
+        )})`
+      )
     const array = evaluate(args[0], env)
     if (!Array.isArray(array))
       throw new TypeError(
@@ -429,7 +486,9 @@ const tokens = {
   ['set']: (args, env) => {
     if (args.length !== 2 && args.length !== 3)
       throw new RangeError(
-        'Invalid number of arguments for (set) (or 2 3) required'
+        `Invalid number of arguments for (set) (or 2 3) required (set ${stringifyArgs(
+          args
+        )})`
       )
     const array = evaluate(args[0], env)
     if (!Array.isArray(array))
@@ -454,7 +513,9 @@ const tokens = {
     if (index < 0) {
       if (args.length !== 2)
         throw new RangeError(
-          'Invalid number of arguments for (set) (if index is < 0 then 2 required)'
+          `Invalid number of arguments for (set) (if (< index 0) then 2 required) (set ${stringifyArgs(
+            args
+          )})`
         )
       if (index * -1 > array.length)
         throw new RangeError(
@@ -467,7 +528,9 @@ const tokens = {
     } else {
       if (args.length !== 3)
         throw new RangeError(
-          'Invalid number of arguments for (set) (if index is >= 0 then 3 required)'
+          `Invalid number of arguments for (set) (if (>= index 0) then 3 required) (set ${stringifyArgs(
+            args
+          )})`
         )
       const value = evaluate(args[2], env)
       if (value == undefined)
@@ -495,7 +558,9 @@ const tokens = {
   ['log']: (args, env) => {
     if (!args.length)
       throw new RangeError(
-        'Invalid number of arguments to (log) (>= 1 required)'
+        `Invalid number of arguments to (log) (>= 1 required) (log ${stringifyArgs(
+          args
+        )})`
       )
     const expressions = args.map((x) => evaluate(x, env))
     console.log(...expressions)
@@ -504,14 +569,18 @@ const tokens = {
   ['do']: (args, env) => {
     if (!args.length)
       throw new RangeError(
-        'Invalid number of arguments to (do) (>= 1 required)'
+        `Invalid number of arguments to (do) (>= 1 required) (do ${stringifyArgs(
+          args
+        )})`
       )
     return args.reduce((_, x) => evaluate(x, env), 0)
   },
   ['defun']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        'Invalid number of arguments to (defun) (2 required)'
+        `Invalid number of arguments to (defun) (2 required) (defun ${stringifyArgs(
+          args
+        )})`
       )
     const params = args.slice(1, -1)
     const body = args.at(-1)
@@ -534,7 +603,7 @@ const tokens = {
             .join(' ')
             .trim()}) are provided. (expects ${params.length} but got ${
             props.length
-          })`
+          }) (defun ${stringifyArgs(args)})`
         )
       const localEnv = Object.create(env)
       for (let i = 0; i < props.length; ++i)
@@ -561,7 +630,7 @@ const tokens = {
             .map((x) => x[VALUE])
             .join(' ')}) are provided. (expects ${params.length} but got ${
             props.length
-          })`
+          }) (lambda ${stringifyArgs(args)})`
         )
       const localEnv = Object.create(env)
       for (let i = 0; i < props.length; ++i)
@@ -571,12 +640,20 @@ const tokens = {
   },
   ['not']: (args, env) => {
     if (args.length !== 1)
-      throw new RangeError('Invalid number of arguments for (not) (1 required)')
+      throw new RangeError(
+        `Invalid number of arguments for (not) (1 required) (not ${stringifyArgs(
+          args
+        )})`
+      )
     return +!evaluate(args[0], env)
   },
   ['=']: (args, env) => {
     if (args.length !== 2)
-      throw new RangeError('Invalid number of arguments for (=) (2 required)')
+      throw new RangeError(
+        `Invalid number of arguments for (=) (2 required) (= ${stringifyArgs(
+          args
+        )})`
+      )
     const a = evaluate(args[0], env)
     const b = evaluate(args[1], env)
     if (
@@ -594,7 +671,11 @@ const tokens = {
   },
   ['<']: (args, env) => {
     if (args.length !== 2)
-      throw new RangeError('Invalid number of arguments for (<) (2 required)')
+      throw new RangeError(
+        `Invalid number of arguments for (<) (2 required) (< ${stringifyArgs(
+          args
+        )})`
+      )
     const a = evaluate(args[0], env)
     const b = evaluate(args[1], env)
     if (
@@ -612,7 +693,11 @@ const tokens = {
   },
   ['>']: (args, env) => {
     if (args.length !== 2)
-      throw new RangeError('Invalid number of arguments for (>) (2 required)')
+      throw new RangeError(
+        `Invalid number of arguments for (>) (2 required) (> ${stringifyArgs(
+          args
+        )})`
+      )
     const a = evaluate(args[0], env)
     const b = evaluate(args[1], env)
     if (
@@ -630,7 +715,11 @@ const tokens = {
   },
   ['>=']: (args, env) => {
     if (args.length !== 2)
-      throw new RangeError('Invalid number of arguments for (>=) (2 required)')
+      throw new RangeError(
+        `Invalid number of arguments for (>=) (2 required) (>= ${stringifyArgs(
+          args
+        )})`
+      )
     const a = evaluate(args[0], env)
     const b = evaluate(args[1], env)
     if (
@@ -648,7 +737,11 @@ const tokens = {
   },
   ['<=']: (args, env) => {
     if (args.length !== 2)
-      throw new RangeError('Invalid number of arguments for (<=) (2 required)')
+      throw new RangeError(
+        `Invalid number of arguments for (<=) (2 required) (<= ${stringifyArgs(
+          args
+        )})`
+      )
     const a = evaluate(args[0], env)
     const b = evaluate(args[1], env)
     if (
@@ -667,7 +760,9 @@ const tokens = {
   ['and']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        'Invalid number of arguments for (and) (>= 2 required)'
+        `Invalid number of arguments for (and) (>= 2 required) (and ${stringifyArgs(
+          args
+        )})`
       )
     let circuit
     for (let i = 0; i < args.length - 1; ++i) {
@@ -680,7 +775,9 @@ const tokens = {
   ['or']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        'Invalid number of arguments for (or) (>= 2 required)'
+        `Invalid number of arguments for (or) (>= 2 required) (or ${stringifyArgs(
+          args
+        )})`
       )
     let circuit
     for (let i = 0; i < args.length - 1; ++i) {
@@ -693,7 +790,9 @@ const tokens = {
   ['apply']: (args, env) => {
     if (!args.length)
       throw new RangeError(
-        'Invalid number of arguments to (apply) (>= 1 required)'
+        `Invalid number of arguments to (apply) (>= 1 required) (apply ${stringifyArgs(
+          args
+        )})`
       )
     const [first, ...rest] = args
     if (first[TYPE] === WORD && first[VALUE] in tokens)
@@ -705,7 +804,9 @@ const tokens = {
     const apply = evaluate(first, env)
     if (typeof apply !== 'function')
       throw new TypeError(
-        `First argument of (apply) must be a (lambda) (${stringifyArgs(args)})`
+        `First argument of (apply) must be a (lambda) (apply ${stringifyArgs(
+          args
+        )})`
       )
 
     return apply(rest, env)
@@ -713,11 +814,15 @@ const tokens = {
   ['defconstant']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        'Invalid number of arguments to (defconstant) (> 2 required)'
+        `Invalid number of arguments to (defconstant) (> 2 required) (defconstant ${stringifyArgs(
+          args
+        )})`
       )
     if (args.length % 2 === 1)
       throw new RangeError(
-        'Invalid number of arguments to (defconstant) (pairs of 2 required)'
+        `Invalid number of arguments to (defconstant) (pairs of 2 required) (defconstant ${stringifyArgs(
+          args
+        )})`
       )
     let name
     for (let i = 0; i < args.length; ++i) {
@@ -725,7 +830,9 @@ const tokens = {
         const word = args[i]
         if (word[TYPE] !== WORD)
           throw new SyntaxError(
-            `First argument of (defconstant) must be word but got ${word[TYPE]}`
+            `First argument of (defconstant) must be word but got ${
+              word[TYPE]
+            } (defconstant ${stringifyArgs(args)})`
           )
         name = word[VALUE]
       } else
@@ -739,11 +846,15 @@ const tokens = {
   ['defvar']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        'Invalid number of arguments to (defvar) (> 2 required)'
+        `Invalid number of arguments to (defvar) (> 2 required) (defvar ${stringifyArgs(
+          args
+        )})`
       )
     if (args.length % 2 === 1)
       throw new RangeError(
-        'Invalid number of arguments to (defvar) (pairs of 2 required)'
+        `Invalid number of arguments to (defvar) (pairs of 2 required) (defvar ${stringifyArgs(
+          args
+        )})`
       )
     let name
     for (let i = 0; i < args.length; ++i) {
@@ -751,7 +862,9 @@ const tokens = {
         const word = args[i]
         if (word[TYPE] !== WORD)
           throw new SyntaxError(
-            `First argument of (defvar) must be word but got ${word[TYPE]}`
+            `First argument of (defvar) must be word but got ${
+              word[TYPE]
+            } (defvar ${stringifyArgs(args)})`
           )
         name = word[VALUE]
       } else env[name] = evaluate(args[i], env)
@@ -760,7 +873,11 @@ const tokens = {
   },
   ['setf']: (args, env) => {
     if (args.length !== 2)
-      throw new RangeError('Invalid number of arguments to (setf) (2 required)')
+      throw new RangeError(
+        `Invalid number of arguments to (setf) (2 required) (setf ${stringifyArgs(
+          args
+        )})`
+      )
     const entityName = args[0][VALUE]
     const value = evaluate(args[1], env)
     for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
@@ -779,13 +896,17 @@ const tokens = {
         return value
       }
     throw new ReferenceError(
-      `Tried setting an undefined variable: ${entityName} using (setf)`
+      `Tried setting an undefined variable: ${entityName} using (setf) (setf ${stringifyArgs(
+        args
+      )})`
     )
   },
   ['boole']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError(
-        'Invalid number of arguments to (boole) (2 required)'
+        `Invalid number of arguments to (boole) (2 required) (boole ${stringifyArgs(
+          args
+        )})`
       )
     const entityName = args[0][VALUE]
     const value = evaluate(args[1], env)
@@ -807,24 +928,32 @@ const tokens = {
         return value
       }
     throw new ReferenceError(
-      `Tried setting an undefined variable: ${entityName} using (boole)`
+      `Tried setting an undefined variable: ${entityName} using (boole) (boole ${stringifyArgs(
+        args
+      )})`
     )
   },
   ['import']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        'Invalid number of arguments for (import) (>= 2 required)'
+        `Invalid number of arguments for (import) (>= 2 required) (import ${stringifyArgs(
+          args
+        )})`
       )
     const [first, ...rest] = args
     const module = evaluate(first, env)
     if (typeof module !== 'function')
       throw new TypeError(
-        `First argument of (import) must be an (function) but got (${first[VALUE]}).`
+        `First argument of (import) must be an (function) but got (${
+          first[VALUE]
+        }). (import ${stringifyArgs(args)})`
       )
     const functions = rest.map((arg) => evaluate(arg, env))
     if (functions.some((arg) => typeof arg !== 'string'))
       throw new TypeError(
-        'Following arguments of (import) must all be (String).'
+        `Following arguments of (import) must all be (String). (import ${stringifyArgs(
+          args
+        )})`
       )
     const records = functions.reduce((a, b) => (a.add(b), a), new Set())
     module()
@@ -836,17 +965,23 @@ const tokens = {
   ['regex-match']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError(
-        'Invalid number of arguments to (regex-match) (2 required)'
+        `Invalid number of arguments to (regex-match) (2 required) (regex-match ${stringifyArgs(
+          args
+        )})`
       )
     const string = evaluate(args[0], env)
     if (typeof string !== 'string')
       throw new TypeError(
-        'First argument of (regex-match) has to be a (String)'
+        `First argument of (regex-match) has to be a (String) (regex-match ${stringifyArgs(
+          args
+        )})`
       )
     const regex = evaluate(args[1], env)
     if (typeof regex !== 'string')
       throw new TypeError(
-        'Second argument of (regex-match) has to be a (String)'
+        `Second argument of (regex-match) has to be a (String) (regex-match ${stringifyArgs(
+          args
+        )})`
       )
     const match = string.match(new RegExp(regex, 'g'))
     return match == undefined ? [] : [...match]
@@ -854,22 +989,30 @@ const tokens = {
   ['regex-replace']: (args, env) => {
     if (args.length !== 3)
       throw new RangeError(
-        'Invalid number of arguments to (regex-replace) (3 required)'
+        `Invalid number of arguments to (regex-replace) (3 required) (regex-replace ${stringifyArgs(
+          args
+        )})`
       )
     const string = evaluate(args[0], env)
     if (typeof string !== 'string')
       throw new TypeError(
-        'First argument of (regex-replace) has to be a (String)'
+        `First argument of (regex-replace) has to be a (String) (regex-replace ${stringifyArgs(
+          args
+        )})`
       )
     const a = evaluate(args[1], env)
     if (typeof a !== 'string')
       throw new TypeError(
-        'Second argument of (regex-replace) has to be a (String)'
+        `Second argument of (regex-replace) has to be a (String) (regex-replace ${stringifyArgs(
+          args
+        )})`
       )
     const b = evaluate(args[2], env)
     if (typeof b !== 'string')
       throw new TypeError(
-        'Third argument of (regex-replace) has to be a (String)'
+        `Third argument of (regex-replace) has to be a (String) (regex-replace ${stringifyArgs(
+          args
+        )})`
       )
     return string.replace(new RegExp(a, 'g'), b)
   },
@@ -948,7 +1091,11 @@ const tokens = {
   },
   ['Bit']: (args, env) => {
     if (args.length !== 1)
-      throw new RangeError('Invalid number of arguments to (Bit) (1 required).')
+      throw new RangeError(
+        `Invalid number of arguments to (Bit) (1 required). (Bit ${stringifyArgs(
+          args
+        )})`
+      )
     const operand = evaluate(args[0], env)
     if (typeof operand !== 'number' && typeof operand !== 'bigint')
       throw new TypeError(
@@ -959,7 +1106,9 @@ const tokens = {
   ['&']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        'Invalid number of arguments to (&) (>= 2 required).'
+        `Invalid number of arguments to (&) (>= 2 required). (& ${stringifyArgs(
+          args
+        )})`
       )
     const operands = args.map((a) => evaluate(a, env))
     if (operands.some((x) => typeof x !== 'number' && typeof x !== 'bigint'))
@@ -970,7 +1119,11 @@ const tokens = {
   },
   ['~']: (args, env) => {
     if (args.length !== 1)
-      throw new RangeError('Invalid number of arguments to (~) (1 required).')
+      throw new RangeError(
+        `Invalid number of arguments to (~) (1 required). (~ ${stringifyArgs(
+          args
+        )})`
+      )
     const operand = evaluate(args[0], env)
     if (typeof operand !== 'number' && typeof operand !== 'bigint')
       throw new TypeError(
@@ -981,7 +1134,9 @@ const tokens = {
   ['|']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        'Invalid number of arguments to (|) (>= 2 required).'
+        `Invalid number of arguments to (|) (>= 2 required). (| ${stringifyArgs(
+          args
+        )})`
       )
     const operands = args.map((a) => evaluate(a, env))
     if (operands.some((x) => typeof x !== 'number' && typeof x !== 'bigint'))
@@ -993,7 +1148,9 @@ const tokens = {
   ['^']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        'Invalid number of arguments to (^) (>= 2 required).'
+        `Invalid number of arguments to (^) (>= 2 required). (^ ${stringifyArgs(
+          args
+        )}).`
       )
     const operands = args.map((a) => evaluate(a, env))
     if (operands.some((x) => typeof x !== 'number' && typeof x !== 'bigint'))
@@ -1005,7 +1162,9 @@ const tokens = {
   ['<<']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        'Invalid number of arguments to (<<) (>= 2 required).'
+        `Invalid number of arguments to (<<) (>= 2 required). (<< ${stringifyArgs(
+          args
+        )}).`
       )
     const operands = args.map((a) => evaluate(a, env))
     if (operands.some((x) => typeof x !== 'number' && typeof x !== 'bigint'))
@@ -1017,7 +1176,9 @@ const tokens = {
   ['>>']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        'Invalid number of arguments to (>>) (>= 2 required).'
+        `Invalid number of arguments to (>>) (>= 2 required). (>> ${stringifyArgs(
+          args
+        )}).`
       )
     const operands = args.map((a) => evaluate(a, env))
     if (operands.some((x) => typeof x !== 'number' && typeof x !== 'bigint'))
@@ -1029,7 +1190,9 @@ const tokens = {
   ['>>>']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
-        'Invalid number of arguments to (>>>) (>= 2 required).'
+        `Invalid number of arguments to (>>>) (>= 2 required). (>>> ${stringifyArgs(
+          args
+        )}).`
       )
     const operands = args.map((a) => evaluate(a, env))
     if (operands.some((x) => typeof x !== 'number' && typeof x !== 'bigint'))
@@ -1041,7 +1204,9 @@ const tokens = {
   ['go']: (args, env) => {
     if (args.length < 1)
       throw new RangeError(
-        'Invalid number of arguments to (go) (>= 1 required).'
+        `Invalid number of arguments to (go) (>= 1 required). (go ${stringifyArgs(
+          args
+        )})`
       )
     let inp = args[0]
     for (let i = 1; i < args.length; ++i) {
@@ -1060,7 +1225,9 @@ const tokens = {
   ['throw']: (args, env) => {
     if (args.length !== 1)
       throw new RangeError(
-        'Invalid number of arguments to (error) (1 required).'
+        `Invalid number of arguments to (error) (1 required). (throw ${stringifyArgs(
+          args
+        )}).`
       )
     const string = evaluate(args[0], env)
     if (typeof string !== 'string')
@@ -1074,7 +1241,9 @@ const tokens = {
   ['loop']: (args, env) => {
     if (!args.length)
       throw new RangeError(
-        'Invalid number of arguments to (loop) (>= 2 required).'
+        `Invalid number of arguments to (loop) (>= 2 required). (loop ${stringifyArgs(
+          args
+        )}).`
       )
     // TODO: Add validation for TCO recursion
     const [definition, ...functionArgs] = args

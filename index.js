@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'fs'
 import { start } from 'repl'
 import { compileToJs } from './src/compiler.js'
-import { evaluate, run } from './src/interpreter.js'
+import { evaluate, run, stacktrace } from './src/interpreter.js'
 import { parse } from './src/parser.js'
 // import wabt from 'wabt'
 import {
@@ -141,8 +141,11 @@ const cli = async () => {
         try {
           run(STD.concat(parse(file)), env)
         } catch (err) {
-          // console.log('\x1b[40m', err, '\x1b[0m')
+          logError('Error')
           logError(err.message)
+          console.log(
+            ` \x1b[30m${stacktrace.filter(Boolean).join('\n ')}\x1b[0m`
+          )
         }
         break
       case '-trace':

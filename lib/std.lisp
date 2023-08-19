@@ -93,7 +93,7 @@
       (if (= t 0) () 
         (do 
           (defvar res 0)
-          (some (check-type value array-number-t) (lambda x . . (do 
+          (some (check-type value array-number-t) (lambda x . . (do
             (setf res (how-can-sum (- t x) values))
             (if (and (Arrayp res) (= -1 (array-index-of res x))) (push res x))))) 
           res))))
@@ -101,6 +101,8 @@
   (defun push array value (set array (length array) value))
   ; pop
   (defun pop array (set array -1))
+  ; yoink
+  (defun yoink array (when (length array) (do (defconstant last (get array -1)) (set array -1) last)))
   ; array-in-bounds-p 
   (defun array-in-bounds-p array index (and (< index (length array)) (>= index 0)))
   ; is-array-of-atoms
@@ -391,6 +393,16 @@
       (when (callback current i array) (setf amount (+ amount 1)))
       (if (< i bounds) (iterate (+ i 1) bounds) amount)))
     (iterate 0 (- (length array) 1))))
+  ; rotate-left
+  (defun rotate-left array n (do 
+    (defconstant t ())
+    (for-n n (lambda . (do 
+      (set t (length t) (get array -1))
+      (set array -1))))
+    (reverse array)
+     (for-n n (lambda i (do 
+     (set array (length array) (get t i)))))
+    (reverse array)))
   ; partition 
   (defun partition array n (reduce array (lambda a x i . (do 
         (if (mod i n) (push (get a -1) x) (push a (Array x))) a)) 
@@ -547,14 +559,15 @@
         (concat (quick-sort right-arr)))))))
       ; reverse 
       (defun reverse array (do
+        (defconstant len (length array))
+        (if (> len 1) (do
         (defconstant 
-          len (length array)
           reversed (Array len length)
           offset (- len 1))
         (loop defun iterate i bounds (do
           (set reversed (- offset i) (get array i))
           (if (< i bounds) (iterate (+ i 1) bounds) reversed)))
-        (iterate 0 offset)))
+        (iterate 0 offset)) array)))
       ; binary-search
       (defun binary-search 
               array target (do
@@ -569,6 +582,10 @@
                   (search arr target start (- index 1))
                   (search arr target (+ index 1) end))))))) 
         (search array target 0 (length array))))
+      ; sort-by-length 
+      (defun sort-by-length array order (map order (lambda x . . (find array (lambda y . . (= (- (length y) 1) x))))))
+      ; order-array
+      (defun order-array array order (map (Array (length array) length) (lambda . i . (get array (get order i)))))
       ; hash-index
       (defun hash-index 
         table key 
@@ -839,7 +856,31 @@
           (set result i (callback (get array (- i 1)) (get array i)))
           (iterate (+ i 1))) result))
           (iterate 1)) array)))
-    ; exports
+      ; permutations
+      (defun permutations permutation (do 
+        (void (check-type permutation array-t))
+        (defconstant  
+          len (length permutation)
+          result (Array (type permutation Array))
+          c (Array len length))
+        (defvar 
+          k 0 
+          p 0)
+          (loop defun while-true i 
+            (if (< i len)
+              (do (if (< (get c i) i) 
+                (do 
+                  (setf k (and (mod i 2) (get c i)))
+                  (setf p (get permutation i))
+                  (set permutation i (get permutation k))
+                  (set permutation k p)
+                  (set c i (+ (get c i) 1))
+                  (setf i 1)
+                  (set result (length result) (type permutation Array)))
+                  (set c i 0))
+                  (while-true (+ i 1)))))
+          (while-true 1)
+          result))
     (Array 
       (Array "max" max)
       (Array "min" min) 
@@ -849,6 +890,9 @@
       (Array "is-even" is-even) 
       (Array "push" push)
       (Array "pop" pop)
+      (Array "yoink" yoink)
+      (Array "sort-by-length" sort-by-length)  
+      (Array "aorder-array" order-array)  
       (Array "array-in-bounds-p" array-in-bounds-p)  
       (Array "abs" abs)
       (Array "floor" floor)
@@ -966,6 +1010,8 @@
       (Array "right-pad" right-pad)
       (Array "to-upper-case" to-upper-case)
       (Array "to-lower-case" to-lower-case)
+      (Array "rotate-left" rotate-left)
+      (Array "permutations" permutations)
    )
 ))
 ; (/ std lib)

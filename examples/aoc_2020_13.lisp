@@ -1,4 +1,4 @@
-(import std "adjacent-difference" "abs" "average" "square" "cartesian-product" "slice-if-index" "remove" "greatest-common-divisor" "every" "sqrt" "is-prime" "find" "split" "map" "quick-sort" "adjacent-difference" "push" "every" "remove" "min" "max" "reduce" "round" "floor" "product-array" "sum-array" "for-each")
+(import std "adjacent-difference" "abs" "average" "square" "slice-if-index" "remove" "greatest-common-divisor" "every" "sqrt" "is-prime" "find" "split" "map" "quick-sort" "adjacent-difference" "push" "every" "remove" "min" "max" "reduce" "round" "floor" "product-array" "sum-array" "for-each")
 (defconstant sample "939
 7,13,x,x,59,x,31,19")
 (defconstant input "1001171
@@ -10,7 +10,11 @@
         (defconstant 
           INP (go inp (split "\n"))
           time (type (car INP) Number)
-          buses (go (car (cdr INP)) (split ",") (map (lambda x . . (if (= x "x") 0 (type x Number)))) (remove (lambda x . . (> x 0)))))
+          buses (go 
+                  (car (cdr INP)) 
+                  (split ",") 
+                  (map (lambda x . . (if (= x "x") 0 (type x Number)))) 
+                  (remove (lambda x . . (> x 0)))))
       (Array time buses)))
     (defconstant 
       *INP* (parse inp)
@@ -51,7 +55,10 @@
         (defconstant 
           INP (go inp (split "\n"))
           time (type (car INP) Number)
-          buses (go (car (cdr INP)) (split ",") (reduce (lambda acc x i . (unless (= x "x") (set acc (length acc) (Array (type x Number) i)) acc)) ())))
+          buses (go 
+                  (car (cdr INP)) 
+                  (split ",") 
+                  (reduce (lambda acc x i . (unless (= x "x") (set acc (length acc) (Array (type x Number) i)) acc)) ())))
         (Array time buses)))
       (defconstant inp (car (cdr (parse input))))
       (unless (is-array-of-coprime-pairs (map inp (lambda x . . (car x)))) 
