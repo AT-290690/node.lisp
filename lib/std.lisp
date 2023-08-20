@@ -7,96 +7,6 @@
   (deftype array-number-t (Array (Number)))
   (deftype direction-t (Array (Array (Number) (Number))))
   ; modules
-  ; max
-  (defun max a b (if (> a b) a b))
-  ; min
-  (defun min a b (if (< a b) a b))
-  ; maximum
-  (defun maximum array (reduce (check-type array array-number-t) (lambda a b . . (max a b)) -9007199254740991))
-  ; minimum
-  (defun minimum array (reduce (check-type array array-number-t) (lambda a b . . (min a b)) 9007199254740991))
-  ; normalize 
-  (defun normalize value min max (* (- value min) (/ (- max min))))
-  ; linear-interpolation
-  (defun linear-interpolation a b n (+ (* (- 1 n) a) (* n b)))
-  ; gauss-sum
-  (defun gauss-sum n (* n (+ n 1) 0.5))
-  ; gauss-sum-sequance
-  (defun gauss-sum-sequance a b (* (+ a b) (+ (- b a) 1) 0.5))
-  ; clamp
-  (defun clamp x limit (if (> x limit) limit x))
-  ; is-odd
-  (defun is-odd x (= (mod x 2) 1))
-  ; is-even
-  (defun is-even x (= (mod x 2) 0))
-  ; sign 
-  (defun sign n (if (< n 0) -1 1))
-  ; radians
-  (defun radians deg (* deg 3.141592653589793 (/ 180)))
-  ; binomial-coefficient
-  (defun binomial-coefficient n k 
-    (or 
-      (cond 
-        (or (< k 0) (> k n)) 0
-        (or (= k 0) (= k n)) 1
-        (or (= k 1) (= k (- n 1))) n) (do 
-          (when (< (- n k) k) (setf k (- n k)))
-          (loop defun iterate i res (if (<= i k) (iterate (+ i 1) (* res (- n i -1) (/ i))) res))
-          (round (iterate 2 n)))))
-  ; sin
-  (defun sin rad terms (do
-    (defvar sine 0)
-    (loop defun inc i 
-      (do 
-        (setf sine 
-          (+ sine 
-            (* 
-              (/ (factorial (+ (* 2 i) 1))) 
-              (power -1 i) 
-              (power rad (+ (* 2 i) 1))))) 
-        (if (< i terms) (inc (+ i 1)) sine)))
-      (inc 0)))
-   ; cos 
-  (defun cos rad terms (do
-    (defvar cosine 0)
-    (loop defun inc i 
-      (do 
-        (setf cosine 
-          (+ cosine 
-            (* 
-              (/ (factorial (* 2 i))) 
-              (power -1 i) 
-              (power rad  (* 2 i))))) 
-        (if (< i terms) (inc (+ i 1)) cosine)))
-    (inc 0)))
-  ; square
-  (defun square x (* x x))
-  ; average
-  (defun average x y (* (+ x y) 0.5))
- ; sqrt
-  (defun sqrt x (do 
-    (defconstant is-good-enough (lambda g x (< (abs (- (square g) x)) 0.01))
-         improve-guess (lambda g x (average g (* x (/ g)))))
-    (loop defun sqrt-iter g x 
-        (if (is-good-enough g x) 
-            g
-            (sqrt-iter (improve-guess g x) x)))
-  (sqrt-iter 1.0 x)))
-  ; can-sum
-  (defun can-sum t values 
-    (if (< t 0) 0 
-      (if (= t 0) 1 
-        (some (check-type values array-number-t) (lambda x . . (can-sum (- t x) values))))))
-  ; how-can-sum
-  (defun how-can-sum t values 
-    (if (< t 0) 0 
-      (if (= t 0) () 
-        (do 
-          (defvar res 0)
-          (some (check-type value array-number-t) (lambda x . . (do
-            (setf res (how-can-sum (- t x) values))
-            (if (and (Arrayp res) (= -1 (array-index-of res x))) (push res x))))) 
-          res))))
   ; push  
   (defun push array value (set array (length array) value))
   ; pop
@@ -107,121 +17,8 @@
   (defun array-in-bounds-p array index (and (< index (length array)) (>= index 0)))
   ; is-array-of-atoms
   (defun is-array-of-atoms array (if (not (length array)) 1 (if (atom (car array)) (is-array-of-atoms (cdr array)) 0)))
-  ; abs
-  (defun abs n (- (^ n (>> n 31)) (>> n 31)))
-  ; max-bit
-  (defun max-bit a b (- a (& (- a b) (>> (- a b) 31))))
-  ; max-bit
-  (defun min-bit a b (- a (& (- a b) (>> (- b a) 31))))
-  ; clamp-bit
-  (defun clamp-bit x min max (do 
-     (setf x (- x (& (- x max) (>> (- max x) 31))))
-     (- x (& (- x min) (>> (- x min) 31)))))
-  ; is-bit-power-of-two ; (and x (not (& x (- x 1)))
-  (defun is-bit-power-of-two value 
-    (and 
-      (= (& value (- value 1)) 0) 
-      (not (= value 0))))
-   ; average-bit 
-  (defun average-bit a b (>> (+ a b) 1))
-  ; toggle-bit
-  (defun toggle-bit n a b (^ a b n))
-  ; is-odd-bit
-  (defun is-odd-bit n (= (& n 1) 1))
-  ; is-same-sign-bit 
-  (defun is-same-sign-bit a b (>= (^ a b) 0))
-  ; modulo-bit
-  (defun modulo-bit numerator divisor (& numerator (- divisor 1)))
-  ; set-bit
-  (defun set-bit n bit (| n (<< 1 bit)))
-  ; clear-bit
-  (defun clear-bit n bit (& n (~ (<< 1 bit))))
-  ; power-of-two-bit
-  (defun power-of-two-bit n (<< 2 (- n 1)))
-  ; count-number-of-ones-bit
-  (defun count-number-of-ones-bit n (do 
-    (defvar count 0)
-    (loop defun iter 
-      (if n (do 
-        (setf n (& n (- n 1)))
-        (setf count (+ count 1))
-        (iter)) count))
-    (iter)))
-  ; check-n-is-one-bit
-  (defun check-n-is-one-bit N nth (type (& N (<< 1 nth)) Boolean))
-  (defun possible-subsets-bit A (do 
-    (defconstant 
-          items () 
-          N (length A))
-    (defun iter-i i (do
-      (when (< i (<< 1 N)) (do 
-        (defconstant current ())
-        (set items (length items) current)
-        (iter-j 0 (lambda j (do (when (& i (<< 1 j)) (set current (length current) (get A j))))))
-        (iter-i (+ i 1)))))) 
-    (defun iter-j j cb (when (< j N) (do (cb j) (iter-j (+ j 1) cb)))) (iter-i 0) items))
-  ; largest-power 
-  (defun largest-power N (do 
-    ; changing all right side bits to 1.
-    (setf N (| N (>> N 1)))
-    (setf N (| N (>> N 2)))
-    (setf N (| N (>> N 4)))
-    (setf N (| N (>> N 8)))
-    ; as now the number is 2 * x-1,
-    ; where x is required answer,
-    ; so adding 1 and dividing it by
-    (>> (+ N 1) 1)))
-  ; floor
-  (defun floor n (| n 0))
-  ; round a number
-  (defun round n (| (+ n 0.5) 0))
-  ; euclidean-mod
-  (defun euclidean-mod a b (mod (+ (mod a b) b) b))
-  ; euclidean-div
-  (defun euclidean-div a b (do 
-                      (defconstant q (* a (/ b)))
-                      (if (< (mod a b) 0) (if (> b 0) (- q 1) (+ q 1)) q)))
-  ; euclidean-distance
-  (defun euclidean-distance x1 y1 x2 y2 (do
-    (defconstant 
-      a (- x1 x2) 
-      b (- y1 y2))
-    (sqrt (+ (* a a) (* b b)))))
-  ; manhattan-distance
-  (defun manhattan-distance x1 y1 x2 y2 (+ (abs (- x2 x1)) (abs (- y2 y1))))
-  ; power
-  (defun power base exp 
-    (if (< exp 0) 
-        (if (= base 0) 
-        (throw "Attempting to divide by 0 in (power)")
-        (/ (* base (power base (- (* exp -1) 1))))) 
-        (if (= exp 0) 1
-          (if (= exp 1) base
-            (* base (power base (- exp 1)))))))
-  ; levenshtein-distance
-  (defun levenshtein-distance a b (do 
-    (defconstant s (type a Array) 
-            t (type b Array)) 
-      
-      (or (cond 
-        (not (length s)) (length t)
-        (not (length t)) (length a)
-      ) (do 
-        (defconstant arr ())
-        (loop defun iterate-i i (when (<= i (length s)) (do
-          (set arr i (Array i))
-          (loop defun iterate-j j (when (<= j (length t)) (do 
-            (set (get arr i) j 
-              (if (= i 0) j 
-                (minimum (Array 
-                  (+ (get (get arr (- i 1)) j) 1)
-                  (+ (get (get arr i) (- j 1)) 1)
-                  (+ (get (get arr (- i 1)) (- j 1)) (not (= (get s (- j 1)) (get t (- i 1)))))))))
-              (iterate-j (+ j 1)))))
-            (iterate-j 1)
-          (iterate-i (+ i 1)))))
-        (iterate-i 0)
-        (get (get arr (length t)) (length s))))))
+  ; cartesian-product
+  (defun cartesian-product a b (reduce a (lambda p x . . (merge p (map b (lambda y . . (Array x y))))) ()))
   ; neighborhood
   (defun neighborhood array directions y x callback
       (reduce (check-type directions direction-t) (lambda sum dir . . (do
@@ -229,83 +26,6 @@
               dy (+ (car dir) y)
               dx (+ (car (cdr dir)) x))
           (+ sum (when (and (array-in-bounds-p array dy) (array-in-bounds-p (get array dy) dx)) (callback (get (get array dy) dx) dir))))) 0))
-    ; greatest-common-divisor
-    (defun greatest-common-divisor a b (do (loop defun gcd a b (if (= b 0) a (gcd b (mod a b)))) (gcd a b)))
-    ; least-common-divisor
-    (defun least-common-divisor a b (* a b (/ (greatest-common-divisor a b))))
-    ; remainder
-    (defun remainder n d (do (loop defun remain n d (if (< n d) n (remain (- n d) d))) (remain n d)))
-    ; factorial
-    (defun factorial n (if (<= n 0) 1 (* n (factorial (- n 1)))))
-    ; fibonacci
-    (defun fibonacci n (if (< n 2) n (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))
-    ; fibonacci-memoized
-    (defun fibonacci-memoized n memo (if (< n 2) n
-        (if (hash-table-has memo n) (hash-table-get memo n)
-        (do
-          (defconstant cache (+ (fibonacci-memoized (- n 1) memo) (fibonacci-memoized (- n 2) memo)))
-          (hash-table-set memo n cache)
-          cache))))
-    ; is-prime
-    (defun is-prime n (do 
-        (loop defun iter i end (do 
-            (defconstant it-is (not (= (mod n i) 0)))
-            (if (and (<= i end) it-is) (iter (+ i 1) end) it-is)))
-      (or (= n 2) (iter 2 (sqrt n)))))
-  ; prime-factors
-  (defun prime-factors n (do 
-    (defvar a () f 2)
-    (loop defun iterate (if (> n 1) (do 
-      (if (= (mod n f) 0) 
-        (do 
-          (push a f)
-          (setf n (* n (/ f))))
-        (setf f (+ f 1)))
-      (iterate)) a))
-      (iterate)))
-    ; chinese-remainder-theorem
-    (defun chinese-remainder-theorem items
-      (do 
-        (defvar result (car (car items)))
-          (reduce 
-            (cdr items) 
-            (lambda step item . . (do 
-            (defconstant 
-                id (car item)
-                index (car (cdr item)))
-            (loop defun rem time
-              (unless (= (mod (+ time index) id) 0) 
-                (rem (+ time step)) 
-                time))
-            (setf result (rem result))
-            (* step id))) 
-            result)
-          result))
-    ; euclid-inverse-mod
-    (defun euclid-inverse-mod a m (do 
-          (defvar 
-              m0 m 
-              x0 0 
-              x1 1)
-          (unless (= m 1) (do 
-              ; Apply extended Euclid Algorithm
-              (loop defun euclid a (if (> a 1) (do
-              ; q is quotient
-              (defvar 
-                  q (floor (* a (/ m))) 
-                  t m)
-              ; m is remainder now, process
-              ; same as euclid's algo
-              (setf m (mod a m))
-              (setf a t)
-              (setf t x0)
-              (setf x0 (- x1 (* q x0)))
-              (setf x1 t)
-              (euclid a))))
-              (euclid a)
-              ; Make x1 positive
-              (when (< x1 0) (setf x1 (+ x1 m0)))
-              x1))))
       ; join
       (defun join array delim (reduce (check-type array array-t) (lambda a x i . (if (> i 0) (concatenate a delim (type x String)) (type x String))) ""))
       ; repeat
@@ -338,27 +58,6 @@
         array1
         )))
       (iterate 0 (- (length array2) 1))))
-      ; range
-      (defun range start end (do
-        (defconstant array ())
-        (loop defun iterate i bounds (do
-          (push array (+ i start))
-          (if (< i bounds) (iterate (+ i 1) bounds) array)))
-        (iterate 0 (- end start))))
-    ; sequance
-      (defun sequance end start step (do
-        (defconstant array ())
-        (loop defun iterate i bounds (do
-          (push array (+ i start))
-          (if (< i bounds) (iterate (+ i step) bounds) array)))
-        (iterate 0 (- end start))))
-      ; arithmetic-progression
-      (defun arithmetic-progression n lim (do
-        (defconstant array ())
-        (loop defun iterate i bounds (do
-          (push array (+ i n))
-          (if (< i bounds) (iterate (+ i n) bounds) array)))
-        (iterate 0 (- lim n))))
       ; map
       (defun map array callback (do 
         (defconstant new-array ())
@@ -393,16 +92,6 @@
       (when (callback current i array) (setf amount (+ amount 1)))
       (if (< i bounds) (iterate (+ i 1) bounds) amount)))
     (iterate 0 (- (length array) 1))))
-  ; rotate-left
-  (defun rotate-left array n (do 
-    (defconstant t ())
-    (for-n n (lambda . (do 
-      (set t (length t) (get array -1))
-      (set array -1))))
-    (reverse array)
-     (for-n n (lambda i (do 
-     (set array (length array) (get t i)))))
-    (reverse array)))
   ; partition 
   (defun partition array n (reduce array (lambda a x i . (do 
         (if (mod i n) (push (get a -1) x) (push a (Array x))) a)) 
@@ -445,10 +134,6 @@
         (setf initial (callback initial (get array i) i array))
         (if (< i bounds) (iterate (+ i 1) bounds) initial)))
       (iterate 0 (- (length array) 1))))
-    ; sum-array
-    (defun sum-array array (reduce (check-type array array-number-t) (lambda a b . . (+ a b)) 0))
-    ; product-array
-    (defun product-array array (reduce (check-type array array-number-t) (lambda a b . . (* a b)) 1))
     ; deep-flat
     (defun deep-flat arr (do 
       (defconstant new-array ()) 
@@ -575,7 +260,7 @@
               arr target start end (do
           (when (<= start end) (do 
               (defconstant 
-                index (floor (* (+ start end) 0.5))
+                index (| (* (+ start end) 0.5) 0)
                 current (get arr index))
               (if (= target current) target
                 (if (> current target) 
@@ -586,6 +271,8 @@
       (defun sort-by-length array order (map order (lambda x . . (find array (lambda y . . (= (- (length y) 1) x))))))
       ; order-array
       (defun order-array array order (map (Array (length array) length) (lambda . i . (get array (get order i)))))
+      ; euclidean-mod
+      (defun euclidean-mod a b (mod (+ (mod a b) b) b))
       ; hash-index
       (defun hash-index 
         table key 
@@ -600,7 +287,8 @@
                 value (- (char-code letter 0) 96))
               (setf total (euclidean-mod (+ (* total prime-num) value) (length table)))
               (if (< i bounds) (find-hash-index (+ i 1) bounds) total)))
-            (find-hash-index 0 (min (- (length key-arr) 1) 100))))
+            (find-hash-index 0 
+            (if (< (- (length key-arr) 1) 100) (- (length key-arr) 1) 100))))
 
       ; (Hash Table)
       ; (go 
@@ -838,67 +526,19 @@
         (reduce (lambda acc current i all 
           (if (>= i n) 
             (push acc (slice all (- i n) i)) acc)) ())))
-      ; cartesian-product
-      (defun cartesian-product a b (reduce a (lambda p x . . (merge p (map b (lambda y . . (Array x y))))) ()))
       ; equal 
       (defun equal a b 
       (or (and (atom a) (atom b) (= a b)) 
       (and (Arrayp a) 
             (= (length a) (length b)) 
               (not (some a (lambda . i . (not (equal (get a i) (get b i)))))))))
-      ; adjacent-difference
-      (defun adjacent-difference array callback (do 
-        (check-type array array-number-t)
-        (defconstant len (length array))
-        (unless (= len 1) 
-          (do (defconstant result (Array (car array)))
-          (loop defun iterate i (if (< i len) (do 
-          (set result i (callback (get array (- i 1)) (get array i)))
-          (iterate (+ i 1))) result))
-          (iterate 1)) array)))
-      ; permutations
-      (defun permutations permutation (do 
-        (void (check-type permutation array-t))
-        (defconstant  
-          len (length permutation)
-          result (Array (type permutation Array))
-          c (Array len length))
-        (defvar 
-          k 0 
-          p 0)
-          (loop defun while-true i 
-            (if (< i len)
-              (do (if (< (get c i) i) 
-                (do 
-                  (setf k (and (mod i 2) (get c i)))
-                  (setf p (get permutation i))
-                  (set permutation i (get permutation k))
-                  (set permutation k p)
-                  (set c i (+ (get c i) 1))
-                  (setf i 1)
-                  (set result (length result) (type permutation Array)))
-                  (set c i 0))
-                  (while-true (+ i 1)))))
-          (while-true 1)
-          result))
     (Array 
-      (Array "max" max)
-      (Array "min" min) 
-      (Array "maximum" maximum)
-      (Array "minimum" minimum) 
-      (Array "is-odd" is-odd) 
-      (Array "is-even" is-even) 
       (Array "push" push)
       (Array "pop" pop)
       (Array "yoink" yoink)
       (Array "sort-by-length" sort-by-length)  
-      (Array "aorder-array" order-array)  
+      (Array "order-array" order-array)  
       (Array "array-in-bounds-p" array-in-bounds-p)  
-      (Array "abs" abs)
-      (Array "floor" floor)
-      (Array "round" round)
-      (Array "euclidean-mod" euclidean-mod)
-      (Array "euclidean-div" euclidean-div)
       (Array "join" join)
       (Array "trim" trim)
       (Array "split-by-lines" split-by-lines)
@@ -908,17 +548,12 @@
       (Array "array-of-numbers" array-of-numbers)
       (Array "concat" concat)
       (Array "merge" merge)
-      (Array "range" range)
-      (Array "sequance" sequance)
-      (Array "arithmetic-progression" arithmetic-progression)
       (Array "map" map)
       (Array "for-each" for-each)
       (Array "for-n" for-n)
       (Array "for-range" for-range)
       (Array "remove" remove)
       (Array "reduce" reduce)
-      (Array "sum-array" sum-array)
-      (Array "product-array" product-array)
       (Array "deep-flat" deep-flat)
       (Array "find" find)
       (Array "find-index" find-index)
@@ -942,12 +577,6 @@
       (Array "binary-tree-set-left" binary-tree-set-left)
       (Array "binary-tree-get-value" binary-tree-get-value)
       (Array "character-occurances-in-string" character-occurances-in-string)
-      (Array "greatest-common-divisor" greatest-common-divisor)
-      (Array "least-common-divisor" least-common-divisor)
-      (Array "remainder" remainder)
-      (Array "factorial" factorial)
-      (Array "fibonacci" fibonacci)
-      (Array "fibonacci-memoized" fibonacci-memoized)
       (Array "every" every)
       (Array "some" some)
       (Array "index-of" index-of)
@@ -962,56 +591,14 @@
       (Array "slice-if" slice-if)
       (Array "slice-if-index" slice-if-index)
       (Array "equal" equal)
-      (Array "can-sum" can-sum)
-      (Array "how-can-sum" how-can-sum)
-      (Array "adjacent-difference" adjacent-difference)
       (Array "neighborhood" neighborhood)
-      (Array "clamp" clamp)
-      (Array "manhattan-distance" manhattan-distance)
-      (Array "manhattan-distance" euclidean-distance)
-      (Array "normalize" normalize)
-      (Array "linear-interpolation" linear-interpolation)
-      (Array "power" power)
-      (Array "radians" radians)
-      (Array "sin" sin)
-      (Array "cos" cos)
       (Array "repeat" repeat)
-      (Array "sign" sign)
-      (Array "square" square)
-      (Array "average" average)
-      (Array "sqrt" sqrt)
-      (Array "is-prime" is-prime)
-      (Array "euclid-inverse-mod" euclid-inverse-mod)
-      (Array "cartesian-product" cartesian-product)
-      (Array "chinese-remainder-theorem" chinese-remainder-theorem)
-      (Array "gauss-sum-sequance" gauss-sum-sequance)
-      (Array "gauss-sum" gauss-sum)
-      (Array "prime-factors" prime-factors)
-      (Array "levenshtein-distance" levenshtein-distance)
-      (Array "binomial-coefficient" binomial-coefficient)
       (Array "window" window)
-      (Array "max-bit" max-bit)
-      (Array "min-bit" min-bit)
-      (Array "clamp-bit" clamp-bit)
-      (Array "is-bit-power-of-two" is-bit-power-of-two)
-      (Array "average-bit" average-bit)
-      (Array "toggle-bit" toggle-bit)
-      (Array "is-odd-bit" is-odd-bit)
-      (Array "is-same-sign-bit" is-same-sign-bit)
-      (Array "modulo-bit" modulo-bit)
-      (Array "set-bit" set-bit)
-      (Array "clear-bit" clear-bit)
-      (Array "power-of-two-bit" power-of-two-bit)
-      (Array "count-number-of-ones-bit" count-number-of-ones-bit)
-      (Array "check-n-is-one-bit" check-n-is-one-bit)
-      (Array "possible-subsets-bit" possible-subsets-bit)
-      (Array "largest-power" largest-power)
       (Array "left-pad" left-pad)
       (Array "right-pad" right-pad)
       (Array "to-upper-case" to-upper-case)
       (Array "to-lower-case" to-lower-case)
-      (Array "rotate-left" rotate-left)
-      (Array "permutations" permutations)
-   )
+      (Array "cartesian-product" cartesian-product)
+      (Array "euclidean-mod" euclidean-mod))
 ))
 ; (/ std lib)

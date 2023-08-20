@@ -1,4 +1,5 @@
-(import std "neighborhood" "split-by" "split-by-lines" "for-n" "for-each" "array-of-numbers" "reduce" "max" "quick-sort" "map" "concat" "push" "count-of" "join" "array-in-bounds-p")
+(import std "neighborhood" "split-by" "split-by-lines" "for-n" "for-each" "array-of-numbers" "reduce" "quick-sort" "map" "concat" "push" "count-of" "join" "array-in-bounds-p")
+(import math "max")
 (defconstant sample 
 "L.LL.LL.LL
 LLLLLLL.LL
@@ -13,7 +14,7 @@ L.LLLLL.LL")
 (deftype matrix-t (Array (Array (Number))))
 (deftype input-t (String))
 (defconstant *input* sample)
-; (defconstant *input* (open "./playground/src/aoc_2020/11/input.txt"))
+; (defconstant *input* (:open "./playground/src/aoc_2020/11/input.txt"))
 (defun count-seats matrix (do
   (reduce (check-type matrix matrix-t) (lambda a row . . (+ a (count-of row (lambda x . . (> x 0))))) 0)))
 

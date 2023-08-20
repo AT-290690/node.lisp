@@ -1,5 +1,6 @@
-(import std "split-by-n-lines" "map" "split" "array-of-numbers" "push" "every" "sum-array" "reduce" "deep-flat" "remove" "some" "reverse" "range"
-"for-n" "rotate-left" "find" "slice-if-index" "product-array" "for-each")
+(import std "split-by-n-lines" "map" "split" "array-of-numbers" "push" "every" "reduce" "deep-flat" "remove" "some" "reverse"
+"for-n" "rotate-left" "find" "slice-if-index" "for-each")
+(import math "range" "product-array" "sum-array")
 
 (defconstant sample1 "class: 1-3 or 5-7
 row: 6-11 or 33-44
@@ -25,7 +26,7 @@ nearby tickets:
 3,9,18
 15,1,5
 5,14,9")
-;  (defconstant sample (open "./playground/src/aoc_2020/16/input.txt"))
+;  (defconstant sample (:open "./playground/src/aoc_2020/16/input.txt"))
 
 (deftype raw-t (Array (Array (String))))
 (deftype ticket-ranges-t (Array (Array (Array (Number)))))
@@ -73,23 +74,15 @@ nearby tickets:
                             (remove (lambda x . .
                               (not (some x (lambda y . .
                                 (not (some ticket-ranges (lambda z . .
-                                  (or (is-in-bounds y (car z)) (is-in-bounds y (car (cdr z))))
-                                  ))))))))))
+                                  (or (is-in-bounds y (car z)) (is-in-bounds y (car (cdr z))))))))))))))
   (defconstant tickets (push (type remaining Array) (type your-ticket Array)))
-  (defconstant R (range 0 (- (length your-ticket) 1)))
   (defun validate-ticket tickets i j (go 
         (every tickets (lambda x . . 
           (do
               (or
                 (is-in-bounds (get x i) (car (get ticket-ranges j)))
                 (is-in-bounds (get x i) (car (cdr (get ticket-ranges j))))))))))
-(defconstant tic (go
-  R
-  (map (lambda x i r 
-    (map r (lambda y j . 
-      (Array i j (validate-ticket tickets i j))))))
-    (map (lambda x . a (remove x (lambda y . . (get y -1)))))
-    (sort-by-len R)))
+(defconstant *range* (range 0 (- (length your-ticket) 1)))
 (loop defun seave tickets order (do (void (check-type tickets groups-t)) 
   (if (length tickets) (do
   (defconstant 
@@ -106,7 +99,15 @@ nearby tickets:
   (seave next order)) order)))
 (go 
   (go 
-    (seave tic ()) 
+    (seave 
+      (go
+        *range*
+        (map (lambda x i r 
+          (map r (lambda y j . 
+            (Array i j (validate-ticket tickets i j))))))
+          (map (lambda x . a (remove x (lambda y . . (get y -1)))))
+          (sort-by-len *range*))
+     ()) 
     (remove (lambda x . . (< (car (cdr x)) 6))) 
     (reduce (lambda a x . . (set a (car (cdr x)) (car x))) 
     (map (Array 20 length) (lambda x . . (or x -1)))) 

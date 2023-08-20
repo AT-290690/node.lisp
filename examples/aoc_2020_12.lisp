@@ -1,11 +1,12 @@
-(import std "split-by" "reduce"  "push" "map" "join" "reverse" "floor" "abs" "radians")
+(import std "split-by" "reduce" "push" "map" "join" "reverse")
+(import math "abs" "radians" "floor")
 (defconstant sample "F10
 N3
 F7
 R90
 F11")
 (defconstant *input* sample)
-; (defvar *input* (open "./playground/src/aoc_2020/12/input.txt"))
+; (defvar *input* (:open "./playground/src/aoc_2020/12/input.txt"))
 (deftype array-number-t (Array (Number)))
 (deftype stack-t (Array (Array (String) (Number))))
 (deftype lazy-cmd-t (Array (Array (String) (Number)) (Function)))

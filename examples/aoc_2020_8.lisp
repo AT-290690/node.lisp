@@ -11,7 +11,7 @@ jmp -4
 acc +6")
 
 (defconstant *input* sample)
-; (defvar *input* (open "./playground/src/aoc_2020/8/input.txt"))
+; (defvar *input* (:open "./playground/src/aoc_2020/8/input.txt"))
 
 (defconstant *stack* 
   (go 

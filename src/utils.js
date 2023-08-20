@@ -20,7 +20,7 @@ export const isBalancedParenthesis = (sourceCode) => {
   return count - stack.length
 }
 export const handleUnbalancedParens = (source) => {
-  const diff = isBalancedParenthesis(source)
+  const diff = isBalancedParenthesis(removeNoCode(source))
   if (diff !== 0)
     throw new SyntaxError(
       `Parenthesis are unbalanced by ${diff > 0 ? '+' : ''}${diff} ")"`
@@ -32,21 +32,23 @@ export const handleUnbalancedQuotes = (source) => {
   if (diff !== 0) throw new SyntaxError(`Quotes are unbalanced "`)
   return source
 }
-export const treeShake = (deps, std) => {
+export const treeShake = (deps, stds) => {
   const mods = []
   for (const [key, value] of deps) {
     const depSet = new Set(value)
-    const parsed = std.at(-1).at(-1).slice(1)
-    parsed.pop()
-    mods.push(
-      parsed.filter(
-        ([dec, name]) =>
-          dec[TYPE] === APPLY &&
-          dec[VALUE] === 'defun' &&
-          name[TYPE] === WORD &&
-          depSet.has(lispToJavaScriptVariableName(name[VALUE]))
+    for (const std of stds) {
+      const parsed = std.at(-1).at(-1).slice(1)
+      parsed.pop()
+      mods.push(
+        parsed.filter(
+          ([dec, name]) =>
+            dec[TYPE] === APPLY &&
+            dec[VALUE] === 'defun' &&
+            name[TYPE] === WORD &&
+            depSet.has(lispToJavaScriptVariableName(name[VALUE]))
+        )
       )
-    )
+    }
   }
   const JavaScript = `${
     mods.length
@@ -57,7 +59,6 @@ export const treeShake = (deps, std) => {
   }`
   return JavaScript
 }
-
 export const runFromCompiled = (
   source,
   topLevel = [],
@@ -75,6 +76,6 @@ export const runFromCompiled = (
   }
 }
 export const runFromInterpreted = (source, topLevel = [], env = {}) => {
-  const tree = topLevel.concat(parse(source))
+  const tree = topLevel.flat(1).concat(parse(source))
   if (Array.isArray(tree)) return run(tree, env)
 }

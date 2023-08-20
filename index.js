@@ -3,6 +3,8 @@ import { start } from 'repl'
 import { compileToJs } from './src/compiler.js'
 import { evaluate, run, stacktrace } from './src/interpreter.js'
 import { parse } from './src/parser.js'
+import domExtension from './lib/extensions/dom.js'
+import fsExtension from './lib/extensions/fs.js'
 // import wabt from 'wabt'
 import {
   isBalancedParenthesis,
@@ -12,9 +14,16 @@ import {
   runFromInterpreted,
   treeShake,
 } from './src/utils.js'
-import { STD } from './lib/std.js'
+import STD from './lib/std.js'
+import DOM from './lib/dom.js'
+import MATH from './lib/math.js'
 import { tokens } from './src/tokeniser.js'
 import { APPLY, TYPE, VALUE, WORD } from './src/enums.js'
+const libraries = {
+  std: STD,
+  dom: DOM,
+  math: MATH,
+}
 const cli = async () => {
   const [, , ...argv] = process.argv
   let file = '',
@@ -22,7 +31,8 @@ const cli = async () => {
     Helpers = {},
     Tops = [],
     env = {},
-    destination = undefined
+    destination = undefined,
+    lib = 'std'
   while (argv.length) {
     const flag = argv.shift()?.toLowerCase()
     const value = argv.shift()
@@ -44,7 +54,10 @@ const cli = async () => {
               Helpers,
               Tops
             )
-            const JavaScript = `${top}${treeShake(deps, STD)}${program}`
+            const JavaScript = `${top}${treeShake(
+              deps,
+              JSON.parse(JSON.stringify(Object.values(libraries)))
+            )}${program}`
             writeFileSync(
               destination ?? './playground/dist/main.js',
               JavaScript
@@ -57,74 +70,18 @@ const cli = async () => {
           switch (value) {
             case 'fs':
               {
-                // const { readWasm, parseWat } = await wabt()
-                // module: (args, env) => {
-                //   const out = args.map((x) => evaluate(x, env))
-                //   const string = `(module ${out
-                //     .flat(1)
-                //     // .map((x) => x.replace(new RegExp(/'/g), '"'))
-                //     .join(' ')})`
-                //   // console.log(readWasm(), {
-                //   //   readDebugNames: true,
-                //   // })
-                //   // console.log({ string: })
-                //   // Buffer.from(string, 'utf-8')
-                //   // console.log(parseWat('main.wat', string))
-                //   console.log({ string })
-                //   console.log(
-                //     readWasm(parseWat('main.wat', string), {
-                //       readDebugNames: true,
-                //     })
-                //   )
-                //   return string
-                //   // parseWat('main.wat', args string)
-                //   // const wasmModule = wabt.parseWat(inputWat, readFileSync(inputWat, "utf8"));
-                //   // const { buffer } = wasmModule.toBinary({});
-                // },
-                Extensions = {
-                  write: (path, data) =>
-                    `writeFileSync(${path}, ${data}, 'utf-8);`,
-                  open: (path) => `readFileSync(${path}, 'utf-8');`,
-                }
-                Tops = [`import { writeFileSync, readFileSync } from 'fs';`]
-                // Helpers = {
-                //   _open: {
-                //     source: `_open = require('fs').readFileSync`,
-                //     has: true,
-                //   },
-                // },
-                env = {
-                  open: (args, env) => {
-                    if (!args.length)
-                      throw new RangeError(
-                        'Invalid number of arguments for (open)'
-                      )
-                    const path = evaluate(args[0], env)
-                    if (typeof path !== 'string')
-                      throw new TypeError(
-                        'First argument of (open) is not a string path'
-                      )
-                    return readFileSync(path, 'utf-8')
-                  },
-                  write: (args, env) => {
-                    if (!args.length)
-                      throw new RangeError(
-                        'Invalid number of arguments for (write)'
-                      )
-                    const path = evaluate(args[0], env)
-                    if (typeof path !== 'string')
-                      throw new TypeError(
-                        'First argument of (write) is not a string path'
-                      )
-                    const data = evaluate(args[1], env)
-                    if (typeof data !== 'string')
-                      throw new TypeError(
-                        'Second argument of (write) is not a string data'
-                      )
-                    writeFileSync(path, data, 'utf-8')
-                    return data
-                  },
-                }
+                Extensions = fsExtension.Extensions
+                Helpers = fsExtension.Helpers
+                Tops = fsExtension.Tops
+                env = fsExtension.env
+              }
+              break
+
+            case 'dom':
+              {
+                Extensions = domExtension.Extensions
+                Helpers = domExtension.Helpers
+                env = domExtension.env
               }
               break
           }
@@ -139,7 +96,15 @@ const cli = async () => {
         break
       case '-r':
         try {
-          run(STD.concat(parse(file)), env)
+          run(
+            [
+              ...libraries['std'],
+              ...libraries['math'],
+              ...libraries['dom'],
+              ...parse(file),
+            ],
+            env
+          )
         } catch (err) {
           logError('Error')
           logError(err.message)
@@ -150,16 +115,27 @@ const cli = async () => {
         break
       case '-trace':
         try {
-          run(STD.concat(parse(file)), env)
+          run(
+            [
+              ...libraries['std'],
+              ...libraries['math'],
+              ...libraries['dom'],
+              ...parse(file),
+            ],
+            env
+          )
         } catch (err) {
           console.log('\x1b[40m', err, '\x1b[0m')
           logError(err.message)
         }
         break
-      case '-std':
+      case '-lib':
+        lib = value
+        break
+      case '-doc':
         {
           const mods = []
-          const parsed = STD.at(-1).at(-1).slice(1)
+          const parsed = libraries[lib].at(-1).at(-1).slice(1)
           parsed.pop()
           mods.push(
             parsed.filter(
@@ -185,7 +161,7 @@ const cli = async () => {
       case '-import':
         {
           const mods = []
-          const parsed = STD.at(-1).at(-1).slice(1)
+          const parsed = libraries[lib].at(-1).at(-1).slice(1)
           parsed.pop()
           mods.push(
             parsed.filter(
@@ -219,7 +195,10 @@ const cli = async () => {
             eval: (input) => {
               try {
                 let out = `${source}\n${file}\n(do ${input})`
-                const result = run(STD.concat(parse(out)), env)
+                const result = run(
+                  [...libraries['std'], ...libraries['math'], ...parse(out)],
+                  env
+                )
                 if (typeof result === 'function') {
                   console.log(inpColor, `(λ)`)
                 } else if (Array.isArray(result)) {
@@ -268,9 +247,11 @@ const cli = async () => {
 -------------------------------------
 -help
 -------------------------------------
--std              list std functions
+-lib                      target lib
 -------------------------------------
--import           log import for std
+-doc              list lib functions
+-------------------------------------
+-import           log import for lib
 -------------------------------------
 -s                    prepare a file
 -------------------------------------
@@ -300,6 +281,6 @@ export default {
   balance: isBalancedParenthesis,
   source: removeNoCode,
   run,
-  std: STD,
+  libraries,
   treeShake,
 }

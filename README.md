@@ -23,8 +23,9 @@ A Lisp for Node
 
 ; to use memo (hashmap) you need to import ALL of these functions
 (import std "index-of" "find" "find-index" "hash-table-set"
-            "min" "euclidean-mod" "push" "map" "array-in-bounds-p"
+            "push" "map" "array-in-bounds-p"
             "hash-index" "hash-table-has" "hash-table-get" "hash-table")
+(import math "min" "euclidean-mod")
 
 (defun fibonacci-memoized n memo (if (< n 2) n
   (if (hash-table-has memo n) (hash-table-get memo n)
@@ -66,7 +67,8 @@ A Lisp for Node
 ```
 
 ```lisp
-(import std "range" "push" "factorial" "product-array" "reduce")
+(import std "push""reduce")
+(import "range" "product-array")
 (defun factorial n
   (go
     (range 1 n)
@@ -135,9 +137,11 @@ npm run lisp -- -help
 -------------------------------------
 -help
 -------------------------------------
--std              list std functions
+-lib                      target lib
 -------------------------------------
--import           log import for std
+-doc              list lib functions
+-------------------------------------
+-import           log import for lib
 -------------------------------------
 -s                    prepare a file
 -------------------------------------

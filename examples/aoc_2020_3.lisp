@@ -1,4 +1,5 @@
-(import std "map" "reduce" "floor" "split-by-lines" "sum-array" "product-array")
+(import std "map" "reduce" "split-by-lines")
+(import math "floor" "sum-array" "product-array")
 (defconstant sample 
 "..##.......
 #...#...#..
@@ -14,7 +15,7 @@
 (deftype matrix-t (Array (Array (Number))))
 (deftype input-t (String))
 (defconstant *input* sample)
-; (defvar *input* (open "./playground/src/aoc_2020/3/input.txt"))
+; (defvar *input* (:open "./playground/src/aoc_2020/3/input.txt"))
 
 (defun to_bit_array array 
   (map array (lambda line . . (go line (type Array) (map (lambda x . . (= x "#")))))))

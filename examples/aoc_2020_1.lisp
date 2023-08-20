@@ -1,5 +1,5 @@
-(import std "quick-sort" "push" "binary-search" "floor" "map" "reduce" "product-array" "concat" "array-of-numbers" "split-by-lines")
-
+(import std "quick-sort" "push" "binary-search" "map" "reduce" "concat" "array-of-numbers" "split-by-lines")
+(import math "floor" "product-array")
 (defconstant sample "1721
 979
 366
@@ -8,7 +8,7 @@
 1456")
 (deftype numbers-t (Array (Number)))
 (defconstant *input* sample)
-; (defvar *input* (open "./playground/src/aoc_2020/1/input.txt"))
+; (defvar *input* (:open "./playground/src/aoc_2020/1/input.txt"))
 
 (defun *solve1* array cb 
      (reduce (check-type array numbers-t) (lambda a x . array (do

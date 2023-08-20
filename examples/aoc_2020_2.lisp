@@ -7,7 +7,7 @@
 ; (defvar sample "2-3 f: fvwc")
 (deftype string-t (String))
 (defconstant *input* sample)
-; (defvar *input* (open "./playground/src/aoc_2020/2/input.txt"))
+; (defvar *input* (:open "./playground/src/aoc_2020/2/input.txt"))
 (defconstant *occ* (regex-match *input* "([0-9]{1,2}-[0-9]{1,2})"))
 (defconstant *policy* (regex-match *input* "[a-z](?=:)"))
 (defconstant *inputs* (regex-match *input* "(?<=:[ ])(.*)"))

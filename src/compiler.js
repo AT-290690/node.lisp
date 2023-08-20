@@ -1,7 +1,9 @@
 import { APPLY, ATOM, TYPE, VALUE, WORD } from './enums.js'
 
 export const earMuffsToLodashes = (name) => name.replace(new RegExp(/\*/g), '_')
-export const dotNamesToLowerCase = (name) => name.replace(new RegExp(/\./g), '')
+export const dotNamesToEmpty = (name) => name.replace(new RegExp(/\./g), '')
+export const colonNamesTo$ = (name) => name.replace(new RegExp(/\:/g), '$')
+
 export const toCamelCase = (name) => {
   let out = name[0]
   for (let i = 1; i < name.length; ++i) {
@@ -22,18 +24,15 @@ export const deepRename = (name, newName, tree) => {
     }
 }
 export const lispToJavaScriptVariableName = (name) =>
-  toCamelCase(dotNamesToLowerCase(earMuffsToLodashes(name)))
-const CAST_BOOLEAN_TO_NUMBER = true
+  toCamelCase(dotNamesToEmpty(colonNamesTo$(earMuffsToLodashes(name))))
+
 const Extensions = {}
-const Functions = new Map()
 const Helpers = {
   log: {
     source: `// Helper Functions\nvar log = (msg) => { console.log(msg); return msg }`,
-    has: true,
   },
   _identity: {
     source: `_identity = i => { return i }`,
-    has: true,
   },
   tco: {
     source: `tco = fn => (...args) => {
@@ -41,22 +40,18 @@ const Helpers = {
       while (typeof result === 'function') result = result()
       return result
     }`,
-    has: true,
   },
   'regexp-match': {
     source: `_regExpMatch = (string, regex) => {
       const match = string.match(new RegExp(regex, 'g'))
       return match == undefined ? [] : [...match]
     }`,
-    has: true,
   },
   'regexp-replace': {
     source: `_regExpReplace = (string, a, b) => string.replace(new RegExp(a, 'g'), b)`,
-    has: true,
   },
   atom: {
     source: `_isAtom = (value) => typeof value === 'number' ||  typeof value === 'bigint' || typeof value === 'string'`,
-    has: true,
   },
   set: {
     source: `_set = (array, index, value) => { 
@@ -66,13 +61,11 @@ const Helpers = {
       } else array[index] = value; 
       return array 
   }`,
-    has: true,
   },
   error: {
     source: `_error = (error) => { 
       throw new Error(error)
   }`,
-    has: true,
   },
   cast: {
     source: `_cast = (type, value) => {
@@ -95,11 +88,9 @@ const Helpers = {
          return 0
       }
     }`,
-    has: true,
   },
 }
-const handleBoolean = (source) =>
-  CAST_BOOLEAN_TO_NUMBER ? `+${source}` : source
+const handleBoolean = (source) => `+${source}`
 const semiColumnEdgeCases = new Set([
   ';)',
   ';-',
@@ -121,10 +112,11 @@ const semiColumnEdgeCases = new Set([
   ';]',
 ])
 
-const parse = (Arguments, Locals) => Arguments.map((x) => compile(x, Locals))
-const parseArgs = (Arguments, Locals, separator = ',') =>
-  parse(Arguments, Locals).join(separator)
-const compile = (tree, Locals) => {
+const parse = (Arguments, Variables, Functions) =>
+  Arguments.map((x) => compile(x, Variables, Functions))
+const parseArgs = (Arguments, Variables, Functions, separator = ',') =>
+  parse(Arguments, Variables, Functions).join(separator)
+const compile = (tree, Variables, Functions) => {
   if (!tree) return ''
   const [first, ...Arguments] = Array.isArray(tree) ? tree : [tree]
   if (first == undefined) return '[];'
@@ -134,23 +126,23 @@ const compile = (tree, Locals) => {
       case 'do': {
         if (Arguments.length > 1) {
           return `(${Arguments.map((x) =>
-            (compile(x, Locals) ?? '').toString().trimStart()
+            (compile(x, Variables, Functions) ?? '').toString().trimStart()
           )
             .filter(Boolean)
             .join(',')});`
         } else {
-          const res = compile(Arguments[0], Locals)
+          const res = compile(Arguments[0], Variables, Functions)
           return res !== undefined ? res.toString().trim() : ''
         }
       }
       case 'apply': {
         const [first, ...rest] = Arguments
-        const apply = compile(first, Locals)
+        const apply = compile(first, Variables, Functions)
         return `${
           apply[apply.length - 1] === ';'
             ? apply.substring(0, apply.length - 1)
             : apply
-        }(${parseArgs(rest, Locals)})`
+        }(${parseArgs(rest, Variables, Functions)})`
       }
       case 'defconstant':
       case 'defvar': {
@@ -160,16 +152,18 @@ const compile = (tree, Locals) => {
           const arg = Arguments[i]
           if (i % 2 === 0 && arg[TYPE] === WORD) {
             name = lispToJavaScriptVariableName(arg[VALUE])
-            Locals.add(name)
+            Variables.add(name)
           } else
-            out += `${name}=${compile(arg, Locals)}${i !== len - 1 ? ',' : ''}`
+            out += `${name}=${compile(arg, Variables, Functions)}${
+              i !== len - 1 ? ',' : ''
+            }`
         }
         out += `),${name});`
         return out
       }
       case 'setf':
       case 'boole': {
-        const res = compile(Arguments[1], Locals)
+        const res = compile(Arguments[1], Variables, Functions)
         const arg = Arguments[0]
         if (arg[TYPE] === WORD) {
           const name = lispToJavaScriptVariableName(arg[VALUE])
@@ -178,39 +172,57 @@ const compile = (tree, Locals) => {
         return ''
       }
       case 'char':
-        return `(String.fromCharCode(${compile(Arguments[0], Locals)}));`
+        return `(String.fromCharCode(${compile(
+          Arguments[0],
+          Variables,
+          Functions
+        )}));`
       case 'char-code':
-        return `((${compile(Arguments[0], Locals)}).charCodeAt(${compile(
-          Arguments[1],
-          Locals
-        )}));`
+        return `((${compile(
+          Arguments[0],
+          Variables,
+          Functions
+        )}).charCodeAt(${compile(Arguments[1], Variables, Functions)}));`
       case 'make-string':
-        return `(String.fromCharCode(...${compile(Arguments[0], Locals)}));`
-      case 'format':
-        return `((${compile(Arguments[0], Locals)}).split(${compile(
-          Arguments[1],
-          Locals
+        return `(String.fromCharCode(...${compile(
+          Arguments[0],
+          Variables,
+          Functions
         )}));`
+      case 'format':
+        return `((${compile(
+          Arguments[0],
+          Variables,
+          Functions
+        )}).split(${compile(Arguments[1], Variables, Functions)}));`
       case 'regex-match':
-        return `_regExpMatch(${parseArgs(Arguments, Locals)});`
+        return `_regExpMatch(${parseArgs(Arguments, Variables, Functions)});`
       case 'regex-replace':
-        return `_regExpReplace(${parseArgs(Arguments, Locals)});`
+        return `_regExpReplace(${parseArgs(Arguments, Variables, Functions)});`
       case 'Stringp':
         return handleBoolean(
-          `(typeof(${compile(Arguments[0], Locals)})==='string');`
+          `(typeof(${compile(Arguments[0], Variables, Functions)})==='string');`
         )
       case 'Numberp':
         return handleBoolean(
-          `(typeof(${compile(Arguments[0], Locals)})==='number');`
+          `(typeof(${compile(Arguments[0], Variables, Functions)})==='number');`
         )
       case 'Integerp':
         return handleBoolean(
-          `(typeof(${compile(Arguments[0], Locals)})==='bigint');`
+          `(typeof(${compile(Arguments[0], Variables, Functions)})==='bigint');`
         )
       case 'Functionp':
-        return `(typeof(${compile(Arguments[0], Locals)})==='function');`
+        return `(typeof(${compile(
+          Arguments[0],
+          Variables,
+          Functions
+        )})==='function');`
       case 'Arrayp':
-        return `(Array.isArray(${compile(Arguments[0], Locals)}));`
+        return `(Array.isArray(${compile(
+          Arguments[0],
+          Variables,
+          Functions
+        )}));`
       case 'Number':
         return '0'
       case 'Integer':
@@ -223,38 +235,45 @@ const compile = (tree, Locals) => {
         return Arguments.length === 2 &&
           Arguments[1][TYPE] === WORD &&
           Arguments[1][VALUE] === 'length'
-          ? `(new Array(${compile(Arguments[0], Locals)}).fill(0))`
-          : `[${parseArgs(Arguments, Locals)}];`
+          ? `(new Array(${compile(
+              Arguments[0],
+              Variables,
+              Functions
+            )}).fill(0))`
+          : `[${parseArgs(Arguments, Variables, Functions)}];`
       case 'Function':
         return '(()=>{});'
       case 'length':
-        return `(${compile(Arguments[0], Locals)}).length`
+        return `(${compile(Arguments[0], Variables, Functions)}).length`
       case 'atom':
-        return handleBoolean(`_isAtom(${compile(Arguments[0], Locals)});`)
+        return handleBoolean(
+          `_isAtom(${compile(Arguments[0], Variables, Functions)});`
+        )
       case 'car':
-        return `${compile(Arguments[0], Locals)}.at(0);`
+        return `${compile(Arguments[0], Variables, Functions)}.at(0);`
       case 'cdr':
-        return `${compile(Arguments[0], Locals)}.slice(1);`
+        return `${compile(Arguments[0], Variables, Functions)}.slice(1);`
       case 'get':
-        return `${compile(Arguments[0], Locals)}.at(${compile(
+        return `${compile(Arguments[0], Variables, Functions)}.at(${compile(
           Arguments[1],
-          Locals
+          Variables,
+          Functions
         )});`
       case 'set':
-        return `_set(${parseArgs(Arguments, Locals)});`
+        return `_set(${parseArgs(Arguments, Variables, Functions)});`
       case 'lambda': {
         const functionArgs = Arguments
         const body = Arguments.pop()
-        const localVars = new Set()
-        const evaluatedBody = compile(body, localVars)
-        const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
+        const Variables = new Set()
+        const evaluatedBody = compile(body, Variables, Functions)
+        const vars = Variables.size ? `var ${[...Variables].join(',')};` : ''
         return `((${parseArgs(
           functionArgs.map((node, index) =>
             node[VALUE] === '.'
               ? { [TYPE]: node[TYPE], [VALUE]: `_${index}` }
               : { [TYPE]: node[TYPE], [VALUE]: node[VALUE] }
           ),
-          Locals
+          Variables
         )})=>{${vars}return ${evaluatedBody.toString().trimStart()}});`
       }
       case 'loop': {
@@ -264,17 +283,19 @@ const compile = (tree, Locals) => {
         const arg = Arguments[1]
         name = lispToJavaScriptVariableName(arg[VALUE])
         newName = `rec_${performance.now().toString().replace('.', 7)}`
-        Locals.add(name)
-        Locals.add(newName)
+        Variables.add(name)
+        Variables.add(newName)
         const functionArgs = Arguments.slice(2)
         const body = functionArgs.pop()
-        const localVars = new Set()
+        const FunctionVariables = new Set()
         deepRename(arg[VALUE], newName, body)
-        const evaluatedBody = compile(body, localVars)
-        const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
+        const evaluatedBody = compile(body, FunctionVariables, Functions)
+        const vars = FunctionVariables.size
+          ? `var ${[...FunctionVariables].join(',')};`
+          : ''
         out += `${name}=(tco(${newName}=(${parseArgs(
           functionArgs,
-          Locals
+          Variables
         )})=>{${vars}return ${evaluatedBody.toString().trimStart()}};`
         out += `, ${newName}))), ${name});`
         return out
@@ -284,40 +305,46 @@ const compile = (tree, Locals) => {
           out = '(('
         const arg = Arguments[0]
         name = lispToJavaScriptVariableName(arg[VALUE])
-        Locals.add(name)
+        Variables.add(name)
         const functionArgs = Arguments.slice(1)
         const body = functionArgs.pop()
-        const localVars = new Set()
-        const evaluatedBody = compile(body, localVars)
-        const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
+        const FunctionVariables = new Set()
+        const evaluatedBody = compile(body, FunctionVariables, Functions)
+        const vars = FunctionVariables.size
+          ? `var ${[...FunctionVariables].join(',')};`
+          : ''
         out += `${name}=(${parseArgs(
           functionArgs.map((node, index) =>
             node[VALUE] === '.'
               ? { [TYPE]: node[TYPE], [VALUE]: `_${index}` }
               : { [TYPE]: node[TYPE], [VALUE]: node[VALUE] }
           ),
-          Locals
+          Variables
         )})=>{${vars}return ${evaluatedBody.toString().trimStart()}};`
         out += `),${name});`
         return out
       }
       case 'and':
-        return `(${parseArgs(Arguments, Locals, '&&')});`
+        return `(${parseArgs(Arguments, Variables, Functions, '&&')});`
       case 'or':
-        return `((${parseArgs(Arguments, Locals, '||')}) || 0);`
+        return `((${parseArgs(Arguments, Variables, Functions, '||')}) || 0);`
       case 'concatenate':
-        return '(' + parseArgs(Arguments, Locals, '+') + ');'
+        return '(' + parseArgs(Arguments, Variables, Functions, '+') + ');'
       case '=':
-        return handleBoolean(`(${parseArgs(Arguments, Locals, '===')});`)
+        return handleBoolean(
+          `(${parseArgs(Arguments, Variables, Functions, '===')});`
+        )
       case '>=':
       case '<=':
       case '>':
       case '<':
-        return handleBoolean(`(${parseArgs(Arguments, Locals, token)});`)
+        return handleBoolean(
+          `(${parseArgs(Arguments, Variables, Functions, token)});`
+        )
       case '-':
         return Arguments.length === 1
-          ? `(-${compile(Arguments[0], Locals)});`
-          : `(${parse(Arguments, Locals)
+          ? `(-${compile(Arguments[0], Variables, Functions)});`
+          : `(${parse(Arguments, Variables, Functions)
               // Add space so it doesn't consider it 2--1 but 2- -1
               .map((x) => (typeof x === 'number' && x < 0 ? ` ${x}` : x))
               .join(token)});`
@@ -331,49 +358,66 @@ const compile = (tree, Locals) => {
       case '>>':
       case '>>>':
       case '&':
-        return `(${parseArgs(Arguments, Locals, token)});`
+        return `(${parseArgs(Arguments, Variables, Functions, token)});`
       case 'mod':
-        return `(${compile(Arguments[0], Locals)}%${compile(
+        return `(${compile(Arguments[0], Variables, Functions)}%${compile(
           Arguments[1],
-          Locals
+          Variables,
+          Functions
         )});`
       case '/':
-        return `(1/${compile(Arguments[0], Locals)});`
+        return `(1/${compile(Arguments[0], Variables, Functions)});`
       case 'Bit':
-        return `(${compile(Arguments[0], Locals)}>>>0).toString(2)`
+        return `(${compile(
+          Arguments[0],
+          Variables,
+          Functions
+        )}>>>0).toString(2)`
       case '~':
-        return `~(${compile(Arguments[0], Locals)})`
+        return `~(${compile(Arguments[0], Variables, Functions)})`
       case 'not':
-        return `(${handleBoolean(`!${compile(Arguments[0], Locals)}`)})`
+        return `(${handleBoolean(
+          `!${compile(Arguments[0], Variables, Functions)}`
+        )})`
       case 'if': {
-        return `(${compile(Arguments[0], Locals)}?${compile(
+        return `(${compile(Arguments[0], Variables, Functions)}?${compile(
           Arguments[1],
-          Locals
-        )}:${Arguments.length === 3 ? compile(Arguments[2], Locals) : 0});`
+          Variables,
+          Functions
+        )}:${
+          Arguments.length === 3
+            ? compile(Arguments[2], Variables, Functions)
+            : 0
+        });`
       }
       case 'when': {
-        return `(${compile(Arguments[0], Locals)}?${compile(
+        return `(${compile(Arguments[0], Variables, Functions)}?${compile(
           Arguments[1],
-          Locals
+          Variables,
+          Functions
         )}:0);`
       }
       case 'unless': {
-        return `(${compile(Arguments[0], Locals)}?${
-          Arguments.length === 3 ? compile(Arguments[2], Locals) : 0
-        }:${compile(Arguments[1], Locals)});`
+        return `(${compile(Arguments[0], Variables, Functions)}?${
+          Arguments.length === 3
+            ? compile(Arguments[2], Variables, Functions)
+            : 0
+        }:${compile(Arguments[1], Variables, Functions)});`
       }
       case 'otherwise': {
-        return `(${compile(Arguments[0], Locals)}?0:${compile(
+        return `(${compile(Arguments[0], Variables, Functions)}?0:${compile(
           Arguments[1],
-          Locals
+          Variables,
+          Functions
         )});`
       }
       case 'cond': {
         let out = '('
         for (let i = 0; i < Arguments.length; i += 2)
-          out += `${compile(Arguments[i], Locals)}?${compile(
+          out += `${compile(Arguments[i], Variables, Functions)}?${compile(
             Arguments[i + 1],
-            Locals
+            Variables,
+            Functions
           )}:`
         out += '0);'
         return out
@@ -381,28 +425,30 @@ const compile = (tree, Locals) => {
       case 'type':
         return `_cast("${Arguments[1][VALUE]}", ${compile(
           Arguments[0],
-          Locals
+          Variables,
+          Functions
         )})`
 
       case 'go': {
         let inp = Arguments[0]
         for (let i = 1; i < Arguments.length; ++i)
           inp = [Arguments[i].shift(), inp, ...Arguments[i]]
-        return compile(inp, Locals)
+        return compile(inp, Variables, Functions)
       }
       case 'sleep': {
-        return `setTimeout(${compile(Arguments[1], Locals)},${compile(
-          Arguments[0],
-          Locals
-        )});`
+        return `setTimeout(${compile(
+          Arguments[1],
+          Variables,
+          Functions
+        )},${compile(Arguments[0], Variables, Functions)});`
       }
       case 'throw': {
-        return `_error(${compile(Arguments[0], Locals)})`
+        return `_error(${compile(Arguments[0], Variables, Functions)})`
       }
       case 'import':
         {
           const [module, ...functions] = Arguments.map((x) =>
-            compile(x, Locals)
+            compile(x, Variables, Functions)
           )
           Functions.set(
             module,
@@ -410,7 +456,7 @@ const compile = (tree, Locals) => {
               const name = lispToJavaScriptVariableName(
                 fn.substring(1, fn.length - 1)
               )
-              Locals.add(name)
+              Variables.add(name)
               return name
             })
           )
@@ -418,7 +464,7 @@ const compile = (tree, Locals) => {
         break
       case 'identity':
       case 'check-type':
-        return `_identity(${compile(Arguments[0], Locals)});`
+        return `_identity(${compile(Arguments[0], Variables, Functions)});`
       case 'probe-file':
       case 'void':
       case 'deftype':
@@ -426,8 +472,15 @@ const compile = (tree, Locals) => {
       default: {
         const camleCasedToken = lispToJavaScriptVariableName(token)
         if (camleCasedToken in Extensions)
-          return `${Extensions[camleCasedToken](parseArgs(Arguments, Locals))}`
-        else return `${camleCasedToken}(${parseArgs(Arguments, Locals)});`
+          return `${Extensions[camleCasedToken](
+            parseArgs(Arguments, Variables, Functions)
+          )}`
+        else
+          return `${camleCasedToken}(${parseArgs(
+            Arguments,
+            Variables,
+            Functions
+          )});`
       }
     }
   } else if (first[TYPE] === ATOM)
@@ -442,8 +495,9 @@ export const compileToJs = (AST, extensions = {}, helpers = {}, tops = []) => {
     Extensions[lispToJavaScriptVariableName(ext)] = extensions[ext]
   for (const hlp in helpers)
     Helpers[lispToJavaScriptVariableName(hlp)] = helpers[hlp]
-  const vars = new Set()
-  const raw = AST.map((x) => compile(x, vars))
+  const Variables = new Set()
+  const Functions = new Map()
+  const raw = AST.map((tree) => compile(tree, Variables, Functions))
     .filter(Boolean)
     .join('\n')
   let program = '// Source Code \n'
@@ -453,8 +507,7 @@ export const compileToJs = (AST, extensions = {}, helpers = {}, tops = []) => {
     if (!semiColumnEdgeCases.has(current + next)) program += current
   }
   const top = `${tops.join('\n')}${Object.values(Helpers)
-    .filter((x) => x.has)
     .map((x) => x.source)
-    .join(',')};\n${vars.size ? `var ${[...vars].join(',')};` : ''}`
+    .join(',')};\n${Variables.size ? `var ${[...Variables].join(',')};` : ''}`
   return { top, program, deps: [...Functions] }
 }

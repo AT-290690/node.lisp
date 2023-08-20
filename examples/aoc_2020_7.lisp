@@ -44,7 +44,7 @@ a a bags contain 2 b b bags, 2 c c bags, 2 d d bags.
 shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
 
 (defconstant input sample1)
-; (defconstant input (open "./playground/src/aoc_2020/7/input.txt"))
+; (defconstant input (:open "./playground/src/aoc_2020/7/input.txt"))
 
 (defconstant *target* (Array "shiny" "gold"))
 (defun *read-input* input

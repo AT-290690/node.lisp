@@ -1,4 +1,5 @@
-(import std "accumulate" "array-of-numbers" "split-by-n-lines" "character-occurances-in-string" "join" "sum-array" "reduce" "index-of" "push" "map" "remove")
+(import std "accumulate" "array-of-numbers" "split-by-n-lines" "character-occurances-in-string" "join" "reduce" "index-of" "push" "map" "remove")
+(import math "sum-array")
 (defconstant sample "abc
 
 a
@@ -16,7 +17,7 @@ a
 b")
 
 (defconstant *input* sample)
-; (defvar *input* (open "./playground/src/aoc_2020/6/input.txt"))
+; (defvar *input* (:open "./playground/src/aoc_2020/6/input.txt"))
 
 (defun remove-duplicates string (go (type string Array) (remove (lambda item pos self (= (index-of self item) pos)))))
 

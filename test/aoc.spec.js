@@ -1,8 +1,11 @@
 import { deepStrictEqual } from 'assert'
 import { runFromCompiled, runFromInterpreted } from '../src/utils.js'
 import { readFileSync } from 'fs'
-import { STD } from '../lib/std.js'
+import STD from '../lib/std.js'
+import MATH from '../lib/math.js'
+
 const day = (day) => readFileSync(`./examples/aoc_2020_${day}.lisp`, 'utf-8')
+const libraries = [STD, MATH]
 const problems = [
   day(1),
   day(2),
@@ -25,13 +28,13 @@ describe('AOC', () => {
   it('Should compile aoc 2020', () =>
     problems.forEach((source) =>
       deepStrictEqual(
-        runFromInterpreted(source, STD),
-        runFromCompiled(source, STD)
+        runFromInterpreted(source, libraries),
+        runFromCompiled(source, libraries)
       )
     ))
   it('Should solve aoc 2020 tasks', () =>
     deepStrictEqual(
-      problems.map((source) => runFromCompiled(source, STD)),
+      problems.map((source) => runFromCompiled(source, libraries)),
       [
         [514579, 241861950],
         [2, 1],

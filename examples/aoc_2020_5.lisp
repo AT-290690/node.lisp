@@ -1,5 +1,5 @@
-(import std "slice-if-index" "minimum" "maximum" "reduce" "floor" "round" "map" "push" "min" "max" "split-by" "quick-sort" "concat" "find-index")
-
+(import std "slice-if-index" "reduce" "map" "push"  "split-by" "quick-sort" "concat" "find-index")
+(import math "minimum" "maximum" "floor" "round" "min" "max")
 ; Start by considering the whole range, rows 0 through 127.
 ; F means to take the lower half, keeping rows 0 through 63.
 ; B means to take the upper half, keeping rows 32 through 63.
@@ -19,7 +19,7 @@ BBFFBBFRLL")
 (deftype array-string-t (Array (String)))
 (deftype array-number-t (Array (Number)))
 (defconstant *input* *sample*)
-; (defvar *input* (open "./playground/src/aoc_2020/5/input.txt"))
+; (defvar *input* (:open "./playground/src/aoc_2020/5/input.txt"))
 (defun binary_boarding inp bounds lower upper 
   (go inp 
       (check-type array-string-t)

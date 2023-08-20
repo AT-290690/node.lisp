@@ -1,4 +1,5 @@
-(import std "adjacent-difference" "abs" "average" "square" "slice-if-index" "remove" "greatest-common-divisor" "every" "sqrt" "is-prime" "find" "split" "map" "quick-sort" "adjacent-difference" "push" "every" "remove" "min" "max" "reduce" "round" "floor" "product-array" "sum-array" "for-each")
+(import std "slice-if-index" "remove" "every" "find" "split" "map" "quick-sort" "push" "every" "remove" "reduce" "for-each")
+(import math "min" "max" "round" "floor" "greatest-common-divisor" "product-array" "sum-array" "sqrt" "is-prime" "adjacent-difference" "abs" "average" "square" )
 (defconstant sample "939
 7,13,x,x,59,x,31,19")
 (defconstant input "1001171

@@ -1,5 +1,5 @@
-(import std  "remove" "for-each" "push" "map" "regex-match" "split-by-n-lines" "deep-flat" "split-by" "join" "every" "reduce" "sum-array")
-
+(import std  "remove" "for-each" "push" "map" "regex-match" "split-by-n-lines" "deep-flat" "split-by" "join" "every" "reduce")
+(import math "sum-array")
 (defconstant sample "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
 byr:1937 iyr:2017 cid:147 hgt:183cm
 
@@ -12,7 +12,7 @@ hgt:76in")
 (deftype matrix-string-t (Array (Array (String))))
 (deftype matrix-array-string-t (Array (Array (Array (String)))))
 (defconstant *input* sample)
-; (defvar *input* (open "./playground/src/aoc_2020/4/input.txt"))
+; (defvar *input* (:open "./playground/src/aoc_2020/4/input.txt"))
 
 ; 190
 (defun validate-fields fields (go fields (check-type matrix-string-t) (map (lambda x . . 

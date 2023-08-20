@@ -1,10 +1,11 @@
 
 (import std 
   "reduce" "push" "remove" "deep-flat" "for-each"
-  "hash-index" "euclidean-mod" "array-in-bounds-p" "find-index"
+  "hash-index" "array-in-bounds-p" "find-index"
   "hash-table-set" "hash-table-has" "hash-table-get" "hash-table" "hash-table-make"
-  "split-by-lines" "join" "split-by" "every" "trim" "array-of-numbers" "map" "min"
-  "some" "find" "slice" "power"  "concat" "sum-array" "count-number-of-ones-bit" "for-n")
+  "split-by-lines" "join" "split-by" "every" "trim" "array-of-numbers" "map"
+  "some" "find" "slice" "concat" "for-n")
+(import math "euclidean-mod" "min" "power" "sum-array" "min" "count-number-of-ones-bit")
 
 (defconstant *input* 
 (Array 
