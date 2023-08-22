@@ -27,7 +27,7 @@
 (go 
   (div 
     (Array
-      (go (div (Array (:set-attribute (image "../../logo.svg") "width" (pixels 100)) (paragraph "Lisper Todo"))) (:set-style 
+      (go (div (Array (:set-attribute (image "../../logo.svg") "width" (pixels 100)) (:set-style (paragraph "TODO APP") (Array (Array "margin-left" (pixels 10)))))) (:set-style 
     (Array 
       (Array "display" "flex") 
       (Array "color" (get *COLORS* 0))
@@ -36,7 +36,7 @@
       (:element "p")
       (defconstant inp (input))
         (go 
-          (button "add todo")
+          (button "ADD TODO")
           (:set-style (Array (Array "cursor" "pointer")))
           (:on-click (lambda but . (and (:get-value inp) (todo (to-upper-case (:get-value inp)) (:parent but)) (:set-value inp "")))))))
       (:set-style (Array (Array "padding-left" (pixels 15))))

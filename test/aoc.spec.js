@@ -1,8 +1,8 @@
 import { deepStrictEqual } from 'assert'
 import { runFromCompiled, runFromInterpreted } from '../src/utils.js'
 import { readFileSync } from 'fs'
-import STD from '../lib/std.js'
-import MATH from '../lib/math.js'
+import STD from '../lib/baked/std.js'
+import MATH from '../lib/baked/math.js'
 
 const day = (day) => readFileSync(`./examples/aoc_2020_${day}.lisp`, 'utf-8')
 const libraries = [STD, MATH]

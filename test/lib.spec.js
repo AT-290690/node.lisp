@@ -1,7 +1,7 @@
 import { deepStrictEqual } from 'assert'
 import { runFromCompiled, runFromInterpreted } from '../src/utils.js'
-import STD from '../lib/std.js'
-import MATH from '../lib/math.js'
+import STD from '../lib/baked/std.js'
+import MATH from '../lib/baked/math.js'
 
 const libraries = [STD, MATH]
 const programs = [

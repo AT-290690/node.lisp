@@ -2,7 +2,7 @@
   "name": "node-lisper",
   "description": "A Lisp for Node.js",
   "author": "AT290690",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "type": "module",
   "main": "index.js",
   "keywords": [
@@ -25,6 +25,10 @@
     "singleQuote": true
   },
   "scripts": {
+    "aocp:i": "yarn lisp -s playground/src/aoc_2020_present/main.lisp -e fs -r",
+    "aocp:c": "yarn lisp -s playground/src/aoc_2020_present/main.lisp -d playground/src/aoc_2020_present/main.js -e fs -c && node playground/src/aoc_2020_present/main.js",
+    "aoc:i": "yarn lisp -s playground/src/aoc_2020_current/main.lisp -e fs -r",
+    "aoc:c": "yarn lisp -s playground/src/aoc_2020_current/main.lisp -d playground/src/aoc_2020_current/main.js -e fs -c && node playground/src/aoc_2020_current/main.js",
     "build": "node ./lib/builder.js",
     "lisp": "node main.js",
     "test": "mocha"

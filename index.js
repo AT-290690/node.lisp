@@ -5,6 +5,8 @@ import { evaluate, run, stacktrace } from './src/interpreter.js'
 import { parse } from './src/parser.js'
 import domExtension from './lib/extensions/dom.js'
 import fsExtension from './lib/extensions/fs.js'
+import canvasExtension from './lib/extensions/canvas.js'
+
 // import wabt from 'wabt'
 import {
   isBalancedParenthesis,
@@ -14,9 +16,9 @@ import {
   runFromInterpreted,
   treeShake,
 } from './src/utils.js'
-import STD from './lib/std.js'
-import DOM from './lib/dom.js'
-import MATH from './lib/math.js'
+import STD from './lib/baked/std.js'
+import DOM from './lib/baked/dom.js'
+import MATH from './lib/baked/math.js'
 import { tokens } from './src/tokeniser.js'
 import { APPLY, TYPE, VALUE, WORD } from './src/enums.js'
 const libraries = {
@@ -70,18 +72,25 @@ const cli = async () => {
           switch (value) {
             case 'fs':
               {
-                Extensions = fsExtension.Extensions
-                Helpers = fsExtension.Helpers
-                Tops = fsExtension.Tops
-                env = fsExtension.env
+                Extensions = { ...Extensions, ...fsExtension.Extensions }
+                Helpers = { ...Helpers, ...fsExtension.Helpers }
+                Tops = { ...Tops, ...fsExtension.Tops }
+                env = { ...env, ...fsExtension.env }
               }
               break
 
             case 'dom':
               {
-                Extensions = domExtension.Extensions
-                Helpers = domExtension.Helpers
-                env = domExtension.env
+                Extensions = { ...Extensions, ...domExtension.Extensions }
+                Helpers = { ...Helpers, ...domExtension.Helpers }
+                env = { ...env, ...domExtension.env }
+              }
+              break
+            case 'canvas':
+              {
+                Extensions = { ...Extensions, ...canvasExtension.Extensions }
+                Helpers = { ...Helpers, ...canvasExtension.Helpers }
+                env = { ...env, ...canvasExtension.env }
               }
               break
           }
