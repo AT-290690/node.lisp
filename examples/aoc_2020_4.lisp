@@ -7,15 +7,15 @@ hcl:#7d3b0c iyr:2013
 eyr:2026
 ecl:oth pid:920076943 byr:1929
 hgt:76in")
-(deftype string-t (String))
-(deftype array-string-t (Array (String)))
-(deftype matrix-string-t (Array (Array (String))))
-(deftype matrix-array-string-t (Array (Array (Array (String)))))
+; (deftype string-t (String))
+; (deftype array-string-t (Array (String)))
+; (deftype matrix-string-t (Array (Array (String))))
+; (deftype matrix-array-string-t (Array (Array (Array (String)))))
 (defconstant *input* sample)
 ; (defvar *input* (:open "./playground/src/aoc_2020/4/input.txt"))
 
 ; 190
-(defun validate-fields fields (go fields (check-type matrix-string-t) (map (lambda x . . 
+(defun validate-fields fields (go fields (map (lambda x . . 
                         (go x (map (lambda y . . 
                           (go y (regex-match "byr|iyr|eyr|hgt|hcl|ecl|pid")))) 
                                 (deep-flat))))
@@ -31,9 +31,8 @@ hgt:76in")
 ; ecl (Eye Color) - exactly one of: amb blu brn gry grn hzl oth.
 ; pid (Passport ID) - a nine-digit number, including leading zeroes.
 ; cid (Country ID) - ignored, missing or not.
-(defun to_entries array (map (check-type array matrix-string-t) (lambda x . . (go x (map (lambda y . . (go y (split-by " ")))) (deep-flat) (map (lambda x . . (split-by x ":")))))))
+(defun to_entries array (map array (lambda x . . (go x (map (lambda y . . (go y (split-by " ")))) (deep-flat) (map (lambda x . . (split-by x ":")))))))
 (defun without_invalid_fields fields (go fields 
-                                            (check-type matrix-array-string-t)
                                             (map (lambda x . . (go x 
                                              (remove (lambda y . . (and (not (= (car y) "cid")) (regex-match (car y) "byr|iyr|eyr|hgt|hcl|ecl|pid")))))))))
 

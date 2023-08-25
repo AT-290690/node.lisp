@@ -6,18 +6,18 @@
 299
 675
 1456")
-(deftype numbers-t (Array (Number)))
 (defconstant *input* sample)
 ; (defvar *input* (:open "./playground/src/aoc_2020/1/input.txt"))
-
+(deftype *solve1* (Function (Array (Number)) (Function) (Array (Number))))
 (defun *solve1* array cb 
-     (reduce (check-type array numbers-t) (lambda a x . array (do
+     (reduce array (lambda a x . array (do
         (defvar res (binary-search array (cb x)))
         (if res (set a (length a) res) a))) 
      ()))
-
+     
+(deftype *solve2* (Function (Array (Number)) (Function) (Array (Number))))
 (defun *solve2* array cb 
-    (reduce (check-type array numbers-t)
+    (reduce array
       (lambda accumulator y i array (do
           (loop defun iterate j bounds (do 
               (defvar x (get array j))

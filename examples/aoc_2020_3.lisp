@@ -12,14 +12,15 @@
 #.##...#...
 #...##....#
 .#..#...#.#")
-(deftype matrix-t (Array (Array (Number))))
-(deftype input-t (String))
+; (deftype matrix-t (Array (Array (Number))))
+; (deftype input-t (String))
 (defconstant *input* sample)
 ; (defvar *input* (:open "./playground/src/aoc_2020/3/input.txt"))
-
+(deftype to_bit_array (Function (Array (String)) (Array (Array (Number)))))
 (defun to_bit_array array 
   (map array (lambda line . . (go line (type Array) (map (lambda x . . (= x "#")))))))
 
+(deftype *solve* (Function (Array (Array (Number))) (Number) (Number) (Array (Number))))
 (defun *solve* array slopeX slopeY (do 
   (defconstant 
     h (length array)
@@ -32,15 +33,14 @@
           (get (* index slopeY))
           (get (mod (* index slopeX) w))))))))
 
+(deftype task (Function (String) (Array (Number))))
 (defun task *input* (do 
   (defconstant matrix (go *input* 
-              (check-type input-t) 
               (split-by-lines)
               (to_bit_array)))
   ; 7 for sample
   (Array 
   (go matrix
-    (check-type matrix-t)
     (*solve* 3 1)
     (sum-array)) 
   ; 336 for sample
@@ -51,7 +51,7 @@
     (Array 5 1) 
     (Array 7 1) 
     (Array 1 2)) 
-    (map (lambda x . . (go matrix (check-type matrix-t) (*solve* (car x) (car (cdr x))) (sum-array))))
+    (map (lambda x . . (go matrix (*solve* (car x) (car (cdr x))) (sum-array))))
     (product-array)))))
 
 (task *input*)

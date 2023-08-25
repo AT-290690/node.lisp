@@ -1,37 +1,47 @@
 ; (math lib)
 (defun math (do
-  (deftype integer-t (Integer))
-  (deftype number-t (Number))
-  (deftype array-t ())
-  (deftype array-number-t (Array (Number)))
   ; modules
   ; max
+  (deftype max (Function (Number) (Number) (Number)))
   (defun max a b (if (> a b) a b))
   ; min
+  (deftype min (Function (Number) (Number) (Number)))
   (defun min a b (if (< a b) a b))
   ; maximum
-  (defun maximum array (reduce (check-type array array-number-t) (lambda a b . . (max a b)) -9007199254740991))
+  (deftype maximum (Function (Array (Number)) (Number)))
+  (defun maximum array (reduce array (lambda a b . . (max a b)) -9007199254740991))
   ; minimum
-  (defun minimum array (reduce (check-type array array-number-t) (lambda a b . . (min a b)) 9007199254740991))
+  (deftype minimum (Function (Array (Number)) (Number)))
+  (defun minimum array (reduce array (lambda a b . . (min a b)) 9007199254740991))
   ; normalize 
+  (deftype normalize (Function (Number) (Number) (Number) (Number)))
   (defun normalize value min max (* (- value min) (/ (- max min))))
   ; linear-interpolation
+  (deftype linear-interpolation (Function (Number) (Number) (Number) (Number)))
   (defun linear-interpolation a b n (+ (* (- 1 n) a) (* n b)))
   ; gauss-sum
+  (deftype gauss-sum (Function (Number) (Number)))
   (defun gauss-sum n (* n (+ n 1) 0.5))
   ; gauss-sum-sequance
+  (deftype gauss-sum-sequance (Function (Number) (Number) (Number)))
   (defun gauss-sum-sequance a b (* (+ a b) (+ (- b a) 1) 0.5))
   ; clamp
+  (deftype clamp (Function (Number) (Number) (Number)))
   (defun clamp x limit (if (> x limit) limit x))
   ; is-odd
+  (deftype is-odd (Function (Number) (Number)))
   (defun is-odd x (= (mod x 2) 1))
   ; is-even
+  (deftype is-even (Function (Number) (Number)))
   (defun is-even x (= (mod x 2) 0))
   ; sign 
+  (deftype sign (Function (Number) (Number)))
   (defun sign n (if (< n 0) -1 1))
   ; radians
+  (deftype radians (Function (Number) (Number)))
   (defun radians deg (* deg 3.141592653589793 (/ 180)))
   ; binomial-coefficient
+  (deftype binomial-coefficient (Function (Number) (Number) (Number)))
   (defun binomial-coefficient n k 
     (or 
       (cond 
@@ -42,6 +52,7 @@
           (loop defun iterate i res (if (<= i k) (iterate (+ i 1) (* res (- n i -1) (/ i))) res))
           (round (iterate 2 n)))))
   ; sin
+  (deftype sin (Function (Number) (Number) (Number)))
   (defun sin rad terms (do
     (defvar sine 0)
     (loop defun inc i 
@@ -55,6 +66,7 @@
         (if (< i terms) (inc (+ i 1)) sine)))
       (inc 0)))
    ; cos 
+  (deftype cos (Function (Number) (Number) (Number)))
   (defun cos rad terms (do
     (defvar cosine 0)
     (loop defun inc i 
@@ -68,10 +80,13 @@
         (if (< i terms) (inc (+ i 1)) cosine)))
     (inc 0)))
   ; square
+  (deftype square (Function (Number) (Number)))
   (defun square x (* x x))
   ; average
+  (deftype average (Function (Number) (Number) (Number)))
   (defun average x y (* (+ x y) 0.5))
- ; sqrt
+  ; sqrt
+  (deftype sqrt (Function (Number) (Number)))
   (defun sqrt x (do 
     (defconstant is-good-enough (lambda g x (< (abs (- (square g) x)) 0.01))
          improve-guess (lambda g x (average g (* x (/ g)))))
@@ -81,58 +96,68 @@
             (sqrt-iter (improve-guess g x) x)))
   (sqrt-iter 1.0 x)))
   ; can-sum
+  (deftype can-sum (Function (Number) (Array (Number)) (Number)))
   (defun can-sum t values 
     (if (< t 0) 0 
       (if (= t 0) 1 
-        (some (check-type values array-number-t) (lambda x . . (can-sum (- t x) values))))))
+        (some values (lambda x . . (can-sum (- t x) values))))))
   ; how-can-sum
+  (deftype how-can-sum (Function (Number) (Array (Number)) (Number)))
   (defun how-can-sum t values 
     (if (< t 0) 0 
       (if (= t 0) () 
         (do 
           (defvar res 0)
-          (some (check-type value array-number-t) (lambda x . . (do
+          (some value (lambda x . . (do
             (setf res (how-can-sum (- t x) values))
             (if (and (Arrayp res) (= -1 (array-index-of res x))) (set (length res) res x))))) 
           res))))
-  ; yoink
-  (defun yoink array (when (length array) (do (defconstant last (get array -1)) (set array -1) last)))
-  ; array-in-bounds-p 
-  (defun array-in-bounds-p array index (and (< index (length array)) (>= index 0)))
-  ; is-array-of-atoms
-  (defun is-array-of-atoms array (if (not (length array)) 1 (if (atom (car array)) (is-array-of-atoms (cdr array)) 0)))
   ; abs
+  (deftype abs (Function (Number) (Number)))
   (defun abs n (- (^ n (>> n 31)) (>> n 31)))
   ; max-bit
+  (deftype max-bit (Function (Number) (Number) (Number)))
   (defun max-bit a b (- a (& (- a b) (>> (- a b) 31))))
   ; max-bit
+  (deftype min-bit (Function (Number) (Number) (Number)))
   (defun min-bit a b (- a (& (- a b) (>> (- b a) 31))))
   ; clamp-bit
+  (deftype clamp-bit (Function (Number) (Number) (Number) (Number)))
   (defun clamp-bit x min max (do 
      (setf x (- x (& (- x max) (>> (- max x) 31))))
      (- x (& (- x min) (>> (- x min) 31)))))
   ; is-bit-power-of-two ; (and x (not (& x (- x 1)))
+  (deftype is-bit-power-of-two (Function (Number) (Number)))
   (defun is-bit-power-of-two value 
     (and 
       (= (& value (- value 1)) 0) 
       (not (= value 0))))
    ; average-bit 
+  (deftype average-bit (Function (Number) (Number) (Number)))
   (defun average-bit a b (>> (+ a b) 1))
   ; toggle-bit
+  (deftype toggle-bit (Function (Number) (Number) (Number) (Number)))
   (defun toggle-bit n a b (^ a b n))
   ; is-odd-bit
+  (deftype is-odd-bit (Function (Number) (Number)))
   (defun is-odd-bit n (= (& n 1) 1))
   ; is-same-sign-bit 
+  (deftype is-same-sign-bit (Function (Number) (Number) (Number)))
   (defun is-same-sign-bit a b (>= (^ a b) 0))
   ; modulo-bit
+  (deftype modulo-bit (Function (Number) (Number) (Number)))
   (defun modulo-bit numerator divisor (& numerator (- divisor 1)))
   ; set-bit
+  (deftype set-bit (Function (Number) (Number) (Number)))
   (defun set-bit n bit (| n (<< 1 bit)))
   ; clear-bit
+  (deftype clear-bit (Function (Number) (Number) (Number)))
   (defun clear-bit n bit (& n (~ (<< 1 bit))))
   ; power-of-two-bit
+  (deftype power-of-two-bit (Function (Number) (Number)))
   (defun power-of-two-bit n (<< 2 (- n 1)))
   ; count-number-of-ones-bit
+  (deftype count-number-of-ones-bit (Function (Number) (Number)))
   (defun count-number-of-ones-bit n (do 
     (defvar count 0)
     (loop defun iter 
@@ -142,8 +167,10 @@
         (iter)) count))
     (iter)))
   ; check-n-is-one-bit
+  (deftype check-n-is-one-bit (Function (Number) (Number) (Number)))
   (defun check-n-is-one-bit N nth (type (& N (<< 1 nth)) Boolean))
   ; possible-subsets-bit
+  (deftype possible-subsets-bit (Function (Array) (Array)))
   (defun possible-subsets-bit A (do 
     (defconstant 
           items () 
@@ -156,6 +183,7 @@
         (iter-i (+ i 1)))))) 
     (defun iter-j j cb (when (< j N) (do (cb j) (iter-j (+ j 1) cb)))) (iter-i 0) items))
   ; largest-power 
+  (deftype largest-power (Function (Number) (Number)))
   (defun largest-power N (do 
     ; changing all right side bits to 1.
     (setf N (| N (>> N 1)))
@@ -167,24 +195,31 @@
     ; so adding 1 and dividing it by
     (>> (+ N 1) 1)))
   ; floor
+  (deftype floor (Function (Number) (Number)))
   (defun floor n (| n 0))
   ; round a number
+  (deftype round (Function (Number) (Number)))
   (defun round n (| (+ n 0.5) 0))
   ; euclidean-mod
+  (deftype euclidean-mod (Function (Number) (Number) (Number)))
   (defun euclidean-mod a b (mod (+ (mod a b) b) b))
   ; euclidean-div
+  (deftype euclidean-div (Function (Number) (Number) (Number)))
   (defun euclidean-div a b (do 
                       (defconstant q (* a (/ b)))
                       (if (< (mod a b) 0) (if (> b 0) (- q 1) (+ q 1)) q)))
   ; euclidean-distance
+  (deftype euclidean-distance (Function (Number) (Number) (Number) (Number) (Number)))
   (defun euclidean-distance x1 y1 x2 y2 (do
     (defconstant 
       a (- x1 x2) 
       b (- y1 y2))
     (sqrt (+ (* a a) (* b b)))))
   ; manhattan-distance
+  (deftype manhattan-distance (Function (Number) (Number) (Number) (Number) (Number)))
   (defun manhattan-distance x1 y1 x2 y2 (+ (abs (- x2 x1)) (abs (- y2 y1))))
   ; power
+  (deftype power (Function (Number) (Number) (Number)))
   (defun power base exp 
     (if (< exp 0) 
         (if (= base 0) 
@@ -194,6 +229,7 @@
           (if (= exp 1) base
             (* base (power base (- exp 1)))))))
   ; prime-factors
+  (deftype prime-factors (Function (Number) (Number)))
   (defun prime-factors n (do 
     (defvar a () f 2)
     (loop defun iterate (if (> n 1) (do 
@@ -204,17 +240,23 @@
         (setf f (+ f 1)))
       (iterate)) a))
       (iterate)))
-   ; greatest-common-divisor
+    ; greatest-common-divisor
+    (deftype greatest-common-divisor (Function (Number) (Number) (Number)))
     (defun greatest-common-divisor a b (do (loop defun gcd a b (if (= b 0) a (gcd b (mod a b)))) (gcd a b)))
     ; least-common-divisor
+    (deftype least-common-divisor (Function (Number) (Number) (Number)))
     (defun least-common-divisor a b (* a b (/ (greatest-common-divisor a b))))
     ; remainder
+    (deftype remainder (Function (Number) (Number) (Number)))
     (defun remainder n d (do (loop defun remain n d (if (< n d) n (remain (- n d) d))) (remain n d)))
     ; factorial
+    (deftype factorial (Function (Number) (Number)))
     (defun factorial n (if (<= n 0) 1 (* n (factorial (- n 1)))))
     ; fibonacci
+    (deftype factorial (Function (Number) (Number)))
     (defun fibonacci n (if (< n 2) n (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))
     ; fibonacci-memoized
+    (deftype fibonacci-memoized (Function (Number) (Array (Array (Number) (Number)))))
     (defun fibonacci-memoized n memo (if (< n 2) n
         (if (hash-table-has memo n) (hash-table-get memo n)
         (do
@@ -222,6 +264,7 @@
           (hash-table-set memo n cache)
           cache))))
     ; is-prime
+    (deftype is-prime (Function (Number) (Number)))
     (defun is-prime n (do 
         (loop defun iter i end (do 
             (defconstant it-is (not (= (mod n i) 0)))
@@ -229,6 +272,7 @@
       (or (= n 2) (iter 2 (sqrt n)))))
   
     ; chinese-remainder-theorem
+    (deftype chinese-remainder-theorem (Function (Array (Number)) (Number)))
     (defun chinese-remainder-theorem items
       (do 
         (defvar result (car (car items)))
@@ -247,6 +291,7 @@
             result)
           result))
     ; euclid-inverse-mod
+    (deftype euclid-inverse-mod (Function (Number) (Number) (Number)))
     (defun euclid-inverse-mod a m (do 
           (defvar 
               m0 m 
@@ -271,7 +316,8 @@
               ; Make x1 positive
               (when (< x1 0) (setf x1 (+ x1 m0)))
               x1))))
-  ; range
+    ;  range
+      (deftype range (Function (Number) (Number) (Array (Number))))
       (defun range start end (do
         (defconstant array ())
         (loop defun iterate i bounds (do
@@ -279,6 +325,7 @@
           (if (< i bounds) (iterate (+ i 1) bounds) array)))
         (iterate 0 (- end start))))
     ; sequance
+      (deftype sequance (Function (Number) (Number) (Number) (Array (Number))))
       (defun sequance end start step (do
         (defconstant array ())
         (loop defun iterate i bounds (do
@@ -286,6 +333,7 @@
           (if (< i bounds) (iterate (+ i step) bounds) array)))
         (iterate 0 (- end start))))
       ; arithmetic-progression
+      (deftype arithmetic-progression (Function (Number) (Number) (Array (Number))))
       (defun arithmetic-progression n lim (do
         (defconstant array ())
         (loop defun iterate i bounds (do
@@ -293,8 +341,8 @@
           (if (< i bounds) (iterate (+ i n) bounds) array)))
         (iterate 0 (- lim n))))
    ; map
+      (deftype map (Function (Array (Number)) (Function) (Array (Number))))
       (defun map array callback (do 
-        (void (check-type array array-number-t))
         (defconstant new-array ())
         (defvar i 0)
         (loop defun iterate i bounds (do
@@ -302,29 +350,31 @@
           (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
         (iterate 0 (- (length array) 1))))
     ; reduce
+    (deftype reduce (Function (Array (Number)) (Function) (Number)))
     (defun reduce array callback initial (do
-    (void (check-type array array-number-t))
     (loop defun iterate i bounds (do
       (setf initial (callback initial (get array i) i array))
       (if (< i bounds) (iterate (+ i 1) bounds) initial)))
     (iterate 0 (- (length array) 1))))
   ; sum-array
-  (defun sum-array array (reduce (check-type array array-number-t) (lambda a b . . (+ a b)) 0))
+  (deftype sum-array (Function (Array (Number)) (Number)))
+  (defun sum-array array (reduce array (lambda a b . . (+ a b)) 0))
   ; product-array
-  (defun product-array array (reduce (check-type array array-number-t) (lambda a b . . (* a b)) 1))
-      ; adjacent-difference
-      (defun adjacent-difference array callback (do 
-        (check-type array array-number-t)
-        (defconstant len (length array))
-        (unless (= len 1) 
-          (do (defconstant result (Array (car array)))
-          (loop defun iterate i (if (< i len) (do 
-          (set result i (callback (get array (- i 1)) (get array i)))
-          (iterate (+ i 1))) result))
-          (iterate 1)) array)))
+  (deftype product-array (Function (Array (Number)) (Number)))
+  (defun product-array array (reduce array (lambda a b . . (* a b)) 1))
+  ; adjacent-difference
+  (deftype adjacent-difference (Function (Array (Number)) (Function) (Array (Number))))
+  (defun adjacent-difference array callback (do 
+    (defconstant len (length array))
+    (unless (= len 1) 
+      (do (defconstant result (Array (car array)))
+      (loop defun iterate i (if (< i len) (do 
+      (set result i (callback (get array (- i 1)) (get array i)))
+      (iterate (+ i 1))) result))
+      (iterate 1)) array)))
       ; permutations
+      (deftype permutations (Function (Array (Number)) (Array (Array (Number)))))
       (defun permutations permutation (do 
-        (void (check-type permutation array-t))
         (defconstant  
           len (length permutation)
           result (Array (type permutation Array))
@@ -348,6 +398,7 @@
           (while-true 1)
           result))
   ; levenshtein-distance
+  (deftype levenshtein-distance (Function (String) (String) (Number)))
   (defun levenshtein-distance a b (do 
     (defconstant s (type a Array) 
             t (type b Array)) 

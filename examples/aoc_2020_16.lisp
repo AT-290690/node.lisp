@@ -28,15 +28,14 @@ nearby tickets:
 5,14,9")
 ;  (defconstant sample (:open "./playground/src/aoc_2020/16/input.txt"))
 
-(deftype raw-t (Array (Array (String))))
-(deftype ticket-ranges-t (Array (Array (Array (Number)))))
-(deftype your-ticket-t (Array (Number)))
-(deftype nearby-tickets-t (Array (Array (Number))))
-(deftype groups-t (Array (Array (Array (Number)))))
+; (deftype raw-t (Array (Array (String))))
+; (deftype ticket-ranges-t (Array (Array (Array (Number)))))
+; (deftype your-ticket-t (Array (Number)))
+; (deftype nearby-tickets-t (Array (Array (Number))))
+; (deftype groups-t (Array (Array (Array (Number)))))
 
 (defun parse-input sample (do 
   (defconstant lines (go sample (split-by-n-lines 2)))
-  (check-type lines raw-t)
   (defconstant ticket-ranges 
                       (go 
                         (car lines) 
@@ -47,11 +46,8 @@ nearby tickets:
                                   (go y 
                                     (split "-") 
                                     (array-of-numbers))))))))
-(check-type ticket-ranges ticket-ranges-t)
 (defconstant your-ticket (array-of-numbers (split (car (cdr (car (cdr lines)))) ",")))
-(check-type your-ticket your-ticket-t)
 (defconstant nearby-tickets (map (cdr (car (cdr (cdr lines)))) (lambda x . . (go x (split ",") (array-of-numbers)))))
-(check-type nearby-tickets nearby-tickets-t)
 (Array ticket-ranges your-ticket nearby-tickets)))
 
 (defun is-in-bounds x rng (and (>= x (car rng)) (<= x (car (cdr rng)))))
@@ -83,7 +79,7 @@ nearby tickets:
                 (is-in-bounds (get x i) (car (get ticket-ranges j)))
                 (is-in-bounds (get x i) (car (cdr (get ticket-ranges j))))))))))
 (defconstant *range* (range 0 (- (length your-ticket) 1)))
-(loop defun seave tickets order (do (void (check-type tickets groups-t)) 
+(loop defun seave tickets order
   (if (length tickets) (do
   (defconstant 
       current (car (car tickets))
@@ -96,7 +92,7 @@ nearby tickets:
               (map (lambda ti . . (remove ti (lambda x . . (not (= (car (cdr x)) swap))))))) 
             ()))
   (push order (Array  slot swap))
-  (seave next order)) order)))
+  (seave next order)) order))
 (go 
   (go 
     (seave 

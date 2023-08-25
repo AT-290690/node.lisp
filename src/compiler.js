@@ -463,8 +463,6 @@ const compile = (tree, Variables, Functions) => {
         }
         break
       case 'identity':
-      case 'check-type':
-        return `_identity(${compile(Arguments[0], Variables, Functions)});`
       case 'probe-file':
       case 'void':
       case 'deftype':

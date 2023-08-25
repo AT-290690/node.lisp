@@ -16,13 +16,12 @@
 (defconstant *sample* "BFFFBBFRRR
 FFFBBBFRRR
 BBFFBBFRLL")
-(deftype array-string-t (Array (String)))
-(deftype array-number-t (Array (Number)))
+; (deftype array-string-t (Array (String)))
+; (deftype array-number-t (Array (Number)))
 (defconstant *input* *sample*)
 ; (defvar *input* (:open "./playground/src/aoc_2020/5/input.txt"))
 (defun binary_boarding inp bounds lower upper 
   (go inp 
-      (check-type array-string-t)
       (reduce (lambda a b . . (do 
             (defconstant half (* (+ (car a) (car (cdr a))) 0.5))
             (cond 
@@ -38,8 +37,7 @@ BBFFBBFRLL")
             array (type directions Array)
             fb (binary_boarding (slice-if-index array (lambda i (< i 7))) (Array 0 127) "F" "B")
             lr (binary_boarding (slice-if-index array (lambda i (>= i 7))) (Array 0 7) "L" "R"))
-      (+ (* fb 8) lr))))
-      (check-type array-number-t)))
+      (+ (* fb 8) lr))))))
 
 (defconstant *res1* (go 
       *prepare-input*

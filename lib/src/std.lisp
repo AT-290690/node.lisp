@@ -1,47 +1,49 @@
 ; (std lib)
 (defun std (do
-  (deftype integer-t (Integer))
-  (deftype number-t (Number))
-  (deftype string-t (String))
-  (deftype array-t ())
-  (deftype array-number-t (Array (Number)))
-  (deftype direction-t (Array (Array (Number) (Number))))
   ; modules
   ; push  
   (defun push array value (set array (length array) value))
   ; pop
+  (deftype pop (Function (Array) (Array)))
   (defun pop array (set array -1))
   ; yoink
   (defun yoink array (when (length array) (do (defconstant last (get array -1)) (set array -1) last)))
   ; array-in-bounds-p 
+  (deftype array-in-bounds-p (Function (Array) (Number) (Number)))
   (defun array-in-bounds-p array index (and (< index (length array)) (>= index 0)))
   ; is-array-of-atoms
+  (deftype is-array-of-atoms (Function (Array) (Number)))
   (defun is-array-of-atoms array (if (not (length array)) 1 (if (atom (car array)) (is-array-of-atoms (cdr array)) 0)))
   ; cartesian-product
+  (deftype cartesian-product (Function (Array) (Array) (Array (Array))))
   (defun cartesian-product a b (reduce a (lambda p x . . (merge p (map b (lambda y . . (Array x y))))) ()))
   ; neighborhood
+  (deftype neighborhood (Function (Array (Array (Number))) (Array (Array (Number))) (Number) (Number) (Function) (Number)))
   (defun neighborhood array directions y x callback
-      (reduce (check-type directions direction-t) (lambda sum dir . . (do
+      (reduce directions (lambda sum dir . . (do
           (defconstant
               dy (+ (car dir) y)
               dx (+ (car (cdr dir)) x))
           (+ sum (when (and (array-in-bounds-p array dy) (array-in-bounds-p (get array dy) dx)) (callback (get (get array dy) dx) dir))))) 0))
       ; join
-      (defun join array delim (reduce (check-type array array-t) (lambda a x i . (if (> i 0) (concatenate a delim (type x String)) (type x String))) ""))
+      (deftype join (Function (Array) (String) (String)))
+      (defun join array delim (reduce array (lambda a x i . (if (> i 0) (concatenate a delim (type x String)) (type x String))) ""))
       ; repeat
       (defun repeat n x (map (Array n length) (lambda . . . x)))
       ; split-by-lines
+      (deftype split-by-lines (Function (String) (String) (Array (String))))
       (defun split-by-lines string (regex-match string "[^\n]+"))
       ; split-by
+      (deftype split-by (Function (String) (String) (Array (String))))
       (defun split-by string delim (regex-match string (concatenate "[^" delim "]+")))
       ; trim
       (defun trim string (regex-replace string "^\s+|\s+$" ""))
       ; array-of-numbers
+      (deftype array-of-numbers (Function (Array) (Array (Number))))
       (defun array-of-numbers array (map array (lambda x . . (type x Number))))
       ; concat
+      (deftype concat (Function (Array) (Array) (Array)))
       (defun concat array1 array2 (do
-        (check-type array1 array-t)
-        (check-type array1 array-t)
         (loop defun iterate i bounds (do
         (when (< i (length array2)) (push array1 (get array2 i)))
         (if (< i bounds) 
@@ -50,6 +52,7 @@
         )))
       (iterate 0 (- (length array2) 1))))
       ; merge
+      (deftype merge (Function (Array) (Array) (Array)))
       (defun merge array1 array2 (do
         (loop defun iterate i bounds (do
         (push array1 (get array2 i))
@@ -59,6 +62,7 @@
         )))
       (iterate 0 (- (length array2) 1))))
       ; map
+      (deftype map (Function (Array) (Function) (Array)))
       (defun map array callback (do 
         (defconstant new-array ())
         (defvar i 0)
@@ -85,6 +89,7 @@
         (if (< i end) (iterate (+ i 1)) res))) 
         (iterate start)))
   ; count-of
+  (deftype count-of (Function (Array) (Function) (Number)))
   (defun count-of array callback (do
     (defvar amount 0)
     (loop defun iterate i bounds (do
@@ -93,10 +98,12 @@
       (if (< i bounds) (iterate (+ i 1) bounds) amount)))
     (iterate 0 (- (length array) 1))))
   ; partition 
+  (deftype partition (Function (Array) (Number) (Array (Array))))
   (defun partition array n (reduce array (lambda a x i . (do 
         (if (mod i n) (push (get a -1) x) (push a (Array x))) a)) 
         ()))
   ; remove
+  (deftype remove (Function (Array) (Function) (Array)))
   (defun remove array callback (do
     (defconstant new-array ())
     (loop defun iterate i bounds (do
@@ -106,6 +113,7 @@
       (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
     (iterate 0 (- (length array) 1))))
   ; every
+  (deftype every (Function (Array) (Function) (Number)))
   (defun every array callback (do
       (defvar bol 1)
       (loop defun iterate i bounds (do
@@ -114,6 +122,7 @@
         (if (and res (< i bounds)) (iterate (+ i 1) bounds) bol)))
       (iterate 0 (- (length array) 1))))
   ; some
+  (deftype some (Function (Array) (Function) (Number)))
   (defun some array callback (do
       (defvar bol 1)
       (loop defun iterate i bounds (do
@@ -223,8 +232,8 @@
                   (iterate 0 (- (length array) 1))
                   (if has-found idx -1)))))
       ; quick-sort
+      (deftype quick-sort (Function (Array (Number)) (Array (Number))))
       (defun quick-sort arr (do
-        (check-type arr array-number-t)
         (if (<= (length arr) 1) arr
         (do
           (defconstant 
@@ -243,6 +252,7 @@
         (push pivot) 
         (concat (quick-sort right-arr)))))))
       ; reverse 
+      (deftype reverse (Function (Array) (Array)))
       (defun reverse array (do
         (defconstant len (length array))
         (if (> len 1) (do
@@ -268,8 +278,10 @@
                   (search arr target (+ index 1) end))))))) 
         (search array target 0 (length array))))
       ; sort-by-length 
+      (deftype sort-by-length (Function (Array) (Array (Number)) (Array)))
       (defun sort-by-length array order (map order (lambda x . . (find array (lambda y . . (= (- (length y) 1) x))))))
       ; order-array
+      (deftype order-array (Function (Array) (Array (Number)) (Array)))
       (defun order-array array order (map (Array (length array) length) (lambda . i . (get array (get order i)))))
       ; euclidean-mod
       (defun euclidean-mod a b (mod (+ (mod a b) b) b))
@@ -417,25 +429,20 @@
       (defun binary-tree-get-value node (get node 0))  
       ; (/ Binary Tree)
       ; left-pad
+      (deftype left-pad (Function (String) (Number) (String) (String)))
       (defun left-pad str n ch (do 
-        (check-type str string-t)
-        (check-type str number-t)
-        (check-type ch string-t)
         (setf n (- n (length str)))
         (loop defun pad i str (if (< i n) (pad (+ i 1) (setf str (concatenate ch str))) str))
         (pad 0 str)))
         ; left-pad
+      (deftype right-pad (Function (String) (Number) (String) (String)))
       (defun right-pad str n ch (do 
-        (check-type str string-t)
-        (check-type str number-t)
-        (check-type ch string-t)
         (setf n (- n (length str)))
         (loop defun pad i str (if (< i n) (pad (+ i 1) (setf str (concatenate str ch))) str))
         (pad 0 str)))
       ; occurances_count
+      (deftype character-occurances-in-string (Function (String) (String) (Number)))
       (defun character-occurances-in-string string letter (do
-        (check-type string string-t)
-        (check-type letter string-t)
         (defvar 
           array (type string Array)
           bitmask 0
@@ -455,8 +462,8 @@
             (+ count has-at-least-one))))
             (iterate 0 (- (length array) 1))))
     ;  to-upper-case
+    (deftype to-upper-case (Function (String) (String)))
     (defun to-upper-case str (do
-    (check-type str string-t)
      (defconstant 
             arr () 
             n (length str))
@@ -471,8 +478,8 @@
         (make-string arr)))
         (iter 0)))
     ;  to-lower-case
+    (deftype to-lower-case (Function (String) (String)))
     (defun to-lower-case str (do
-      (check-type str string-t)
       (defconstant 
             arr () 
             n (length str))
@@ -487,10 +494,11 @@
         (make-string arr)))
         (iter 0)))
     ; split-by-n-lines
-    (defun split-by-n-lines string n (go string (check-type string-t) (regex-replace (concatenate "(\n){" (type n String) "}") "௮") (regex-match "[^௮]+") (map (lambda x . . (regex-match x "[^\n]+")))))
+    (deftype split-by-n-lines (Function (String) (Number) (Array (Array (String)))))
+    (defun split-by-n-lines string n (go string (regex-replace (concatenate "(\n){" (type n String) "}") "௮") (regex-match "[^௮]+") (map (lambda x . . (regex-match x "[^\n]+")))))
     ; split
+    (deftype split (Function (String) (String) (Array (String))))
     (defun split string separator (do
-        (check-type string string-t) 
         (defconstant 
           sep-arr (type separator Array)
           array (type string Array)
@@ -507,8 +515,8 @@
                     (iterate result (+ i 1) bounds) result))
         (push (iterate () 0 (- (length array) 1)) cursor)))
       ; slice 
+      (deftype slice (Function (Array) (Number) (Number) (Array)))
       (defun slice array start end (do 
-        (check-type array array-t)
         (defconstant bounds (- end start) out (Array bounds length))
         (loop defun iterate i 
           (if (< i bounds) 
@@ -518,11 +526,14 @@
               out))
               (iterate 0)))
       ; slice-if-index
-      (defun slice-if-index array callback (reduce (check-type array array-t) (lambda a b i . (if (callback i) (push a b) a)) ()))
+      (deftype slice-if-index (Function (Array) (Function) (Array)))
+      (defun slice-if-index array callback (reduce array (lambda a b i . (if (callback i) (push a b) a)) ()))
       ; slice-if
-      (defun slice-if array callback (reduce (check-type array array-t) (lambda a b i . (if (callback b i) (push a b) a)) ()))
+      (deftype slice-if (Function (Array) (Function) (Array)))
+      (defun slice-if array callback (reduce array (lambda a b i . (if (callback b i) (push a b) a)) ()))
       ; window
-      (defun window array n (go array (check-type array-t)
+      (deftype window (Function (Array) (Number) (Array (Array))))
+      (defun window array n (go array
         (reduce (lambda acc current i all 
           (if (>= i n) 
             (push acc (slice all (- i n) i)) acc)) ())))

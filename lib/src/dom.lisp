@@ -3,8 +3,14 @@
   ; modules
   ; button
   (defun button text (:set-text-content (:element "button") text))
-  ; p
+  ; paragraph
   (defun paragraph text (:set-text-content (:element "p") text))
+  ; span
+  (defun span text (:set-text-content (:element "span") text))
+  ; preformatted
+  (defun preformatted text (:set-text-content (:element "pre") text))
+  ; text-area
+  (defun text-area rows cols (go (:element "textarea") (:set-attribute "rows" rows) (:set-attribute "cols" cols)))
   ; img
   (defun image src (:set-attribute (:element "img") "src" src))
   ; input
@@ -24,9 +30,12 @@
     (Array 
       (Array "button" button)
       (Array "paragraph" paragraph)
+      (Array "span" span)
+      (Array "preformatted" preformatted)
       (Array "div" div)
       (Array "image" image)
       (Array "input" input)
+      (Array "text-area" text-area)
       (Array "pixels" pixels)
       (Array "percent" percent)
    )

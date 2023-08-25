@@ -29,7 +29,6 @@ export const evaluate = (expression, env) => {
       if (rest.length) throw new TypeError(`Atoms can't have arguments.`)
       return first.v
     // default:
-    //   console.log(types)
     //   console.log(first)
     //   throw new TypeError(`Trying to access a null pointer.`)
   }

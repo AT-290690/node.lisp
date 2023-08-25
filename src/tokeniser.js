@@ -1,5 +1,9 @@
-import { APPLY, ATOM, TYPE, VALUE, WORD } from './enums.js'
+import { APPLY, ATOM, TYPE, VALUE, WORD, TYPES } from './enums.js'
 import { evaluate } from './interpreter.js'
+const stringifyType = (type) =>
+  Array.isArray(type)
+    ? `(array ${type.map((t) => stringifyType(t)).join(' ')})`
+    : typeof type
 const stringifyArgs = (args) =>
   args
     .map((x) => {
@@ -41,7 +45,6 @@ const equal = (a, b) =>
           )
       ))) ||
   false
-const types = {}
 const tokens = {
   ['deftype']: (args, env) => {
     if (args.length < 2)
@@ -65,8 +68,10 @@ const tokens = {
         } (deftype ${stringifyArgs(args)})`
       )
     const name = word[VALUE]
-    types[name] = evaluate(args[1], env)
-    return types[name]
+    const T = ((args[1][0][VALUE] = 'Array'), args[1])
+    if (!env[TYPES]) env[TYPES] = {}
+    env[TYPES][name] = evaluate(T, env)
+    return env[TYPES][name]
   },
   ['identity']: (args, env) => {
     if (args.length !== 1)
@@ -77,25 +82,7 @@ const tokens = {
       )
     return evaluate(args[0], env)
   },
-  ['check-type']: (args, env) => {
-    if (args.length !== 2)
-      throw new RangeError(
-        `Invalid number of arguments for (check-type), expected 2 but got ${
-          args.length
-        }. (check-type ${stringifyArgs(args)})`
-      )
-    const value = evaluate(args[0], env)
-    const type = args[1][VALUE]
-    if (!(type in types))
-      throw new ReferenceError(
-        `Type ${type} doesn't exist at (check-type ${stringifyArgs(args)})`
-      )
-    if (!equal(value, types[type])) {
-      throw new TypeError(
-        `Type doesn't match ${type} (check-type ${stringifyArgs(args)})`
-      )
-    } else return value
-  },
+
   ['concatenate']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
@@ -363,12 +350,7 @@ const tokens = {
     return 0
   },
   ['Array']: (args, env) => {
-    if (!args.length)
-      throw new RangeError(
-        `Invalid number of arguments for (Array) (>= 1 required) (Array ${stringifyArgs(
-          args
-        )})`
-      )
+    if (!args.length) return []
     const isCapacity =
       args.length === 2 && args[1][TYPE] === WORD && args[1][VALUE] === 'length'
     if (isCapacity) {
@@ -605,17 +587,43 @@ const tokens = {
             props.length
           }) (defun ${stringifyArgs(args)})`
         )
+
       const localEnv = Object.create(env)
-      for (let i = 0; i < props.length; ++i)
-        Object.defineProperty(localEnv, params[i][VALUE], {
-          value: evaluate(props[i], scope),
+      const isTyped = env[TYPES] && name in env[TYPES]
+      for (let i = 0; i < props.length; ++i) {
+        const value = evaluate(props[i], scope)
+        const param = params[i][VALUE]
+        if (isTyped) {
+          const type = env[TYPES][name]
+          if (!equal(value, type[i]))
+            throw new TypeError(
+              `Type doesn't match ${i} argument (${param}) of ${name} (defun ${stringifyArgs(
+                args
+              )}) should be ${stringifyType(type[i])}`
+            )
+        }
+        Object.defineProperty(localEnv, param, {
+          value,
           writable: true,
         })
-      return evaluate(body, localEnv)
+      }
+      const result = evaluate(body, localEnv)
+      if (isTyped) {
+        const type = env[TYPES][name].at(-1)
+        if (!equal(result, type)) {
+          throw new TypeError(
+            `Type doesn't match result of ${name} (defun ${stringifyArgs(
+              args
+            )}) should be ${stringifyType(type)}`
+          )
+        }
+      }
+      return result
     }
     env[name] = fn
     return fn
   },
+
   ['lambda']: (args, env) => {
     const params = args.slice(0, -1)
     // if (!params.length)
@@ -1252,4 +1260,4 @@ const tokens = {
   ['module']: () => 'WAT module',
 }
 tokens['void'] = tokens['do']
-export { tokens, types }
+export { tokens }

@@ -64,6 +64,7 @@ const programs = [
   `(import std "array-of-numbers" "map" "reduce")
 (import math "maximum" "max")
 (go (Array "1" "2" "3") (array-of-numbers) (maximum) (Array))`,
+  `(import math "permutations") (Array (permutations (Array 1 2 3)))`,
 ]
 
 describe('Libraries', () => {
@@ -125,6 +126,14 @@ describe('Libraries', () => {
           ],
         ],
         [3],
+        [
+          [
+            [1, 2, 3],
+            [2, 1, 3],
+            [3, 1, 2],
+            [2, 1, 3],
+          ],
+        ],
       ]
     ))
   it('Should compile matching interpretation', () =>

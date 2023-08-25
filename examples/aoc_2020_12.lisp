@@ -7,10 +7,9 @@ R90
 F11")
 (defconstant *input* sample)
 ; (defvar *input* (:open "./playground/src/aoc_2020/12/input.txt"))
-(deftype array-number-t (Array (Number)))
-(deftype stack-t (Array (Array (String) (Number))))
-(deftype lazy-cmd-t (Array (Array (String) (Number)) (Function)))
-
+; (deftype array-number-t (Array (Number)))
+; (deftype stack-t (Array (Array (String) (Number))))
+; (deftype lazy-cmd-t (Array (Array (String) (Number)) (Function)))
 (defun yoink stack (when (length stack) (do (defconstant last (get stack -1)) (set stack -1) last)))
 (defun move stack (defconstant f (lambda (Array (yoink stack) f))))
 ; 362
@@ -28,7 +27,6 @@ F11")
     (defconstant 
       moves (type *stack* Array)
       compass (Array "N" "E" "S" "W"))
-    (check-type moves stack-t)
     (defvar
       x 0
       y 0
@@ -55,7 +53,7 @@ F11")
         (= action "R") (push moves (Array (get compass (setf arrow (mod (+ arrow (go value (normalize 0 90) (floor))) (length compass)))) 0))
         (= action "F") (push moves (Array (get compass arrow) value)))
       (setf cursor (apply (car (cdr cursor))))
-      (check-type cursor lazy-cmd-t)))
+      ))
     (defun next (if (length moves) (do (lazy) (next)) (do (lazy))))
     (next)
     (abs (+ x y))))
@@ -112,7 +110,6 @@ F11")
       moves (type *stack* Array)
       TERM 17
       compass (Array "N" "E" "S" "W"))
-    (check-type moves stack-t)
     (defvar 
       cursor (apply (move moves))
       x 0
@@ -152,7 +149,6 @@ F11")
                     (setf x (+ x (* dx value))) 
                     (setf y (+ y (* dy value)))))
       (setf cursor (apply (car (cdr cursor))))))
-      (check-type cursor lazy-cmd-t)
     (defun next moves (if (length moves) (do (lazy) (next moves)) (do (lazy))))
     (next moves)
     (+ (abs x) (abs y))))
