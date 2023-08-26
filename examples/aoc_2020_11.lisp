@@ -15,9 +15,10 @@ L.LLLLL.LL")
 ; (deftype input-t (String))
 (defconstant *input* sample)
 ; (defconstant *input* (:open "./playground/src/aoc_2020/11/input.txt"))
+(deftype count-seats (Lambda (Or (Array (Array (Number)))) (Or (Number))))
 (defun count-seats matrix (do
   (reduce matrix (lambda a row . . (+ a (count-of row (lambda x . . (> x 0))))) 0)))
-
+(deftype parse-input (Lambda (Or (String)) (Or (Array (Array (Number))))))
 (defun parse-input input (go 
   input
   (split-by-lines)
@@ -26,6 +27,7 @@ L.LLLLL.LL")
       (type Array) 
       (map (lambda col . . (- (= col "L") 1))))))))
 
+(deftype solve-1 (Lambda (Or (Array (Array (Number)))) (Or (Number)) (Or (Array (Array (Number))))))
 (defun solve-1 matrix tolerance (do 
   (defconstant 
     height (- (length matrix) 1)
@@ -41,7 +43,7 @@ L.LLLLL.LL")
         (if (and (= sum 0) (= current 0)) 1
           (if (and (>= sum tolerance) (= current 1)) 0 current))))))))
           copy))
-          
+(deftype solve-2 (Lambda (Or (Array (Array (Number)))) (Or (Number)) (Or (Array (Array (Number))))))
 (defun solve-2 matrix tolerance (do 
   (defconstant 
     height (- (length matrix) 1)
@@ -136,7 +138,8 @@ L.LLLLL.LL")
 ;   (print-matrix)
 ;   )
 ; (log "\n----------")
-
+  
+  (deftype rotate (Lambda (Or (Array (Array (Number)))) (Or (Number)) (Or (Number)) (Or (Number))))
   (loop defun rotate matrix prev n (do 
     (defconstant 
       next-matrix (if n (solve-2 matrix 5) (solve-1 matrix 4))

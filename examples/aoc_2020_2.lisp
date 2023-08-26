@@ -12,10 +12,10 @@
 (defconstant *policy* (regex-match *input* "[a-z](?=:)"))
 (defconstant *inputs* (regex-match *input* "(?<=:[ ])(.*)"))
 
-(deftype occ_to_numbers (Function (String) (Number) (Array (String)) (Array (Number))))
-(defun occ_to_numbers x . . (go x (split-by "-") (map (lambda y . . (type y Number)))))
+(deftype occ-to-numbers (Lambda (Or (String)) (Or (Number)) (Or (Array (String))) (Or (Array (Number)))))
+(defun occ-to-numbers x . . (go x (split-by "-") (map (lambda y . . (type y Number)))))
 
-(deftype *solve* (Function (String) (String) (Number)))
+(deftype *solve* (Lambda (Or (String)) (Or (String)) (Or (Number))))
 (defun *solve1* string letter (do
   (defconstant 
     array (type string Array) 
@@ -37,7 +37,7 @@
       (+ count has-at-least-one))))
       (iterate 0 (- (length array) 1))))
 
-(deftype *solve2* (Function (Array (String)) (String) (Number) (Number) (Number)))
+(deftype *solve2* (Lambda (Or (Array (String))) (Or (String)) (Or (Number)) (Or (Number)) (Or (Number))))
 (defun *solve2* array letter x y (do 
   (defconstant 
     a (get array (- x 1))
@@ -48,7 +48,7 @@
 
 (Array 
 (go *occ*
-   (map occ_to_numbers)
+   (map occ-to-numbers)
    (map (lambda x i . (go x 
             (push (get *policy* i)) 
             (push (get *inputs* i))
@@ -60,7 +60,7 @@
   ; (map (lambda x i o (log x)))
 )
 (go *occ*
-   (map occ_to_numbers)
+   (map occ-to-numbers)
    (map (lambda x i . (go x 
             (push (get *policy* i)) 
             (push (get *inputs* i)))))

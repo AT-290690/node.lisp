@@ -33,6 +33,8 @@
   *input* 
   (split-by "\n") 
   (array-of-numbers)))
+
+  (deftype find-preamble (Lambda (Or (Array (Number))) (Or (Number)) (Or (Number))))
   
   (defun find-preamble inp n (go inp 
     (find (lambda current i all 
@@ -41,7 +43,7 @@
 
 (defconstant *preamble* (find-preamble *numbers* (if (> (length *numbers*) 25) 25 5)))
 
-(defvar *weakness* ())
+(defvar *weakness* (Array))
 (go (range 2 (- (length *numbers*) 1))
     (some (lambda n . .
       (some (window *numbers* n) (lambda x . . (do 

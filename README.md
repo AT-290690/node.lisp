@@ -38,7 +38,7 @@ A Lisp for Node
 ```
 
 ```lisp
-; Define reusable modules
+; Define reusable functions
 (defun binary-search
         array target (do
   (loop defun search
@@ -68,7 +68,7 @@ A Lisp for Node
 
 ```lisp
 (import std "push""reduce")
-(import "range" "product-array")
+(import math "range" "product-array")
 (defun factorial n
   (go
     (range 1 n)
@@ -220,4 +220,24 @@ var sumBelow, rec_32721849989891052
 )),
   sumBelow
 log(sumBelow(10000, 0))
+```
+
+Types validated by interpretation
+
+```lisp
+(deftype find-bag (Lambda
+                  ; ((("golden" "yellow") ((0 "dark" "blue") (2 "silver" "gray") ... )) ... )
+                  (Or (Array (Array (Array (String) (String)) (Array (Array (Number) (String) (String))))))
+                  (Or (String)) ; "golden"
+                  (Or (String)) ; "yellow"
+                  (Or
+                    ; ((0 "dark" "blue") (2 "silver" "gray") ... )
+                    (Array (Array (String) (String)) (Array (Array (Number) (String) (String))))
+                    ; 0 - couldn't find
+                    (Number))))
+(defun find-bag bags left right
+          (find bags
+            (lambda x . . (and
+              (= (car (car x)) left)
+              (= (car (cdr (car x))) right)))))
 ```

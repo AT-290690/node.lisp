@@ -15,6 +15,7 @@ hgt:76in")
 ; (defvar *input* (:open "./playground/src/aoc_2020/4/input.txt"))
 
 ; 190
+(deftype validate-fields (Lambda (Or (Array (Array (String)))) (Or (Array (Array (String))))))
 (defun validate-fields fields (go fields (map (lambda x . . 
                         (go x (map (lambda y . . 
                           (go y (regex-match "byr|iyr|eyr|hgt|hcl|ecl|pid")))) 
@@ -31,8 +32,10 @@ hgt:76in")
 ; ecl (Eye Color) - exactly one of: amb blu brn gry grn hzl oth.
 ; pid (Passport ID) - a nine-digit number, including leading zeroes.
 ; cid (Country ID) - ignored, missing or not.
-(defun to_entries array (map array (lambda x . . (go x (map (lambda y . . (go y (split-by " ")))) (deep-flat) (map (lambda x . . (split-by x ":")))))))
-(defun without_invalid_fields fields (go fields 
+(deftype to-entries (Lambda (Or (Array (Array (String)))) (Or (Array (Array (Array (String) (String)))))))
+(defun to-entries array (map array (lambda x . . (go x (map (lambda y . . (go y (split-by " ")))) (deep-flat) (map (lambda x . . (split-by x ":")))))))
+(deftype without-invalid-fields (Lambda (Or (Array (Array (Array (String) (String))))) (Or (Array (Array (Array (String) (String)))))))
+(defun without-invalid-fields fields (go fields 
                                             (map (lambda x . . (go x 
                                              (remove (lambda y . . (and (not (= (car y) "cid")) (regex-match (car y) "byr|iyr|eyr|hgt|hcl|ecl|pid")))))))))
 
@@ -43,8 +46,8 @@ hgt:76in")
                   (length))
 (go *input* 
      (split-by-n-lines 2)
-     (to_entries)
-     (without_invalid_fields)
+     (to-entries)
+     (without-invalid-fields)
      (remove (lambda x . . (= (length x) 7)))
      (map (lambda x . . (go x     
       (map (lambda y . . (do

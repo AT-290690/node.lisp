@@ -18,11 +18,11 @@ b")
 
 (defconstant *input* sample)
 ; (defvar *input* (:open "./playground/src/aoc_2020/6/input.txt"))
-
-(defun remove-duplicates string (go (type string Array) (remove (lambda item pos self (= (index-of self item) pos)))))
+(deftype remove-duplicates-of-strings (Lambda (Or (String)) (Or (Array (String)))))
+(defun remove-duplicates-of-strings string (go (type string Array) (remove (lambda item pos self (= (index-of self item) pos)))))
 
 (defconstant *lines* (go *input* (split-by-n-lines 2)))
-(defconstant *unique_chars* (go *lines* (map (lambda x . . (go x (join "") (remove-duplicates))))))
+(defconstant *unique_chars* (go *lines* (map (lambda x . . (go x (join "") (remove-duplicates-of-strings))))))
 
 (Array (go *unique_chars* 
   (map (lambda x . . (length x)))

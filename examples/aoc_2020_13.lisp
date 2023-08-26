@@ -4,6 +4,7 @@
 7,13,x,x,59,x,31,19")
 (defconstant input "1001171
 17,x,x,x,x,x,x,41,x,x,x,37,x,x,x,x,x,367,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,19,x,x,x,23,x,x,x,x,x,29,x,613,x,x,x,x,x,x,x,x,x,x,x,x,13")
+(deftype *solve1* (Lambda (Or (String)) (Or (Number))))
 (defun *solve1* inp 
   (do
     (defun parse inp 
@@ -27,10 +28,12 @@
       (reduce (lambda a b . . (if (> (car (cdr a)) (car (cdr b))) b a)) (Array 0 100000))
       (product-array))))
 
+(deftype is-array-of-coprime-pairs (Lambda (Or (Array (Number))) (Or (Number))))
 (defun is-array-of-coprime-pairs inp (and 
         (go inp (every (lambda x . . (is-prime x)))) 
         (go inp (adjacent-difference (lambda a b (greatest-common-divisor a b))) (cdr) (every (lambda x . . (= x 1))))))
 
+(deftype chinese-remainder-theorem (Lambda (Or (Array (Array (Number)))) (Or (Number))))
 (defun chinese-remainder-theorem items
   (do 
     (defvar result (car (car items)))
@@ -49,6 +52,7 @@
         result)
       result))
 
+(deftype *solve2* (Lambda (Or (String)) (Or (Number))))
 (defun *solve2* input 
   (do
     (defun parse inp 
@@ -59,7 +63,7 @@
           buses (go 
                   (car (cdr INP)) 
                   (split ",") 
-                  (reduce (lambda acc x i . (unless (= x "x") (set acc (length acc) (Array (type x Number) i)) acc)) ())))
+                  (reduce (lambda acc x i . (unless (= x "x") (set acc (length acc) (Array (type x Number) i)) acc)) (Array))))
         (Array time buses)))
       (defconstant inp (car (cdr (parse input))))
       (unless (is-array-of-coprime-pairs (map inp (lambda x . . (car x)))) 

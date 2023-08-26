@@ -33,7 +33,13 @@ nearby tickets:
 ; (deftype your-ticket-t (Array (Number)))
 ; (deftype nearby-tickets-t (Array (Array (Number))))
 ; (deftype groups-t (Array (Array (Array (Number)))))
-
+(deftype parse-input (Lambda  
+                        (Or (String)) 
+                        (Or 
+                          (Array 
+                            (Array (Array (Array (Number) (Number))))
+                            (Array (Number)) 
+                            (Array (Array (Number)))))))
 (defun parse-input sample (do 
   (defconstant lines (go sample (split-by-n-lines 2)))
   (defconstant ticket-ranges 
@@ -49,18 +55,20 @@ nearby tickets:
 (defconstant your-ticket (array-of-numbers (split (car (cdr (car (cdr lines)))) ",")))
 (defconstant nearby-tickets (map (cdr (car (cdr (cdr lines)))) (lambda x . . (go x (split ",") (array-of-numbers)))))
 (Array ticket-ranges your-ticket nearby-tickets)))
-
+(deftype is-in-bounds (Lambda (Or (Number)) (Or (Array (Number) (Number))) (Or (Number))))
 (defun is-in-bounds x rng (and (>= x (car rng)) (<= x (car (cdr rng)))))
+(deftype sort-by-len (Lambda (Or (Array (Array (Array (Number))))) (Or (Array (Number))) (Or (Array (Array (Array (Number)))))))
 (defun sort-by-len tickets r (map r (lambda x . . (find tickets (lambda y . . (= (- (length y) 1) x))))))
+(deftype order-array (Lambda (Or (Array (Array (Number)))) (Or (Array (Number))) (Or (Array (Array (Number))))))
 (defun order-array array order (map (Array (length array) length) (lambda . i . (get array (get order i)))))
-
+(deftype part1 (Lambda (Or (Number))))
 (defun part1 (do 
   (defconstant *parsed-input* (parse-input sample1))
   (defconstant ticket-ranges (car *parsed-input*))
   (defconstant your-ticket (car (cdr *parsed-input*)))
   (defconstant nearby-tickets (car (cdr (cdr *parsed-input*))))
   (go nearby-tickets (map (lambda x . . (remove x (lambda y . . (not (some ticket-ranges (lambda z . . (or (is-in-bounds y (car z)) (is-in-bounds y (car (cdr z))))))))))) (deep-flat) (sum-array))))
-
+(deftype part2 (Lambda (Or (Number))))
 (defun part2 (do 
   (defconstant *parsed-input* (parse-input sample2))
   (defconstant ticket-ranges (car *parsed-input*))
@@ -90,7 +98,7 @@ nearby tickets:
               tickets 
               (cdr) 
               (map (lambda ti . . (remove ti (lambda x . . (not (= (car (cdr x)) swap))))))) 
-            ()))
+            (Array)))
   (push order (Array  slot swap))
   (seave next order)) order))
 (go 
@@ -103,7 +111,7 @@ nearby tickets:
             (Array i j (validate-ticket tickets i j))))))
           (map (lambda x . a (remove x (lambda y . . (get y -1)))))
           (sort-by-len *range*))
-     ()) 
+     (Array)) 
     (remove (lambda x . . (< (car (cdr x)) 6))) 
     (reduce (lambda a x . . (set a (car (cdr x)) (car x))) 
     (map (Array 20 length) (lambda x . . (or x -1)))) 

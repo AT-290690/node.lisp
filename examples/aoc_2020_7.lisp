@@ -47,6 +47,9 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
 ; (defconstant input (:open "./playground/src/aoc_2020/7/input.txt"))
 
 (defconstant *target* (Array "shiny" "gold"))
+(deftype *read-input* (Lambda 
+                      (Or (String)) 
+                      (Or (Array (Array (Array (String) (String)) (Array (Array (Number) (String) (String))))))))
 (defun *read-input* input
     (go 
       input 
@@ -80,7 +83,10 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
                           (set 0 (type (car current) Number)) 
                           (set -1)))))))
             (Array head tail))))))
-
+(deftype *solve1* (Lambda 
+                  (Or (Array (Array (Array (String) (String)) (Array (Array (Number) (String) (String)))))) 
+                  (Or (Array (String) (String)))
+                  (Or (Number))))
 (defun *solve1* bags target (do 
   (defvar count 0)
   (defconstant traverse-bags (lambda left right (do
@@ -98,13 +104,22 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
                   (traverse-bags (car (car bag)) (car (cdr (car bag)))))))))))))
       (traverse-bags (car target) (car (cdr target)))
       count))
-
+(deftype *find-bag* (Lambda
+                  (Or (Array (Array (Array (String) (String)) (Array (Array (Number) (String) (String))))))
+                  (Or (String))
+                  (Or (String))
+                  (Or 
+                    (Array (Array (String) (String)) (Array (Array (Number) (String) (String))))
+                    (Number))))
 (defun *find-bag* bags left right 
           (find bags 
             (lambda x . . (and 
               (= (car (car x)) left)
               (= (car (cdr (car x))) right)))))
-      
+(deftype *solve2* (Lambda 
+                  (Or (Array (Array (Number) (String) (String))))
+                  (Or (Array (Array (Array (String) (String)) (Array (Array (Number) (String) (String))))))
+                  (Or (Number))))
 (defun *solve2* initial all-bags 
   (reduce initial (lambda output current . . (do 
     (defconstant next (*find-bag* all-bags (car (cdr current)) (car (cdr (cdr current)))))

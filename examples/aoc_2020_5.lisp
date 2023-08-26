@@ -20,7 +20,8 @@ BBFFBBFRLL")
 ; (deftype array-number-t (Array (Number)))
 (defconstant *input* *sample*)
 ; (defvar *input* (:open "./playground/src/aoc_2020/5/input.txt"))
-(defun binary_boarding inp bounds lower upper 
+(deftype binary-boarding (Lambda (Or (Array (String))) (Or (Array (Number) (Number))) (Or (String)) (Or (String)) (Or (Number))))
+(defun binary-boarding inp bounds lower upper 
   (go inp 
       (reduce (lambda a b . . (do 
             (defconstant half (* (+ (car a) (car (cdr a))) 0.5))
@@ -35,8 +36,8 @@ BBFFBBFRLL")
     (map (lambda directions . . (do 
       (defconstant 
             array (type directions Array)
-            fb (binary_boarding (slice-if-index array (lambda i (< i 7))) (Array 0 127) "F" "B")
-            lr (binary_boarding (slice-if-index array (lambda i (>= i 7))) (Array 0 7) "L" "R"))
+            fb (binary-boarding (slice-if-index array (lambda i (< i 7))) (Array 0 127) "F" "B")
+            lr (binary-boarding (slice-if-index array (lambda i (>= i 7))) (Array 0 7) "L" "R"))
       (+ (* fb 8) lr))))))
 
 (defconstant *res1* (go 

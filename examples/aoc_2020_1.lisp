@@ -8,14 +8,14 @@
 1456")
 (defconstant *input* sample)
 ; (defvar *input* (:open "./playground/src/aoc_2020/1/input.txt"))
-(deftype *solve1* (Function (Array (Number)) (Function) (Array (Number))))
+(deftype *solve1* (Lambda (Or (Array (Number))) (Or (Function)) (Or (Array (Number)))))
 (defun *solve1* array cb 
      (reduce array (lambda a x . array (do
         (defvar res (binary-search array (cb x)))
         (if res (set a (length a) res) a))) 
-     ()))
-     
-(deftype *solve2* (Function (Array (Number)) (Function) (Array (Number))))
+     (Array)))
+
+(deftype *solve2* (Lambda (Or (Array (Number))) (Or (Function)) (Or (Array (Number)))))
 (defun *solve2* array cb 
     (reduce array
       (lambda accumulator y i array (do
@@ -25,7 +25,7 @@
               (when res (set accumulator (length accumulator) res))
             (if (< j bounds) (iterate (+ j 1) bounds) accumulator)))
         (iterate i (- (length array) 1)))) 
-     ()))
+     (Array)))
 
 (Array 
 ; 514579 for sample

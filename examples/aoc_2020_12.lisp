@@ -11,8 +11,11 @@ F11")
 ; (deftype stack-t (Array (Array (String) (Number))))
 ; (deftype lazy-cmd-t (Array (Array (String) (Number)) (Function)))
 (defun yoink stack (when (length stack) (do (defconstant last (get stack -1)) (set stack -1) last)))
+
+(deftype move (Lambda (Or (Array (Array (String) (Number)))) (Or (Function))))
 (defun move stack (defconstant f (lambda (Array (yoink stack) f))))
 ; 362
+(deftype solve1 (Lambda (Or (Number))))
 (defun solve1 (do 
   (defun normalize value min max (* (- value min) (/ (- max min))))
   (defconstant *stack* (go 
@@ -59,11 +62,16 @@ F11")
     (abs (+ x y))))
 
 
+
+
   ; 29895
+  (deftype solve2 (Lambda (Or (Number))))
   (defun solve2 (do 
 
+  (deftype factorial (Lambda (Or (Number)) (Or (Number))))
   (defun factorial n (if (<= n 0) 1 (* n (factorial (- n 1)))))
 
+  (deftype power (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
   (defun power base exp 
     (if (< exp 0) 
         (if (= base 0) 
@@ -73,6 +81,7 @@ F11")
           (if (= exp 1) base
             (* base (power base (- exp 1)))))))
 
+  (deftype sin (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
   (defun sin rad terms (do
       (defvar sine 0)
       (loop defun inc i 
@@ -86,6 +95,7 @@ F11")
         (if (< i terms) (inc (+ i 1)) sine)))
       (inc 0)))
     ; cos 
+    (deftype cos (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
     (defun cos rad terms (do
       (defvar cosine 0)
       (loop defun inc i 
@@ -149,6 +159,7 @@ F11")
                     (setf x (+ x (* dx value))) 
                     (setf y (+ y (* dy value)))))
       (setf cursor (apply (car (cdr cursor))))))
+    (deftype next (Lambda (Or (Array (Array (String) (Number)))) (Array (Array (String) (Number)))))
     (defun next moves (if (length moves) (do (lazy) (next moves)) (do (lazy))))
     (next moves)
     (+ (abs x) (abs y))))

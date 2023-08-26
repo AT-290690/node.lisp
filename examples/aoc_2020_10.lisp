@@ -56,6 +56,7 @@
    (adjacent-difference (lambda a b (- b a)))))
 
 ; part 2
+(deftype combinations (Lambda (Or (Array (Number))) (Or (Number)) (Or (Array (Number))) (Or (Number))))
 (defun combinations inp i memo
       (if (array-in-bounds-p memo i)
         (get memo i) 
@@ -70,7 +71,7 @@
             (iterate (- i 1))
             (set memo i result)
             result)))
-
+(deftype iterative-solution (Lambda (Or (Array (Number))) (Or (Number))))
 (defun iterative-solution inp (do
   (defconstant 
     memo (Array 1)
@@ -87,7 +88,7 @@
         (iterate-i (+ i 1))))))
   (iterate-i 1)
   (get memo -1)))
-
+(deftype transform-input (Lambda (Or (Array (Number))) (Or (Array (Number)))))
 (defun transform-input input (do 
                           (defconstant sorted 
                               (go input 

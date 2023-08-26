@@ -45,7 +45,34 @@ const equal = (a, b) =>
           )
       ))) ||
   false
+const partial = (a, b) =>
+  (typeof a !== 'object' && typeof b !== 'object' && typeof a === typeof b) ||
+  (Array.isArray(a) &&
+    Array.isArray(b) &&
+    (!a.length ||
+      !b.length ||
+      !(a.length < b.length ? a : b).some(
+        (_, i, smaller) =>
+          !equal(
+            smaller.at(i),
+            (a.length < b.length ? b : a).at(
+              i % (a.length < b.length ? b : a).length
+            )
+          )
+      ))) ||
+  false
 const tokens = {
+  ['Lambda']: (args, env) => args.map((x) => evaluate(x, env)),
+  ['Or']: (args, env) => {
+    const out = args.map((x) => evaluate(x, env))
+    out._type = 'Or'
+    return out
+  },
+  ['And']: (args, env) => {
+    const out = args.map((x) => evaluate(x, env))
+    out._type = 'And'
+    return out
+  },
   ['deftype']: (args, env) => {
     if (args.length < 2)
       throw new RangeError(
@@ -68,7 +95,7 @@ const tokens = {
         } (deftype ${stringifyArgs(args)})`
       )
     const name = word[VALUE]
-    const T = ((args[1][0][VALUE] = 'Array'), args[1])
+    const T = args[1]
     if (!env[TYPES]) env[TYPES] = {}
     env[TYPES][name] = evaluate(T, env)
     return env[TYPES][name]
@@ -590,17 +617,38 @@ const tokens = {
 
       const localEnv = Object.create(env)
       const isTyped = env[TYPES] && name in env[TYPES]
+      if (isTyped && props.length !== env[TYPES][name].length - 1)
+        throw new RangeError(
+          `The number of arguments doesn't match type of ${name}\n(defun ${stringifyArgs(
+            args
+          )})\n should be ${env[TYPES][name].length - 1}`
+        )
       for (let i = 0; i < props.length; ++i) {
         const value = evaluate(props[i], scope)
         const param = params[i][VALUE]
         if (isTyped) {
-          const type = env[TYPES][name]
-          if (!equal(value, type[i]))
+          const Type = env[TYPES][name].slice(0, -1)
+          if (Type[i]._type === 'Or' && !Type[i].some((T) => equal(value, T)))
             throw new TypeError(
-              `Type doesn't match ${i} argument (${param}) of ${name} (defun ${stringifyArgs(
+              `Type doesn't match ${i} argument (${param}) of ${name}\n(defun ${stringifyArgs(
                 args
-              )}) should be ${stringifyType(type[i])}`
+              )})\nShould be:\n${Type[i]
+                .map((T) => stringifyType(T))
+                .join('\nor\n')}`
             )
+          else if (
+            Type[i]._type === 'And' &&
+            Type[i].length &&
+            !Type[i].some((T) => partial(value, T))
+          ) {
+            throw new TypeError(
+              `Type doesn't match ${i} argument (${param}) of ${name}\n(defun ${stringifyArgs(
+                args
+              )})\nShould be:\n${Type[i]
+                .map((T) => stringifyType(T))
+                .join('\nand\n')}`
+            )
+          }
         }
         Object.defineProperty(localEnv, param, {
           value,
@@ -609,12 +657,26 @@ const tokens = {
       }
       const result = evaluate(body, localEnv)
       if (isTyped) {
-        const type = env[TYPES][name].at(-1)
-        if (!equal(result, type)) {
+        const Type = env[TYPES][name].at(-1)
+        if (Type._type === 'Or' && !Type.some((T) => equal(result, T)))
           throw new TypeError(
-            `Type doesn't match result of ${name} (defun ${stringifyArgs(
+            `Type doesn't match result of ${name}\n(defun ${stringifyArgs(
               args
-            )}) should be ${stringifyType(type)}`
+            )})\nShould be:\n${Type.map((T) => stringifyType(T)).join(
+              '\nor\n'
+            )}`
+          )
+        else if (
+          Type._type === 'And' &&
+          Type.length &&
+          !Type.some((T) => partial(result, T))
+        ) {
+          throw new TypeError(
+            `Type doesn't match result of ${name}\n(defun ${stringifyArgs(
+              args
+            )})\nShould be:\n${Type.map((T) => stringifyType(T)).join(
+              '\nand\n'
+            )}`
           )
         }
       }

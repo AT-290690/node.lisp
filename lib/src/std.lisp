@@ -4,21 +4,21 @@
   ; push  
   (defun push array value (set array (length array) value))
   ; pop
-  (deftype pop (Function (Array) (Array)))
+  (deftype pop (Lambda (Or (Array)) (Or (Array))))
   (defun pop array (set array -1))
   ; yoink
   (defun yoink array (when (length array) (do (defconstant last (get array -1)) (set array -1) last)))
   ; array-in-bounds-p 
-  (deftype array-in-bounds-p (Function (Array) (Number) (Number)))
+  (deftype array-in-bounds-p (Lambda (Or (Array)) (Or (Number)) (Or (Number))))
   (defun array-in-bounds-p array index (and (< index (length array)) (>= index 0)))
   ; is-array-of-atoms
-  (deftype is-array-of-atoms (Function (Array) (Number)))
+  (deftype is-array-of-atoms (Lambda (Or (Array)) (Or (Number))))
   (defun is-array-of-atoms array (if (not (length array)) 1 (if (atom (car array)) (is-array-of-atoms (cdr array)) 0)))
   ; cartesian-product
-  (deftype cartesian-product (Function (Array) (Array) (Array (Array))))
-  (defun cartesian-product a b (reduce a (lambda p x . . (merge p (map b (lambda y . . (Array x y))))) ()))
+  (deftype cartesian-product (Lambda (Or (Array)) (Or (Array)) (Or (Array (Array)))))
+  (defun cartesian-product a b (reduce a (lambda p x . . (merge p (map b (lambda y . . (Array x y))))) (Array)))
   ; neighborhood
-  (deftype neighborhood (Function (Array (Array (Number))) (Array (Array (Number))) (Number) (Number) (Function) (Number)))
+  (deftype neighborhood (Lambda (Or (Array (Array (Number)))) (Or (Array (Array (Number)))) (Or (Number)) (Or (Number)) (Or (Function)) (Or (Number))))
   (defun neighborhood array directions y x callback
       (reduce directions (lambda sum dir . . (do
           (defconstant
@@ -26,23 +26,23 @@
               dx (+ (car (cdr dir)) x))
           (+ sum (when (and (array-in-bounds-p array dy) (array-in-bounds-p (get array dy) dx)) (callback (get (get array dy) dx) dir))))) 0))
       ; join
-      (deftype join (Function (Array) (String) (String)))
+      (deftype join (Lambda (Or (Array)) (Or (String)) (Or (String))))
       (defun join array delim (reduce array (lambda a x i . (if (> i 0) (concatenate a delim (type x String)) (type x String))) ""))
       ; repeat
       (defun repeat n x (map (Array n length) (lambda . . . x)))
       ; split-by-lines
-      (deftype split-by-lines (Function (String) (String) (Array (String))))
+      (deftype split-by-lines (Lambda (Or (String)) (Or (Array (String)))))
       (defun split-by-lines string (regex-match string "[^\n]+"))
       ; split-by
-      (deftype split-by (Function (String) (String) (Array (String))))
+      (deftype split-by (Lambda (Or (String)) (Or (String)) (Or (Array (String)))))
       (defun split-by string delim (regex-match string (concatenate "[^" delim "]+")))
       ; trim
       (defun trim string (regex-replace string "^\s+|\s+$" ""))
       ; array-of-numbers
-      (deftype array-of-numbers (Function (Array) (Array (Number))))
+      (deftype array-of-numbers (Lambda (Or (Array)) (Or (Array (Number)))))
       (defun array-of-numbers array (map array (lambda x . . (type x Number))))
       ; concat
-      (deftype concat (Function (Array) (Array) (Array)))
+      (deftype concat (Lambda (Or (Array)) (Or (Array)) (Or (Array))))
       (defun concat array1 array2 (do
         (loop defun iterate i bounds (do
         (when (< i (length array2)) (push array1 (get array2 i)))
@@ -52,7 +52,7 @@
         )))
       (iterate 0 (- (length array2) 1))))
       ; merge
-      (deftype merge (Function (Array) (Array) (Array)))
+      (deftype merge (Lambda (Or (Array)) (Or (Array)) (Or (Array))))
       (defun merge array1 array2 (do
         (loop defun iterate i bounds (do
         (push array1 (get array2 i))
@@ -62,9 +62,9 @@
         )))
       (iterate 0 (- (length array2) 1))))
       ; map
-      (deftype map (Function (Array) (Function) (Array)))
-      (defun map array callback (do 
-        (defconstant new-array ())
+      (deftype map (Lambda (Or (Array)) (Or (Function)) (Or (Array))))
+      (defun map array callback (do
+        (defconstant new-array (Array))
         (defvar i 0)
         (loop defun iterate i bounds (do
           (set new-array i (callback (get array i) i array))
@@ -89,7 +89,7 @@
         (if (< i end) (iterate (+ i 1)) res))) 
         (iterate start)))
   ; count-of
-  (deftype count-of (Function (Array) (Function) (Number)))
+  (deftype count-of (Lambda (Or (Array)) (Or (Function)) (Or (Number))))
   (defun count-of array callback (do
     (defvar amount 0)
     (loop defun iterate i bounds (do
@@ -98,14 +98,14 @@
       (if (< i bounds) (iterate (+ i 1) bounds) amount)))
     (iterate 0 (- (length array) 1))))
   ; partition 
-  (deftype partition (Function (Array) (Number) (Array (Array))))
+  (deftype partition (Lambda (Or (Array)) (Or (Number)) (Or (Array (Array)))))
   (defun partition array n (reduce array (lambda a x i . (do 
         (if (mod i n) (push (get a -1) x) (push a (Array x))) a)) 
-        ()))
+        (Array)))
   ; remove
-  (deftype remove (Function (Array) (Function) (Array)))
+  (deftype remove (Lambda (Or (Array)) (Or (Function)) (Or (Array))))
   (defun remove array callback (do
-    (defconstant new-array ())
+    (defconstant new-array (Array))
     (loop defun iterate i bounds (do
       (defconstant current (get array i))
       (when (callback current i array) 
@@ -113,7 +113,7 @@
       (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
     (iterate 0 (- (length array) 1))))
   ; every
-  (deftype every (Function (Array) (Function) (Number)))
+  (deftype every (Lambda (Or (Array)) (Or (Function)) (Or (Number))))
   (defun every array callback (do
       (defvar bol 1)
       (loop defun iterate i bounds (do
@@ -122,7 +122,7 @@
         (if (and res (< i bounds)) (iterate (+ i 1) bounds) bol)))
       (iterate 0 (- (length array) 1))))
   ; some
-  (deftype some (Function (Array) (Function) (Number)))
+  (deftype some (Lambda (Or (Array)) (Or (Function)) (Or (Number))))
   (defun some array callback (do
       (defvar bol 1)
       (loop defun iterate i bounds (do
@@ -145,7 +145,7 @@
       (iterate 0 (- (length array) 1))))
     ; deep-flat
     (defun deep-flat arr (do 
-      (defconstant new-array ()) 
+      (defconstant new-array (Array)) 
       (defconstant flatten (lambda item 
         (if (and (Arrayp item) (length item)) 
               (for-each item (lambda x . . (flatten x))) 
@@ -232,14 +232,14 @@
                   (iterate 0 (- (length array) 1))
                   (if has-found idx -1)))))
       ; quick-sort
-      (deftype quick-sort (Function (Array (Number)) (Array (Number))))
+      (deftype quick-sort (Lambda (Or (Array (Number))) (Or (Array (Number)))))
       (defun quick-sort arr (do
         (if (<= (length arr) 1) arr
         (do
           (defconstant 
             pivot (get arr 0) 
-            left-arr () 
-            right-arr ())
+            left-arr (Array) 
+            right-arr (Array))
         (loop defun iterate i bounds (do
           (defconstant current (get arr i))
           (if (< current pivot) 
@@ -252,7 +252,7 @@
         (push pivot) 
         (concat (quick-sort right-arr)))))))
       ; reverse 
-      (deftype reverse (Function (Array) (Array)))
+      (deftype reverse (Lambda (Or (Array)) (Or (Array))))
       (defun reverse array (do
         (defconstant len (length array))
         (if (> len 1) (do
@@ -278,10 +278,10 @@
                   (search arr target (+ index 1) end))))))) 
         (search array target 0 (length array))))
       ; sort-by-length 
-      (deftype sort-by-length (Function (Array) (Array (Number)) (Array)))
+      (deftype sort-by-length (Lambda (Or (Array)) (Or (Array (Number))) (Or (Array))))
       (defun sort-by-length array order (map order (lambda x . . (find array (lambda y . . (= (- (length y) 1) x))))))
       ; order-array
-      (deftype order-array (Function (Array) (Array (Number)) (Array)))
+      (deftype order-array (Lambda (Or (Array)) (Or (Array (Number))) (Or (Array))))
       (defun order-array array order (map (Array (length array) length) (lambda . i . (get array (get order i)))))
       ; euclidean-mod
       (defun euclidean-mod a b (mod (+ (mod a b) b) b))
@@ -316,7 +316,7 @@
         table key value 
           (do
             (defconstant idx (hash-index table key))
-            (otherwise (array-in-bounds-p table idx) (set table idx ()))
+            (otherwise (array-in-bounds-p table idx) (set table idx (Array)))
             (defconstant 
               current (get table idx)
               len (length current)
@@ -345,7 +345,7 @@
       ; hash-table
       (defun hash-table 
         size 
-          (map (Array size length) (lambda . . . ())))
+          (map (Array size length) (lambda . . . (Array))))
       ; hash-table-make
       (defun hash-table-make 
         items 
@@ -363,7 +363,7 @@
         table key 
           (do
             (defconstant idx (hash-index table key))
-            (otherwise (array-in-bounds-p table idx) (set table idx ()))
+            (otherwise (array-in-bounds-p table idx) (set table idx (Array)))
             (defconstant 
               current (get table idx)
               len (length current)
@@ -385,7 +385,7 @@
                 (go current
                   (find (lambda x . . (= key x))))))))
       ; hash-set
-      (defun hash-set size (map (Array size length) (lambda . . . ())))
+      (defun hash-set size (map (Array size length) (lambda . . . (Array))))
       ; hash-set-make
       (defun hash-set-make items (do
           (defconstant 
@@ -415,8 +415,8 @@
       (defun binary-tree-node value 
         (Array 
           (Array "value" value)
-          (Array "left"  ())
-          (Array "right" ())))
+          (Array "left"  (Array))
+          (Array "right" (Array))))
       ; binary-tree-get-left
       (defun binary-tree-get-left node (get node 1))
       ; binary-tree-get-right
@@ -429,19 +429,19 @@
       (defun binary-tree-get-value node (get node 0))  
       ; (/ Binary Tree)
       ; left-pad
-      (deftype left-pad (Function (String) (Number) (String) (String)))
+      (deftype left-pad (Lambda (Or (String)) (Or (Number)) (Or (String)) (Or (String))))
       (defun left-pad str n ch (do 
         (setf n (- n (length str)))
         (loop defun pad i str (if (< i n) (pad (+ i 1) (setf str (concatenate ch str))) str))
         (pad 0 str)))
         ; left-pad
-      (deftype right-pad (Function (String) (Number) (String) (String)))
+      (deftype right-pad (Lambda (Or (String)) (Or (Number)) (Or (String)) (Or (String))))
       (defun right-pad str n ch (do 
         (setf n (- n (length str)))
         (loop defun pad i str (if (< i n) (pad (+ i 1) (setf str (concatenate str ch))) str))
         (pad 0 str)))
       ; occurances_count
-      (deftype character-occurances-in-string (Function (String) (String) (Number)))
+      (deftype character-occurances-in-string (Lambda (Or (String)) (Or (String)) (Or (Number))))
       (defun character-occurances-in-string string letter (do
         (defvar 
           array (type string Array)
@@ -462,10 +462,10 @@
             (+ count has-at-least-one))))
             (iterate 0 (- (length array) 1))))
     ;  to-upper-case
-    (deftype to-upper-case (Function (String) (String)))
+    (deftype to-upper-case (Lambda (Or (String)) (Or (String))))
     (defun to-upper-case str (do
      (defconstant 
-            arr () 
+            arr (Array) 
             n (length str))
       (loop defun iter i (if (< i n) (do 
         (defconstant current-char (char-code str i))
@@ -478,10 +478,10 @@
         (make-string arr)))
         (iter 0)))
     ;  to-lower-case
-    (deftype to-lower-case (Function (String) (String)))
+    (deftype to-lower-case (Lambda (Or (String)) (Or (String))))
     (defun to-lower-case str (do
       (defconstant 
-            arr () 
+            arr (Array) 
             n (length str))
       (loop defun iter i (if (< i n) (do 
         (defconstant current-char (char-code str i))
@@ -494,10 +494,10 @@
         (make-string arr)))
         (iter 0)))
     ; split-by-n-lines
-    (deftype split-by-n-lines (Function (String) (Number) (Array (Array (String)))))
+    (deftype split-by-n-lines (Lambda (Or (String)) (Or (Number)) (Or (Array (Array (String))))))
     (defun split-by-n-lines string n (go string (regex-replace (concatenate "(\n){" (type n String) "}") "௮") (regex-match "[^௮]+") (map (lambda x . . (regex-match x "[^\n]+")))))
     ; split
-    (deftype split (Function (String) (String) (Array (String))))
+    (deftype split (Lambda (Or (String)) (Or (String)) (Or (Array (String)))))
     (defun split string separator (do
         (defconstant 
           sep-arr (type separator Array)
@@ -513,9 +513,9 @@
                   i)
                 (do (setf cursor (concatenate cursor (get array i))) i)) bounds) 
                     (iterate result (+ i 1) bounds) result))
-        (push (iterate () 0 (- (length array) 1)) cursor)))
+        (push (iterate (Array) 0 (- (length array) 1)) cursor)))
       ; slice 
-      (deftype slice (Function (Array) (Number) (Number) (Array)))
+      (deftype slice (Lambda (Or (Array)) (Or (Number)) (Or (Number)) (Or (Array))))
       (defun slice array start end (do 
         (defconstant bounds (- end start) out (Array bounds length))
         (loop defun iterate i 
@@ -526,17 +526,17 @@
               out))
               (iterate 0)))
       ; slice-if-index
-      (deftype slice-if-index (Function (Array) (Function) (Array)))
-      (defun slice-if-index array callback (reduce array (lambda a b i . (if (callback i) (push a b) a)) ()))
+      (deftype slice-if-index (Lambda (Or (Array)) (Or (Function)) (Or (Array))))
+      (defun slice-if-index array callback (reduce array (lambda a b i . (if (callback i) (push a b) a)) (Array)))
       ; slice-if
-      (deftype slice-if (Function (Array) (Function) (Array)))
-      (defun slice-if array callback (reduce array (lambda a b i . (if (callback b i) (push a b) a)) ()))
+      (deftype slice-if (Lambda (Or (Array)) (Or (Function)) (Or Array)))
+      (defun slice-if array callback (reduce array (lambda a b i . (if (callback b i) (push a b) a)) (Array)))
       ; window
-      (deftype window (Function (Array) (Number) (Array (Array))))
+      (deftype window (Lambda (Or (Array)) (Or (Number)) (Or (Array (Array)))))
       (defun window array n (go array
         (reduce (lambda acc current i all 
           (if (>= i n) 
-            (push acc (slice all (- i n) i)) acc)) ())))
+            (push acc (slice all (- i n) i)) acc)) (Array))))
       ; equal 
       (defun equal a b 
       (or (and (atom a) (atom b) (= a b)) 

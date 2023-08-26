@@ -21,8 +21,15 @@ acc +6")
       (defvar cmd (go x (split-by " ")))
       (set cmd 1 (type (get cmd 1) Number)))))))
 
+(deftype find-infinite-loop (Lambda 
+                            (And 
+                                (Array (Array (String) (Number))) 
+                                (Array (Array (String) (Number) (Array (Number) (Number))))) 
+                            (Or (Number)) 
+                            (Or (Number)) 
+                            (Or (Number) (Array (String) (Number) (Array (Number) (Number))))))
+
 (loop defun find-infinite-loop instructions offset accumulator (do 
-   
    (defconstant 
       instruction (get instructions offset)
       cmd (car instruction)
@@ -35,6 +42,13 @@ acc +6")
         (if (= cmd "acc") (+ accumulator value) accumulator))
        accumulator)))
 
+(deftype fix-infinite-loop (Lambda 
+                            (And 
+                                (Array (Array (String) (Number))) 
+                                (Array (Array (String) (Number) (Array (Number) (Number))))) 
+                            (Or (Number)) 
+                            (Or (Number)) 
+                            (Or (Number) (Array (Array (String) (Number) (Array (Number) (Number)))))))
 (loop defun fix-infinite-loop instructions offset accumulator (unless (= offset (length instructions)) (do 
    
    (defvar 

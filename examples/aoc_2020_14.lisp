@@ -17,13 +17,15 @@ mem[8] = 0"
 mem[42] = 100
 mask = 00000000000000000000000000000000X0XX
 mem[26] = 1"))
-
+(deftype Int (Lambda (Or (String) (Number) (Integer)) (Or (Integer))))
 (defun Int n (type n Integer))
 ; for debug use only
 (defun int-to-bit int (go int (type Number) (Bit)))
+(deftype sum-array-ints (Lambda (Or (Array (Integer))) (Or (Integer))))
 (defun sum-array-ints ints (reduce ints (lambda a b . . (+ a b)) (Int 0)))
+(deftype to-mask-of (Lambda (Or (Array (String))) (Or (String)) (Or (Integer))))
 (defun to-mask-of arr t (go arr (reduce (lambda acc x . . (if (= x t) (go acc (<< (Int 1)) (| (Int 1))) (go acc (<< (Int 1))))) (Int 0))))
-
+(deftype part1 (Lambda (Or (String)) (Or (Integer))))
 (defun part1 input (do 
     (go input (split-by-lines)
       (map (lambda x . . (split-by x " = ")))
@@ -37,7 +39,7 @@ mem[26] = 1"))
                   (regex-match "[0-9]")
                   (join "")
                   (type Number))
-                  (car (cdr b))))) a)) ())
+                  (car (cdr b))))) a)) (Array))
       (reduce (lambda memory fields . .
         (reduce (cdr fields) (lambda memory x . .
             (hash-table-set memory
@@ -54,8 +56,8 @@ mem[26] = 1"))
     (deep-flat)
     (remove (lambda . i . (= (mod i 2) 1)))
     (sum-array-ints))))
-
-(defun spread-xmask xmask x (do
+(deftype quantum-mask (Lambda (Or (Integer)) (Or (Integer)) (Or (Integer))))
+(defun quantum-mask xmask x (do
   (defvar rev-result (Int 0))
   (loop defun iter-and i (when (< i 36) 
     (do 
@@ -76,7 +78,7 @@ mem[26] = 1"))
   (iter-or 0)
   result))
 
- 
+ (deftype part2 (Lambda (Or (String)) (Or (Integer))))
 (defun part2 input (do 
     (defvar n 0)
     (go input (split-by-lines)
@@ -95,7 +97,7 @@ mem[26] = 1"))
                   (regex-match "[0-9]")
                   (join "")
                   (type Number))
-                  (car (cdr b))))) a)) ())
+                  (car (cdr b))))) a)) (Array))
       (reduce (lambda memory fields . .
         (reduce (cdr fields) (lambda memory x . . (do
         (defconstant 
@@ -103,7 +105,7 @@ mem[26] = 1"))
               xmask (go fields (car) (car) (Int))
               addr (& (| (Int (car x)) omask) (~ xmask))
               value (go x (cdr) (car) (Int)))
-        (for-n n (lambda i (hash-table-set memory (type (| addr (spread-xmask xmask (Int i))) Number) value))) 
+        (for-n n (lambda i (hash-table-set memory (type (| addr (quantum-mask xmask (Int i))) Number) value))) 
         memory)) memory))
         (hash-table 10))
     (deep-flat)

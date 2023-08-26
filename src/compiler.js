@@ -466,6 +466,8 @@ const compile = (tree, Variables, Functions) => {
       case 'probe-file':
       case 'void':
       case 'deftype':
+      case 'Or':
+      case 'Function':
         return ''
       default: {
         const camleCasedToken = lispToJavaScriptVariableName(token)
