@@ -131,18 +131,23 @@
         (if (and (not res) (< i bounds)) (iterate (+ i 1) bounds) bol)))
       (iterate 0 (- (length array) 1))))
   ; reduce
+  (deftype reduce (Lambda (Or (Array)) (Or (Function)) (Or (Array) (Number) (Integer) (String)) (Or (Array) (Number) (Integer) (String))))
   (defun reduce array callback initial (do
     (loop defun iterate i bounds (do
       (setf initial (callback initial (get array i) i array))
       (if (< i bounds) (iterate (+ i 1) bounds) initial)))
     (iterate 0 (- (length array) 1))))
     ; accumulate
+    (deftype accumulate (Lambda (Or (Array)) (Or (Function)) (Or (Array) (Number) (Integer) (String))))
     (defun accumulate array callback (do
       (defvar initial (get array 0))
       (loop defun iterate i bounds (do
         (setf initial (callback initial (get array i) i array))
         (if (< i bounds) (iterate (+ i 1) bounds) initial)))
       (iterate 0 (- (length array) 1))))
+    ; iteration 
+    (deftype iteration (Lambda (Or (Function)) (Or (Number)) (Or (Array))))
+    (defun iteration callback n (reduce (defconstant arr (Array n length)) (lambda a . i . (set a i (callback (get a -1) i))) arr))
     ; deep-flat
     (defun deep-flat arr (do 
       (defconstant new-array (Array)) 
@@ -610,6 +615,6 @@
       (Array "to-upper-case" to-upper-case)
       (Array "to-lower-case" to-lower-case)
       (Array "cartesian-product" cartesian-product)
-      (Array "euclidean-mod" euclidean-mod))
-))
+      (Array "euclidean-mod" euclidean-mod)
+      (Array "iteration" iteration))))
 ; (/ std lib)

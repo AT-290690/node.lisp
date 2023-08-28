@@ -133,7 +133,6 @@ npm run lisp -- -help
 ```
 
 ```
-
 -------------------------------------
 -help
 -------------------------------------
@@ -153,8 +152,16 @@ npm run lisp -- -help
 -------------------------------------
 -p      interpret & run with 0 deps
 -------------------------------------
+-m                      minify code
+-------------------------------------
 -repl    start Read Eval Print Loop
 -------------------------------------
+```
+
+Search available functions in libraries
+
+```
+yarn lisp -lib std -doc binary
 ```
 
 Parse, Interpred & Compile

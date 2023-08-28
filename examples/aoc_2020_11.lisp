@@ -16,8 +16,7 @@ L.LLLLL.LL")
 (defconstant *input* sample)
 ; (defconstant *input* (:open "./playground/src/aoc_2020/11/input.txt"))
 (deftype count-seats (Lambda (Or (Array (Array (Number)))) (Or (Number))))
-(defun count-seats matrix (do
-  (reduce matrix (lambda a row . . (+ a (count-of row (lambda x . . (> x 0))))) 0)))
+(defun count-seats matrix (reduce matrix (lambda a row . . (+ a (count-of row (lambda x . . (> x 0))))) 0))
 (deftype parse-input (Lambda (Or (String)) (Or (Array (Array (Number))))))
 (defun parse-input input (go 
   input

@@ -1,15 +1,15 @@
 (import std "push" "last-index-of-ending-from" "reduce")
 (deftype rambunctious-recitation-1 (Lambda (Or (Number)) (Or (Array (Number))) (Or (Number))))
-(loop defun rambunctious-recitation-1 T stack (do 
+(loop defun rambunctious-recitation-1 target stack (do 
   (defconstant last (get stack -1))
-    (if (= (length stack) T) 
+    (if (= (length stack) target) 
       last
       (do 
         (unless (= (last-index-of-ending-from stack last -1) -1) 
           (push stack 
             (- (+ (last-index-of-ending-from stack last 0) 1) (+ (last-index-of-ending-from stack last -1) 1)))
           (push stack 0)) 
-      (rambunctious-recitation-1 T stack)))))
+      (rambunctious-recitation-1 target stack)))))
 
 (deftype rambunctious-recitation-2 (Lambda (Or (Number)) (Or (Array (Number))) (Or (Number))))
 (defun rambunctious-recitation-2 target stack (do 

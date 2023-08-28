@@ -40,6 +40,9 @@ const cli = async () => {
     const value = argv.shift()
     if (!flag) throw new Error('No flag provided')
     switch (flag) {
+      case '-m':
+        console.log(removeNoCode(file))
+        break
       case '-d':
         destination = value
         break
@@ -74,7 +77,7 @@ const cli = async () => {
               {
                 Extensions = { ...Extensions, ...fsExtension.Extensions }
                 Helpers = { ...Helpers, ...fsExtension.Helpers }
-                Tops = { ...Tops, ...fsExtension.Tops }
+                Tops = [...Tops, ...fsExtension.Tops]
                 env = { ...env, ...fsExtension.env }
               }
               break
@@ -83,6 +86,7 @@ const cli = async () => {
               {
                 Extensions = { ...Extensions, ...domExtension.Extensions }
                 Helpers = { ...Helpers, ...domExtension.Helpers }
+                Tops = [...Tops, ...domExtension.Tops]
                 env = { ...env, ...domExtension.env }
               }
               break
@@ -90,6 +94,7 @@ const cli = async () => {
               {
                 Extensions = { ...Extensions, ...canvasExtension.Extensions }
                 Helpers = { ...Helpers, ...canvasExtension.Helpers }
+                Tops = [...Tops, ...canvasExtension.Tops]
                 env = { ...env, ...canvasExtension.env }
               }
               break
@@ -118,7 +123,10 @@ const cli = async () => {
           logError('Error')
           logError(err.message)
           console.log(
-            ` \x1b[30m${stacktrace.filter(Boolean).join('\n ')}\x1b[0m`
+            ` \x1b[30m${[...stacktrace]
+              .reverse()
+              .filter(Boolean)
+              .join('\n ')}\x1b[0m`
           )
         }
         break
@@ -271,6 +279,8 @@ const cli = async () => {
 -r                  interpret & run
 -------------------------------------
 -p      interpret & run with 0 deps
+-------------------------------------
+-m                      minify code 
 -------------------------------------
 -repl    start Read Eval Print Loop
 -------------------------------------

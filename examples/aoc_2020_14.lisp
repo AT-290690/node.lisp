@@ -25,10 +25,12 @@ mem[26] = 1"))
 (defun sum-array-ints ints (reduce ints (lambda a b . . (+ a b)) (Int 0)))
 (deftype to-mask-of (Lambda (Or (Array (String))) (Or (String)) (Or (Integer))))
 (defun to-mask-of arr t (go arr (reduce (lambda acc x . . (if (= x t) (go acc (<< (Int 1)) (| (Int 1))) (go acc (<< (Int 1))))) (Int 0))))
-(deftype part1 (Lambda (Or (String)) (Or (Integer))))
-(defun part1 input (do 
-    (go input (split-by-lines)
-      (map (lambda x . . (split-by x " = ")))
+(deftype parse (Lambda (Or (String)) (Or (Array (Array (String) (String))))))
+(defun parse input (go input (split-by-lines) (map (lambda x . . (split-by x " = ")))))
+(deftype parse-input (Lambda (Or (String)) (Or (Array (Array (Array (Integer) (Integer)) (Array (Number) (String)) (Array (Number) (String)) (Array (Number) (String)))))))
+(defun parse-input-1 input (go 
+      input 
+      (parse)
       (reduce (lambda a b . . (do
         (if (= (car b) "mask") (do
           (defconstant mask (go (car (cdr b)) (type Array)))
@@ -39,7 +41,11 @@ mem[26] = 1"))
                   (regex-match "[0-9]")
                   (join "")
                   (type Number))
-                  (car (cdr b))))) a)) (Array))
+                  (car (cdr b))))) a)) (Array))))
+(deftype part1 (Lambda (Or (String)) (Or (Integer))))
+(defun part1 input (do 
+    (go input 
+      (parse-input-1)
       (reduce (lambda memory fields . .
         (reduce (cdr fields) (lambda memory x . .
             (hash-table-set memory
@@ -77,12 +83,11 @@ mem[26] = 1"))
       (iter-or (+ i 1)))))
   (iter-or 0)
   result))
-
- (deftype part2 (Lambda (Or (String)) (Or (Integer))))
+(deftype part2 (Lambda (Or (String)) (Or (Integer))))
 (defun part2 input (do 
     (defvar n 0)
-    (go input (split-by-lines)
-      (map (lambda x . . (split-by x " = ")))
+    (go input 
+      (parse)
       (reduce (lambda a b . . (do
         (if (= (car b) "mask") (do
           (defconstant 
@@ -115,3 +120,7 @@ mem[26] = 1"))
 (Array 
   (part1 (car *input*))
   (part2 (car (cdr *input*))))
+
+; 0 -> 0
+; 1 -> 1
+; 1 -> 0
