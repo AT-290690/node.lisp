@@ -1,4 +1,4 @@
-import { APPLY, ATOM, TYPE, VALUE, WORD, TYPES } from './enums.js'
+import { APPLY, ATOM, TYPE, VALUE, WORD, TYPES, PLACEHOLDER } from './enums.js'
 import { evaluate } from './interpreter.js'
 const stringifyType = (type) =>
   Array.isArray(type)
@@ -396,6 +396,15 @@ const tokens = {
         )
       return new Array(N).fill(0)
     }
+    return args.map((x) => evaluate(x, env))
+  },
+  ["'"]: (args, env) => {
+    if (!args.length)
+      throw new RangeError(
+        `Invalid number of arguments for (') (>= 1 required) (atom ${stringifyArgs(
+          args
+        )}).`
+      )
     return args.map((x) => evaluate(x, env))
   },
   ['atom']: (args, env) => {
@@ -880,6 +889,42 @@ const tokens = {
       )
 
     return apply(rest, env)
+  },
+  ['destructuring-bind']: (args, env) => {
+    if (args.length < 3)
+      throw new RangeError(
+        `Invalid number of arguments to (destructuring-bind) (>= 3 required) (destructuring-bind ${stringifyArgs(
+          args
+        )})`
+      )
+    const right = evaluate(args.pop(), env)
+    const rest = args.pop()
+    for (let i = 0; i < args.length; ++i) {
+      const word = args[i]
+      if (word[TYPE] !== WORD)
+        throw new SyntaxError(
+          `Variable argument of (destructuring-bind) must be word but got ${
+            word[TYPE]
+          } (destructuring-bind ${stringifyArgs(args)})`
+        )
+      if (word[VALUE] !== PLACEHOLDER)
+        Object.defineProperty(env, word[VALUE], {
+          value: right[i],
+          writable: false,
+        })
+    }
+    if (rest[TYPE] !== WORD)
+      throw new SyntaxError(
+        `Rest argument of (destructuring-bind) must be word but got ${
+          rest[TYPE]
+        } (destructuring-bind ${stringifyArgs(args)})`
+      )
+    if (rest[VALUE] !== PLACEHOLDER)
+      Object.defineProperty(env, rest[VALUE], {
+        value: right.slice(args.length),
+        writable: false,
+      })
+    return right
   },
   ['defconstant']: (args, env) => {
     if (args.length < 2)

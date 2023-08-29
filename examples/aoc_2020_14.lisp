@@ -63,15 +63,15 @@ mem[26] = 1"))
     (remove (lambda . i . (= (mod i 2) 1)))
     (sum-array-ints))))
 (deftype quantum-mask (Lambda (Or (Integer)) (Or (Integer)) (Or (Integer))))
-(defun quantum-mask xmask x (do
+(defun quantum-mask mask-x x (do
   (defvar rev-result (Int 0))
   (loop defun iter-and i (when (< i 36) 
     (do 
       (setf rev-result (<< rev-result (Int 1)))
-      (when (= (& xmask (Int 1)) (Int 1)) (do 
+      (when (= (& mask-x (Int 1)) (Int 1)) (do 
         (setf rev-result (| rev-result (& x (Int 1))))
         (setf x (>> x (Int 1)))))
-      (setf xmask (>> xmask (Int 1)))
+      (setf mask-x (>> mask-x (Int 1)))
       (iter-and (+ i 1)))))
   (iter-and 0)
 
@@ -92,10 +92,10 @@ mem[26] = 1"))
         (if (= (car b) "mask") (do
           (defconstant 
                 mask (go (car (cdr b)) (type Array))
-                xmask (to-mask-of mask "X")
-                omask (to-mask-of mask "1"))
-          (setf n (<< 2 (count-number-of-ones-bit (type xmask Number))))
-          (push a (Array (Array xmask omask))))
+                mask-x (to-mask-of mask "X")
+                mask-1 (to-mask-of mask "1"))
+          (setf n (<< 2 (count-number-of-ones-bit (type mask-x Number))))
+          (push a (Array (Array mask-x mask-1))))
           (push (get a -1) 
                 (Array (go b
                   (car)
@@ -106,11 +106,11 @@ mem[26] = 1"))
       (reduce (lambda memory fields . .
         (reduce (cdr fields) (lambda memory x . . (do
         (defconstant 
-              omask (go fields (car) (cdr) (car) (Int))
-              xmask (go fields (car) (car) (Int))
-              addr (& (| (Int (car x)) omask) (~ xmask))
+              mask-1 (go fields (car) (cdr) (car) (Int))
+              mask-x (go fields (car) (car) (Int))
+              addr (& (| (Int (car x)) mask-1) (~ mask-x))
               value (go x (cdr) (car) (Int)))
-        (for-n n (lambda i (hash-table-set memory (type (| addr (quantum-mask xmask (Int i))) Number) value))) 
+        (for-n n (lambda i (hash-table-set memory (type (| addr (quantum-mask mask-x (Int i))) Number) value))) 
         memory)) memory))
         (hash-table 10))
     (deep-flat)

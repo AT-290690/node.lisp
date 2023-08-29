@@ -45,12 +45,12 @@
     (sum-array)) 
   ; 336 for sample
   (go 
-  (Array 
-    (Array 1 1) 
-    (Array 3 1) 
-    (Array 5 1) 
-    (Array 7 1) 
-    (Array 1 2)) 
+  (' 
+    (' 1 1) 
+    (' 3 1) 
+    (' 5 1) 
+    (' 7 1) 
+    (' 1 2)) 
     (map (lambda x . . (go matrix (*solve* (car x) (car (cdr x))) (sum-array))))
     (product-array)))))
 

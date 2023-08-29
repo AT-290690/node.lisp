@@ -332,6 +332,18 @@
               (set current index entry)
             )
             table))
+      ; hash-table-remove
+      (defun hash-table-remove 
+        table key 
+          (do
+            (defconstant idx (hash-index table key))
+            (otherwise (array-in-bounds-p table idx) (set table idx (Array)))
+            (defconstant 
+              current (get table idx)
+              len (length current)
+              index (if len (find-index current (lambda x . . (= (get x 0) key))) -1))
+            (otherwise (= index -1) (and (set current index (get current -1)) (set current -1)))
+            table))        
       ; hash table_has 
       (defun hash-table-has table key 
         (and (array-in-bounds-p table (defconstant idx (hash-index table key))) (and (length (defconstant current (get table idx))) (>= (index-of (car current) key) 0))))
@@ -378,6 +390,19 @@
               (push current entry)
               (set current index entry)
             )
+            table))
+      ; hash-set-remove
+      (defun hash-set-remove 
+        table key 
+          (do
+            (defconstant idx (hash-index table key))
+            (otherwise (array-in-bounds-p table idx) (set table idx (Array)))
+            (defconstant 
+              current (get table idx)
+              len (length current)
+              index (if len (find-index current (lambda x . . (= x key))) -1)
+              entry key)
+            (otherwise (= index -1) (and (set current index (get current -1)) (set current -1)))
             table))
       ; hash table_has 
       (defun hash-set-has table key 
@@ -577,12 +602,14 @@
       (Array "reverse" reverse)
       (Array "binary-search" binary-search)
       (Array "hash-table-set" hash-table-set)
+      (Array "hash-table-remove" hash-table-remove)
       (Array "hash-table-has" hash-table-has)
       (Array "hash-table-get" hash-table-get)
       (Array "hash-table" hash-table)
       (Array "hash-table-make" hash-table-make)
       (Array "hash-set-set" hash-set-set)
       (Array "hash-set-has" hash-set-has)
+      (Array "hash-set-remove" hash-set-remove)
       (Array "hash-set-get" hash-set-get)
       (Array "hash-set" hash-set)
       (Array "hash-set-make" hash-set-make)

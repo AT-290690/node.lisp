@@ -531,7 +531,20 @@ describe('Interpration', () => {
   `),
       234
     )
-
+    deepStrictEqual(
+      runFromInterpreted(`
+  (defconstant arr (Array 1 2 3 4 5 6))
+  (Array (destructuring-bind x y rest arr) x y rest arr)
+  `),
+      [[1, 2, 3, 4, 5, 6], 1, 2, [3, 4, 5, 6], [1, 2, 3, 4, 5, 6]]
+    )
+    deepStrictEqual(
+      runFromInterpreted(`
+  (defconstant arr (Array 1 2 3 4 5 6))
+  (Array (destructuring-bind x . rest arr) x rest arr)
+  `),
+      [[1, 2, 3, 4, 5, 6], 1, [3, 4, 5, 6], [1, 2, 3, 4, 5, 6]]
+    )
     deepStrictEqual(
       runFromInterpreted(`
   (defvar sample 

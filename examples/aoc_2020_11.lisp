@@ -31,7 +31,7 @@ L.LLLLL.LL")
   (defconstant 
     height (- (length matrix) 1)
     width (- (length (car matrix)) 1)
-    directions (Array (Array 0 1) (Array 1 0) (Array -1 0) (Array 0 -1) (Array 1 -1) (Array -1 -1) (Array 1 1) (Array -1 1))
+    directions (' (' 0 1) (' 1 0) (' -1 0) (' 0 -1) (' 1 -1) (' -1 -1) (' 1 1) (' -1 1))
     copy (map (Array (+ height 1) length) (lambda . . . (Array (+ width 1) length))))
   (for-n height (lambda y 
     (for-n width (lambda x (do 

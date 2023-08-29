@@ -210,6 +210,8 @@ const cli = async () => {
           start({
             prompt: '',
             eval: (input) => {
+              input = input.trim()
+              if (!input || input[0] === ';') return
               try {
                 let out = `${source}\n${file}\n(do ${input})`
                 const result = run(

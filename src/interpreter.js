@@ -1,6 +1,6 @@
-import { APPLY, ATOM, WORD } from './enums.js'
+import { APPLY, ATOM, TYPE, VALUE, WORD } from './enums.js'
 import { tokens } from './tokeniser.js'
-const traceN = 5
+const traceN = 10
 const trace = (stacktrace, value) => {
   for (let i = 0; i < traceN; ++i) stacktrace[i] = stacktrace[i + 1]
   stacktrace[traceN] = value
@@ -10,24 +10,24 @@ export const evaluate = (expression, env) => {
   if (expression == undefined) return 0
   const [first, ...rest] = Array.isArray(expression) ? expression : [expression]
   if (first == undefined) return []
-  switch (first.t) {
+  switch (first[TYPE]) {
     case WORD: {
-      const word = env[first.v]
+      const word = env[first[VALUE]]
       if (word == undefined)
-        throw new ReferenceError(`Undefined variable ${first.v}.`)
+        throw new ReferenceError(`Undefined variable ${first[VALUE]}.`)
       return word
     }
     case APPLY:
-      const apply = env[first.v]
+      const apply = env[first[VALUE]]
       if (typeof apply !== 'function')
-        throw new TypeError(`${first.v} is not a (function).`)
+        throw new TypeError(`${first[VALUE]} is not a (function).`)
       if (!apply._count) apply._count = 0
       apply._count++
-      trace(stacktrace, first.v)
+      trace(stacktrace, first[VALUE])
       return apply(rest, env)
     case ATOM:
       if (rest.length) throw new TypeError(`Atoms can't have arguments.`)
-      return first.v
+      return first[VALUE]
     // default:
     //   console.log(first)
     //   throw new TypeError(`Trying to access a null pointer.`)

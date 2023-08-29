@@ -1,4 +1,4 @@
-import { APPLY, ATOM, TYPE, VALUE, WORD } from './enums.js'
+import { APPLY, ATOM, PLACEHOLDER, TYPE, VALUE, WORD } from './enums.js'
 
 export const earMuffsToLodashes = (name) => name.replace(new RegExp(/\*/g), '_')
 export const dotNamesToEmpty = (name) => name.replace(new RegExp(/\./g), '')
@@ -144,6 +144,28 @@ const compile = (tree, Variables, Functions) => {
             : apply
         }(${parseArgs(rest, Variables, Functions)})`
       }
+      case 'destructuring-bind': {
+        let out = '(('
+        const rigth = compile(Arguments.pop(), Variables, Functions)
+        const _rest = Arguments.pop()
+        const len = Arguments.length
+        for (let i = 0; i < len; ++i) {
+          const NAME = Arguments[i][VALUE]
+          if (NAME !== PLACEHOLDER) {
+            const name = lispToJavaScriptVariableName(NAME)
+            Variables.add(name)
+            out += `${name}=${rigth}.at(${i})${i !== len - 1 ? ',' : ''}`
+          } else {
+            out += i !== len - 1 ? ',' : ''
+          }
+        }
+        if (_rest[VALUE] !== PLACEHOLDER) {
+          const rest = lispToJavaScriptVariableName(_rest[VALUE])
+          Variables.add(rest)
+          out += `,${rest}=(${rigth}).slice(${len})), ${rigth});`
+        } else out += `), ${rigth});`
+        return out
+      }
       case 'defconstant':
       case 'defvar': {
         let name,
@@ -231,6 +253,8 @@ const compile = (tree, Variables, Functions) => {
         return '1'
       case 'String':
         return '""'
+      case "'":
+        return `[${parseArgs(Arguments, Variables, Functions)}];`
       case 'Array':
         return Arguments.length === 2 &&
           Arguments[1][TYPE] === WORD &&
@@ -269,7 +293,7 @@ const compile = (tree, Variables, Functions) => {
         const vars = Variables.size ? `var ${[...Variables].join(',')};` : ''
         return `((${parseArgs(
           functionArgs.map((node, index) =>
-            node[VALUE] === '.'
+            node[VALUE] === PLACEHOLDER
               ? { [TYPE]: node[TYPE], [VALUE]: `_${index}` }
               : { [TYPE]: node[TYPE], [VALUE]: node[VALUE] }
           ),
@@ -315,7 +339,7 @@ const compile = (tree, Variables, Functions) => {
           : ''
         out += `${name}=(${parseArgs(
           functionArgs.map((node, index) =>
-            node[VALUE] === '.'
+            node[VALUE] === PLACEHOLDER
               ? { [TYPE]: node[TYPE], [VALUE]: `_${index}` }
               : { [TYPE]: node[TYPE], [VALUE]: node[VALUE] }
           ),

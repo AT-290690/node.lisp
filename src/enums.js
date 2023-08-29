@@ -6,3 +6,4 @@ export const TYPE = 't'
 export const ATOM = 'a'
 // tokeniser enums
 export const TYPES = ';'
+export const PLACEHOLDER = '.'
