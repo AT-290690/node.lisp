@@ -1508,7 +1508,6 @@ const tokens = {
     }
     return [Object.entries(out), ['⏱️ ', total]]
   },
-  [TOKENS.MODULE]: () => 'WAT module',
 }
-tokens[TOKENS.UNCOMPILED_BLOCK] = tokens[TOKENS.BLOCK]
+tokens[TOKENS.NOT_COMPILED_BLOCK] = { ...tokens[TOKENS.BLOCK] }
 export { tokens }

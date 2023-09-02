@@ -480,9 +480,10 @@ const compile = (tree, Variables, Functions) => {
         break
       case TOKENS.IDENTITY:
       case TOKENS.DEBUG:
-      case TOKENS.UNCOMPILED_BLOCK:
+      case TOKENS.NOT_COMPILED_BLOCK:
       case TOKENS.DEFINE_TYPE:
       case TOKENS.OR_TYPE:
+      case TOKENS.AND_TYPE:
       case TOKENS.LAMBDA_TYPE:
         return ''
       default: {

@@ -88,11 +88,10 @@ export const TOKENS = {
   PIPE: 'go',
   THROW_ERROR: 'throw',
   TAILC_CALLS_OPTIMISED_RECURSIVE_FUNCTION: 'loop',
-  UNCOMPILED_BLOCK: 'void',
+  NOT_COMPILED_BLOCK: 'void',
   REGEX_MATCH: 'regex-match',
   REGEX_REPLACE: 'regex-replace',
   SLEEP: 'sleep',
 
   DEBUG: 'debug',
-  MODULE: 'module',
 }

@@ -148,6 +148,10 @@
     ; iteration 
     (deftype iteration (Lambda (Or (Function)) (Or (Number)) (Or (Array))))
     (defun iteration callback n (reduce (defconstant arr (Array n length)) (lambda a . i . (set a i (callback (get a -1) i))) arr))
+    ; iteration 
+    (defun repeated-apply initial callback i (do 
+      (loop defun iterate result callback i (if (> i 0) (iterate (callback result) callback (- i 1)) result))
+      (iterate initial callback i)))
     ; deep-flat
     (defun deep-flat arr (do 
       (defconstant new-array (Array)) 
@@ -643,5 +647,6 @@
       (Array "to-lower-case" to-lower-case)
       (Array "cartesian-product" cartesian-product)
       (Array "euclidean-mod" euclidean-mod)
+      (Array "repeated-apply" repeated-apply)
       (Array "iteration" iteration))))
 ; (/ std lib)
