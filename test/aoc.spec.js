@@ -23,6 +23,7 @@ const problems = [
   day(14),
   day(15),
   day(16),
+  day(17),
 ]
 describe('AOC', () => {
   it('Should compile aoc 2020', () =>
@@ -52,6 +53,10 @@ describe('AOC', () => {
         [165n, 208n],
         [0, 0],
         [71, 1716],
+        [
+          11,
+          //  29
+        ],
       ]
     ))
 })

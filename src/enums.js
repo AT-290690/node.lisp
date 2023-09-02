@@ -7,3 +7,92 @@ export const ATOM = 'a'
 // tokeniser enums
 export const TYPES = ';'
 export const PLACEHOLDER = '.'
+
+export const TOKENS = {
+  BIT_TYPE: 'Bit',
+  LAMBDA_TYPE: 'Lambda',
+  STRING_TYPE: 'String',
+  NUMBER_TYPE: 'Number',
+  INTEGER_TYPE: 'Integer',
+  BOOLEAN_TYPE: 'Boolean',
+
+  CAST_TYPE: 'type',
+
+  FUNCTION_TYPE: 'Function',
+  ARRAY_TYPE: 'Array',
+
+  OR_TYPE: 'Or',
+  AND_TYPE: 'And',
+  DEFINE_TYPE: 'deftype',
+  IDENTITY: 'identity',
+  STRING_CONCATENATION: 'concatenate',
+  ARRAY_OR_STRING_LENGTH: 'length',
+  IS_ARRAY: 'Arrayp',
+  IS_NUMBER: 'Numberp',
+  IS_INTEGER: 'Integerp',
+  IS_STRING: 'Stringp',
+  IS_FUNCTION: 'Functionp',
+  CHAR_CODE_AT: 'char-code',
+  FROM_CHAR_CODE: 'char',
+  MAKE_STRING: 'make-string',
+
+  ADDITION: '+',
+  SUBTRACTION: '-',
+  MULTIPLICATION: '*',
+  DIVISION: '/',
+  REMAINDER_OF_DIVISION: 'mod',
+
+  BITWISE_AND: '&',
+  BITWISE_OR: '|',
+  BITWISE_NOT: '~',
+  BITWISE_XOR: '^',
+  BITWISE_LEFT_SHIFT: '<<',
+  BITWISE_RIGHT_SHIFT: '>>',
+  BITWISE_UNSIGNED_RIGHT_SHIFT: '>>>',
+  ATOM: 'atom',
+
+  SHORT_ARRAY: "'",
+  FIRST_ARRAY: 'car',
+  REST_ARRAY: 'cdr',
+  GET_ARRAY: 'get',
+  SET_ARRAY: 'set',
+
+  LOG: 'log',
+  BLOCK: 'do',
+
+  DEFINE_FUNCTION: 'defun',
+  ANONYMOUS_FUNCTION: 'lambda',
+
+  IF: 'if',
+  UNLESS: 'unless',
+  WHEN: 'when',
+  OTHERWISE: 'otherwise',
+  CONDITION: 'cond',
+
+  NOT: 'not',
+  EQUAL: '=',
+  LESS_THAN: '<',
+  GREATHER_THAN: '>',
+  GREATHER_THAN_OR_EQUAL: '>=',
+  LESS_THAN_OR_EQUAL: '<=',
+  AND: 'and',
+  OR: 'or',
+  CALL_FUNCTION: 'apply',
+  DESTRUCTURING_ASSIGMENT: 'destructuring-bind',
+  DEFINE_CONSTANT: 'defconstant',
+  DEFINE_VARIABLE: 'defvar',
+  SET_VARIABLE: 'setf',
+  SET_BOOLEAN: 'boole',
+  IMPORT: 'import',
+
+  PIPE: 'go',
+  THROW_ERROR: 'throw',
+  TAILC_CALLS_OPTIMISED_RECURSIVE_FUNCTION: 'loop',
+  UNCOMPILED_BLOCK: 'void',
+  REGEX_MATCH: 'regex-match',
+  REGEX_REPLACE: 'regex-replace',
+  SLEEP: 'sleep',
+
+  DEBUG: 'debug',
+  MODULE: 'module',
+}

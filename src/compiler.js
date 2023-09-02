@@ -1,4 +1,4 @@
-import { APPLY, ATOM, PLACEHOLDER, TYPE, VALUE, WORD } from './enums.js'
+import { APPLY, ATOM, PLACEHOLDER, TOKENS, TYPE, VALUE, WORD } from './enums.js'
 
 export const earMuffsToLodashes = (name) => name.replace(new RegExp(/\*/g), '_')
 export const dotNamesToEmpty = (name) => name.replace(new RegExp(/\./g), '')
@@ -41,13 +41,13 @@ const Helpers = {
       return result
     }`,
   },
-  'regexp-match': {
+  'regex-match': {
     source: `_regExpMatch = (string, regex) => {
       const match = string.match(new RegExp(regex, 'g'))
       return match == undefined ? [] : [...match]
     }`,
   },
-  'regexp-replace': {
+  'regex-replace': {
     source: `_regExpReplace = (string, a, b) => string.replace(new RegExp(a, 'g'), b)`,
   },
   atom: {
@@ -135,7 +135,7 @@ const compile = (tree, Variables, Functions) => {
           return res !== undefined ? res.toString().trim() : ''
         }
       }
-      case 'apply': {
+      case TOKENS.CALL_FUNCTION: {
         const [first, ...rest] = Arguments
         const apply = compile(first, Variables, Functions)
         return `${
@@ -144,7 +144,7 @@ const compile = (tree, Variables, Functions) => {
             : apply
         }(${parseArgs(rest, Variables, Functions)})`
       }
-      case 'destructuring-bind': {
+      case TOKENS.DESTRUCTURING_ASSIGMENT: {
         let out = '(('
         const rigth = compile(Arguments.pop(), Variables, Functions)
         const _rest = Arguments.pop()
@@ -166,8 +166,8 @@ const compile = (tree, Variables, Functions) => {
         } else out += `), ${rigth});`
         return out
       }
-      case 'defconstant':
-      case 'defvar': {
+      case TOKENS.DEFINE_CONSTANT:
+      case TOKENS.DEFINE_VARIABLE: {
         let name,
           out = '(('
         for (let i = 0, len = Arguments.length; i < len; ++i) {
@@ -183,8 +183,8 @@ const compile = (tree, Variables, Functions) => {
         out += `),${name});`
         return out
       }
-      case 'setf':
-      case 'boole': {
+      case TOKENS.SET_VARIABLE:
+      case TOKENS.SET_BOOLEAN: {
         const res = compile(Arguments[1], Variables, Functions)
         const arg = Arguments[0]
         if (arg[TYPE] === WORD) {
@@ -193,69 +193,63 @@ const compile = (tree, Variables, Functions) => {
         }
         return ''
       }
-      case 'char':
+      case TOKENS.FROM_CHAR_CODE:
         return `(String.fromCharCode(${compile(
           Arguments[0],
           Variables,
           Functions
         )}));`
-      case 'char-code':
+      case TOKENS.CHAR_CODE_AT:
         return `((${compile(
           Arguments[0],
           Variables,
           Functions
         )}).charCodeAt(${compile(Arguments[1], Variables, Functions)}));`
-      case 'make-string':
+      case TOKENS.MAKE_STRING:
         return `(String.fromCharCode(...${compile(
           Arguments[0],
           Variables,
           Functions
         )}));`
-      case 'format':
-        return `((${compile(
-          Arguments[0],
-          Variables,
-          Functions
-        )}).split(${compile(Arguments[1], Variables, Functions)}));`
-      case 'regex-match':
+      case TOKENS.REGEX_MATCH:
         return `_regExpMatch(${parseArgs(Arguments, Variables, Functions)});`
-      case 'regex-replace':
+      case TOKENS.REGEX_REPLACE:
         return `_regExpReplace(${parseArgs(Arguments, Variables, Functions)});`
-      case 'Stringp':
+      case TOKENS.IS_STRING:
         return handleBoolean(
           `(typeof(${compile(Arguments[0], Variables, Functions)})==='string');`
         )
-      case 'Numberp':
+      case TOKENS.IS_NUMBER:
         return handleBoolean(
           `(typeof(${compile(Arguments[0], Variables, Functions)})==='number');`
         )
-      case 'Integerp':
+      case TOKENS.IS_INTEGER:
         return handleBoolean(
           `(typeof(${compile(Arguments[0], Variables, Functions)})==='bigint');`
         )
-      case 'Functionp':
+      case TOKENS.IS_FUNCTION:
         return `(typeof(${compile(
           Arguments[0],
           Variables,
           Functions
         )})==='function');`
-      case 'Arrayp':
+      case TOKENS.IS_ARRAY:
         return `(Array.isArray(${compile(
           Arguments[0],
           Variables,
           Functions
         )}));`
-      case 'Number':
+      case TOKENS.NUMBER_TYPE:
         return '0'
-      case 'Integer':
+      case TOKENS.INTEGER_TYPE:
         return '0n'
-      case 'Boolean':
+      case TOKENS.BOOLEAN_TYPE:
         return '1'
-      case 'String':
+      case TOKENS.STRING_TYPE:
         return '""'
-      case "'":
+      case TOKENS.SHORT_ARRAY:
         return `[${parseArgs(Arguments, Variables, Functions)}];`
-      case 'Array':
+      case TOKENS.ARRAY_TYPE:
         return Arguments.length === 2 &&
           Arguments[1][TYPE] === WORD &&
           Arguments[1][VALUE] === 'length'
@@ -265,27 +259,27 @@ const compile = (tree, Variables, Functions) => {
               Functions
             )}).fill(0))`
           : `[${parseArgs(Arguments, Variables, Functions)}];`
-      case 'Function':
+      case TOKENS.FUNCTION_TYPE:
         return '(()=>{});'
-      case 'length':
+      case TOKENS.ARRAY_OR_STRING_LENGTH:
         return `(${compile(Arguments[0], Variables, Functions)}).length`
-      case 'atom':
+      case TOKENS.ATOM:
         return handleBoolean(
           `_isAtom(${compile(Arguments[0], Variables, Functions)});`
         )
-      case 'car':
+      case TOKENS.FIRST_ARRAY:
         return `${compile(Arguments[0], Variables, Functions)}.at(0);`
-      case 'cdr':
+      case TOKENS.REST_ARRAY:
         return `${compile(Arguments[0], Variables, Functions)}.slice(1);`
-      case 'get':
+      case TOKENS.GET_ARRAY:
         return `${compile(Arguments[0], Variables, Functions)}.at(${compile(
           Arguments[1],
           Variables,
           Functions
         )});`
-      case 'set':
+      case TOKENS.SET_ARRAY:
         return `_set(${parseArgs(Arguments, Variables, Functions)});`
-      case 'lambda': {
+      case TOKENS.ANONYMOUS_FUNCTION: {
         const functionArgs = Arguments
         const body = Arguments.pop()
         const Variables = new Set()
@@ -300,7 +294,7 @@ const compile = (tree, Variables, Functions) => {
           Variables
         )})=>{${vars}return ${evaluatedBody.toString().trimStart()}});`
       }
-      case 'loop': {
+      case TOKENS.TAILC_CALLS_OPTIMISED_RECURSIVE_FUNCTION: {
         let name,
           newName,
           out = '(('
@@ -324,7 +318,7 @@ const compile = (tree, Variables, Functions) => {
         out += `, ${newName}))), ${name});`
         return out
       }
-      case 'defun': {
+      case TOKENS.DEFINE_FUNCTION: {
         let name,
           out = '(('
         const arg = Arguments[0]
@@ -348,62 +342,60 @@ const compile = (tree, Variables, Functions) => {
         out += `),${name});`
         return out
       }
-      case 'and':
+      case TOKENS.AND:
         return `(${parseArgs(Arguments, Variables, Functions, '&&')});`
-      case 'or':
+      case TOKENS.OR:
         return `((${parseArgs(Arguments, Variables, Functions, '||')}) || 0);`
-      case 'concatenate':
+      case TOKENS.STRING_CONCATENATION:
         return '(' + parseArgs(Arguments, Variables, Functions, '+') + ');'
-      case '=':
+      case TOKENS.EQUAL:
         return handleBoolean(
           `(${parseArgs(Arguments, Variables, Functions, '===')});`
         )
-      case '>=':
-      case '<=':
-      case '>':
-      case '<':
+      case TOKENS.GREATHER_THAN_OR_EQUAL:
+      case TOKENS.LESS_THAN_OR_EQUAL:
+      case TOKENS.GREATHER_THAN:
+      case TOKENS.LESS_THAN:
         return handleBoolean(
           `(${parseArgs(Arguments, Variables, Functions, token)});`
         )
-      case '-':
+      case TOKENS.SUBTRACTION:
         return Arguments.length === 1
           ? `(-${compile(Arguments[0], Variables, Functions)});`
           : `(${parse(Arguments, Variables, Functions)
               // Add space so it doesn't consider it 2--1 but 2- -1
               .map((x) => (typeof x === 'number' && x < 0 ? ` ${x}` : x))
               .join(token)});`
-      case '+':
-      case '*':
-      case '&&':
-      case '||':
-      case '|':
-      case '^':
-      case '<<':
-      case '>>':
-      case '>>>':
-      case '&':
+      case TOKENS.ADDITION:
+      case TOKENS.MULTIPLICATION:
+      case TOKENS.BITWISE_AND:
+      case TOKENS.BITWISE_OR:
+      case TOKENS.BITWISE_XOR:
+      case TOKENS.BITWISE_LEFT_SHIFT:
+      case TOKENS.BITWISE_RIGHT_SHIFT:
+      case TOKENS.BITWISE_UNSIGNED_RIGHT_SHIFT:
         return `(${parseArgs(Arguments, Variables, Functions, token)});`
-      case 'mod':
+      case TOKENS.REMAINDER_OF_DIVISION:
         return `(${compile(Arguments[0], Variables, Functions)}%${compile(
           Arguments[1],
           Variables,
           Functions
         )});`
-      case '/':
+      case TOKENS.DIVISION:
         return `(1/${compile(Arguments[0], Variables, Functions)});`
-      case 'Bit':
+      case TOKENS.BIT_TYPE:
         return `(${compile(
           Arguments[0],
           Variables,
           Functions
         )}>>>0).toString(2)`
-      case '~':
+      case TOKENS.BITWISE_NOT:
         return `~(${compile(Arguments[0], Variables, Functions)})`
-      case 'not':
+      case TOKENS.NOT:
         return `(${handleBoolean(
           `!${compile(Arguments[0], Variables, Functions)}`
         )})`
-      case 'if': {
+      case TOKENS.IF: {
         return `(${compile(Arguments[0], Variables, Functions)}?${compile(
           Arguments[1],
           Variables,
@@ -414,28 +406,28 @@ const compile = (tree, Variables, Functions) => {
             : 0
         });`
       }
-      case 'when': {
+      case TOKENS.WHEN: {
         return `(${compile(Arguments[0], Variables, Functions)}?${compile(
           Arguments[1],
           Variables,
           Functions
         )}:0);`
       }
-      case 'unless': {
+      case TOKENS.UNLESS: {
         return `(${compile(Arguments[0], Variables, Functions)}?${
           Arguments.length === 3
             ? compile(Arguments[2], Variables, Functions)
             : 0
         }:${compile(Arguments[1], Variables, Functions)});`
       }
-      case 'otherwise': {
+      case TOKENS.OTHERWISE: {
         return `(${compile(Arguments[0], Variables, Functions)}?0:${compile(
           Arguments[1],
           Variables,
           Functions
         )});`
       }
-      case 'cond': {
+      case TOKENS.CONDITION: {
         let out = '('
         for (let i = 0; i < Arguments.length; i += 2)
           out += `${compile(Arguments[i], Variables, Functions)}?${compile(
@@ -446,30 +438,30 @@ const compile = (tree, Variables, Functions) => {
         out += '0);'
         return out
       }
-      case 'type':
+      case TOKENS.CAST_TYPE:
         return `_cast("${Arguments[1][VALUE]}", ${compile(
           Arguments[0],
           Variables,
           Functions
         )})`
 
-      case 'go': {
+      case TOKENS.PIPE: {
         let inp = Arguments[0]
         for (let i = 1; i < Arguments.length; ++i)
           inp = [Arguments[i].shift(), inp, ...Arguments[i]]
         return compile(inp, Variables, Functions)
       }
-      case 'sleep': {
+      case TOKENS.SLEEP: {
         return `setTimeout(${compile(
           Arguments[1],
           Variables,
           Functions
         )},${compile(Arguments[0], Variables, Functions)});`
       }
-      case 'throw': {
+      case TOKENS.THROW_ERROR: {
         return `_error(${compile(Arguments[0], Variables, Functions)})`
       }
-      case 'import':
+      case TOKENS.IMPORT:
         {
           const [module, ...functions] = Arguments.map((x) =>
             compile(x, Variables, Functions)
@@ -486,12 +478,12 @@ const compile = (tree, Variables, Functions) => {
           )
         }
         break
-      case 'identity':
-      case 'probe-file':
-      case 'void':
-      case 'deftype':
-      case 'Or':
-      case 'Function':
+      case TOKENS.IDENTITY:
+      case TOKENS.DEBUG:
+      case TOKENS.UNCOMPILED_BLOCK:
+      case TOKENS.DEFINE_TYPE:
+      case TOKENS.OR_TYPE:
+      case TOKENS.LAMBDA_TYPE:
         return ''
       default: {
         const camleCasedToken = lispToJavaScriptVariableName(token)
