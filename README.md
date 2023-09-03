@@ -1,7 +1,7 @@
 # Node Lisper
 
 <p align="center">
-<img width="200" src="./logo.svg"/>
+<img width="150" src="./logo.svg"/>
 </p>
 
 A Lisp for Node
