@@ -1,4 +1,4 @@
-import { APPLY, ATOM, TYPE, VALUE, WORD } from './enums.js'
+import { APPLY, ATOM, TOKENS, TYPE, VALUE, WORD } from './enums.js'
 import { tokens } from './tokeniser.js'
 const traceN = 10
 const trace = (stacktrace, value) => {
@@ -33,4 +33,5 @@ export const evaluate = (expression, env) => {
     //   throw new TypeError(`Trying to access a null pointer.`)
   }
 }
-export const run = (tree, env = {}) => tokens['do'](tree, { ...tokens, ...env })
+export const run = (tree, env = {}) =>
+  tokens[TOKENS.BLOCK](tree, { ...tokens, ...env })

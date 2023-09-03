@@ -3,9 +3,7 @@ import { start } from 'repl'
 import { compileToJs } from './src/compiler.js'
 import { evaluate, run, stacktrace } from './src/interpreter.js'
 import { parse } from './src/parser.js'
-import domExtension from './lib/extensions/dom.js'
 import fsExtension from './lib/extensions/fs.js'
-import canvasExtension from './lib/extensions/canvas.js'
 
 // import wabt from 'wabt'
 import {
@@ -17,13 +15,11 @@ import {
   treeShake,
 } from './src/utils.js'
 import STD from './lib/baked/std.js'
-import DOM from './lib/baked/dom.js'
 import MATH from './lib/baked/math.js'
 import { tokens } from './src/tokeniser.js'
 import { APPLY, TYPE, VALUE, WORD } from './src/enums.js'
 const libraries = {
   std: STD,
-  dom: DOM,
   math: MATH,
 }
 const cli = async () => {
@@ -81,23 +77,6 @@ const cli = async () => {
                 env = { ...env, ...fsExtension.env }
               }
               break
-
-            case 'dom':
-              {
-                Extensions = { ...Extensions, ...domExtension.Extensions }
-                Helpers = { ...Helpers, ...domExtension.Helpers }
-                Tops = [...Tops, ...domExtension.Tops]
-                env = { ...env, ...domExtension.env }
-              }
-              break
-            case 'canvas':
-              {
-                Extensions = { ...Extensions, ...canvasExtension.Extensions }
-                Helpers = { ...Helpers, ...canvasExtension.Helpers }
-                Tops = [...Tops, ...canvasExtension.Tops]
-                env = { ...env, ...canvasExtension.env }
-              }
-              break
           }
         }
         break
@@ -110,15 +89,7 @@ const cli = async () => {
         break
       case '-r':
         try {
-          run(
-            [
-              ...libraries['std'],
-              ...libraries['math'],
-              ...libraries['dom'],
-              ...parse(file),
-            ],
-            env
-          )
+          run([...libraries['std'], ...libraries['math'], ...parse(file)], env)
         } catch (err) {
           logError('Error')
           logError(err.message)
@@ -132,15 +103,7 @@ const cli = async () => {
         break
       case '-trace':
         try {
-          run(
-            [
-              ...libraries['std'],
-              ...libraries['math'],
-              ...libraries['dom'],
-              ...parse(file),
-            ],
-            env
-          )
+          run([...libraries['std'], ...libraries['math'], ...parse(file)], env)
         } catch (err) {
           console.log('\x1b[40m', err, '\x1b[0m')
           logError(err.message)
