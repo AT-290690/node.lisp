@@ -591,5 +591,19 @@ describe('Interpration', () => {
   `),
       [299, 1041, 1654, 1721, 1345, 564]
     )
+    deepStrictEqual(
+      runFromInterpreted(
+        ` (defun map array callback (do
+          (defconstant new-array (Array))
+          (defvar i 0)
+          (loop defun iterate i bounds (do
+            (set new-array i (callback (get array i) i array))
+            (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
+          (iterate 0 (- (length array) 1))))
+    (destructuring-bind x y rem (Array 1 2 3 4))
+    (Array x y (map rem (lambda x y . (concatenate (type y String) "." (type x String) "!"))))`
+      ),
+      [1, 2, ['0.3!', '1.4!']]
+    )
   })
 })

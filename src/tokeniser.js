@@ -770,8 +770,12 @@ const tokens = {
           } ${stringifyArgs(args)})`
         )
       const localEnv = Object.create(env)
-      for (let i = 0; i < props.length; ++i)
-        localEnv[params[i][VALUE]] = evaluate(props[i], scope)
+      for (let i = 0; i < props.length; ++i) {
+        Object.defineProperty(localEnv, params[i][VALUE], {
+          value: evaluate(props[i], scope),
+          writable: true,
+        })
+      }
       return evaluate(body, localEnv)
     }
   },
