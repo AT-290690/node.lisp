@@ -2,7 +2,7 @@
   "name": "node-lisper",
   "description": "A Lisp for Node.js",
   "author": "AT290690",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "type": "module",
   "main": "index.js",
   "keywords": [
@@ -13,9 +13,6 @@
     "interpreter",
     "compiler"
   ],
-  "engines": {
-    "node": "16.13.0"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AT-290690/node.lisp.git"
