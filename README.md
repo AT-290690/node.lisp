@@ -79,8 +79,8 @@ A Lisp for Node
 Simple CLI usage - create main.js
 
 ```js
-import lisp from 'node-lisper'
-lisp.cli()
+import cli from 'node-lisper/cli'
+cli()
 ```
 
 ```json

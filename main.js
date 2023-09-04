@@ -1,2 +1,2 @@
-import lisp from './index.js'
-lisp.cli()
+import cli from './cli/index.js'
+cli()
