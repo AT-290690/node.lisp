@@ -39,10 +39,9 @@ export const parse = (source) => {
       }
     }
     if (cursor === '(') {
-      const expression = []
-      head.push(expression)
+      head.push([])
       stack.push(head)
-      head = expression
+      head = head.at(-1)
     } else if (cursor === ')' || cursor === ' ') {
       let token = acc
       acc = ''
