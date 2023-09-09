@@ -22,9 +22,8 @@ A Lisp for Node
 (fibonacci 10) ; 55
 
 ; to use memo (hashmap) you need to import ALL of these functions
-(import std "index-of" "find" "find-index" "hash-table-set"
-            "push" "map" "array-in-bounds-p"
-            "hash-index" "hash-table-has" "hash-table-get" "hash-table")
+(import std "index-of" "find" "find-index" "map" "array-in-bounds-p")
+(import ds "hash-index" "hash-table-has" "hash-table-set" "hash-table-get" "hash-table")
 (import math "min" "euclidean-mod")
 
 (defun fibonacci-memoized n memo (if (< n 2) n
@@ -61,18 +60,18 @@ A Lisp for Node
 ; (arg (arg .. ) (arg .. ) (ar . . . . ))
 (go
   (Array 1 2 3 4 5 6 7 101)
-  (remove is-odd)
+  (except is-odd)
   (map mult_2)
   (reduce sum 0))
 ```
 
 ```lisp
 (import std "push""reduce")
-(import math "range" "product-array")
+(import math "range" "product")
 (defun factorial n
   (go
     (range 1 n)
-    (product-array)))
+    (product)))
 (factorial 10)
 ```
 
@@ -161,7 +160,7 @@ npm run lisp -- -help
 Search available functions in libraries
 
 ```
-yarn lisp -lib std -doc binary
+yarn lisp -lib ds -doc binary
 ```
 
 Parse, Interpred & Compile
@@ -177,10 +176,10 @@ lisp.js(lisp.parse('(+ 1 2)')).program // (1 + 2); as js
 Compiles to JavaScript
 
 ```lisp
-(import std "remove" "map" "reduce")
+(import std "except" "map" "reduce")
 (go
   (Array 1 2 3 4 5 6 7 101)
-  (remove (lambda x . . (= (mod x 2) 1)))
+  (except (lambda x . . (= (mod x 2) 1)))
   (map (lambda x . . (* x 2)))
   (reduce (lambda a x . . (+ a x)) 0))
 ```
@@ -188,7 +187,7 @@ Compiles to JavaScript
 ```js
 reduce(
   map(
-    remove([1, 2, 3, 4, 5, 6, 7, 101], (x, _1, _2) => {
+    except([1, 2, 3, 4, 5, 6, 7, 101], (x, _1, _2) => {
       return +(x % 2 === 1)
     }),
     (x, _1, _2) => {

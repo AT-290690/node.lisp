@@ -208,7 +208,7 @@ describe('Compilation', () => {
             )))
             (interate 0 (- (length array) 1)))))
 
-            (defvar remove (lambda array callback (do
+            (defvar select (lambda array callback (do
             (defvar new-array ())
             (defvar interate (lambda i bounds (do
               (defvar current (get array i))
@@ -231,7 +231,7 @@ describe('Compilation', () => {
 
       (go
       (Array 1 2 3 4 5 6 7 101)
-      (remove is-odd)
+      (select is-odd)
       (map mult_2)
       (reduce sum 0))
             `,
@@ -251,7 +251,7 @@ describe('Compilation', () => {
                 (if (< i bounds) (interate (+ i 1) bounds) new-array)))
               (interate 0 (- (length array) 1)))))
 
-              (defvar remove (lambda array callback (do
+              (defvar select (lambda array callback (do
               (defvar new-array ())
               (loop defun interate i bounds (do
                 (defvar current (get array i))
@@ -272,7 +272,7 @@ describe('Compilation', () => {
 
         (go
           (Array 1 2 3 4 5 6 7 101)
-          (remove is-odd)
+          (select is-odd)
           (map mult_2)
           (reduce sum 0)
         )

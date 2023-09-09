@@ -2,8 +2,9 @@ import { deepStrictEqual } from 'assert'
 import { runFromCompiled, runFromInterpreted } from '../src/utils.js'
 import STD from '../lib/baked/std.js'
 import MATH from '../lib/baked/math.js'
+import DS from '../lib/baked/ds.js'
 
-const libraries = [STD, MATH]
+const libraries = [STD, MATH, DS]
 const programs = [
   `(import std "to-upper-case" "to-lower-case") (Array (to-lower-case "Lisp is Cool AT-29") (to-upper-case "Lisp is Cool AT-29"))`,
   `(import std "map") (go (Array 1 2 4) (map (lambda x . . (* x 2))))`,
@@ -65,6 +66,7 @@ const programs = [
 (import math "maximum" "max")
 (go (Array "1" "2" "3") (array-of-numbers) (maximum) (Array))`,
   `(import math "permutations") (Array (permutations (Array 1 2 3)))`,
+  `(import std "equal" "some") (Array (equal 1 1) (equal 1 2) (equal (Array 1) (Array 1)) (equal (Array (Array 1 2)) (Array (Array 1 2))) (equal (Array (Array 1 2)) (Array (Array 0 2))))`,
 ]
 
 describe('Libraries', () => {
@@ -134,6 +136,7 @@ describe('Libraries', () => {
             [2, 1, 3],
           ],
         ],
+        [1, 0, 1, 1, 0],
       ]
     ))
   it('Should compile matching interpretation', () =>

@@ -1,5 +1,5 @@
-(import std "slice-if-index" "remove" "every" "find" "split" "map" "quick-sort" "push" "every" "remove" "reduce" "for-each")
-(import math "min" "max" "round" "floor" "greatest-common-divisor" "product-array" "sum-array" "sqrt" "is-prime" "adjacent-difference" "abs" "average" "square" )
+(import std "slice-if-index" "select" "every" "find" "split" "map" "quick-sort" "push" "every" "select" "reduce" "for-each")
+(import math "min" "max" "round" "floor" "greatest-common-divisor" "product" "summation" "sqrt" "is-prime" "adjacent-difference" "abs" "average" "square" )
 (defconstant sample "939
 7,13,x,x,59,x,31,19")
 (defconstant input "1001171
@@ -16,7 +16,7 @@
                   (car (cdr INP)) 
                   (split ",") 
                   (map (lambda x . . (if (= x "x") 0 (type x Number)))) 
-                  (remove (lambda x . . (> x 0)))))
+                  (select (lambda x . . (> x 0)))))
       (Array time buses)))
     (defconstant 
       *INP* (parse inp)
@@ -26,7 +26,7 @@
       *buses*
       (map (lambda x . . (Array x (- x (mod *time* x)))))
       (reduce (lambda a b . . (if (> (car (cdr a)) (car (cdr b))) b a)) (Array 0 100000))
-      (product-array))))
+      (product))))
 
 (deftype is-array-of-coprime-pairs (Lambda (Or (Array (Number))) (Or (Number))))
 (defun is-array-of-coprime-pairs inp (and 

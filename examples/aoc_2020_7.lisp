@@ -1,4 +1,4 @@
-(import std "reduce" "find" "for-each" "split-by" "split" "map" "trim" "push" "every" "remove" "some")
+(import std "reduce" "find" "for-each" "split-by" "split" "map" "trim" "push" "every" "except" "some")
 (defconstant sample1 
 "light red bags contain 1 bright white bag, 2 muted yellow bags.
 dark orange bags contain 3 bright white bags, 4 muted yellow bags.
@@ -59,13 +59,12 @@ shiny gold bags contain 2 a a bags, 2 b b bags, 2 c c bags.")
         (lambda y . . 
           (go y 
             (split ", ")))))))
-      (remove 
+      (except 
         (lambda bag . . 
-          (not 
             (or 
               (= (car (car bag)) (concatenate (car *target*) (car (cdr *target*))))
               (= (car (car (cdr bag))) "no other bags")
-              ))))
+              )))
       (map 
         (lambda bag . . 
           (do

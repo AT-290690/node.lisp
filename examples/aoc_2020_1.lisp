@@ -1,5 +1,5 @@
 (import std "quick-sort" "push" "binary-search" "map" "reduce" "concat" "array-of-numbers" "split-by-lines")
-(import math "floor" "product-array")
+(import math "floor" "product")
 (defconstant sample "1721
 979
 366
@@ -34,7 +34,7 @@
   (array-of-numbers)
   (quick-sort)
   (*solve1* (lambda x (- 2020 x)))
-  (product-array))
+  (product))
 
 ; 241861950 for sample
 (go *input*
@@ -42,4 +42,4 @@
   (array-of-numbers)
   (quick-sort)
   (*solve2* (lambda x y (- 2020 x y)))
-  (product-array)))
+  (product)))

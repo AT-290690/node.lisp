@@ -10,10 +10,10 @@ F11")
 ; (deftype array-number-t (Array (Number)))
 ; (deftype stack-t (Array (Array (String) (Number))))
 ; (deftype lazy-cmd-t (Array (Array (String) (Number)) (Function)))
-(defun yoink stack (when (length stack) (do (defconstant last (get stack -1)) (set stack -1) last)))
+(defun drop stack (when (length stack) (do (defconstant last (get stack -1)) (set stack -1) last)))
 
 (deftype move (Lambda (Or (Array (Array (String) (Number)))) (Or (Function))))
-(defun move stack (defconstant f (lambda (Array (yoink stack) f))))
+(defun move stack (defconstant f (lambda (Array (drop stack) f))))
 ; 362
 (deftype solve1 (Lambda (Or (Number))))
 (defun solve1 (do 

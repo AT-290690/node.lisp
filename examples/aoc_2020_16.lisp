@@ -1,6 +1,6 @@
-(import std "split-by-n-lines" "map" "split" "array-of-numbers" "push" "every" "reduce" "deep-flat" "remove" "some" "reverse"
+(import std "split-by-n-lines" "map" "except" "split" "array-of-numbers" "push" "every" "reduce" "deep-flat" "select" "some" "reverse"
 "for-n" "rotate-left" "find" "slice-if-index" "for-each")
-(import math "range" "product-array" "sum-array")
+(import math "range" "product" "summation")
 
 (defconstant sample1 "class: 1-3 or 5-7
 row: 6-11 or 33-44
@@ -63,22 +63,24 @@ nearby tickets:
 (defun order-array array order (map (Array (length array) length) (lambda . i . (get array (get order i)))))
 (deftype part1 (Lambda (Or (Number))))
 (defun part1 (do 
-  (defconstant *parsed-input* (parse-input sample1))
-  (defconstant ticket-ranges (car *parsed-input*))
-  (defconstant your-ticket (car (cdr *parsed-input*)))
-  (defconstant nearby-tickets (car (cdr (cdr *parsed-input*))))
-  (go nearby-tickets (map (lambda x . . (remove x (lambda y . . (not (some ticket-ranges (lambda z . . (or (is-in-bounds y (car z)) (is-in-bounds y (car (cdr z))))))))))) (deep-flat) (sum-array))))
+  ; (defconstant *parsed-input* (parse-input sample1))
+  ; (defconstant ticket-ranges (car *parsed-input*))
+  ; (defconstant your-ticket (car (cdr *parsed-input*)))
+  ; (defconstant nearby-tickets (car (cdr (cdr *parsed-input*))))
+  (destructuring-bind ticket-ranges your-ticket nearby-tickets . (parse-input sample1))
+  (go nearby-tickets (map (lambda x . . (except x (lambda y . . (some ticket-ranges (lambda z . . (or (is-in-bounds y (car z)) (is-in-bounds y (car (cdr z)))))))))) (deep-flat) (summation))))
 (deftype part2 (Lambda (Or (Number))))
 (defun part2 (do 
-  (defconstant *parsed-input* (parse-input sample2))
-  (defconstant ticket-ranges (car *parsed-input*))
-  (defconstant your-ticket (car (cdr *parsed-input*)))
-  (defconstant nearby-tickets (car (cdr (cdr *parsed-input*))))
+  ; (defconstant *parsed-input* (parse-input sample2))
+  ; (defconstant ticket-ranges (car *parsed-input*))
+  ; (defconstant your-ticket (car (cdr *parsed-input*)))
+  ; (defconstant nearby-tickets (car (cdr (cdr *parsed-input*))))
+  (destructuring-bind ticket-ranges your-ticket nearby-tickets . (parse-input sample2))
   (defconstant remaining (go nearby-tickets
-                            (remove (lambda x . .
-                              (not (some x (lambda y . .
-                                (not (some ticket-ranges (lambda z . .
-                                  (or (is-in-bounds y (car z)) (is-in-bounds y (car (cdr z))))))))))))))
+                            (except (lambda x . .
+                              (some x (lambda y . .
+                                (some ticket-ranges (lambda z . .
+                                  (and (is-in-bounds y (car z)) (is-in-bounds y (car (cdr z))))))))))))
   (defconstant tickets (push (type remaining Array) (type your-ticket Array)))
   (defun validate-ticket tickets i j (go 
         (every tickets (lambda x . . 
@@ -97,7 +99,7 @@ nearby tickets:
             (go 
               tickets 
               (cdr) 
-              (map (lambda ti . . (remove ti (lambda x . . (not (= (car (cdr x)) swap))))))) 
+              (map (lambda ti . . (except ti (lambda x . . (= (car (cdr x)) swap)))))) 
             (Array)))
   (push order (Array  slot swap))
   (seave next order)) order))
@@ -109,14 +111,14 @@ nearby tickets:
         (map (lambda x i r 
           (map r (lambda y j . 
             (Array i j (validate-ticket tickets i j))))))
-          (map (lambda x . a (remove x (lambda y . . (get y -1)))))
+          (map (lambda x . a (select x (lambda y . . (get y -1)))))
           (sort-by-len *range*))
      (Array)) 
-    (remove (lambda x . . (< (car (cdr x)) 6))) 
+    (select (lambda x . . (< (car (cdr x)) 6))) 
     (reduce (lambda a x . . (set a (car (cdr x)) (car x))) 
     (map (Array 20 length) (lambda x . . (or x -1)))) 
-    (remove (lambda x . . (not (= x -1))))) 
+    (except (lambda x . . (= x -1)))) 
 (map (lambda x . . (get your-ticket x)))
-(product-array))))
+(product))))
 
 (Array (part1) (part2))

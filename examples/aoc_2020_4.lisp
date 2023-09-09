@@ -1,5 +1,5 @@
-(import std  "remove" "for-each" "push" "map" "regex-match" "split-by-n-lines" "deep-flat" "split-by" "join" "every" "reduce")
-(import math "sum-array")
+(import std  "select" "for-each" "push" "map" "regex-match" "split-by-n-lines" "deep-flat" "split-by" "join" "every" "reduce")
+(import math "summation")
 (defconstant sample "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
 byr:1937 iyr:2017 cid:147 hgt:183cm
 
@@ -20,7 +20,7 @@ hgt:76in")
                         (go x (map (lambda y . . 
                           (go y (regex-match "byr|iyr|eyr|hgt|hcl|ecl|pid")))) 
                                 (deep-flat))))
-                  (remove (lambda x . . (= (length x) 7)))))
+                  (select (lambda x . . (= (length x) 7)))))
 
 ; byr (Birth Year) - four digits; at least 1920 and at most 2002.
 ; iyr (Issue Year) - four digits; at least 2010 and at most 2020.
@@ -37,7 +37,7 @@ hgt:76in")
 (deftype without-invalid-fields (Lambda (Or (Array (Array (Array (String) (String))))) (Or (Array (Array (Array (String) (String)))))))
 (defun without-invalid-fields fields (go fields 
                                             (map (lambda x . . (go x 
-                                             (remove (lambda y . . (and (not (= (car y) "cid")) (regex-match (car y) "byr|iyr|eyr|hgt|hcl|ecl|pid")))))))))
+                                             (select (lambda y . . (and (not (= (car y) "cid")) (regex-match (car y) "byr|iyr|eyr|hgt|hcl|ecl|pid")))))))))
 
 
 (Array 
@@ -48,7 +48,7 @@ hgt:76in")
      (split-by-n-lines 2)
      (to-entries)
      (without-invalid-fields)
-     (remove (lambda x . . (= (length x) 7)))
+     (select (lambda x . . (= (length x) 7)))
      (map (lambda x . . (go x     
       (map (lambda y . . (do
         (defconstant 
@@ -76,6 +76,6 @@ hgt:76in")
                       (and 
                         (= (length arr) 9) 
                         (length (regex-match value "[0-9]{9}")))))))))))
-       (remove (lambda x . . (every x (lambda y . . (= (get y -1) 1)))))
+       (select (lambda x . . (every x (lambda y . . (= (get y -1) 1)))))
       ; (map (lambda x . . (log x)))
       (length)))

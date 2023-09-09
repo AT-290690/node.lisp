@@ -18,7 +18,7 @@ const stringifyArgs = (args) =>
     .map((x) => {
       return Array.isArray(x)
         ? `(${stringifyArgs(x)})`
-        : x[TYPE] === [APPLY] || x[TYPE] === WORD
+        : x[TYPE] === APPLY || x[TYPE] === WORD
         ? x[VALUE]
         : JSON.stringify(x[VALUE])
             .replace(new RegExp(/\[/g), '(')

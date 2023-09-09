@@ -1,4 +1,4 @@
-(import std "split-by" "map" "find" "remove" "push" "reduce")
+(import std "split-by" "map" "find" "select" "push" "reduce")
 
 (defconstant sample "nop +0
 acc +1
@@ -63,7 +63,7 @@ acc +6")
        (if (= cmd "acc") (+ accumulator value) accumulator)) (do
         (go 
           instructions
-          (remove (lambda x i . (and (= (length x) 3) (or (= (car x) "nop") (= (car x) "jmp")))))
+          (select (lambda x i . (and (= (length x) 3) (or (= (car x) "nop") (= (car x) "jmp")))))
           (map (lambda x . . (do 
             (defconstant 
               cmd (if (= (car x) "jmp") "nop" "jmp")

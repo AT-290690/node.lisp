@@ -15,15 +15,16 @@ export const TOKENS = {
   NUMBER_TYPE: 'Number',
   INTEGER_TYPE: 'Integer',
   BOOLEAN_TYPE: 'Boolean',
-
-  CAST_TYPE: 'type',
-
   FUNCTION_TYPE: 'Function',
   ARRAY_TYPE: 'Array',
 
+  CAST_TYPE: 'type',
+
   OR_TYPE: 'Or',
   AND_TYPE: 'And',
+
   DEFINE_TYPE: 'deftype',
+
   IDENTITY: 'identity',
   STRING_CONCATENATION: 'concatenate',
   ARRAY_OR_STRING_LENGTH: 'length',

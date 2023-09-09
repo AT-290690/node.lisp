@@ -8,10 +8,13 @@ import fsExtension from '../lib/extensions/fs.js'
 import { logError, removeNoCode, treeShake } from '../src/utils.js'
 import STD from '../lib/baked/std.js'
 import MATH from '../lib/baked/math.js'
+import DS from '../lib/baked/ds.js'
 const libraries = {
   std: STD,
   math: MATH,
+  ds: DS,
 }
+const libs = [...libraries['std'], ...libraries['math'], ...libraries['ds']]
 import { APPLY, TYPE, VALUE, WORD } from '../src/enums.js'
 export default async () => {
   const [, , ...argv] = process.argv
@@ -80,7 +83,7 @@ export default async () => {
         break
       case '-r':
         try {
-          run([...libraries['std'], ...libraries['math'], ...parse(file)], env)
+          run([...libs, ...parse(file)], env)
         } catch (err) {
           logError('Error')
           logError(err.message)
@@ -94,7 +97,7 @@ export default async () => {
         break
       case '-trace':
         try {
-          run([...libraries['std'], ...libraries['math'], ...parse(file)], env)
+          run([...libs, ...parse(file)], env)
         } catch (err) {
           console.log('\x1b[40m', err, '\x1b[0m')
           logError(err.message)
@@ -168,10 +171,7 @@ export default async () => {
               if (!input || input[0] === ';') return
               try {
                 let out = `${source}\n${file}\n(do ${input})`
-                const result = run(
-                  [...libraries['std'], ...libraries['math'], ...parse(out)],
-                  env
-                )
+                const result = run([...libs, ...parse(out)], env)
                 if (typeof result === 'function') {
                   console.log(inpColor, `(λ)`)
                 } else if (Array.isArray(result)) {

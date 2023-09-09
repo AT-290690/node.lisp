@@ -1,5 +1,5 @@
-(import std "split" "map" "join" "reduce" "for-each" "push" "every" "map" "remove" "array-in-bounds-p" "deep-flat" "concat" "split-by-lines")
-(import math "sum-array" "product-array")
+(import std "split" "map" "push" "pop" "drop" "join" "reduce" "for-each" "push" "every" "map" "select" "array-in-bounds-p" "deep-flat" "concat" "split-by-lines")
+(import math "summation" "product")
 
 (defconstant *INPUT* 
 "1 + 2 * 3 + 4 * 5 + 6
@@ -20,14 +20,15 @@
   (reduce (lambda stack token . . (do
   (or (cond 
     (= token "(") (do
-      (set head (length head) ())
-      (set stack (length stack) head)
+      (push head ())
+      (push stack head)
       (setf head (get head -1)))
     (= token ")") (do 
       (setf head (get stack -1))
-      (set stack -1))) 
-    (set head (length head) token)) stack)) (Array ()))
-  (remove (lambda x . . (length x))))
+      (pop stack))) 
+    (push head token)) 
+  stack)) (Array ()))
+  (select (lambda x . . (length x))))
   head))
 
 (deftype evaluate (Lambda (Or (Array)) (Or (Number)) (Or (Number))))
@@ -36,10 +37,10 @@
   (unless (Arrayp expression) (type expression Number) 
   (go expression (reduce (lambda a x i . 
     (if (= (mod i 2) 1) 
-      (set a (- (length a) 1)
+      (push a
         (cond
-          (= x "+") (+ (get a -1) (evaluate expression (+ i 1)))
-          (= x "*") (* (get a -1) (evaluate expression (+ i 1))))) a)) 
+          (= x "+") (+ (drop a) (evaluate expression (+ i 1)))
+          (= x "*") (* (drop a) (evaluate expression (+ i 1))))) a)) 
   (Array (evaluate expression 0))) (get -1)))))
 
 (deftype evaluate-adv (Lambda (Or (Array)) (Or (Number)) (Or (Number))))
@@ -50,16 +51,16 @@
     (if (= (mod i 2) 1) (do 
       (defconstant right (evaluate-adv expression (+ i 1)))
         (cond
-          (= x "+") (set a (- (length a) 1) (+ (get a -1) right)) 
-          (= x "*") (set a (length a) right))) a))
-  (Array (evaluate-adv expression 0))) (product-array)))))
+          (= x "+") (push a (+ (drop a) right)) 
+          (= x "*") (push a right))) a))
+  (Array (evaluate-adv expression 0))) (product)))))
 
 (Array 
   (go *INPUT*
     (split-by-lines)
     (map (lambda x . . (go x (parse) (evaluate 0))))
-    (sum-array))
+    (summation))
   (go *INPUT*
     (split-by-lines)
     (map (lambda x . . (go x (parse) (evaluate-adv 0))))
-    (sum-array)))
+    (summation)))

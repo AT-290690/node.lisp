@@ -3,9 +3,9 @@ import { runFromCompiled, runFromInterpreted } from '../src/utils.js'
 import { readFileSync } from 'fs'
 import STD from '../lib/baked/std.js'
 import MATH from '../lib/baked/math.js'
-
+import DS from '../lib/baked/ds.js'
 const day = (day) => readFileSync(`./examples/aoc_2020_${day}.lisp`, 'utf-8')
-const libraries = [STD, MATH]
+const libraries = [STD, MATH, DS]
 const problems = [
   day(1),
   day(2),
@@ -27,14 +27,14 @@ const problems = [
   day(18),
 ]
 describe('AOC', () => {
-  it('Should compile aoc 2020', () =>
+  it('Should compile aoc 2020 problems', () =>
     problems.forEach((source) =>
       deepStrictEqual(
         runFromInterpreted(source, libraries),
         runFromCompiled(source, libraries)
       )
     ))
-  it('Should solve aoc 2020 tasks', () =>
+  it('Should solve aoc 2020 problems', () =>
     deepStrictEqual(
       problems.map((source) => runFromCompiled(source, libraries)),
       [

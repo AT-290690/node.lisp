@@ -2,12 +2,14 @@
 (defun std (do
   ; modules
   ; push  
+  (deftype push (Lambda (Or (Array)) (Or (Array) (Number) (Integer) (String) (Function)) (Or (Array))))
   (defun push array value (set array (length array) value))
   ; pop
   (deftype pop (Lambda (Or (Array)) (Or (Array))))
   (defun pop array (set array -1))
-  ; yoink
-  (defun yoink array (when (length array) (do (defconstant last (get array -1)) (set array -1) last)))
+  ; drop
+  (deftype drop (Lambda (Or (Array)) (Or (Array) (Number) (Integer) (String) (Function))))
+  (defun drop array (when (length array) (do (defconstant last (get array -1)) (set array -1) last)))
   ; array-in-bounds-p 
   (deftype array-in-bounds-p (Lambda (Or (Array)) (Or (Number)) (Or (Number))))
   (defun array-in-bounds-p array index (and (< index (length array)) (>= index 0)))
@@ -71,18 +73,21 @@
           (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
         (iterate 0 (- (length array) 1))))
       ; for-each
+      (deftype for-each (Lambda (Or (Array)) (Or (Function)) (Or (Array) (Number) (Integer) (String) (Function))))
       (defun for-each array callback (do
         (loop defun iterate i bounds (do
           (callback (get array i) i array)
           (if (< i bounds) (iterate (+ i 1) bounds) array)))
         (iterate 0 (- (length array) 1))))
   ; for-n
+  (deftype for-n (Lambda (Or (Number)) (Or (Function)) (Or (Array) (Number) (Integer) (String) (Function))))
   (defun for-n N callback (do
     (loop defun iterate i (do 
         (defconstant res (callback i))
         (if (< i N) (iterate (+ i 1)) res))) 
         (iterate 0)))
   ; for-range
+  (deftype for-range (Lambda (Or (Number)) (Or (Number)) (Or (Function)) (Or (Array) (Number) (Integer) (String) (Function))))
   (defun for-range start end callback (do
     (loop defun iterate i (do 
         (defconstant res (callback i))
@@ -102,13 +107,43 @@
   (defun partition array n (reduce array (lambda a x i . (do 
         (if (mod i n) (push (get a -1) x) (push a (Array x))) a)) 
         (Array)))
-  ; remove
+  ; select
+  (deftype select (Lambda (Or (Array)) (Or (Function)) (Or (Array))))
+  (defun select array callback (do
+    (defconstant new-array (Array))
+    (loop defun iterate i bounds (do
+      (defconstant current (get array i))
+      (when (callback current i array) 
+        (push new-array current))
+      (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
+    (iterate 0 (- (length array) 1))))
+  ; except
+  (deftype except (Lambda (Or (Array)) (Or (Function)) (Or (Array))))
+  (defun except array callback (do
+    (defconstant new-array (Array))
+    (loop defun iterate i bounds (do
+      (defconstant current (get array i))
+      (otherwise (callback current i array) 
+        (push new-array current))
+      (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
+    (iterate 0 (- (length array) 1))))
+  ; keep
+  (deftype keep (Lambda (Or (Array)) (Or (Function)) (Or (Array))))
+  (defun keep array callback (do
+    (defconstant new-array (Array))
+    (loop defun iterate i bounds (do
+      (defconstant current (get array i))
+      (when (callback current) 
+        (push new-array current))
+      (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
+    (iterate 0 (- (length array) 1))))
+  ; remmove
   (deftype remove (Lambda (Or (Array)) (Or (Function)) (Or (Array))))
   (defun remove array callback (do
     (defconstant new-array (Array))
     (loop defun iterate i bounds (do
       (defconstant current (get array i))
-      (when (callback current i array) 
+      (otherwise (callback current) 
         (push new-array current))
       (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
     (iterate 0 (- (length array) 1))))
@@ -153,6 +188,7 @@
       (loop defun iterate result callback i (if (> i 0) (iterate (callback result) callback (- i 1)) result))
       (iterate initial callback i)))
     ; deep-flat
+    (deftype deep-flat (Lambda (Or (Array)) (Or (Array))))
     (defun deep-flat arr (do 
       (defconstant new-array (Array)) 
       (defconstant flatten (lambda item 
@@ -162,6 +198,7 @@
       (flatten arr) 
       new-array))
     ; find
+    (deftype find (Lambda (Or (Array)) (Or (Function)) (Or (Array) (Number) (Integer) (String) (Function))))
     (defun find array callback (do
             (loop defun iterate i bounds (do
               (defconstant 
@@ -172,17 +209,19 @@
                 (when has current))))
                 (iterate 0 (- (length array) 1))))
     ; find-index
-      (defun find-index array callback (do
-        (defvar idx -1 has-found 0)
-        (loop defun iterate i bounds (do
-          (defconstant current (get array i))
-          (boole has-found (callback current i array))
-          (if (and (not has-found) (< i bounds))
-            (iterate (+ i 1) bounds) 
-            (setf idx i))))
-            (iterate 0 (- (length array) 1))
-            (if has-found idx -1)))
+    (deftype find-index (Lambda (Or (Array)) (Or (Function)) (Or (Number))))
+    (defun find-index array callback (do
+      (defvar idx -1 has-found 0)
+      (loop defun iterate i bounds (do
+        (defconstant current (get array i))
+        (boole has-found (callback current i array))
+        (if (and (not has-found) (< i bounds))
+          (iterate (+ i 1) bounds) 
+          (setf idx i))))
+          (iterate 0 (- (length array) 1))
+          (if has-found idx -1)))
     ; index-of
+    (deftype index-of (Lambda (Or (Array)) (Or (Number) (Integer) (String)) (Or (Number))))
     (defun index-of array target (do
       (defvar idx -1 has-found 0)
       (loop defun iterate i bounds (do
@@ -194,6 +233,7 @@
           (iterate 0 (- (length array) 1))
           (if has-found idx -1)))
       ; last-index-of
+      (deftype last-index-of (Lambda (Or (Array)) (Or (Number) (Integer) (String)) (Or (Number))))
       (defun last-index-of array target (do
         (defvar idx -1 has-found 0)
         (loop defun iterate i (do
@@ -205,6 +245,7 @@
             (iterate (- (length array) 1))
             (if has-found idx -1)))
       ; index-of-starting-from
+    (deftype index-of-starting-from (Lambda (Or (Array)) (Or (Number) (Integer) (String)) (Or (Number)) (Or (Number))))
     (defun index-of-starting-from array target start (do
       (defvar idx -1 has-found 0)
       (loop defun iterate i bounds (do
@@ -216,6 +257,7 @@
           (iterate start (- (length array) 1))
           (if has-found idx -1)))
       ; last-index-of-ending-from
+      (deftype last-index-of-ending-from (Lambda (Or (Array)) (Or (Number) (Integer) (String)) (Or (Number)) (Or (Number))))
       (defun last-index-of-ending-from array target end (do
         (defvar idx -1 has-found 0)
         (loop defun iterate i (do
@@ -227,6 +269,7 @@
             (iterate (- (length array) 1 (* end -1)))
             (if has-found idx -1)))
       ; array-index-of
+      (deftype array-index-of (Lambda (Or (Array)) (Or (Number) (Integer) (String)) (Or (Number))))
       (defun array-index-of array target 
         (do
           (if (= (length array) 0) -1 
@@ -241,7 +284,7 @@
                   (iterate 0 (- (length array) 1))
                   (if has-found idx -1)))))
       ; quick-sort
-      (deftype quick-sort (Lambda (Or (Array (Number))) (Or (Array (Number)))))
+      (deftype quick-sort (Lambda (Or (Array (Number)) (Array (String)) (Array (Integer))) (Or (Array (Number)) (Array (String)) (Array (Integer)))))
       (defun quick-sort arr (do
         (if (<= (length arr) 1) arr
         (do
@@ -273,6 +316,7 @@
           (if (< i bounds) (iterate (+ i 1) bounds) reversed)))
         (iterate 0 offset)) array)))
       ; binary-search
+      (deftype binary-search (Lambda (Or (Array)) (Or (Number) (Integer) (String)) (Or (Number) (Integer) (String) (Array))))
       (defun binary-search 
               array target (do
         (loop defun search 
@@ -292,177 +336,7 @@
       ; order-array
       (deftype order-array (Lambda (Or (Array)) (Or (Array (Number))) (Or (Array))))
       (defun order-array array order (map (Array (length array) length) (lambda . i . (get array (get order i)))))
-      ; euclidean-mod
-      (defun euclidean-mod a b (mod (+ (mod a b) b) b))
-      ; hash-index
-      (defun hash-index 
-        table key 
-          (do
-            (defconstant 
-              prime-num 31
-              key-arr (type (type key String) Array))
-            (defvar total 0)
-            (loop defun find-hash-index i bounds (do 
-              (defconstant 
-                letter (get key-arr i) 
-                value (- (char-code letter 0) 96))
-              (setf total (euclidean-mod (+ (* total prime-num) value) (length table)))
-              (if (< i bounds) (find-hash-index (+ i 1) bounds) total)))
-            (find-hash-index 0 
-            (if (< (- (length key-arr) 1) 100) (- (length key-arr) 1) 100))))
-
-      ; (Hash Table)
-      ; (go 
-      ;   (hash-table-make (Array 
-      ;     (Array "name" "Anthony") 
-      ;     (Array "age" 32) 
-      ;     (Array "skills" 
-      ;       (Array "Animation" "Programming"))))
-      ;   (log)
-      ; )
-        ; hash-table-set
-      (defun hash-table-set 
-        table key value 
-          (do
-            (defconstant idx (hash-index table key))
-            (otherwise (array-in-bounds-p table idx) (set table idx (Array)))
-            (defconstant 
-              current (get table idx)
-              len (length current)
-              index (if len (find-index current (lambda x . . (= (get x 0) key))) -1)
-              entry (Array key value))
-            (if (= index -1)
-              (push current entry)
-              (set current index entry)
-            )
-            table))
-      ; hash-table-remove
-      (defun hash-table-remove 
-        table key 
-          (do
-            (defconstant idx (hash-index table key))
-            (otherwise (array-in-bounds-p table idx) (set table idx (Array)))
-            (defconstant 
-              current (get table idx)
-              len (length current)
-              index (if len (find-index current (lambda x . . (= (get x 0) key))) -1))
-            (otherwise (= index -1) (and (set current index (get current -1)) (set current -1)))
-            table))        
-      ; hash table_has 
-      (defun hash-table-has table key 
-        (and (array-in-bounds-p table (defconstant idx (hash-index table key))) (and (length (defconstant current (get table idx))) (>= (index-of (car current) key) 0))))
-      ; hash-table-get
-      (defun hash-table-get
-        table key 
-          (do
-            (defconstant idx (hash-index table key))
-            (if (array-in-bounds-p table idx) 
-              (do
-                (defconstant current (get table idx))
-                (go current
-                  (find (lambda x . . (= key 
-                          (go x (get 0)))))
-                  (get 1))))))
-      ; hash-table
-      (defun hash-table 
-        size 
-          (map (Array size length) (lambda . . . (Array))))
-      ; hash-table-make
-      (defun hash-table-make 
-        items 
-          (do
-            (defconstant 
-              len (- (length items) 1)
-              table (hash-table (* len len)))
-            (loop defun add i (do
-              (defconstant item (get items i))
-              (hash-table-set table (get item 0) (get item 1))
-            (if (< i len) (add (+ i 1)) table)))
-            (add 0)))
-        ; hash-set-set
-      (defun hash-set-set 
-        table key 
-          (do
-            (defconstant idx (hash-index table key))
-            (otherwise (array-in-bounds-p table idx) (set table idx (Array)))
-            (defconstant 
-              current (get table idx)
-              len (length current)
-              index (if len (find-index current (lambda x . . (= x key))) -1)
-              entry key)
-            (if (= index -1)
-              (push current entry)
-              (set current index entry)
-            )
-            table))
-      ; hash-set-remove
-      (defun hash-set-remove 
-        table key 
-          (do
-            (defconstant idx (hash-index table key))
-            (otherwise (array-in-bounds-p table idx) (set table idx (Array)))
-            (defconstant 
-              current (get table idx)
-              len (length current)
-              index (if len (find-index current (lambda x . . (= x key))) -1)
-              entry key)
-            (otherwise (= index -1) (and (set current index (get current -1)) (set current -1)))
-            table))
-      ; hash table_has 
-      (defun hash-set-has table key 
-        (and (array-in-bounds-p table (defconstant idx (hash-index table key))) (and (length (defconstant current (get table idx))) (>= (index-of current key) 0))))
-      ; hash-set-get
-      (defun hash-set-get table key (do
-            (defconstant idx (hash-index table key))
-            (if (array-in-bounds-p table idx) (do
-                (defconstant current (get table idx))
-                (go current
-                  (find (lambda x . . (= key x))))))))
-      ; hash-set
-      (defun hash-set size (map (Array size length) (lambda . . . (Array))))
-      ; hash-set-make
-      (defun hash-set-make items (do
-          (defconstant 
-            len (- (length items) 1)
-            table (hash-set (* len len)))
-          (loop defun add i (do
-            (defconstant item (get items i))
-            (hash-set-set table item)
-          (if (< i len) (add (+ i 1)) table)))
-          (add 0)))
-    ; (/ Hash Set)
-
-      ; (Binary Tree)
-      ; (go 
-      ; (binary-tree-node 1)
-      ; (binary-tree-set-left (go 
-      ;                         (binary-tree-node 2) 
-      ;                         (binary-tree-set-left 
-      ;                           (go (binary-tree-node 4) 
-      ;                               (binary-tree-set-right 
-      ;                               (binary-tree-node 5))))))
-      ; (binary-tree-set-right (binary-tree-node 3))
-      ; (binary-tree-get-left)
-      ; (binary-tree-get-left)
-      ; (binary-tree-get-right))
-      ; binary-tree-node
-      (defun binary-tree-node value 
-        (Array 
-          (Array "value" value)
-          (Array "left"  (Array))
-          (Array "right" (Array))))
-      ; binary-tree-get-left
-      (defun binary-tree-get-left node (get node 1))
-      ; binary-tree-get-right
-      (defun binary-tree-get-right node (get node 2))
-      ; binary-tree-set-left
-      (defun binary-tree-set-left tree node (set tree 1 node))
-      ; binary-tree-set-right
-      (defun binary-tree-set-right tree node (set tree 2 node)) 
-      ; binary-tree-get-value
-      (defun binary-tree-get-value node (get node 0))  
-      ; (/ Binary Tree)
-      ; left-pad
+     
       (deftype left-pad (Lambda (Or (String)) (Or (Number)) (Or (String)) (Or (String))))
       (defun left-pad str n ch (do 
         (setf n (- n (length str)))
@@ -572,6 +446,7 @@
           (if (>= i n) 
             (push acc (slice all (- i n) i)) acc)) (Array))))
       ; equal 
+      (deftype equal (Lambda (Or (Array) (Number) (Integer) (String)) (Or (Array) (Number) (Integer) (String)) (Or (Number))))
       (defun equal a b 
       (or (and (atom a) (atom b) (= a b)) 
       (and (Arrayp a) 
@@ -580,7 +455,7 @@
     (Array 
       (Array "push" push)
       (Array "pop" pop)
-      (Array "yoink" yoink)
+      (Array "drop" drop)
       (Array "sort-by-length" sort-by-length)  
       (Array "order-array" order-array)  
       (Array "array-in-bounds-p" array-in-bounds-p)  
@@ -597,6 +472,9 @@
       (Array "for-each" for-each)
       (Array "for-n" for-n)
       (Array "for-range" for-range)
+      (Array "select" select)
+      (Array "except" except)
+      (Array "keep" keep)
       (Array "remove" remove)
       (Array "reduce" reduce)
       (Array "deep-flat" deep-flat)
@@ -605,24 +483,6 @@
       (Array "quick-sort" quick-sort)
       (Array "reverse" reverse)
       (Array "binary-search" binary-search)
-      (Array "hash-table-set" hash-table-set)
-      (Array "hash-table-remove" hash-table-remove)
-      (Array "hash-table-has" hash-table-has)
-      (Array "hash-table-get" hash-table-get)
-      (Array "hash-table" hash-table)
-      (Array "hash-table-make" hash-table-make)
-      (Array "hash-set-set" hash-set-set)
-      (Array "hash-set-has" hash-set-has)
-      (Array "hash-set-remove" hash-set-remove)
-      (Array "hash-set-get" hash-set-get)
-      (Array "hash-set" hash-set)
-      (Array "hash-set-make" hash-set-make)
-      (Array "binary-tree-node" binary-tree-node)
-      (Array "binary-tree-get-left" binary-tree-get-left)
-      (Array "binary-tree-get-right" binary-tree-get-right)
-      (Array "binary-tree-set-right" binary-tree-set-right)
-      (Array "binary-tree-set-left" binary-tree-set-left)
-      (Array "binary-tree-get-value" binary-tree-get-value)
       (Array "character-occurances-in-string" character-occurances-in-string)
       (Array "every" every)
       (Array "some" some)
@@ -646,7 +506,6 @@
       (Array "to-upper-case" to-upper-case)
       (Array "to-lower-case" to-lower-case)
       (Array "cartesian-product" cartesian-product)
-      (Array "euclidean-mod" euclidean-mod)
       (Array "repeated-apply" repeated-apply)
       (Array "iteration" iteration))))
 ; (/ std lib)

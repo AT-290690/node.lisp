@@ -1,6 +1,6 @@
 import { deepStrictEqual, strictEqual } from 'assert'
 import { runFromInterpreted } from '../src/utils.js'
-describe('Interpration', () => {
+describe('Interpretation', () => {
   it('Should be correct', () => {
     deepStrictEqual(
       runFromInterpreted(
@@ -256,7 +256,7 @@ describe('Interpration', () => {
     (defun floor n (| n 0))
 (defun push array value (set array (length array) value))
 (defun array-of-numbers array (map array (lambda x i (type x Number))))
-(defun product-array array (reduce array (lambda a b i o (* a b)) 1))
+(defun product array (reduce array (lambda a b i o (* a b)) 1))
 (defun split-by-lines string (regex-match string "[^\n]+"))
 (defun string_to_array string delim 
                       (reduce (type string Array) 
@@ -352,13 +352,13 @@ describe('Interpration', () => {
   (array-of-numbers)
   (quick-sort)
   (solve1 (lambda x (- 2020 x)))
-  (product-array))
+  (product))
 (go input
   (split-by-lines)
   (array-of-numbers)
   (quick-sort)
   (solve2 (lambda x y (- 2020 x y)))
-  (product-array)))
+  (product)))
     `),
       [514579, 241861950]
     )
@@ -500,7 +500,7 @@ describe('Interpration', () => {
   (iterate 0 (- (length array) 1)))))
   
   
-  (defvar remove (lambda array callback (do 
+  (defvar select (lambda array callback (do 
   (defvar new-array ())
   (defvar iterate (lambda i bounds (do
     (defvar current (get array i))
@@ -524,7 +524,7 @@ describe('Interpration', () => {
   
   (go 
   (Array 1 2 3 4 5 6 7 101) 
-  (remove is-odd)
+  (select is-odd)
   (map mult_2)
   (reduce sum 0))
   

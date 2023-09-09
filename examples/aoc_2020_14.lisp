@@ -1,11 +1,11 @@
-
+(import ds "hash-index" 
+  "hash-table-set" "hash-table-has" "hash-table-get" "hash-table" "hash-table-make")
 (import std 
-  "reduce" "push" "remove" "deep-flat" "for-each"
-  "hash-index" "array-in-bounds-p" "find-index"
-  "hash-table-set" "hash-table-has" "hash-table-get" "hash-table" "hash-table-make"
+"array-in-bounds-p" "find-index"
+  "reduce" "push" "select" "deep-flat" "for-each"
   "split-by-lines" "join" "split-by" "every" "trim" "array-of-numbers" "map"
   "some" "find" "slice" "concat" "for-n")
-(import math "euclidean-mod" "min" "power" "sum-array" "min" "count-number-of-ones-bit")
+(import math "euclidean-mod" "min" "power" "summation" "min" "count-number-of-ones-bit")
 
 (defconstant *input* 
 (Array 
@@ -21,8 +21,8 @@ mem[26] = 1"))
 (defun Int n (type n Integer))
 ; for debug use only
 (defun int-to-bit int (go int (type Number) (Bit)))
-(deftype sum-array-ints (Lambda (Or (Array (Integer))) (Or (Integer))))
-(defun sum-array-ints ints (reduce ints (lambda a b . . (+ a b)) (Int 0)))
+(deftype summation-ints (Lambda (Or (Array (Integer))) (Or (Integer))))
+(defun summation-ints ints (reduce ints (lambda a b . . (+ a b)) (Int 0)))
 (deftype to-mask-of (Lambda (Or (Array (String))) (Or (String)) (Or (Integer))))
 (defun to-mask-of arr t (go arr (reduce (lambda acc x . . (if (= x t) (go acc (<< (Int 1)) (| (Int 1))) (go acc (<< (Int 1))))) (Int 0))))
 (deftype parse (Lambda (Or (String)) (Or (Array (Array (String) (String))))))
@@ -60,8 +60,8 @@ mem[26] = 1"))
               memory))
         (hash-table 10))
     (deep-flat)
-    (remove (lambda . i . (= (mod i 2) 1)))
-    (sum-array-ints))))
+    (select (lambda . i . (= (mod i 2) 1)))
+    (summation-ints))))
 (deftype quantum-mask (Lambda (Or (Integer)) (Or (Integer)) (Or (Integer))))
 (defun quantum-mask mask-x x (do
   (defvar rev-result (Int 0))
@@ -114,8 +114,8 @@ mem[26] = 1"))
         memory)) memory))
         (hash-table 10))
     (deep-flat)
-    (remove (lambda . i . (= (mod i 2) 1)))
-    (sum-array-ints))))
+    (select (lambda . i . (= (mod i 2) 1)))
+    (summation-ints))))
 
 (Array 
   (part1 (car *input*))

@@ -356,12 +356,12 @@
       (setf initial (callback initial (get array i) i array))
       (if (< i bounds) (iterate (+ i 1) bounds) initial)))
     (iterate 0 (- (length array) 1))))
-  ; sum-array
-  (deftype sum-array (Lambda (Or (Array (Number))) (Or (Number))))
-  (defun sum-array array (reduce array (lambda a b . . (+ a b)) 0))
-  ; product-array
-  (deftype product-array (Lambda (Or (Array (Number))) (Or (Number))))
-  (defun product-array array (reduce array (lambda a b . . (* a b)) 1))
+  ; summation
+  (deftype summation (Lambda (Or (Array (Number))) (Or (Number))))
+  (defun summation array (reduce array (lambda a b . . (+ a b)) 0))
+  ; product
+  (deftype product (Lambda (Or (Array (Number))) (Or (Number))))
+  (defun product array (reduce array (lambda a b . . (* a b)) 1))
   ; adjacent-difference
   (deftype adjacent-difference (Lambda (Or (Array (Number))) (Or (Function)) (Or (Array (Number)))))
   (defun adjacent-difference array callback (do 
@@ -437,8 +437,8 @@
       (Array "range" range)
       (Array "sequance" sequance)
       (Array "arithmetic-progression" arithmetic-progression)
-      (Array "sum-array" sum-array)
-      (Array "product-array" product-array)
+      (Array "summation" summation)
+      (Array "product" product)
       (Array "greatest-common-divisor" greatest-common-divisor)
       (Array "least-common-divisor" least-common-divisor)
       (Array "remainder" remainder)

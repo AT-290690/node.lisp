@@ -1,5 +1,5 @@
 (import std "map" "reduce" "split-by-lines")
-(import math "floor" "sum-array" "product-array")
+(import math "floor" "summation" "product")
 (defconstant sample 
 "..##.......
 #...#...#..
@@ -42,7 +42,7 @@
   (Array 
   (go matrix
     (*solve* 3 1)
-    (sum-array)) 
+    (summation)) 
   ; 336 for sample
   (go 
   (' 
@@ -51,7 +51,7 @@
     (' 5 1) 
     (' 7 1) 
     (' 1 2)) 
-    (map (lambda x . . (go matrix (*solve* (car x) (car (cdr x))) (sum-array))))
-    (product-array)))))
+    (map (lambda x . . (go matrix (*solve* (car x) (car (cdr x))) (summation))))
+    (product)))))
 
 (task *input*)
