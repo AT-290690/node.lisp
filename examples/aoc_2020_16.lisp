@@ -1,5 +1,5 @@
 (import std "split-by-n-lines" "map" "except" "split" "array-of-numbers" "push" "every" "reduce" "deep-flat" "select" "some" "reverse"
-"for-n" "rotate-left" "find" "slice-if-index" "for-each")
+"for-n" "find" "slice-if-index" "for-each")
 (import math "range" "product" "summation")
 
 (defconstant sample1 "class: 1-3 or 5-7

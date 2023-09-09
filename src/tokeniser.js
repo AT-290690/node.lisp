@@ -70,7 +70,6 @@ const partial = (a, b) =>
           )
       ))) ||
   false
-
 const tokens = {
   [TOKENS.LAMBDA_TYPE]: (args, env) => args.map((x) => evaluate(x, env)),
   [TOKENS.OR_TYPE]: (args, env) => {
@@ -1162,14 +1161,23 @@ const tokens = {
     const functions = rest.map((arg) => evaluate(arg, env))
     if (functions.some((arg) => typeof arg !== 'string'))
       throw new TypeError(
-        `Following arguments of (${TOKENS.IMPORT}) must all be (${
-          TOKENS.STRING_TYPE
-        }). (${TOKENS.IMPORT} ${stringifyArgs(args)})`
+        `Following arguments of (${TOKENS.IMPORT} ${
+          first[VALUE]
+        }) must all be (${TOKENS.STRING_TYPE}). (${
+          TOKENS.IMPORT
+        } ${stringifyArgs(args)})`
       )
     const records = functions.reduce((a, b) => (a.add(b), a), new Set())
-    module()
-      .filter(([n]) => records.has(n))
-      .forEach(([key, fn]) => (env[key] = fn))
+    const library = module().filter(
+      ([key]) => records.has(key) && records.delete(key)
+    )
+    if (records.size)
+      throw new ReferenceError(
+        `Library ${first[VALUE]} doesn't have a functions (${[...records].join(
+          ' '
+        )}) at (${TOKENS.IMPORT} ${first[VALUE]})`
+      )
+    library.forEach(([key, fn]) => (env[key] = fn))
 
     return functions
   },

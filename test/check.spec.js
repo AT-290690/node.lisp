@@ -21,5 +21,9 @@ describe('Errors', () => {
     checks(`(car ())`, RangeError)
     checks(`(cdr ())`, RangeError)
     checks(`(car (cdr (Array 1)))`, RangeError)
+    checks(
+      `(defun std (do (defun push a x (set a (length a) x)) (Array (Array "push" push)))) (import std "java.Array")`,
+      ReferenceError
+    )
   })
 })
