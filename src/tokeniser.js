@@ -677,7 +677,6 @@ const tokens = {
             props.length
           }) (${TOKENS.DEFINE_FUNCTION} ${stringifyArgs(args)})`
         )
-
       const localEnv = Object.create(env)
       const isTyped = env[TYPES] && name in env[TYPES]
       if (isTyped && props.length !== env[TYPES][name].length - 1)

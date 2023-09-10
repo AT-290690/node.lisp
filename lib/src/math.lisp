@@ -1,6 +1,15 @@
 ; (math lib)
 (defun math (do
   ; modules
+  ; e
+  (deftype e (Lambda (Or (Number))))
+  (defun e 2.718281828459045)
+  ; pi
+  (deftype pi (Lambda (Or (Number))))
+  (defun pi 3.141592653589793)
+  ; circumference
+  (deftype circumference (Lambda (Or (Number)) (Or (Number))))
+  (defun circumference radius (* 3.141592653589793 (* radius 2)))
   ; max
   (deftype max (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
   (defun max a b (if (> a b) a b))
@@ -488,7 +497,9 @@
       (Array "permutations" permutations)
       (Array "reduce" reduce)
       (Array "map" map)
-
+      (Array "pi" pi)
+      (Array "e" e)
+      (Array "circumference" circumference)
    )
 ))
 ; (/ math lib)

@@ -1,4 +1,4 @@
-(import std  "select" "for-each" "push" "map" "split-by-n-lines" "deep-flat" "split-by" "join" "every" "reduce")
+(import std  "select" "for-each" "map" "split-by-n-lines" "deep-flat" "split-by" "join" "every" "reduce")
 (import math "summation")
 (defconstant sample "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
 byr:1937 iyr:2017 cid:147 hgt:183cm

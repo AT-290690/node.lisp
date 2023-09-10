@@ -47,17 +47,14 @@
       (deftype concat (Lambda (Or (Array)) (Or (Array)) (Or (Array))))
       (defun concat array1 array2 (do
         (loop defun iterate i bounds (do
-        (when (< i (length array2)) (push array1 (get array2 i)))
-        (if (< i bounds) 
-          (iterate (+ i 1) bounds)
-        array1
-        )))
+        (when (< i (length array2)) (set array1 (length array1) (get array2 i)))
+        (if (< i bounds) (iterate (+ i 1) bounds) array1)))
       (iterate 0 (- (length array2) 1))))
       ; merge
       (deftype merge (Lambda (Or (Array)) (Or (Array)) (Or (Array))))
       (defun merge array1 array2 (do
         (loop defun iterate i bounds (do
-        (push array1 (get array2 i))
+        (set array1 (length array1) (get array2 i))
         (if (< i bounds) 
           (iterate (+ i 1) bounds)
         array1
@@ -105,7 +102,7 @@
   ; partition 
   (deftype partition (Lambda (Or (Array)) (Or (Number)) (Or (Array (Array)))))
   (defun partition array n (reduce array (lambda a x i . (do 
-        (if (mod i n) (push (get a -1) x) (push a (Array x))) a)) 
+        (if (mod i n) (set (defconstant last-a (get a -1)) (length last-a) x) (set a (length a) (Array x))) a)) 
         (Array)))
   ; select
   (deftype select (Lambda (Or (Array)) (Or (Function)) (Or (Array))))
@@ -114,7 +111,7 @@
     (loop defun iterate i bounds (do
       (defconstant current (get array i))
       (when (callback current i array) 
-        (push new-array current))
+        (set new-array (length new-array) current))
       (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
     (iterate 0 (- (length array) 1))))
   ; except
@@ -124,7 +121,7 @@
     (loop defun iterate i bounds (do
       (defconstant current (get array i))
       (otherwise (callback current i array) 
-        (push new-array current))
+        (set new-array (length new-array) current))
       (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
     (iterate 0 (- (length array) 1))))
   ; keep
@@ -134,7 +131,7 @@
     (loop defun iterate i bounds (do
       (defconstant current (get array i))
       (when (callback current) 
-        (push new-array current))
+        (set new-array (length new-array) current))
       (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
     (iterate 0 (- (length array) 1))))
   ; remmove
@@ -144,7 +141,7 @@
     (loop defun iterate i bounds (do
       (defconstant current (get array i))
       (otherwise (callback current) 
-        (push new-array current))
+        (set new-array (length new-array) current))
       (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
     (iterate 0 (- (length array) 1))))
   ; every
@@ -194,7 +191,7 @@
       (defconstant flatten (lambda item 
         (if (and (Arrayp item) (length item)) 
               (for-each item (lambda x . . (flatten x))) 
-              (otherwise (Arrayp item) (push new-array item)))))
+              (otherwise (Arrayp item) (set new-array (length new-array) item)))))
       (flatten arr) 
       new-array))
     ; find
@@ -295,13 +292,14 @@
         (loop defun iterate i bounds (do
           (defconstant current (get arr i))
           (if (< current pivot) 
-              (push left-arr current)
-              (push right-arr current))
+              (set left-arr (length left-arr) current)
+              (set right-arr (length right-arr) current))
           (when (< i bounds) (iterate (+ i 1) bounds))))
           (iterate 1 (- (length arr) 1))
+      (defconstant left-sorted (go left-arr (quick-sort)))
       (go 
-        left-arr (quick-sort) 
-        (push pivot) 
+        left-sorted
+        (set (length left-sorted) pivot)
         (concat (quick-sort right-arr)))))))
       ; reverse 
       (deftype reverse (Lambda (Or (Array)) (Or (Array))))
@@ -416,12 +414,12 @@
           (if (< (if (every sep-arr (lambda y j . (or (<= (length array) (+ i j)) (= (get array (+ i j)) y))))
                 (do 
                   (setf i (+ i skip -1))
-                  (push result cursor)
+                  (set result (length result) cursor)
                   (setf cursor "")
                   i)
                 (do (setf cursor (concatenate cursor (get array i))) i)) bounds) 
                     (iterate result (+ i 1) bounds) result))
-        (push (iterate (Array) 0 (- (length array) 1)) cursor)))
+        (set (defconstant iteration-result (iterate (Array) 0 (- (length array) 1))) (length iteration-result) cursor)))
       ; slice 
       (deftype slice (Lambda (Or (Array)) (Or (Number)) (Or (Number)) (Or (Array))))
       (defun slice array start end (do 
@@ -435,16 +433,16 @@
               (iterate 0)))
       ; slice-if-index
       (deftype slice-if-index (Lambda (Or (Array)) (Or (Function)) (Or (Array))))
-      (defun slice-if-index array callback (reduce array (lambda a b i . (if (callback i) (push a b) a)) (Array)))
+      (defun slice-if-index array callback (reduce array (lambda a b i . (if (callback i) (set a (length a) b) a)) (Array)))
       ; slice-if
       (deftype slice-if (Lambda (Or (Array)) (Or (Function)) (Or Array)))
-      (defun slice-if array callback (reduce array (lambda a b i . (if (callback b i) (push a b) a)) (Array)))
+      (defun slice-if array callback (reduce array (lambda a b i . (if (callback b i) (set a (length a) b) a)) (Array)))
       ; window
       (deftype window (Lambda (Or (Array)) (Or (Number)) (Or (Array (Array)))))
       (defun window array n (go array
         (reduce (lambda acc current i all 
           (if (>= i n) 
-            (push acc (slice all (- i n) i)) acc)) (Array))))
+            (set acc (length acc) (slice all (- i n) i)) acc)) (Array))))
       ; equal 
       (deftype equal (Lambda (Or (Array) (Number) (Integer) (String)) (Or (Array) (Number) (Integer) (String)) (Or (Number))))
       (defun equal a b 

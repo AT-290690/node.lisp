@@ -3,9 +3,47 @@ import { runFromCompiled, runFromInterpreted } from '../src/utils.js'
 import STD from '../lib/baked/std.js'
 import MATH from '../lib/baked/math.js'
 import DS from '../lib/baked/ds.js'
-
 const libraries = [STD, MATH, DS]
 const programs = [
+  `(import math "pi" "circumference") (Array (pi) (circumference 1))`,
+  `(import ds "hash-set" "hash-index" "hash-set-set" "hash-set-get" "hash-set-has" "hash-set-remove")
+  (import math "euclidean-mod")
+  (import std "map" "index-of" "find-index" "find" "array-in-bounds-p")
+  
+  (defconstant hs (hash-set 10))
+  (hash-set-set hs "Anthony")
+  (hash-set-set hs 3)
+  (hash-set-set hs "Bob")
+  (hash-set-remove hs "Bob")
+  (Array (hash-set-has hs "Anthony"))`,
+  `(import std "index-of" "find" "find-index" "map" "array-in-bounds-p")
+  (import ds "hash-index" "hash-table-has" "hash-table-set" "hash-table-get" "hash-table")
+  (import math "min" "euclidean-mod")
+  
+  (defun fibonacci-memoized n memo (if (< n 2) n
+    (if (hash-table-has memo n) (hash-table-get memo n)
+    (do
+      (defconstant cache (+ (fibonacci-memoized (- n 1) memo) (fibonacci-memoized (- n 2) memo)))
+      (hash-table-set memo n cache)
+      cache))))
+  
+  (Array (fibonacci-memoized 10 (hash-table 10)))`,
+  `(import ds "hash-table" "hash-index" "hash-table-set" "hash-table-get")
+  (import math "euclidean-mod")
+  (import std "map" "find-index" "find" "array-in-bounds-p")
+  (defconstant ht (hash-table 10))
+  (hash-table-set ht "name" "Anthony")
+  (hash-table-set ht "age" 33)
+  (Array (hash-table-get ht "name"))`,
+  `(import ds "binary-tree-node" "binary-tree-set-left" "binary-tree-get-value"  "binary-tree-get-left")
+  (defconstant tree (binary-tree-node 10))
+  (go 
+    tree 
+    (binary-tree-set-left (binary-tree-node 8)) 
+    (binary-tree-get-left)
+    (binary-tree-get-value)
+    (Array))
+  `,
   `(import std "to-upper-case" "to-lower-case") (Array (to-lower-case "Lisp is Cool AT-29") (to-upper-case "Lisp is Cool AT-29"))`,
   `(import std "map") (go (Array 1 2 4) (map (lambda x . . (* x 2))))`,
   `(import std "map")
@@ -74,6 +112,11 @@ describe('Libraries', () => {
     deepStrictEqual(
       programs.map((source) => runFromInterpreted(source, libraries)),
       [
+        [3.141592653589793, 6.283185307179586],
+        [1],
+        [55],
+        ['Anthony'],
+        [8],
         ['lisp is cool at-29', 'LISP IS COOL AT-29'],
         [2, 4, 8],
         [1, 1, 1, 1, 1, 0, 0, 1, 0, 0],

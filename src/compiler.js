@@ -1,9 +1,7 @@
 import { APPLY, ATOM, PLACEHOLDER, TOKENS, TYPE, VALUE, WORD } from './enums.js'
-
 export const earMuffsToLodashes = (name) => name.replace(new RegExp(/\*/g), '_')
 export const dotNamesToEmpty = (name) => name.replace(new RegExp(/\./g), '')
 export const colonNamesTo$ = (name) => name.replace(new RegExp(/\:/g), '$')
-
 export const toCamelCase = (name) => {
   let out = name[0]
   for (let i = 1; i < name.length; ++i) {

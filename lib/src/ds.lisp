@@ -2,6 +2,7 @@
 (defun ds (do
 ; modules
   ; hash-index
+  (deftype hash-index (Lambda (Or (Array (Array))) (Or (Number) (Integer) (String)) (Or (Number))))
   (defun hash-index 
     table key 
       (do
@@ -28,6 +29,7 @@
     ;   (log)
     ; )
       ; hash-table-set
+    (deftype hash-table-set (Lambda (Or (Array (Array (Array)))) (Or (Number) (Integer) (String)) (Or (Array) (Number) (String) (Integer) (Function)) (Or (Array (Array (Array))))))
     (defun hash-table-set 
       table key value 
         (do
@@ -44,6 +46,7 @@
           )
           table))
     ; hash-table-remove
+    (deftype hash-table-remove (Lambda (Or (Array (Array (Array)))) (Or (Number) (Integer) (String)) (Or (Array (Array (Array))))))
     (defun hash-table-remove 
       table key 
         (do
@@ -56,9 +59,11 @@
           (otherwise (= index -1) (and (set current index (get current -1)) (set current -1)))
           table))        
     ; hash table_has 
+    (deftype hash-table-has (Lambda (Or (Array (Array (Array)))) (Or (Number) (Integer) (String)) (Or (Number))))
     (defun hash-table-has table key 
       (and (array-in-bounds-p table (defconstant idx (hash-index table key))) (and (length (defconstant current (get table idx))) (>= (index-of (car current) key) 0))))
     ; hash-table-get
+    (deftype hash-table-get (Lambda (Or (Array (Array (Array)))) (Or (Number) (Integer) (String)) (Or (Number) (Integer) (String) (Array))))
     (defun hash-table-get
       table key 
         (do
@@ -71,6 +76,7 @@
                         (go x (get 0)))))
                 (get 1))))))
     ; hash-table
+    (deftype hash-table (Lambda (Or (Number)) (Or (Array (Array)))))
     (defun hash-table 
       size 
         (map (Array size length) (lambda . . . (Array))))
@@ -87,6 +93,7 @@
           (if (< i len) (add (+ i 1)) table)))
           (add 0)))
       ; hash-set-set
+    (deftype hash-set-set (Lambda (Or (Array (Array))) (Or (Number) (Integer) (String)) (Or (Array (Array)))))
     (defun hash-set-set 
       table key 
         (do
@@ -103,6 +110,7 @@
           )
           table))
     ; hash-set-remove
+    (deftype hash-set-remove (Lambda (Or (Array (Array))) (Or (Number) (Integer) (String)) (Or (Array (Array)))))
     (defun hash-set-remove 
       table key 
         (do
@@ -116,9 +124,11 @@
           (otherwise (= index -1) (and (set current index (get current -1)) (set current -1)))
           table))
     ; hash table_has 
+    (deftype hash-set-has (Lambda (Or (Array (Array))) (Or (Number) (Integer) (String)) (Or (Number))))
     (defun hash-set-has table key 
       (and (array-in-bounds-p table (defconstant idx (hash-index table key))) (and (length (defconstant current (get table idx))) (>= (index-of current key) 0))))
     ; hash-set-get
+    (deftype hash-set-get (Lambda (Or (Array (Array))) (Or (Number) (Integer) (String)) (Or (Number) (Integer) (String))))
     (defun hash-set-get table key (do
           (defconstant idx (hash-index table key))
           (if (array-in-bounds-p table idx) (do
@@ -126,6 +136,7 @@
               (go current
                 (find (lambda x . . (= key x))))))))
     ; hash-set
+    (deftype hash-set (Lambda (Or (Number)) (Or (Array (Array)))))
     (defun hash-set size (map (Array size length) (lambda . . . (Array))))
     ; hash-set-make
     (defun hash-set-make items (do
@@ -153,21 +164,101 @@
     ; (binary-tree-get-left)
     ; (binary-tree-get-right))
     ; binary-tree-node
+    (deftype binary-tree-node (Lambda 
+      (Or (Number) (String) (Integer) (Array) (Function)) 
+      (And 
+       (Array (Array (String) (Number))) 
+       (Array (Array (String) (String)))
+       (Array (Array (String) (Integer)))
+       (Array (Array (String) (Function)))
+       (Array (Array (String) (Array))))))
     (defun binary-tree-node value 
       (Array 
         (Array "value" value)
         (Array "left"  (Array))
         (Array "right" (Array))))
     ; binary-tree-get-left
+     (deftype binary-tree-get-left (Lambda 
+      (And 
+       (Array (Array (String) (Number))) 
+       (Array (Array (String) (String)))
+       (Array (Array (String) (Integer)))
+       (Array (Array (String) (Function)))
+       (Array (Array (String) (Array)))) 
+      (And 
+       (Array (Array (String) (Number))) 
+       (Array (Array (String) (String)))
+       (Array (Array (String) (Integer)))
+       (Array (Array (String) (Function)))
+       (Array (Array (String) (Array))))))
     (defun binary-tree-get-left node (get node 1))
     ; binary-tree-get-right
+    (deftype binary-tree-get-right (Lambda 
+      (And 
+       (Array (Array (String) (Number))) 
+       (Array (Array (String) (String)))
+       (Array (Array (String) (Integer)))
+       (Array (Array (String) (Function)))
+       (Array (Array (String) (Array)))) 
+      (And 
+       (Array (Array (String) (Number))) 
+       (Array (Array (String) (String)))
+       (Array (Array (String) (Integer)))
+       (Array (Array (String) (Function)))
+       (Array (Array (String) (Array))))))
     (defun binary-tree-get-right node (get node 2))
     ; binary-tree-set-left
+    (deftype binary-tree-set-left (Lambda 
+      (And 
+       (Array (Array (String) (Number))) 
+       (Array (Array (String) (String)))
+       (Array (Array (String) (Integer)))
+       (Array (Array (String) (Function)))
+       (Array (Array (String) (Array)))) 
+      (And 
+       (Array (Array (String) (Number))) 
+       (Array (Array (String) (String)))
+       (Array (Array (String) (Integer)))
+       (Array (Array (String) (Function)))
+       (Array (Array (String) (Array))))
+      (And 
+       (Array (Array (String) (Number))) 
+       (Array (Array (String) (String)))
+       (Array (Array (String) (Integer)))
+       (Array (Array (String) (Function)))
+       (Array (Array (String) (Array))))))
     (defun binary-tree-set-left tree node (set tree 1 node))
     ; binary-tree-set-right
+    (deftype binary-tree-set-right (Lambda 
+      (And 
+       (Array (Array (String) (Number))) 
+       (Array (Array (String) (String)))
+       (Array (Array (String) (Integer)))
+       (Array (Array (String) (Function)))
+       (Array (Array (String) (Array)))) 
+      (And 
+       (Array (Array (String) (Number))) 
+       (Array (Array (String) (String)))
+       (Array (Array (String) (Integer)))
+       (Array (Array (String) (Function)))
+       (Array (Array (String) (Array))))
+      (And 
+       (Array (Array (String) (Number))) 
+       (Array (Array (String) (String)))
+       (Array (Array (String) (Integer)))
+       (Array (Array (String) (Function)))
+       (Array (Array (String) (Array))))))
     (defun binary-tree-set-right tree node (set tree 2 node)) 
     ; binary-tree-get-value
-    (defun binary-tree-get-value node (get node 0))  
+    (deftype binary-tree-get-right (Lambda 
+      (And 
+       (Array (Array (String) (Number))) 
+       (Array (Array (String) (String)))
+       (Array (Array (String) (Integer)))
+       (Array (Array (String) (Function)))
+       (Array (Array (String) (Array)))) 
+      (Or (Number) (String) (Integer) (Function) (Array))))
+    (defun binary-tree-get-value node (car (cdr (get node 0))))
     ; (/ Binary Tree)
   (Array 
     (Array "hash-index" hash-index)

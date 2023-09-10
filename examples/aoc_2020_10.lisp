@@ -1,4 +1,4 @@
-(import std "split-by" "array-of-numbers" "reduce" "quick-sort" "map" "concat" "push" "count-of" "join" "array-in-bounds-p")
+(import std "split-by" "array-of-numbers" "reduce" "quick-sort" "map" "concat" "count-of" "join" "array-in-bounds-p")
 (import math "adjacent-difference" "max")
 
 (defconstant sample "16

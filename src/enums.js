@@ -7,7 +7,7 @@ export const ATOM = 'a'
 // tokeniser enums
 export const TYPES = ';'
 export const PLACEHOLDER = '.'
-
+// tokens aliases
 export const TOKENS = {
   BIT_TYPE: 'Bit',
   LAMBDA_TYPE: 'Lambda',

@@ -1,7 +1,7 @@
 (import ds "hash-index"
   "hash-table-set" "hash-table-has" "hash-table-get" "hash-table" "hash-table-make" "hash-index" "hash-table-get" "hash-table"
   "hash-set-set" "hash-set-remove" "hash-set-has" "hash-set-get" "hash-set" "hash-set-make")
-(import std  "array-in-bounds-p" "find-index" "map" "split-by-lines" "push" "for-n" "iteration" "join" "reduce" "array-in-bounds-p" "find-index" "index-of"
+(import std  "array-in-bounds-p" "find-index" "map" "split-by-lines" "for-n" "iteration" "join" "reduce" "array-in-bounds-p" "find-index" "index-of"
             "count-of" "for-each"  "for-range" "concat" "left-pad" "right-pad" "every"
              "deep-flat" "split")
 (import math "summation" "floor" "euclidean-mod" "max" "min" "abs")

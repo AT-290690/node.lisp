@@ -23,7 +23,7 @@ export const handleUnbalancedParens = (source) => {
   const diff = isBalancedParenthesis(removeNoCode(source))
   if (diff !== 0)
     throw new SyntaxError(
-      `Parenthesis are unbalanced by ${diff > 0 ? '+' : ''}${diff} ")"`
+      `Parenthesis are unbalanced by ${diff > 0 ? '+' : ''}${diff}`
     )
   return source
 }

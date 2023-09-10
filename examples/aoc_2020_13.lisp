@@ -1,4 +1,4 @@
-(import std "slice-if-index" "select" "every" "find" "split" "map" "quick-sort" "push" "every" "select" "reduce" "for-each")
+(import std "slice-if-index" "select" "every" "find" "split" "map" "every" "select" "reduce" "for-each")
 (import math "min" "max" "round" "floor" "greatest-common-divisor" "product" "summation" "sqrt" "is-prime" "adjacent-difference" "abs" "average" "square" )
 (defconstant sample "939
 7,13,x,x,59,x,31,19")
