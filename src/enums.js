@@ -95,4 +95,5 @@ export const TOKENS = {
   SLEEP: 'sleep',
 
   DEBUG: 'debug',
+  ABORT: 'abort',
 }

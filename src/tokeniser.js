@@ -546,7 +546,7 @@ const tokens = {
       throw new RangeError(
         `Second argument of (${TOKENS.GET_ARRAY}) is outside of the (${
           TOKENS.ARRAY_TYPE
-        })) bounds (${index}) (${TOKENS.GET_ARRAY} ${stringifyArgs(args)}).`
+        }) bounds (${index}) (${TOKENS.GET_ARRAY} ${stringifyArgs(args)}).`
       )
     const value = array.at(index)
     if (value == undefined)
@@ -985,11 +985,20 @@ const tokens = {
             TOKENS.DESTRUCTURING_ASSIGMENT
           } ${stringifyArgs(args)})`
         )
-      if (word[VALUE] !== PLACEHOLDER)
+      if (word[VALUE] !== PLACEHOLDER) {
+        if (right[i] == undefined)
+          throw new ReferenceError(
+            `Attempting to assign a void value at (${
+              TOKENS.DESTRUCTURING_ASSIGMENT
+            }) when asssigning ${word[VALUE]} (${
+              TOKENS.DESTRUCTURING_ASSIGMENT
+            } ${stringifyArgs(args)})`
+          )
         Object.defineProperty(env, word[VALUE], {
           value: right[i],
           writable: false,
         })
+      }
     }
     if (rest[TYPE] !== WORD)
       throw new SyntaxError(
@@ -1519,6 +1528,7 @@ const tokens = {
     }
     return [Object.entries(out), ['⏱️ ', total]]
   },
+  [TOKENS.ABORT]: () => process.exit(),
 }
 tokens[TOKENS.NOT_COMPILED_BLOCK] = { ...tokens[TOKENS.BLOCK] }
 export { tokens }
