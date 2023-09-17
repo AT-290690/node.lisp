@@ -27,7 +27,7 @@ export const lispToJavaScriptVariableName = (name) =>
 const Extensions = {}
 const Helpers = {
   log: {
-    source: `// Helper Functions\nvar log = (msg) => { console.log(msg); return msg }`,
+    source: `var log = (msg) => { console.log(msg); return msg }`,
   },
   _identity: {
     source: `_identity = i => { return i }`,
@@ -516,7 +516,7 @@ export const compileToJs = (AST, extensions = {}, helpers = {}, tops = []) => {
   const raw = AST.map((tree) => compile(tree, Variables, Functions))
     .filter(Boolean)
     .join('\n')
-  let program = '// Source Code \n'
+  let program = ''
   for (let i = 0; i < raw.length; ++i) {
     const current = raw[i]
     const next = raw[i + 1]

@@ -105,6 +105,8 @@ const programs = [
 (go (Array "1" "2" "3") (array-of-numbers) (maximum) (Array))`,
   `(import math "permutations") (Array (permutations (Array 1 2 3)))`,
   `(import std "equal" "some") (Array (equal 1 1) (equal 1 2) (equal (Array 1) (Array 1)) (equal (Array (Array 1 2)) (Array (Array 1 2))) (equal (Array (Array 1 2)) (Array (Array 0 2))))`,
+
+  `(import std "trim") (Array (trim "a a "))`,
 ]
 
 describe('Libraries', () => {
@@ -180,6 +182,7 @@ describe('Libraries', () => {
           ],
         ],
         [1, 0, 1, 1, 0],
+        ['a a'],
       ]
     ))
   it('Should compile matching interpretation', () =>

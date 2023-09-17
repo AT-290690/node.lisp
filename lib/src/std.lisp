@@ -39,7 +39,7 @@
       (deftype split-by (Lambda (Or (String)) (Or (String)) (Or (Array (String)))))
       (defun split-by string delim (regex-match string (concatenate "[^" delim "]+")))
       ; trim
-      (defun trim string (regex-replace string "^\s+|\s+$" ""))
+      (defun trim string (regex-replace string "^ +| +$" ""))
       ; array-of-numbers
       (deftype array-of-numbers (Lambda (Or (Array)) (Or (Array (Number)))))
       (defun array-of-numbers array (map array (lambda x . . (type x Number))))
