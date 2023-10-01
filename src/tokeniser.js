@@ -27,6 +27,15 @@ const stringifyArgs = (args) =>
             .replace(new RegExp(/"/g), '')
     })
     .join(' ')
+const isForbiddenVariableName = (name) => {
+  for (const key in TOKENS) if (TOKENS[key] === name) return true
+  switch (name) {
+    case '_':
+      return true
+    default:
+      return false
+  }
+}
 const atom = (arg, env) => {
   if (arg[TYPE] === ATOM) return 1
   else {
@@ -655,6 +664,18 @@ const tokens = {
     const params = args.slice(1, -1)
     const body = args.at(-1)
     const name = args[0][VALUE]
+    if (isForbiddenVariableName(name))
+      throw new ReferenceError(
+        `Function name ${name} is forbidden at (${
+          TOKENS.DEFINE_FUNCTION
+        } ${stringifyArgs(args)})`
+      )
+    if (params.some((param) => isForbiddenVariableName(param[VALUE])))
+      throw new ReferenceError(
+        `Argument name ${JSON.stringify(
+          params.find((param) => isForbiddenVariableName(param[VALUE]))
+        )} is forbidden at (${TOKENS.DEFINE_FUNCTION} ${stringifyArgs(args)})`
+      )
     const fn = (props = [], scope) => {
       if (props.length > params.length) {
         throw new RangeError(
@@ -994,6 +1015,12 @@ const tokens = {
               TOKENS.DESTRUCTURING_ASSIGMENT
             } ${stringifyArgs(args)})`
           )
+        else if (isForbiddenVariableName(word[VALUE]))
+          throw new ReferenceError(
+            `Variable name ${word[VALUE]} is forbidden at (${
+              TOKENS.DESTRUCTURING_ASSIGMENT
+            } ${stringifyArgs(args)})`
+          )
         Object.defineProperty(env, word[VALUE], {
           value: right[i],
           writable: false,
@@ -1008,11 +1035,18 @@ const tokens = {
           TOKENS.DESTRUCTURING_ASSIGMENT
         } ${stringifyArgs(args)})`
       )
-    if (rest[VALUE] !== PLACEHOLDER)
+    if (rest[VALUE] !== PLACEHOLDER) {
       Object.defineProperty(env, rest[VALUE], {
         value: right.slice(args.length),
         writable: false,
       })
+      if (isForbiddenVariableName(rest[VALUE]))
+        throw new ReferenceError(
+          `Variable name ${rest[VALUE]} is forbidden at (${
+            TOKENS.DESTRUCTURING_ASSIGMENT
+          } ${stringifyArgs(args)})`
+        )
+    }
     return right
   },
   [TOKENS.DEFINE_CONSTANT]: (args, env) => {
@@ -1039,6 +1073,12 @@ const tokens = {
             `First argument of (${
               TOKENS.DEFINE_CONSTANT
             }) must be word but got ${word[TYPE]} (${
+              TOKENS.DEFINE_CONSTANT
+            } ${stringifyArgs(args)})`
+          )
+        else if (isForbiddenVariableName(word[VALUE]))
+          throw new ReferenceError(
+            `Variable name ${word[VALUE]} is forbidden at (${
               TOKENS.DEFINE_CONSTANT
             } ${stringifyArgs(args)})`
           )
@@ -1078,6 +1118,13 @@ const tokens = {
               TOKENS.DEFINE_VARIABLE
             } ${stringifyArgs(args)})`
           )
+        else if (isForbiddenVariableName(word[VALUE]))
+          throw new ReferenceError(
+            `Variable name ${word[VALUE]} is forbidden at (${
+              TOKENS.DEFINE_VARIABLE
+            } ${stringifyArgs(args)})`
+          )
+
         name = word[VALUE]
       } else env[name] = evaluate(args[i], env)
     }

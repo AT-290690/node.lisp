@@ -1,15 +1,24 @@
 ; (math lib)
 (defun math (do
   ; modules
-  ; e
-  (deftype e (Lambda (Or (Number))))
-  (defun e 2.718281828459045)
-  ; pi
-  (deftype pi (Lambda (Or (Number))))
-  (defun pi 3.141592653589793)
+  ; E
+  (deftype E (Lambda (Or (Number))))
+  (defun E 2.718281828459045)
+  ; PI
+  (deftype PI (Lambda (Or (Number))))
+  (defun PI 3.141592653589793)
   ; circumference
   (deftype circumference (Lambda (Or (Number)) (Or (Number))))
   (defun circumference radius (* 3.141592653589793 (* radius 2)))
+  ; positive?
+  (deftype positive? (Lambda (Or (Number)) (Or (Number))))
+  (defun positive? num (> num 0))
+  ; negative?
+  (deftype negative? (Lambda (Or (Number)) (Or (Number))))
+  (defun negative? num (< num 0))
+  ; zero?
+  (deftype zero? (Lambda (Or (Number)) (Or (Number))))
+  (defun zero? num (= num 0))
   ; max
   (deftype max (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
   (defun max a b (if (> a b) a b))
@@ -37,12 +46,12 @@
   ; clamp
   (deftype clamp (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
   (defun clamp x limit (if (> x limit) limit x))
-  ; is-odd
-  (deftype is-odd (Lambda (Or (Number)) (Or (Number))))
-  (defun is-odd x (= (mod x 2) 1))
-  ; is-even
-  (deftype is-even (Lambda (Or (Number)) (Or (Number))))
-  (defun is-even x (= (mod x 2) 0))
+  ; odd?
+  (deftype odd? (Lambda (Or (Number)) (Or (Number))))
+  (defun odd? x (= (mod x 2) 1))
+  ; even?
+  (deftype even? (Lambda (Or (Number)) (Or (Number))))
+  (defun even? x (= (mod x 2) 0))
   ; sign 
   (deftype sign (Lambda (Or (Number)) (Or (Number))))
   (defun sign n (if (< n 0) -1 1))
@@ -104,12 +113,12 @@
             g
             (sqrt-iter (improve-guess g x) x)))
   (sqrt-iter 1.0 x)))
-  ; can-sum
-  (deftype can-sum (Lambda (Or (Number)) (Or (Array (Number))) (Or (Number))))
-  (defun can-sum t values 
+  ; can-sum?
+  (deftype can-sum? (Lambda (Or (Number)) (Or (Array (Number))) (Or (Number))))
+  (defun can-sum? t values 
     (if (< t 0) 0 
       (if (= t 0) 1 
-        (some values (lambda x . . (can-sum (- t x) values))))))
+        (some? values (lambda x . . (can-sum? (- t x) values))))))
   ; how-can-sum
   (deftype how-can-sum (Lambda (Or (Number)) (Or (Array (Number))) (Or (Number))))
   (defun how-can-sum t values 
@@ -117,9 +126,9 @@
       (if (= t 0) (Array) 
         (do 
           (defvar res 0)
-          (some value (lambda x . . (do
+          (some? value (lambda x . . (do
             (setf res (how-can-sum (- t x) values))
-            (if (and (Arrayp res) (= -1 (array-index-of res x))) (set (length res) res x))))) 
+            (if (and (Array? res) (= -1 (array-index-of res x))) (set (length res) res x))))) 
           res))))
   ; abs
   (deftype abs (Lambda (Or (Number)) (Or (Number))))
@@ -135,9 +144,9 @@
   (defun clamp-bit x min max (do 
      (setf x (- x (& (- x max) (>> (- max x) 31))))
      (- x (& (- x min) (>> (- x min) 31)))))
-  ; is-bit-power-of-two ; (and x (not (& x (- x 1)))
-  (deftype is-bit-power-of-two (Lambda (Or (Number)) (Or (Number))))
-  (defun is-bit-power-of-two value 
+  ; bit-power-of-two? ; (and x (not (& x (- x 1)))
+  (deftype bit-power-of-two? (Lambda (Or (Number)) (Or (Number))))
+  (defun bit-power-of-two? value 
     (and 
       (= (& value (- value 1)) 0) 
       (not (= value 0))))
@@ -147,12 +156,12 @@
   ; toggle-bit
   (deftype toggle-bit (Lambda (Or (Number)) (Or (Number)) (Or (Number)) (Or (Number))))
   (defun toggle-bit n a b (^ a b n))
-  ; is-odd-bit
-  (deftype is-odd-bit (Lambda (Or (Number)) (Or (Number))))
-  (defun is-odd-bit n (= (& n 1) 1))
-  ; is-same-sign-bit 
-  (deftype is-same-sign-bit (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
-  (defun is-same-sign-bit a b (>= (^ a b) 0))
+  ; odd-bit?
+  (deftype odd-bit? (Lambda (Or (Number)) (Or (Number))))
+  (defun odd-bit? n (= (& n 1) 1))
+  ; same-sign-bit? 
+  (deftype same-sign-bit? (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
+  (defun same-sign-bit? a b (>= (^ a b) 0))
   ; modulo-bit
   (deftype modulo-bit (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
   (defun modulo-bit numerator divisor (& numerator (- divisor 1)))
@@ -267,14 +276,14 @@
     ; fibonacci-memoized
     (deftype fibonacci-memoized (Lambda (Or (Number)) (Or (Array (Array (Number)) (Or (Number))))))
     (defun fibonacci-memoized n memo (if (< n 2) n
-        (if (hash-table-has memo n) (hash-table-get memo n)
+        (if (hash-table? memo n) (hash-table-get memo n)
         (do
           (defconstant cache (+ (fibonacci-memoized (- n 1) memo) (fibonacci-memoized (- n 2) memo)))
-          (hash-table-set memo n cache)
+          (hash-table-add memo n cache)
           cache))))
-    ; is-prime
-    (deftype is-prime (Lambda (Or (Number)) (Or (Number))))
-    (defun is-prime n (do 
+    ; prime?
+    (deftype prime? (Lambda (Or (Number)) (Or (Number))))
+    (defun prime? n (do 
         (loop defun iter i end (do 
             (defconstant it-is (not (= (mod n i) 0)))
             (if (and (<= i end) it-is) (iter (+ i 1) end) it-is)))
@@ -436,8 +445,8 @@
       (Array "min" min) 
       (Array "maximum" maximum)
       (Array "minimum" minimum) 
-      (Array "is-odd" is-odd) 
-      (Array "is-even" is-even) 
+      (Array "odd?" odd?) 
+      (Array "even?" even?) 
       (Array "abs" abs)
       (Array "floor" floor)
       (Array "round" round)
@@ -454,7 +463,7 @@
       (Array "factorial" factorial)
       (Array "fibonacci" fibonacci)
       (Array "fibonacci-memoized" fibonacci-memoized)
-      (Array "can-sum" can-sum)
+      (Array "can-sum?" can-sum?)
       (Array "how-can-sum" how-can-sum)
       (Array "adjacent-difference" adjacent-difference)
       (Array "clamp" clamp)
@@ -470,7 +479,7 @@
       (Array "square" square)
       (Array "average" average)
       (Array "sqrt" sqrt)
-      (Array "is-prime" is-prime)
+      (Array "prime?" prime?)
       (Array "euclid-inverse-mod" euclid-inverse-mod)
       (Array "chinese-remainder-theorem" chinese-remainder-theorem)
       (Array "gauss-sum-sequance" gauss-sum-sequance)
@@ -481,11 +490,11 @@
       (Array "max-bit" max-bit)
       (Array "min-bit" min-bit)
       (Array "clamp-bit" clamp-bit)
-      (Array "is-bit-power-of-two" is-bit-power-of-two)
+      (Array "bit-power-of-two?" bit-power-of-two?)
       (Array "average-bit" average-bit)
       (Array "toggle-bit" toggle-bit)
-      (Array "is-odd-bit" is-odd-bit)
-      (Array "is-same-sign-bit" is-same-sign-bit)
+      (Array "odd-bit?" odd-bit?)
+      (Array "same-sign-bit?" same-sign-bit?)
       (Array "modulo-bit" modulo-bit)
       (Array "set-bit" set-bit)
       (Array "clear-bit" clear-bit)
@@ -497,9 +506,12 @@
       (Array "permutations" permutations)
       (Array "reduce" reduce)
       (Array "map" map)
-      (Array "pi" pi)
-      (Array "e" e)
+      (Array "PI" PI)
+      (Array "E" E)
       (Array "circumference" circumference)
+      (Array "positive?" positive?)
+      (Array "negative?" negative?)
+      (Array "zero?" zero?)
    )
 ))
 ; (/ math lib)

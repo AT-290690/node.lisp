@@ -10,12 +10,12 @@
   ; drop
   (deftype drop (Lambda (Or (Array)) (Or (Array) (Number) (Integer) (String) (Function))))
   (defun drop array (when (length array) (do (defconstant last (get array -1)) (set array -1) last)))
-  ; array-in-bounds-p 
-  (deftype array-in-bounds-p (Lambda (Or (Array)) (Or (Number)) (Or (Number))))
-  (defun array-in-bounds-p array index (and (< index (length array)) (>= index 0)))
-  ; is-array-of-atoms
-  (deftype is-array-of-atoms (Lambda (Or (Array)) (Or (Number))))
-  (defun is-array-of-atoms array (if (not (length array)) 1 (if (atom (car array)) (is-array-of-atoms (cdr array)) 0)))
+  ; array-in-bounds? 
+  (deftype array-in-bounds? (Lambda (Or (Array)) (Or (Number)) (Or (Number))))
+  (defun array-in-bounds? array index (and (< index (length array)) (>= index 0)))
+  ; array-of-atoms?
+  (deftype array-of-atoms? (Lambda (Or (Array)) (Or (Number))))
+  (defun array-of-atoms? array (if (not (length array)) 1 (if (atom? (car array)) (array-of-atoms? (cdr array)) 0)))
   ; cartesian-product
   (deftype cartesian-product (Lambda (Or (Array)) (Or (Array)) (Or (Array (Array)))))
   (defun cartesian-product a b (reduce a (lambda p x . . (merge p (map b (lambda y . . (Array x y))))) (Array)))
@@ -26,7 +26,7 @@
           (defconstant
               dy (+ (car dir) y)
               dx (+ (car (cdr dir)) x))
-          (+ sum (when (and (array-in-bounds-p array dy) (array-in-bounds-p (get array dy) dx)) (callback (get (get array dy) dx) dir))))) 0))
+          (+ sum (when (and (array-in-bounds? array dy) (array-in-bounds? (get array dy) dx)) (callback (get (get array dy) dx) dir))))) 0))
       ; join
       (deftype join (Lambda (Or (Array)) (Or (String)) (Or (String))))
       (defun join array delim (reduce array (lambda a x i . (if (> i 0) (concatenate a delim (type x String)) (type x String))) ""))
@@ -103,7 +103,7 @@
   (deftype partition (Lambda (Or (Array)) (Or (Number)) (Or (Array (Array)))))
   (defun partition array n (reduce array (lambda a x i . (do 
         (if (mod i n) (set (defconstant last-a (get a -1)) (length last-a) x) (set a (length a) (Array x))) a)) 
-        (Array)))
+        ()))
   ; select
   (deftype select (Lambda (Or (Array)) (Or (Function)) (Or (Array))))
   (defun select array callback (do
@@ -144,18 +144,18 @@
         (set new-array (length new-array) current))
       (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
     (iterate 0 (- (length array) 1))))
-  ; every
-  (deftype every (Lambda (Or (Array)) (Or (Function)) (Or (Number))))
-  (defun every array callback (do
+  ; every?
+  (deftype every? (Lambda (Or (Array)) (Or (Function)) (Or (Number))))
+  (defun every? array callback (do
       (defvar bol 1)
       (loop defun iterate i bounds (do
         (defconstant res (callback (get array i) i array))
         (boole bol (type res Boolean))
         (if (and res (< i bounds)) (iterate (+ i 1) bounds) bol)))
       (iterate 0 (- (length array) 1))))
-  ; some
-  (deftype some (Lambda (Or (Array)) (Or (Function)) (Or (Number))))
-  (defun some array callback (do
+  ; some?
+  (deftype some? (Lambda (Or (Array)) (Or (Function)) (Or (Number))))
+  (defun some? array callback (do
       (defvar bol 1)
       (loop defun iterate i bounds (do
         (defconstant res (callback (get array i) i array))
@@ -189,9 +189,9 @@
     (defun deep-flat arr (do 
       (defconstant new-array (Array)) 
       (defconstant flatten (lambda item 
-        (if (and (Arrayp item) (length item)) 
+        (if (and (Array? item) (length item)) 
               (for-each item (lambda x . . (flatten x))) 
-              (otherwise (Arrayp item) (set new-array (length new-array) item)))))
+              (otherwise (Array? item) (set new-array (length new-array) item)))))
       (flatten arr) 
       new-array))
     ; find
@@ -223,7 +223,7 @@
       (defvar idx -1 has-found 0)
       (loop defun iterate i bounds (do
         (defconstant current (get array i))
-        (boole has-found (and (atom current) (= target current)))
+        (boole has-found (and (atom? current) (= target current)))
         (if (and (not has-found) (< i bounds))
           (iterate (+ i 1) bounds) 
           (setf idx i))))
@@ -313,6 +313,12 @@
           (set reversed (- offset i) (get array i))
           (if (< i bounds) (iterate (+ i 1) bounds) reversed)))
         (iterate 0 offset)) array)))
+      ; empty
+      (deftype empty (Lambda (Or (Array)) (Or (Array))))
+      (defun empty array (do (loop defun iterate (if (length array) (do (set array -1) (iterate)) array)) (iterate)))
+      ; empty?
+      (deftype empty? (Lambda (Or (Array)) (Or (Number))))
+      (defun empty? array (not (length array)))
       ; binary-search
       (deftype binary-search (Lambda (Or (Array)) (Or (Number) (Integer) (String)) (Or (Number) (Integer) (String) (Array))))
       (defun binary-search 
@@ -411,7 +417,7 @@
           skip (length sep-arr))
         (defvar cursor "")
         (loop defun iterate result i bounds
-          (if (< (if (every sep-arr (lambda y j . (or (<= (length array) (+ i j)) (= (get array (+ i j)) y))))
+          (if (< (if (every? sep-arr (lambda y j . (or (<= (length array) (+ i j)) (= (get array (+ i j)) y))))
                 (do 
                   (setf i (+ i skip -1))
                   (set result (length result) cursor)
@@ -431,6 +437,19 @@
                 (iterate (+ i 1)))
               out))
               (iterate 0)))
+      (deftype clone (Lambda (Or (Array)) (Or (Array))))
+      (defun clone array (do 
+      (defconstant 
+              bounds (length array) 
+              out (Array bounds length))
+        (loop defun iterate i 
+          (if (< i bounds) 
+              (do 
+                (defconstant current (get array i))
+                (set out i (if (Array? current) (clone current) current)) 
+                (iterate (+ i 1)))
+              out))
+              (iterate 0)))
       ; slice-if-index
       (deftype slice-if-index (Lambda (Or (Array)) (Or (Function)) (Or (Array))))
       (defun slice-if-index array callback (reduce array (lambda a b i . (if (callback i) (set a (length a) b) a)) (Array)))
@@ -444,19 +463,19 @@
           (if (>= i n) 
             (set acc (length acc) (slice all (- i n) i)) acc)) (Array))))
       ; equal 
-      (deftype equal (Lambda (Or (Array) (Number) (Integer) (String)) (Or (Array) (Number) (Integer) (String)) (Or (Number))))
-      (defun equal a b 
-      (or (and (atom a) (atom b) (= a b)) 
-      (and (Arrayp a) 
+      (deftype equal? (Lambda (Or (Array) (Number) (Integer) (String)) (Or (Array) (Number) (Integer) (String)) (Or (Number))))
+      (defun equal? a b 
+      (or (and (atom? a) (atom? b) (= a b)) 
+      (and (Array? a) 
             (= (length a) (length b)) 
-              (not (some a (lambda . i . (not (equal (get a i) (get b i)))))))))
+              (not (some? a (lambda . i . (not (equal? (get a i) (get b i)))))))))
     (Array 
       (Array "push" push)
       (Array "pop" pop)
       (Array "drop" drop)
       (Array "sort-by-length" sort-by-length)  
       (Array "order-array" order-array)  
-      (Array "array-in-bounds-p" array-in-bounds-p)  
+      (Array "array-in-bounds?" array-in-bounds?)  
       (Array "join" join)
       (Array "trim" trim)
       (Array "split-by-lines" split-by-lines)
@@ -482,8 +501,8 @@
       (Array "reverse" reverse)
       (Array "binary-search" binary-search)
       (Array "character-occurances-in-string" character-occurances-in-string)
-      (Array "every" every)
-      (Array "some" some)
+      (Array "every?" every?)
+      (Array "some?" some?)
       (Array "index-of" index-of)
       (Array "last-index-of" last-index-of)
       (Array "index-of-starting-from" index-of-starting-from)
@@ -495,7 +514,7 @@
       (Array "slice" slice)
       (Array "slice-if" slice-if)
       (Array "slice-if-index" slice-if-index)
-      (Array "equal" equal)
+      (Array "equal?" equal?)
       (Array "neighborhood" neighborhood)
       (Array "repeat" repeat)
       (Array "window" window)
@@ -505,5 +524,9 @@
       (Array "to-lower-case" to-lower-case)
       (Array "cartesian-product" cartesian-product)
       (Array "repeated-apply" repeated-apply)
-      (Array "iteration" iteration))))
+      (Array "iteration" iteration)
+      (Array "empty" empty)
+      (Array "clone" clone)
+      (Array "empty?" empty?)
+  )))
 ; (/ std lib)

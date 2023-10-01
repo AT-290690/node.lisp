@@ -1,4 +1,4 @@
-(import std "split" "map" "push" "pop" "drop" "join" "reduce" "for-each" "push" "every" "map" "select" "array-in-bounds-p" "deep-flat" "concat" "split-by-lines")
+(import std "split" "map" "push" "pop" "drop" "join" "reduce" "for-each" "push" "every?" "map" "select" "array-in-bounds?" "deep-flat" "concat" "split-by-lines")
 (import math "summation" "product")
 
 (defconstant *INPUT* 
@@ -34,7 +34,7 @@
 (deftype evaluate (Lambda (Or (Array)) (Or (Number)) (Or (Number))))
 (defun evaluate args index (do
   (defconstant expression (get args index))
-  (unless (Arrayp expression) (type expression Number) 
+  (unless (Array? expression) (type expression Number) 
   (go expression (reduce (lambda a x i . 
     (if (= (mod i 2) 1) 
       (push a
@@ -46,7 +46,7 @@
 (deftype evaluate-adv (Lambda (Or (Array)) (Or (Number)) (Or (Number))))
 (defun evaluate-adv args index (do
   (defconstant expression (get args index))
-  (unless (Arrayp expression) (type expression Number) 
+  (unless (Array? expression) (type expression Number) 
   (go expression (reduce (lambda a x i . 
     (if (= (mod i 2) 1) (do 
       (defconstant right (evaluate-adv expression (+ i 1)))

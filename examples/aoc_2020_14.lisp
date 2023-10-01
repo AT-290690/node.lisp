@@ -1,10 +1,10 @@
 (import ds "hash-index" 
-  "hash-table-set" "hash-table-has" "hash-table-get" "hash-table" "hash-table-make")
+  "hash-table-add" "hash-table?" "hash-table-get" "hash-table" "hash-table-make")
 (import std 
-"array-in-bounds-p" "find-index"
+"array-in-bounds?" "find-index"
   "reduce" "push" "select" "deep-flat" "for-each"
-  "split-by-lines" "join" "split-by" "every" "trim" "array-of-numbers" "map"
-  "some" "find" "slice" "concat" "for-n")
+  "split-by-lines" "join" "split-by" "every?" "trim" "array-of-numbers" "map"
+  "some?" "find" "slice" "concat" "for-n")
 (import math "euclidean-mod" "min" "power" "summation" "min" "count-number-of-ones-bit")
 
 (defconstant *input* 
@@ -48,7 +48,7 @@ mem[26] = 1"))
       (parse-input-1)
       (reduce (lambda memory fields . .
         (reduce (cdr fields) (lambda memory x . .
-            (hash-table-set memory
+            (hash-table-add memory
               (car x)
               (go
                 x
@@ -110,7 +110,7 @@ mem[26] = 1"))
               mask-x (go fields (car) (car) (Int))
               addr (& (| (Int (car x)) mask-1) (~ mask-x))
               value (go x (cdr) (car) (Int)))
-        (for-n n (lambda i (hash-table-set memory (type (| addr (quantum-mask mask-x (Int i))) Number) value))) 
+        (for-n n (lambda i (hash-table-add memory (type (| addr (quantum-mask mask-x (Int i))) Number) value))) 
         memory)) memory))
         (hash-table 10))
     (deep-flat)

@@ -22,15 +22,15 @@ A Lisp for Node
 (fibonacci 10) ; 55
 
 ; to use memo (hashmap) you need to import ALL of these functions
-(import std "index-of" "find" "find-index" "map" "array-in-bounds-p")
-(import ds "hash-index" "hash-table-has" "hash-table-set" "hash-table-get" "hash-table")
+(import std "index-of" "find" "find-index" "map" "array-in-bounds?")
+(import ds "hash-index" "hash-table?" "hash-table-add" "hash-table-get" "hash-table")
 (import math "min" "euclidean-mod")
 
 (defun fibonacci-memoized n memo (if (< n 2) n
-  (if (hash-table-has memo n) (hash-table-get memo n)
+  (if (hash-table? memo n) (hash-table-get memo n)
   (do
     (defconstant cache (+ (fibonacci-memoized (- n 1) memo) (fibonacci-memoized (- n 2) memo)))
-    (hash-table-set memo n cache)
+    (hash-table-add memo n cache)
     cache))))
 
 (fibonacci-memoized 10 (hash-table 10)) ; 55
@@ -53,14 +53,14 @@ A Lisp for Node
 ```
 
 ```lisp
-(defconstant is-odd (lambda x . . (= (mod x 2) 1)))
+(defconstant odd? (lambda x . . (= (mod x 2) 1)))
 (defconstant mult_2 (lambda x . . (* x 2)))
 (defconstant sum (lambda a x . . (+ a x)))
 ; Pipe the first to a series of composed functions
 ; (arg (arg .. ) (arg .. ) (ar . . . . ))
 (go
   (Array 1 2 3 4 5 6 7 101)
-  (except is-odd)
+  (except odd?)
   (map mult_2)
   (reduce sum 0))
 ```
@@ -73,6 +73,18 @@ A Lisp for Node
     (range 1 n)
     (product)))
 (factorial 10)
+```
+
+```lisp
+; https://leetcode.com/problems/maximum-count-of-positive-integer-and-negative-integer/
+; yarn lisp -s /leetcode.lisp -d ./leetcode.js -c
+(import std "count-of" "reduce")
+(import math "max")
+(deftype maximum-count (Lambda (Or (Array (Number))) (Or (Number))))
+(defun maximum-count nums
+    (max
+      (count-of nums (lambda e . . (< e 0)))
+      (count-of nums (lambda e . . (> e 0)))))
 ```
 
 Simple CLI usage - create main.js

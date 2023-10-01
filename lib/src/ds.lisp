@@ -28,13 +28,13 @@
     ;       (Array "Animation" "Programming"))))
     ;   (log)
     ; )
-      ; hash-table-set
-    (deftype hash-table-set (Lambda (Or (Array (Array (Array)))) (Or (Number) (Integer) (String)) (Or (Array) (Number) (String) (Integer) (Function)) (Or (Array (Array (Array))))))
-    (defun hash-table-set 
+      ; hash-table-add
+    (deftype hash-table-add (Lambda (Or (Array (Array (Array)))) (Or (Number) (Integer) (String)) (Or (Array) (Number) (String) (Integer) (Function)) (Or (Array (Array (Array))))))
+    (defun hash-table-add 
       table key value 
         (do
           (defconstant idx (hash-index table key))
-          (otherwise (array-in-bounds-p table idx) (set table idx (Array)))
+          (otherwise (array-in-bounds? table idx) (set table idx (Array)))
           (defconstant 
             current (get table idx)
             len (length current)
@@ -51,7 +51,7 @@
       table key 
         (do
           (defconstant idx (hash-index table key))
-          (otherwise (array-in-bounds-p table idx) (set table idx (Array)))
+          (otherwise (array-in-bounds? table idx) (set table idx (Array)))
           (defconstant 
             current (get table idx)
             len (length current)
@@ -59,16 +59,16 @@
           (otherwise (= index -1) (and (set current index (get current -1)) (set current -1)))
           table))        
     ; hash table_has 
-    (deftype hash-table-has (Lambda (Or (Array (Array (Array)))) (Or (Number) (Integer) (String)) (Or (Number))))
-    (defun hash-table-has table key 
-      (and (array-in-bounds-p table (defconstant idx (hash-index table key))) (and (length (defconstant current (get table idx))) (>= (index-of (car current) key) 0))))
+    (deftype hash-table? (Lambda (Or (Array (Array (Array)))) (Or (Number) (Integer) (String)) (Or (Number))))
+    (defun hash-table? table key 
+      (and (array-in-bounds? table (defconstant idx (hash-index table key))) (and (length (defconstant current (get table idx))) (>= (index-of (car current) key) 0))))
     ; hash-table-get
     (deftype hash-table-get (Lambda (Or (Array (Array (Array)))) (Or (Number) (Integer) (String)) (Or (Number) (Integer) (String) (Array))))
     (defun hash-table-get
       table key 
         (do
           (defconstant idx (hash-index table key))
-          (if (array-in-bounds-p table idx) 
+          (if (array-in-bounds? table idx) 
             (do
               (defconstant current (get table idx))
               (go current
@@ -89,16 +89,16 @@
             table (hash-table (* len len)))
           (loop defun add i (do
             (defconstant item (get items i))
-            (hash-table-set table (get item 0) (get item 1))
+            (hash-table-add table (get item 0) (get item 1))
           (if (< i len) (add (+ i 1)) table)))
           (add 0)))
-      ; hash-set-set
-    (deftype hash-set-set (Lambda (Or (Array (Array))) (Or (Number) (Integer) (String)) (Or (Array (Array)))))
-    (defun hash-set-set 
+      ; hash-set-add
+    (deftype hash-set-add (Lambda (Or (Array (Array))) (Or (Number) (Integer) (String)) (Or (Array (Array)))))
+    (defun hash-set-add 
       table key 
         (do
           (defconstant idx (hash-index table key))
-          (otherwise (array-in-bounds-p table idx) (set table idx (Array)))
+          (otherwise (array-in-bounds? table idx) (set table idx (Array)))
           (defconstant 
             current (get table idx)
             len (length current)
@@ -115,7 +115,7 @@
       table key 
         (do
           (defconstant idx (hash-index table key))
-          (otherwise (array-in-bounds-p table idx) (set table idx (Array)))
+          (otherwise (array-in-bounds? table idx) (set table idx (Array)))
           (defconstant 
             current (get table idx)
             len (length current)
@@ -124,14 +124,14 @@
           (otherwise (= index -1) (and (set current index (get current -1)) (set current -1)))
           table))
     ; hash table_has 
-    (deftype hash-set-has (Lambda (Or (Array (Array))) (Or (Number) (Integer) (String)) (Or (Number))))
-    (defun hash-set-has table key 
-      (and (array-in-bounds-p table (defconstant idx (hash-index table key))) (and (length (defconstant current (get table idx))) (>= (index-of current key) 0))))
+    (deftype hash-set? (Lambda (Or (Array (Array))) (Or (Number) (Integer) (String)) (Or (Number))))
+    (defun hash-set? table key 
+      (and (array-in-bounds? table (defconstant idx (hash-index table key))) (and (length (defconstant current (get table idx))) (>= (index-of current key) 0))))
     ; hash-set-get
     (deftype hash-set-get (Lambda (Or (Array (Array))) (Or (Number) (Integer) (String)) (Or (Number) (Integer) (String))))
     (defun hash-set-get table key (do
           (defconstant idx (hash-index table key))
-          (if (array-in-bounds-p table idx) (do
+          (if (array-in-bounds? table idx) (do
               (defconstant current (get table idx))
               (go current
                 (find (lambda x . . (= key x))))))))
@@ -145,7 +145,7 @@
           table (hash-set (* len len)))
         (loop defun add i (do
           (defconstant item (get items i))
-          (hash-set-set table item)
+          (hash-set-add table item)
         (if (< i len) (add (+ i 1)) table)))
         (add 0)))
   ; (/ Hash Set)
@@ -262,14 +262,14 @@
     ; (/ Binary Tree)
   (Array 
     (Array "hash-index" hash-index)
-    (Array "hash-table-set" hash-table-set)
+    (Array "hash-table-add" hash-table-add)
     (Array "hash-table-remove" hash-table-remove)
-    (Array "hash-table-has" hash-table-has)
+    (Array "hash-table?" hash-table?)
     (Array "hash-table-get" hash-table-get)
     (Array "hash-table" hash-table)
     (Array "hash-table-make" hash-table-make)
-    (Array "hash-set-set" hash-set-set)
-    (Array "hash-set-has" hash-set-has)
+    (Array "hash-set-add" hash-set-add)
+    (Array "hash-set?" hash-set?)
     (Array "hash-set-remove" hash-set-remove)
     (Array "hash-set-get" hash-set-get)
     (Array "hash-set" hash-set)

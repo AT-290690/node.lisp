@@ -1,4 +1,4 @@
-(import std "neighborhood" "split-by" "split-by-lines" "for-n" "for-each" "array-of-numbers" "reduce" "quick-sort" "map" "concat" "count-of" "join" "array-in-bounds-p")
+(import std "neighborhood" "split-by" "split-by-lines" "for-n" "for-each" "array-of-numbers" "reduce" "quick-sort" "map" "concat" "count-of" "join" "array-in-bounds?")
 (import math "max")
 (defconstant sample 
 "L.LL.LL.LL
@@ -48,7 +48,7 @@ L.LLLLL.LL")
     height (- (length matrix) 1)
     width (- (length (car matrix)) 1)
     copy (map (Array (+ height 1) length) (lambda . . . (Array (+ width 1) length)))
-    directions (Array (Array 0 1) (Array 1 0) (Array -1 0) (Array 0 -1) (Array 1 -1) (Array -1 -1) (Array 1 1) (Array -1 1)))
+    directions (' (' 0 1) (' 1 0) (' -1 0) (' 0 -1) (' 1 -1) (' -1 -1) (' 1 1) (' -1 1)))
   (for-n height (lambda y 
     (for-n width (lambda x 
       (do 
@@ -58,7 +58,7 @@ L.LLLLL.LL")
               (defconstant 
                 dy (+ y (* Y i))
                 dx (+ x (* X i)))
-              (when (and (array-in-bounds-p matrix dy) (array-in-bounds-p (get matrix dy) dx)) 
+              (when (and (array-in-bounds? matrix dy) (array-in-bounds? (get matrix dy) dx)) 
                 (do 
                   (defconstant seat (get (get matrix dy) dx))
                   (cond 

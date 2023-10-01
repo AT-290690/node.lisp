@@ -52,8 +52,8 @@ describe('Interpretation', () => {
         (if (and (not res) (< i bounds)) (iterate (+ i 1) bounds) bol)))
       (iterate 0 (- (length array) 1))))
         (defun equal a b 
-     (or (and (atom a) (atom b) (= a b)) 
-     (and (Arrayp a) 
+     (or (and (atom? a) (atom? b) (= a b)) 
+     (and (Array? a) 
           (= (length a) (length b)) 
             (not (some a (lambda . i . (not (equal (get a i) (get b i)))))))))
     (defvar patten (Array "hello" 10))
@@ -72,14 +72,14 @@ describe('Interpretation', () => {
 
     deepStrictEqual(
       runFromInterpreted(
-        `(defun is-array-of-atoms array 
+        `(defun array-of-atoms? array 
         (if (not (length array)) 1 
-         (if (atom (car array)) 
-          (is-array-of-atoms (cdr array)) 0)))
+         (if (atom? (car array)) 
+          (array-of-atoms? (cdr array)) 0)))
      
            (Array 
-               (is-array-of-atoms (Array 1 2 (Array 1 2) "5"))
-               (is-array-of-atoms (Array 1 2 3 4 "5")))`
+               (array-of-atoms? (Array 1 2 (Array 1 2) "5"))
+               (array-of-atoms? (Array 1 2 3 4 "5")))`
       ),
       [0, 1]
     )
@@ -126,7 +126,7 @@ describe('Interpretation', () => {
       (setf idx i))))
       (iterate 0 (- (length array) 1))
       (if has-found idx -1)))
-(defun array-in-bounds-p array index (and (< index (length array)) (>= index 0)))
+(defun array-in-bounds? array index (and (< index (length array)) (>= index 0)))
 (defun map array callback (do 
   (defvar new-array ())
   (defvar i 0)
@@ -146,12 +146,12 @@ describe('Interpretation', () => {
             (setf total (euclidean-mod (+ (* total prime-num) value) (length table)))
             (if (< i bounds) (find-hash-index (+ i 1) bounds) total)))
           (find-hash-index 0 (min (- (length key-arr) 1) 100))))
-      ; hash-table-set
-    (defun hash-table-set 
+      ; hash-table-add
+    (defun hash-table-add 
       table key value 
         (do
           (defvar idx (hash-index table key))
-          (otherwise (array-in-bounds-p table idx) (set table idx ()))
+          (otherwise (array-in-bounds? table idx) (set table idx ()))
           (defvar current (get table idx))
           (defvar len (length current))
           (defvar index (if len (find-index current (lambda x i o (= (get x 0) key))) -1))
@@ -161,13 +161,13 @@ describe('Interpretation', () => {
             (set current index entry)
           )
           table))
-    (defun hash-table-has table key 
-      (and (array-in-bounds-p table (defvar idx (hash-index table key))) (length (get table idx))))
+    (defun hash-table? table key 
+      (and (array-in-bounds? table (defvar idx (hash-index table key))) (length (get table idx))))
     (defun hash-table-get
       table key 
         (do
           (defvar idx (hash-index table key))
-          (if (array-in-bounds-p table idx) 
+          (if (array-in-bounds? table idx) 
             (do
               (defvar current (get table idx))
               (go current
@@ -184,7 +184,7 @@ describe('Interpretation', () => {
           (defvar table (hash-table (* len len)))
           (loop defun add i (do
             (defvar item (get items i))
-            (hash-table-set table (get item 0) (get item 1))
+            (hash-table-add table (get item 0) (get item 1))
           (if (< i len) (add (+ i 1)) table)))
           (add 0)))
     
@@ -194,7 +194,7 @@ describe('Interpretation', () => {
       (Array "age" 32) 
       (Array "skills" 
         (Array "Animation" "Programming"))))
-  )) (hash-table-set tabl "age" 33)`),
+  )) (hash-table-add tabl "age" 33)`),
       [
         [],
         [],
@@ -437,7 +437,7 @@ describe('Interpretation', () => {
       (iterate 0 (- (length array) 1)))))
     (defvar deep-flat (lambda arr (do 
       (defvar new-array ()) 
-      (loop defun flatten item (if (Arrayp item) (for-each item (lambda x . (flatten x))) 
+      (loop defun flatten item (if (Array? item) (for-each item (lambda x . (flatten x))) 
       (push new-array item)))
       (flatten arr) 
       new-array
@@ -518,13 +518,13 @@ describe('Interpretation', () => {
   (iterate 0 (- (length array) 1)))))
   
 
-  (defvar is-odd (lambda x i (= (mod x 2) 1)))
+  (defvar odd? (lambda x i (= (mod x 2) 1)))
   (defvar mult_2 (lambda x i (* x 2)))
   (defvar sum (lambda a x i (+ a x)))
   
   (go 
   (Array 1 2 3 4 5 6 7 101) 
-  (select is-odd)
+  (select odd?)
   (map mult_2)
   (reduce sum 0))
   

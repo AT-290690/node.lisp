@@ -1,4 +1,4 @@
-(import std "split-by" "array-of-numbers" "reduce" "quick-sort" "map" "concat" "count-of" "join" "array-in-bounds-p")
+(import std "split-by" "array-of-numbers" "reduce" "quick-sort" "map" "concat" "count-of" "join" "array-in-bounds?")
 (import math "adjacent-difference" "max")
 
 (defconstant sample "16
@@ -58,7 +58,7 @@
 ; part 2
 (deftype combinations (Lambda (Or (Array (Number))) (Or (Number)) (Or (Array (Number))) (Or (Number))))
 (defun combinations inp i memo
-      (if (array-in-bounds-p memo i)
+      (if (array-in-bounds? memo i)
         (get memo i) 
       ; else 
         (do

@@ -5,35 +5,35 @@ import MATH from '../lib/baked/math.js'
 import DS from '../lib/baked/ds.js'
 const libraries = [STD, MATH, DS]
 const programs = [
-  `(import math "pi" "circumference") (Array (pi) (circumference 1))`,
-  `(import ds "hash-set" "hash-index" "hash-set-set" "hash-set-get" "hash-set-has" "hash-set-remove")
+  `(import math "PI" "circumference") (Array (PI) (circumference 1))`,
+  `(import ds "hash-set" "hash-index" "hash-set-add" "hash-set-get" "hash-set?" "hash-set-remove")
   (import math "euclidean-mod")
-  (import std "map" "index-of" "find-index" "find" "array-in-bounds-p")
+  (import std "map" "index-of" "find-index" "find" "array-in-bounds?")
   
   (defconstant hs (hash-set 10))
-  (hash-set-set hs "Anthony")
-  (hash-set-set hs 3)
-  (hash-set-set hs "Bob")
+  (hash-set-add hs "Anthony")
+  (hash-set-add hs 3)
+  (hash-set-add hs "Bob")
   (hash-set-remove hs "Bob")
-  (Array (hash-set-has hs "Anthony"))`,
-  `(import std "index-of" "find" "find-index" "map" "array-in-bounds-p")
-  (import ds "hash-index" "hash-table-has" "hash-table-set" "hash-table-get" "hash-table")
+  (Array (hash-set? hs "Anthony"))`,
+  `(import std "index-of" "find" "find-index" "map" "array-in-bounds?")
+  (import ds "hash-index" "hash-table?" "hash-table-add" "hash-table-get" "hash-table")
   (import math "min" "euclidean-mod")
   
   (defun fibonacci-memoized n memo (if (< n 2) n
-    (if (hash-table-has memo n) (hash-table-get memo n)
+    (if (hash-table? memo n) (hash-table-get memo n)
     (do
       (defconstant cache (+ (fibonacci-memoized (- n 1) memo) (fibonacci-memoized (- n 2) memo)))
-      (hash-table-set memo n cache)
+      (hash-table-add memo n cache)
       cache))))
   
   (Array (fibonacci-memoized 10 (hash-table 10)))`,
-  `(import ds "hash-table" "hash-index" "hash-table-set" "hash-table-get")
+  `(import ds "hash-table" "hash-index" "hash-table-add" "hash-table-get")
   (import math "euclidean-mod")
-  (import std "map" "find-index" "find" "array-in-bounds-p")
+  (import std "map" "find-index" "find" "array-in-bounds?")
   (defconstant ht (hash-table 10))
-  (hash-table-set ht "name" "Anthony")
-  (hash-table-set ht "age" 33)
+  (hash-table-add ht "name" "Anthony")
+  (hash-table-add ht "age" 33)
   (Array (hash-table-get ht "name"))`,
   `(import ds "binary-tree-node" "binary-tree-set-left" "binary-tree-get-value"  "binary-tree-get-left")
   (defconstant tree (binary-tree-node 10))
@@ -47,10 +47,10 @@ const programs = [
   `(import std "to-upper-case" "to-lower-case") (Array (to-lower-case "Lisp is Cool AT-29") (to-upper-case "Lisp is Cool AT-29"))`,
   `(import std "map") (go (Array 1 2 4) (map (lambda x . . (* x 2))))`,
   `(import std "map")
-  (import math "is-prime" "sqrt" "abs" "square" "average")
+  (import math "prime?" "sqrt" "abs" "square" "average")
   (go
     (Array 2 3 5 7 11 10 2563 1 48 1729)
-    (map (lambda x . . (is-prime x))))`,
+    (map (lambda x . . (prime? x))))`,
   `(import std "push" "concat" "quick-sort")
   (go
     (Array 3 0 5 3 2 4 1)
@@ -61,11 +61,11 @@ const programs = [
   (reverse (Array 1 2 3 4 5))`,
   `(import math "greatest-common-divisor")
   (Array (greatest-common-divisor 12 8))`,
-  `(import math "greatest-common-divisor" "adjacent-difference" "is-prime" "sqrt" "abs" "square" "average")
-  (import std "every")
+  `(import math "greatest-common-divisor" "adjacent-difference" "prime?" "sqrt" "abs" "square" "average")
+  (import std "every?")
   (defun is-array-of-coprime-pairs inp (and
-    (go inp (every (lambda x . . (is-prime x))))
-    (go inp (adjacent-difference (lambda a b (greatest-common-divisor a b))) (cdr) (every (lambda x . . (= x 1))))))
+    (go inp (every? (lambda x . . (prime? x))))
+    (go inp (adjacent-difference (lambda a b (greatest-common-divisor a b))) (cdr) (every? (lambda x . . (= x 1))))))
     (Array (is-array-of-coprime-pairs (Array 7 13 59 31 19)))`,
   `(import std "cartesian-product" "reduce" "map" "merge" "push")
     (cartesian-product (Array "x" "y") (Array 1 2))`,
@@ -95,18 +95,36 @@ const programs = [
       (Array (window (Array 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16) 4))`,
   `(import math "max-bit" "min-bit" "clamp-bit")
       (Array (max-bit 1 2) (min-bit 1 2) (clamp-bit 100 2 50) (clamp-bit 10 0 20))`,
-  `(import math "is-bit-power-of-two"  "count-number-of-ones-bit")
+  `(import math "bit-power-of-two?"  "count-number-of-ones-bit")
     (import std "map")
-    (Array (map (Array 2 4 8 16 32 64 1 3 7 40 49) (lambda x . . (is-bit-power-of-two x))) (count-number-of-ones-bit 23))`,
+    (Array (map (Array 2 4 8 16 32 64 1 3 7 40 49) (lambda x . . (bit-power-of-two? x))) (count-number-of-ones-bit 23))`,
   `(import math "possible-subsets-bit")
     (Array (possible-subsets-bit (Array "a" "b" "c")))`,
   `(import std "array-of-numbers" "map" "reduce")
 (import math "maximum" "max")
 (go (Array "1" "2" "3") (array-of-numbers) (maximum) (Array))`,
   `(import math "permutations") (Array (permutations (Array 1 2 3)))`,
-  `(import std "equal" "some") (Array (equal 1 1) (equal 1 2) (equal (Array 1) (Array 1)) (equal (Array (Array 1 2)) (Array (Array 1 2))) (equal (Array (Array 1 2)) (Array (Array 0 2))))`,
+  `(import std "equal?" "some?") (Array (equal? 1 1) (equal? 1 2) (equal? (Array 1) (Array 1)) (equal? (Array (Array 1 2)) (Array (Array 1 2))) (equal? (Array (Array 1 2)) (Array (Array 0 2))))`,
 
   `(import std "trim") (Array (trim "a a "))`,
+  `(import std "empty")
+ (defconstant array (Array 1 2 3 4))
+ (empty array)
+ (Array array)`,
+  `(import std "clone")
+ (defconstant arr (' (' 1 2 3) 2 (' 3 4 5)))
+ (defconstant c (clone arr))
+ (set (get c 0) 1 100)
+ (Array arr c)
+ `,
+  `
+(import std "empty?" "empty")
+(defvar arr (' 1 2 3 4))
+(Array
+   (empty? arr)
+   (empty arr)
+   (empty? arr)) 
+`,
 ]
 
 describe('Libraries', () => {
@@ -183,6 +201,12 @@ describe('Libraries', () => {
         ],
         [1, 0, 1, 1, 0],
         ['a a'],
+        [[]],
+        [
+          [[1, 2, 3], 2, [3, 4, 5]],
+          [[1, 100, 3], 2, [3, 4, 5]],
+        ],
+        [0, [], 1],
       ]
     ))
   it('Should compile matching interpretation', () =>

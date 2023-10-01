@@ -1,4 +1,4 @@
-(import std "split-by-n-lines" "map" "except" "split" "array-of-numbers" "push" "every" "reduce" "deep-flat" "select" "some" "reverse"
+(import std "split-by-n-lines" "map" "except" "split" "array-of-numbers" "push" "every?" "reduce" "deep-flat" "select" "some?" "reverse"
 "for-n" "find" "slice-if-index" "for-each")
 (import math "range" "product" "summation")
 
@@ -58,20 +58,20 @@ nearby tickets:
 (deftype part1 (Lambda (Or (Number))))
 (defun part1 (do 
   (destructuring-bind ticket-ranges your-ticket nearby-tickets . (parse-input sample1))
-  (go nearby-tickets (map (lambda x . . (select x (lambda y . . (not (some ticket-ranges (lambda z . . (or (is-in-bounds y (car z)) (is-in-bounds y (car (cdr z))))))))))) (deep-flat) (summation))))
+  (go nearby-tickets (map (lambda x . . (select x (lambda y . . (not (some? ticket-ranges (lambda z . . (or (is-in-bounds y (car z)) (is-in-bounds y (car (cdr z))))))))))) (deep-flat) (summation))))
 (deftype part2 (Lambda (Or (Number))))
 (defun part2 (do 
   (destructuring-bind ticket-ranges your-ticket nearby-tickets . (parse-input sample2))
   (defconstant remaining (go nearby-tickets
                             (select (lambda x . .
-                              (not (some x (lambda y . .
-                                (not (some ticket-ranges (lambda z . .
+                              (not (some? x (lambda y . .
+                                (not (some? ticket-ranges (lambda z . .
                                   (or (is-in-bounds y (car z)) (is-in-bounds y (car (cdr z))))
                                   ))))))))))
   (defconstant tickets (push (type remaining Array) (type your-ticket Array)))
   (defconstant *range* (range 0 (- (length your-ticket) 1)))
   (defun validate-ticket tickets i j (go 
-        (every tickets (lambda x . . 
+        (every? tickets (lambda x . . 
           (do
               (or
                 (is-in-bounds (get x i) (car (get ticket-ranges j)))

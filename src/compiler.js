@@ -2,6 +2,11 @@ import { APPLY, ATOM, PLACEHOLDER, TOKENS, TYPE, VALUE, WORD } from './enums.js'
 export const earMuffsToLodashes = (name) => name.replace(new RegExp(/\*/g), '_')
 export const dotNamesToEmpty = (name) => name.replace(new RegExp(/\./g), '')
 export const colonNamesTo$ = (name) => name.replace(new RegExp(/\:/g), '$')
+export const commaToLodash = (name) => name.replace(new RegExp(/\,/g), '_')
+
+export const questionMarkToLodash = (name) =>
+  name.replace(new RegExp(/\?/g), 'Pre')
+
 export const toCamelCase = (name) => {
   let out = name[0]
   for (let i = 1; i < name.length; ++i) {
@@ -22,7 +27,13 @@ export const deepRename = (name, newName, tree) => {
     }
 }
 export const lispToJavaScriptVariableName = (name) =>
-  toCamelCase(dotNamesToEmpty(colonNamesTo$(earMuffsToLodashes(name))))
+  toCamelCase(
+    dotNamesToEmpty(
+      colonNamesTo$(
+        questionMarkToLodash(commaToLodash(earMuffsToLodashes(name)))
+      )
+    )
+  )
 
 const Extensions = {}
 const Helpers = {
@@ -143,8 +154,8 @@ const compile = (tree, Variables, Functions) => {
         }(${parseArgs(rest, Variables, Functions)})`
       }
       case TOKENS.DESTRUCTURING_ASSIGMENT: {
-        let out = '(('
-        const rigth = compile(Arguments.pop(), Variables, Functions)
+        let out = `((_=${compile(Arguments.pop(), Variables, Functions)},`
+        Variables.add('_')
         const _rest = Arguments.pop()
         const len = Arguments.length
         for (let i = 0; i < len; ++i) {
@@ -152,7 +163,7 @@ const compile = (tree, Variables, Functions) => {
           if (NAME !== PLACEHOLDER) {
             const name = lispToJavaScriptVariableName(NAME)
             Variables.add(name)
-            out += `${name}=${rigth}.at(${i})${i !== len - 1 ? ',' : ''}`
+            out += `${name}=_.at(${i})${i !== len - 1 ? ',' : ''}`
           } else {
             out += i !== len - 1 ? ',' : ''
           }
@@ -160,8 +171,8 @@ const compile = (tree, Variables, Functions) => {
         if (_rest[VALUE] !== PLACEHOLDER) {
           const rest = lispToJavaScriptVariableName(_rest[VALUE])
           Variables.add(rest)
-          out += `,${rest}=(${rigth}).slice(${len})), ${rigth});`
-        } else out += `), ${rigth});`
+          out += `,${rest}=_.slice(${len})), _);`
+        } else out += `), _);`
         return out
       }
       case TOKENS.DEFINE_CONSTANT:

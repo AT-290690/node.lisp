@@ -21,8 +21,8 @@ describe('Compilation', () => {
               (if (and (not res) (< i bounds)) (iterate (+ i 1) bounds) bol)))
             (iterate 0 (- (length array) 1))))
               (defun equal a b
-           (or (and (atom a) (atom b) (= a b))
-           (and (Arrayp a)
+           (or (and (atom? a) (atom? b) (= a b))
+           (and (Array? a)
                 (= (length a) (length b))
                   (not (some a (lambda . i . (not (equal (get a i) (get b i)))))))))
           (defvar patten (Array "hello" 10))
@@ -111,7 +111,7 @@ describe('Compilation', () => {
           (interate 0 (- (length array) 1)))))
           (defvar deep-flat (lambda arr (do
             (defvar new-array ())
-            (defvar flatten (lambda item (if (Arrayp item) (for-each item (lambda x . (flatten x)))
+            (defvar flatten (lambda item (if (Array? item) (for-each item (lambda x . (flatten x)))
             (push new-array item))))
             new-array
           )))
@@ -225,13 +225,13 @@ describe('Compilation', () => {
               )))
             (interate 0 (- (length array) 1)))))
 
-      (defvar is-odd (lambda x i (= (mod x 2) 1)))
+      (defvar odd? (lambda x i (= (mod x 2) 1)))
       (defvar mult_2 (lambda x i (* x 2)))
       (defvar sum (lambda a x i (+ a x)))
 
       (go
       (Array 1 2 3 4 5 6 7 101)
-      (select is-odd)
+      (select odd?)
       (map mult_2)
       (reduce sum 0))
             `,
@@ -266,13 +266,13 @@ describe('Compilation', () => {
                   (if (< i bounds) (interate (+ i 1) bounds) initial)))
               (interate 0 (- (length array) 1)))))
 
-        (defvar is-odd (lambda x i (= (mod x 2) 1)))
+        (defvar odd? (lambda x i (= (mod x 2) 1)))
         (defvar mult_2 (lambda x i (* x 2)))
         (defvar sum (lambda a x i (+ a x)))
 
         (go
           (Array 1 2 3 4 5 6 7 101)
-          (select is-odd)
+          (select odd?)
           (map mult_2)
           (reduce sum 0)
         )

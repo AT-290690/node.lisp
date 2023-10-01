@@ -1,8 +1,8 @@
 (import ds "hash-index"
-  "hash-table-set" "hash-table-has" "hash-table-get" "hash-table" "hash-table-make" "hash-index" "hash-table-get" "hash-table"
-  "hash-set-set" "hash-set-remove" "hash-set-has" "hash-set-get" "hash-set" "hash-set-make")
-(import std  "array-in-bounds-p" "find-index" "map" "split-by-lines" "for-n" "iteration" "join" "reduce" "array-in-bounds-p" "find-index" "index-of"
-            "count-of" "for-each"  "for-range" "concat" "left-pad" "right-pad" "every"
+  "hash-table-add" "hash-table?" "hash-table-get" "hash-table" "hash-table-make" "hash-index" "hash-table-get" "hash-table"
+  "hash-set-add" "hash-set-remove" "hash-set?" "hash-set-get" "hash-set" "hash-set-make")
+(import std  "array-in-bounds?" "find-index" "map" "split-by-lines" "for-n" "iteration" "join" "reduce" "array-in-bounds?" "find-index" "index-of"
+            "count-of" "for-each"  "for-range" "concat" "left-pad" "right-pad" "every?"
              "deep-flat" "split")
 (import math "summation" "floor" "euclidean-mod" "max" "min" "abs")
 
@@ -38,7 +38,7 @@
   (for-each (lambda row x .
     (go row 
       (type Array) 
-      (for-each (lambda col y . (when (= col "#") (hash-set-set matrix (to-3d-key y x 0)))))))))
+      (for-each (lambda col y . (when (= col "#") (hash-set-add matrix (to-3d-key y x 0)))))))))
       matrix))
 
 (defun parse-input-4d input (do 
@@ -49,7 +49,7 @@
   (for-each (lambda row x .
     (go row 
       (type Array) 
-      (for-each (lambda col y . (when (= col "#") (hash-set-set matrix (to-4d-key y x 0 0)))))))))
+      (for-each (lambda col y . (when (= col "#") (hash-set-add matrix (to-4d-key y x 0 0)))))))))
       matrix))
 
 (deftype neighborhood-3d (Lambda (Or (Array (Array (String)))) (Or (Array (Array (Number) (Number) (Number))))  (Or (Number)) (Or (Number)) (Or (Number)) (Or (Number))))
@@ -59,7 +59,7 @@
                       dx (+ (get dir 1) x)
                       dz (+ (get dir 2) z)
                       dkey (to-3d-key dy dx dz)
-                      is-active (hash-set-has matrix dkey))
+                      is-active (hash-set? matrix dkey))
                       (+ acc is-active))) 0))
 
 (deftype neighborhood-4d (Lambda (Or (Array (Array (String)))) (Or (Array (Array (Number) (Number) (Number) (Number)))) (Or (Number)) (Or (Number)) (Or (Number)) (Or (Number)) (Or (Number))))
@@ -70,8 +70,11 @@
                       dz (+ (get dir 2) z)
                       dw (+ (get dir 3) w)
                       dkey (to-4d-key dy dx dz dw)
-                      is-active (hash-set-has matrix dkey))
+                      is-active (hash-set? matrix dkey))
                       (+ acc is-active))) 0))
+
+(defconstant directions-2d (' 
+                  (' 0 1) (' 1 0) (' -1 0) (' 0 -1) (' 1 -1) (' -1 -1) (' 1 1) (' -1 1)))
 
 (defconstant directions-3d (' 
                   (' 0 0 -1) (' 0 0 1)
@@ -120,13 +123,13 @@
           (for-range (+ min-d -1) (+ max-d 1) (lambda z (do 
       (defconstant 
           key (to-3d-key y x z)
-          current (hash-set-has matrix key)
+          current (hash-set? matrix key)
           sum (neighborhood-3d matrix directions-3d y x z))
         ; If a cube is active and exactly 2 or 3 of its neighbors are also active, the cube remains active. 
         ; Otherwise, the cube becomes inactive.
         ; If a cube is inactive but exactly 3 of its neighbors are active, the cube becomes active. 
         ; Otherwise, the cube remains inactive.
-        (if (or (and (= current 1) (or (= sum 2) (= sum 3))) (and (= current 0) (= sum 3))) (hash-set-set next-matrix key)))))))))
+        (if (or (and (= current 1) (or (= sum 2) (= sum 3))) (and (= current 0) (= sum 3))) (hash-set-add next-matrix key)))))))))
         next-matrix))
 
 (defun solve-2 matrix (do
@@ -159,13 +162,13 @@
             (for-range (+ min-t -1) (+ max-t 1) (lambda w (do 
       (defconstant 
           key (to-4d-key y x z w)
-          current (hash-set-has matrix key)
+          current (hash-set? matrix key)
           sum (neighborhood-4d matrix directions-4d y x z w))
         ; If a cube is active and exactly 2 or 3 of its neighbors are also active, the cube remains active. 
         ; Otherwise, the cube becomes inactive.
         ; If a cube is inactive but exactly 3 of its neighbors are active, the cube becomes active. 
         ; Otherwise, the cube remains inactive.
-        (if (or (and (= current 1) (or (= sum 2) (= sum 3))) (and (= current 0) (= sum 3))) (hash-set-set next-matrix key)))))))))))
+        (if (or (and (= current 1) (or (= sum 2) (= sum 3))) (and (= current 0) (= sum 3))) (hash-set-add next-matrix key)))))))))))
         next-matrix))
 
 

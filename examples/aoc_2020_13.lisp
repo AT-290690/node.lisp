@@ -1,5 +1,5 @@
-(import std "slice-if-index" "select" "every" "find" "split" "map" "every" "select" "reduce" "for-each")
-(import math "min" "max" "round" "floor" "greatest-common-divisor" "product" "summation" "sqrt" "is-prime" "adjacent-difference" "abs" "average" "square" )
+(import std "slice-if-index" "select" "every?" "find" "split" "map" "every?" "select" "reduce" "for-each")
+(import math "min" "max" "round" "floor" "greatest-common-divisor" "product" "summation" "sqrt" "prime?" "adjacent-difference" "abs" "average" "square" )
 (defconstant sample "939
 7,13,x,x,59,x,31,19")
 (defconstant input "1001171
@@ -30,8 +30,8 @@
 
 (deftype is-array-of-coprime-pairs (Lambda (Or (Array (Number))) (Or (Number))))
 (defun is-array-of-coprime-pairs inp (and 
-        (go inp (every (lambda x . . (is-prime x)))) 
-        (go inp (adjacent-difference (lambda a b (greatest-common-divisor a b))) (cdr) (every (lambda x . . (= x 1))))))
+        (go inp (every? (lambda x . . (prime? x)))) 
+        (go inp (adjacent-difference (lambda a b (greatest-common-divisor a b))) (cdr) (every? (lambda x . . (= x 1))))))
 
 (deftype chinese-remainder-theorem (Lambda (Or (Array (Array (Number)))) (Or (Number))))
 (defun chinese-remainder-theorem items

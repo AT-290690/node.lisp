@@ -1,4 +1,4 @@
-(import std  "select" "for-each" "map" "split-by-n-lines" "deep-flat" "split-by" "join" "every" "reduce")
+(import std  "select" "for-each" "map" "split-by-n-lines" "deep-flat" "split-by" "join" "every?" "reduce")
 (import math "summation")
 (defconstant sample "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
 byr:1937 iyr:2017 cid:147 hgt:183cm
@@ -76,6 +76,6 @@ hgt:76in")
                       (and 
                         (= (length arr) 9) 
                         (length (regex-match value "[0-9]{9}")))))))))))
-       (select (lambda x . . (every x (lambda y . . (= (get y -1) 1)))))
+       (select (lambda x . . (every? x (lambda y . . (= (get y -1) 1)))))
       ; (map (lambda x . . (log x)))
       (length)))
