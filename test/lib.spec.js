@@ -128,6 +128,15 @@ const programs = [
   `(import math "summation" "reduce")
 (defconstant add (function args (summation args)))
 (Array (add 2 3 4))`,
+  `(import std "zip" "scan" "take" "fold")
+  (import math "even?")
+  (go 
+  (' 1 2 3 4 5 6 7 8 9 10) 
+  (take even?) 
+  (zip (' "A" "B" "C" "D" "E"))
+  (scan (lambda x (concatenate (type (* (car x) 10) String) "-" (car (cdr x)))))
+  (fold (lambda a x (concatenate x a)) "")
+  (Array))`,
 ]
 
 describe('Libraries', () => {
@@ -211,6 +220,7 @@ describe('Libraries', () => {
         ],
         [0, [], 1],
         [9],
+        ['100-E80-D60-C40-B20-A'],
       ]
     ))
   it('Should compile matching interpretation', () =>

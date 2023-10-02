@@ -1,4 +1,4 @@
-(import std "map" "empty?" "drop" "concat" "clone" "slice" "split-by-n-lines" "some?" "every?" "reverse" "split" "join" "trim" "array-of-numbers" "reduce" "every?" "count-of" )
+(import std "fold" "map" "scan" "empty?" "drop" "concat" "clone" "slice" "split-by-n-lines" "some?" "reverse" "split" "join" "trim" "array-of-numbers" "reduce" "every?" )
 (import math "summation")
 ; (defconstant *INPUT* (go 
 ;  (:open "./playground/src/aoc_2020/19/input.txt")
@@ -21,7 +21,7 @@ aaaabbb"
 (destructuring-bind rules messages . *INPUT*)
 (deftype parse-rules (Lambda (Or (Array (String))) (Or (Array (Array)))))
 (defun parse-rules rules (go rules
-                        (map (lambda x . . (do 
+                        (scan (lambda x (do 
                             (defconstant parts (split x ": "))
                             (defconstant index (type (car parts) Number))
                             (defconstant ored (split (car (cdr parts)) "|"))
@@ -34,11 +34,11 @@ aaaabbb"
                               (if (or (= x "\"a\"") (= x "\"b\""))
                               (Array (car (cdr (split x (char 34)))))
                               (array-of-numbers (split (trim x) " ")))))))))
-                        (reduce (lambda a x . . (set a (car x) (cdr x))) 
+                        (fold (lambda a x (set a (car x) (cdr x))) 
                         (Array (length rules) length))))
 
 (defconstant *RULES* (parse-rules rules))
-(defconstant *MESSAGES* (go messages (map (lambda x . . (type x Array)))))
+(defconstant *MESSAGES* (go messages (scan (lambda x (type x Array)))))
 
 (deftype match? (Lambda (Or (Array (String))) (Or (Array (Number))) (Or (Number))))
 (defun match? msg queue 
@@ -64,5 +64,5 @@ aaaabbb"
 
 (Array (go
   *MESSAGES*
-  (map (lambda msg . . (match? msg (' 0))))
+  (scan (lambda msg (match? msg (' 0))))
   (summation)))

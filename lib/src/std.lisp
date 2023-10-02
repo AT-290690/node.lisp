@@ -99,6 +99,15 @@
       (when (callback current i array) (setf amount (+ amount 1)))
       (if (< i bounds) (iterate (+ i 1) bounds) amount)))
     (iterate 0 (- (length array) 1))))
+    ; count-of
+  (deftype number-of (Lambda (Or (Array)) (Or (Function)) (Or (Number))))
+  (defun number-of array callback (do
+    (defvar amount 0)
+    (loop defun iterate i bounds (do
+      (defconstant current (get array i))
+      (when (callback current) (setf amount (+ amount 1)))
+      (if (< i bounds) (iterate (+ i 1) bounds) amount)))
+    (iterate 0 (- (length array) 1))))
   ; partition 
   (deftype partition (Lambda (Or (Array)) (Or (Number)) (Or (Array (Array)))))
   (defun partition array n (reduce array (lambda a x i . (do 
@@ -114,6 +123,30 @@
         (set new-array (length new-array) current))
       (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
     (iterate 0 (- (length array) 1))))
+; take
+(deftype take (Lambda (Or (Array)) (Or (Function)) (Or (Array))))
+(defun take array callback (do 
+  (loop defun iterate arr output
+    (if (length arr) (iterate (cdr arr) (if (callback (car arr)) (set output (length output) (car arr)) output)) output))
+  (iterate array ())))
+; scan
+(deftype scan (Lambda (Or (Array)) (Or (Function)) (Or (Array))))
+(defun scan arr callback (do 
+  (loop defun iterate arr output
+    (if (length arr) (iterate (cdr arr) (set output (length output) (callback (car arr)))) output))
+  (iterate arr ())))
+; fold 
+(deftype fold (Lambda (Or (Array)) (Or (Function)) (Or (Array) (Number) (Integer) (String)) (Or (Array) (Number) (Integer) (String))))
+(defun fold arr callback initial (do 
+  (loop defun iterate arr output
+    (if (length arr) (iterate (cdr arr) (setf output (callback output (car arr)))) output))
+  (iterate arr initial)))
+; zip
+(deftype zip (Lambda (Or (Array)) (Or (Array)) (Or (Array (Array)))))
+(defun zip A B (do 
+  (loop defun iterate a b output
+    (if (and (length a) (length b)) (iterate (cdr a) (cdr b) (set output (length output) (Array (car a) (car b)))) output))
+  (iterate A B ())))
   ; except
   (deftype except (Lambda (Or (Array)) (Or (Function)) (Or (Array))))
   (defun except array callback (do
@@ -162,6 +195,24 @@
         (boole bol (type res Boolean))
         (if (and (not res) (< i bounds)) (iterate (+ i 1) bounds) bol)))
       (iterate 0 (- (length array) 1))))
+  ; all?
+  (deftype all? (Lambda (Or (Array)) (Or (Function)) (Or (Number))))
+  (defun all? array callback (do
+      (defvar bol 1)
+      (loop defun iterate i bounds (do
+        (defconstant res (callback (get array i)))
+        (boole bol (type res Boolean))
+        (if (and res (< i bounds)) (iterate (+ i 1) bounds) bol)))
+      (iterate 0 (- (length array) 1))))
+  ; any?
+  (deftype any? (Lambda (Or (Array)) (Or (Function)) (Or (Number))))
+  (defun any? array callback (do
+      (defvar bol 1)
+      (loop defun iterate i bounds (do
+        (defconstant res (callback (get array i)))
+        (boole bol (type res Boolean))
+        (if (and (not res) (< i bounds)) (iterate (+ i 1) bounds) bol)))
+      (iterate 0 (- (length array) 1))))
   ; reduce
   (deftype reduce (Lambda (Or (Array)) (Or (Function)) (Or (Array) (Number) (Integer) (String)) (Or (Array) (Number) (Integer) (String))))
   (defun reduce array callback initial (do
@@ -194,7 +245,18 @@
               (otherwise (Array? item) (set new-array (length new-array) item)))))
       (flatten arr) 
       new-array))
-    ; find
+    ; fetch
+    (deftype fetch (Lambda (Or (Array)) (Or (Function)) (Or (Array) (Number) (Integer) (String) (Function))))
+    (defun fetch array callback (do
+            (loop defun iterate i bounds (do
+              (defconstant 
+                current (get array i)
+                has (callback current))
+              (if (and (not has) (< i bounds))
+                (iterate (+ i 1) bounds) 
+                (when has current))))
+                (iterate 0 (- (length array) 1))))
+     ; find
     (deftype find (Lambda (Or (Array)) (Or (Function)) (Or (Array) (Number) (Integer) (String) (Function))))
     (defun find array callback (do
             (loop defun iterate i bounds (do
@@ -528,5 +590,13 @@
       (Array "empty" empty)
       (Array "clone" clone)
       (Array "empty?" empty?)
+      (Array "take" take)
+      (Array "zip" zip)
+      (Array "scan" scan)
+      (Array "fold" fold)
+      (Array "fetch" fetch)
+      (Array "any?" any?)
+      (Array "all?" all?)
+      (Array "number-of" number-of)
   )))
 ; (/ std lib)

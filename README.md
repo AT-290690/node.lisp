@@ -89,15 +89,14 @@ A Lisp for Node
 
 ```lisp
 ; Variadic function
-(defconstant prod (function args (do
-    (defvar initial 1)
-    (loop defun product arr
-      (if (length arr) (do
-        (setf initial (* initial (car arr)))
-        (product (cdr arr))) initial))
-    (product args))))
+(defconstant product (function args (do
+  (loop defun iterate arr initial
+    (if (length arr)
+        (iterate (cdr arr) (* initial (car arr)))
+        initial))
+  (iterate args 1))))
 
-  (log (prod 10 20 30))
+  (log (product 10 20 30))
 ```
 
 ```lisp
