@@ -78,13 +78,10 @@ A Lisp for Node
 ```lisp
 ; https://leetcode.com/problems/maximum-count-of-positive-integer-and-negative-integer/
 ; yarn lisp -s /leetcode.lisp -d ./leetcode.js -c
-(import std "count-of" "reduce")
+(import std "number-of")
 (import math "max" "positive?" "negative?")
 (deftype maximum-count (Lambda (Or (Array (Number))) (Or (Number))))
-(defun maximum-count nums
-    (max
-      (count-of nums (lambda x . . (negative? x)))
-      (count-of nums (lambda x . . (positive? x)))))
+(defun maximum-count nums (max (number-of nums negative?) (number-of nums positive?)))
 ```
 
 ```lisp

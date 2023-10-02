@@ -11,13 +11,13 @@
   (deftype circumference (Lambda (Or (Number)) (Or (Number))))
   (defun circumference radius (* 3.141592653589793 (* radius 2)))
   ; positive?
-  (deftype positive? (Lambda (Or (Number)) (Or (Number))))
+  (deftype positive? (Lambda (Or (Number)) (Or (Boolean))))
   (defun positive? num (> num 0))
   ; negative?
-  (deftype negative? (Lambda (Or (Number)) (Or (Number))))
+  (deftype negative? (Lambda (Or (Number)) (Or (Boolean))))
   (defun negative? num (< num 0))
   ; zero?
-  (deftype zero? (Lambda (Or (Number)) (Or (Number))))
+  (deftype zero? (Lambda (Or (Number)) (Or (Boolean))))
   (defun zero? num (= num 0))
   ; max
   (deftype max (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
@@ -47,10 +47,10 @@
   (deftype clamp (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
   (defun clamp x limit (if (> x limit) limit x))
   ; odd?
-  (deftype odd? (Lambda (Or (Number)) (Or (Number))))
+  (deftype odd? (Lambda (Or (Number)) (Or (Boolean))))
   (defun odd? x (= (mod x 2) 1))
   ; even?
-  (deftype even? (Lambda (Or (Number)) (Or (Number))))
+  (deftype even? (Lambda (Or (Number)) (Or (Boolean))))
   (defun even? x (= (mod x 2) 0))
   ; sign 
   (deftype sign (Lambda (Or (Number)) (Or (Number))))
@@ -114,7 +114,7 @@
             (sqrt-iter (improve-guess g x) x)))
   (sqrt-iter 1.0 x)))
   ; can-sum?
-  (deftype can-sum? (Lambda (Or (Number)) (Or (Array (Number))) (Or (Number))))
+  (deftype can-sum? (Lambda (Or (Number)) (Or (Array (Number))) (Or (Boolean))))
   (defun can-sum? t values 
     (if (< t 0) 0 
       (if (= t 0) 1 
@@ -145,7 +145,7 @@
      (setf x (- x (& (- x max) (>> (- max x) 31))))
      (- x (& (- x min) (>> (- x min) 31)))))
   ; bit-power-of-two? ; (and x (not (& x (- x 1)))
-  (deftype bit-power-of-two? (Lambda (Or (Number)) (Or (Number))))
+  (deftype bit-power-of-two? (Lambda (Or (Number)) (Or (Boolean))))
   (defun bit-power-of-two? value 
     (and 
       (= (& value (- value 1)) 0) 

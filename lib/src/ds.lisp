@@ -59,7 +59,7 @@
           (otherwise (= index -1) (and (set current index (get current -1)) (set current -1)))
           table))        
     ; hash table_has 
-    (deftype hash-table? (Lambda (Or (Array (Array (Array)))) (Or (Number) (Integer) (String)) (Or (Number))))
+    (deftype hash-table? (Lambda (Or (Array (Array (Array)))) (Or (Number) (Integer) (String)) (Or (Boolean))))
     (defun hash-table? table key 
       (and (array-in-bounds? table (defconstant idx (hash-index table key))) (and (length (defconstant current (get table idx))) (>= (index-of (car current) key) 0))))
     ; hash-table-get
@@ -124,7 +124,7 @@
           (otherwise (= index -1) (and (set current index (get current -1)) (set current -1)))
           table))
     ; hash table_has 
-    (deftype hash-set? (Lambda (Or (Array (Array))) (Or (Number) (Integer) (String)) (Or (Number))))
+    (deftype hash-set? (Lambda (Or (Array (Array))) (Or (Number) (Integer) (String)) (Or (Boolean))))
     (defun hash-set? table key 
       (and (array-in-bounds? table (defconstant idx (hash-index table key))) (and (length (defconstant current (get table idx))) (>= (index-of current key) 0))))
     ; hash-set-get

@@ -11,10 +11,10 @@
   (deftype drop (Lambda (Or (Array)) (Or (Array) (Number) (Integer) (String) (Function))))
   (defun drop array (when (length array) (do (defconstant last (get array -1)) (set array -1) last)))
   ; array-in-bounds? 
-  (deftype array-in-bounds? (Lambda (Or (Array)) (Or (Number)) (Or (Number))))
+  (deftype array-in-bounds? (Lambda (Or (Array)) (Or (Number)) (Or (Boolean))))
   (defun array-in-bounds? array index (and (< index (length array)) (>= index 0)))
   ; array-of-atoms?
-  (deftype array-of-atoms? (Lambda (Or (Array)) (Or (Number))))
+  (deftype array-of-atoms? (Lambda (Or (Array)) (Or (Boolean))))
   (defun array-of-atoms? array (if (not (length array)) 1 (if (atom? (car array)) (array-of-atoms? (cdr array)) 0)))
   ; cartesian-product
   (deftype cartesian-product (Lambda (Or (Array)) (Or (Array)) (Or (Array (Array)))))
@@ -178,7 +178,7 @@
       (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
     (iterate 0 (- (length array) 1))))
   ; every?
-  (deftype every? (Lambda (Or (Array)) (Or (Function)) (Or (Number))))
+  (deftype every? (Lambda (Or (Array)) (Or (Function)) (Or (Boolean))))
   (defun every? array callback (do
       (defvar bol 1)
       (loop defun iterate i bounds (do
@@ -187,7 +187,7 @@
         (if (and res (< i bounds)) (iterate (+ i 1) bounds) bol)))
       (iterate 0 (- (length array) 1))))
   ; some?
-  (deftype some? (Lambda (Or (Array)) (Or (Function)) (Or (Number))))
+  (deftype some? (Lambda (Or (Array)) (Or (Function)) (Or (Boolean))))
   (defun some? array callback (do
       (defvar bol 1)
       (loop defun iterate i bounds (do
@@ -196,7 +196,7 @@
         (if (and (not res) (< i bounds)) (iterate (+ i 1) bounds) bol)))
       (iterate 0 (- (length array) 1))))
   ; all?
-  (deftype all? (Lambda (Or (Array)) (Or (Function)) (Or (Number))))
+  (deftype all? (Lambda (Or (Array)) (Or (Function)) (Or (Boolean))))
   (defun all? array callback (do
       (defvar bol 1)
       (loop defun iterate i bounds (do
@@ -205,7 +205,7 @@
         (if (and res (< i bounds)) (iterate (+ i 1) bounds) bol)))
       (iterate 0 (- (length array) 1))))
   ; any?
-  (deftype any? (Lambda (Or (Array)) (Or (Function)) (Or (Number))))
+  (deftype any? (Lambda (Or (Array)) (Or (Function)) (Or (Boolean))))
   (defun any? array callback (do
       (defvar bol 1)
       (loop defun iterate i bounds (do
