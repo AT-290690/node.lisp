@@ -28,9 +28,14 @@ const stringifyArgs = (args) =>
     })
     .join(' ')
 const isForbiddenVariableName = (name) => {
-  for (const key in TOKENS) if (TOKENS[key] === name) return true
   switch (name) {
     case '_':
+    case TOKENS.CAST_TYPE:
+    case TOKENS.DEFINE_CONSTANT:
+    case TOKENS.DEFINE_VARIABLE:
+    case TOKENS.DEFINE_TYPE:
+    case TOKENS.DEFINE_FUNCTION:
+    case TOKENS.DESTRUCTURING_ASSIGMENT:
       return true
     default:
       return false
@@ -175,30 +180,33 @@ const tokens = {
     return a % b
   },
   [TOKENS.DIVISION]: (args, env) => {
-    if (args.length !== 1)
-      throw new RangeError(
-        `Invalid number of arguments for (${
-          TOKENS.DIVISION
-        }), expected 1 but got ${args.length}. (${
-          TOKENS.DIVISION
-        } ${stringifyArgs(args)}).`
-      )
-    const number = evaluate(args[0], env)
-    if (typeof number !== 'number')
+    if (!args.length) return 0
+    if (args.length === 1) {
+      const number = evaluate(args[0], env)
+      if (typeof number !== 'number')
+        throw new TypeError(
+          `Arguments of (${TOKENS.DIVISION}) is not a (${
+            TOKENS.NUMBER_TYPE
+          }) (${TOKENS.DIVISION} ${stringifyArgs(args)}).`
+        )
+      if (number === 0)
+        throw new TypeError(
+          `Argument of (${
+            TOKENS.DIVISION
+          }) can't be a (0) (division by 0 is not allowed) (${
+            TOKENS.DIVISION
+          } ${stringifyArgs(args)}).`
+        )
+      return 1 / number
+    }
+    const operands = args.map((x) => evaluate(x, env))
+    if (operands.some((x) => typeof x !== 'number' && typeof x !== 'bigint'))
       throw new TypeError(
-        `Arguments of (${TOKENS.DIVISION}) is not a (${TOKENS.NUMBER_TYPE}) (${
-          TOKENS.DIVISION
-        } ${stringifyArgs(args)}).`
+        `Not all arguments of (${TOKENS.DIVISION}) are (${
+          TOKENS.NUMBER_TYPE
+        }) (${TOKENS.DIVISION} ${stringifyArgs(args)}).`
       )
-    if (number === 0)
-      throw new TypeError(
-        `Argument of (${
-          TOKENS.DIVISION
-        }) can't be a (0) (division by 0 is not allowed) (${
-          TOKENS.DIVISION
-        } ${stringifyArgs(args)}).`
-      )
-    return 1 / number
+    return operands.reduce((a, b) => a / b)
   },
   [TOKENS.ARRAY_OR_STRING_LENGTH]: (args, env) => {
     if (args.length !== 1)
@@ -340,9 +348,10 @@ const tokens = {
     return operands.reduce((a, b) => a + b)
   },
   [TOKENS.MULTIPLICATION]: (args, env) => {
+    if (!args.length) return 1
     if (args.length < 2)
       throw new RangeError(
-        `Invalid number of arguments for (${TOKENS.MULTIPLICATION}), expected > 1 but got ${args.length}.`
+        `Invalid number of arguments for (${TOKENS.MULTIPLICATION}), expected (or (> 1) (= 0)) but got ${args.length}.`
       )
     const operands = args.map((x) => evaluate(x, env))
     if (operands.some((x) => typeof x !== 'number' && typeof x !== 'bigint'))
@@ -795,6 +804,23 @@ const tokens = {
           writable: true,
         })
       }
+      return evaluate(body, localEnv)
+    }
+  },
+  [TOKENS.VARIADIC_FUNCTION]: (args, env) => {
+    if (args.length !== 2)
+      throw new RangeError(
+        `Invalid number of arguments to (${
+          TOKENS.VARIADIC_FUNCTION
+        }) (2 required) (${TOKENS.VARIADIC_FUNCTION} ${stringifyArgs(args)})`
+      )
+    const [params, body] = args
+    return (props = [], scope) => {
+      const localEnv = Object.create(env)
+      Object.defineProperty(localEnv, params[VALUE], {
+        value: props.map((arg) => evaluate(arg, scope)),
+        writable: true,
+      })
       return evaluate(body, localEnv)
     }
   },
@@ -1577,5 +1603,5 @@ const tokens = {
   },
   [TOKENS.ABORT]: () => process.exit(),
 }
-tokens[TOKENS.NOT_COMPILED_BLOCK] = { ...tokens[TOKENS.BLOCK] }
+tokens[TOKENS.NOT_COMPILED_BLOCK] = tokens[TOKENS.BLOCK]
 export { tokens }

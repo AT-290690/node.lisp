@@ -303,6 +303,16 @@ const compile = (tree, Variables, Functions) => {
           Variables
         )})=>{${vars}return ${evaluatedBody.toString().trimStart()}});`
       }
+      case TOKENS.VARIADIC_FUNCTION: {
+        const body = Arguments.pop()
+        const Variables = new Set()
+        const evaluatedBody = compile(body, Variables, Functions)
+        const vars = Variables.size ? `var ${[...Variables].join(',')};` : ''
+        return `((...${compile(
+          Arguments[0],
+          Variables
+        )})=>{${vars}return ${evaluatedBody.toString().trimStart()}});`
+      }
       case TOKENS.TAILC_CALLS_OPTIMISED_RECURSIVE_FUNCTION: {
         let name,
           newName,
@@ -375,8 +385,17 @@ const compile = (tree, Variables, Functions) => {
               // Add space so it doesn't consider it 2--1 but 2- -1
               .map((x) => (typeof x === 'number' && x < 0 ? ` ${x}` : x))
               .join(token)});`
-      case TOKENS.ADDITION:
       case TOKENS.MULTIPLICATION:
+        return Arguments.length
+          ? `(${parseArgs(Arguments, Variables, Functions, token)});`
+          : `(1);`
+      case TOKENS.DIVISION:
+        return Arguments.length
+          ? Arguments.length === 1
+            ? `(1/${compile(Arguments[0], Variables, Functions)});`
+            : `(${parseArgs(Arguments, Variables, Functions, token)});`
+          : `(0);`
+      case TOKENS.ADDITION:
       case TOKENS.BITWISE_AND:
       case TOKENS.BITWISE_OR:
       case TOKENS.BITWISE_XOR:
@@ -390,8 +409,6 @@ const compile = (tree, Variables, Functions) => {
           Variables,
           Functions
         )});`
-      case TOKENS.DIVISION:
-        return `(1/${compile(Arguments[0], Variables, Functions)});`
       case TOKENS.BIT_TYPE:
         return `(${compile(
           Arguments[0],

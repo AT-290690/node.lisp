@@ -292,6 +292,14 @@ describe('Compilation', () => {
         (iterate 0 (- (length array) 1))))
   (destructuring-bind x y rem (Array 1 2 3 4))
   (Array x y (map rem (lambda x y . (concatenate (type y String) "." (type x String) "!"))))`,
+      `(defconstant prod (function args (do 
+    (defvar initial 1)
+    (loop defun product arr 
+      (if (length arr) (do 
+        (setf initial (* initial (car arr))) 
+        (product (cdr arr))) initial))
+    (product args))))
+    (prod 10 20 30)`,
     ].forEach((source) =>
       deepStrictEqual(runFromInterpreted(source), runFromCompiled(source))
     ))

@@ -79,12 +79,37 @@ A Lisp for Node
 ; https://leetcode.com/problems/maximum-count-of-positive-integer-and-negative-integer/
 ; yarn lisp -s /leetcode.lisp -d ./leetcode.js -c
 (import std "count-of" "reduce")
-(import math "max")
+(import math "max" "positive?" "negative?")
 (deftype maximum-count (Lambda (Or (Array (Number))) (Or (Number))))
 (defun maximum-count nums
     (max
-      (count-of nums (lambda e . . (< e 0)))
-      (count-of nums (lambda e . . (> e 0)))))
+      (count-of nums (lambda x . . (negative? x)))
+      (count-of nums (lambda x . . (positive? x)))))
+```
+
+```lisp
+; Variadic function
+(defconstant prod (function args (do
+    (defvar initial 1)
+    (loop defun product arr
+      (if (length arr) (do
+        (setf initial (* initial (car arr)))
+        (product (cdr arr))) initial))
+    (product args))))
+
+  (log (prod 10 20 30))
+```
+
+```lisp
+; Many faces of math symbols
+; depending on the number of arguments
+(*) ; 1
+(/) ; 0
+(* 2 3) ; 6
+(/ 10) ; 0.1
+(/ 10 2) ; 5
+(- 1) ; -1
+(- 2 1) ; 1
 ```
 
 Simple CLI usage - create main.js

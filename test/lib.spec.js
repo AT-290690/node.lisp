@@ -125,6 +125,9 @@ const programs = [
    (empty arr)
    (empty? arr)) 
 `,
+  `(import math "summation" "reduce")
+(defconstant add (function args (summation args)))
+(Array (add 2 3 4))`,
 ]
 
 describe('Libraries', () => {
@@ -207,6 +210,7 @@ describe('Libraries', () => {
           [[1, 100, 3], 2, [3, 4, 5]],
         ],
         [0, [], 1],
+        [9],
       ]
     ))
   it('Should compile matching interpretation', () =>

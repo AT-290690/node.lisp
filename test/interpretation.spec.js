@@ -605,5 +605,18 @@ describe('Interpretation', () => {
       ),
       [1, 2, ['0.3!', '1.4!']]
     )
+    deepStrictEqual(
+      runFromInterpreted(
+        `(defconstant prod (function args (do 
+          (defvar initial 1)
+          (loop defun product arr 
+            (if (length arr) (do 
+              (setf initial (* initial (car arr))) 
+              (product (cdr arr))) initial))
+          (product args))))
+          (prod 10 20 30)`
+      ),
+      6000
+    )
   })
 })

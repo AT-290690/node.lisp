@@ -63,6 +63,7 @@ export const TOKENS = {
 
   DEFINE_FUNCTION: 'defun',
   ANONYMOUS_FUNCTION: 'lambda',
+  VARIADIC_FUNCTION: 'function',
 
   IF: 'if',
   UNLESS: 'unless',

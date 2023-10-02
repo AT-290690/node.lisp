@@ -1,4 +1,4 @@
-(import std "map" "empty?" "drop" "concat" "for-each" "clone" "slice" "split-by-n-lines" "some?" "every?" "reverse" "split" "join" "trim" "array-of-numbers" "reduce" "every?" "count-of" )
+(import std "map" "empty?" "drop" "concat" "clone" "slice" "split-by-n-lines" "some?" "every?" "reverse" "split" "join" "trim" "array-of-numbers" "reduce" "every?" "count-of" )
 (import math "summation")
 ; (defconstant *INPUT* (go 
 ;  (:open "./playground/src/aoc_2020/19/input.txt")
@@ -40,27 +40,23 @@ aaaabbb"
 (defconstant *RULES* (parse-rules rules))
 (defconstant *MESSAGES* (go messages (map (lambda x . . (type x Array)))))
 
- 
-(defun match_seq chars seq stack (do 
-              (go (car (car (cdr seq))) (reverse) (for-each (lambda x . . (set stack (length stack) x))))
-              (match chars stack)))
-
-(deftype match-seq? (Lambda (Or (Array (String))) (Or (Array (Number))) (Or (Array (Number))) (Or (Number))))
-(defun match-seq? msg queue sequance (match? msg (concat queue (reverse sequance))))
 (deftype match? (Lambda (Or (Array (String))) (Or (Array (Number))) (Or (Number))))
 (defun match? msg queue 
   (cond 
-    (and (empty? msg) (empty? queue)) 1
-    (and (not (empty? msg)) (empty? queue)) 0
-    () (do
+    (and 
+      (empty? msg) (empty? queue)) 1
+    (or 
+      (and (not (empty? msg)) (empty? queue)) 
+      (and (empty? msg) (not (empty? queue)))) 0
+    (*) (do
           (destructuring-bind kind rule . (get *RULES* (drop queue)))
           (cond
             (= kind "AND") 
-              (match-seq? msg queue (car rule))
+              (match? msg (concat queue (reverse (car rule))))
             (= kind "OR") 
               (or 
-                (match-seq? msg (clone queue) (car rule))
-                (match-seq? msg (clone queue) (car (cdr rule))))
+               (match? msg (concat (clone queue) (reverse (car rule))))
+               (match? msg (concat (clone queue) (reverse (car (cdr rule))))))
             (= kind "MATCH") 
               (and 
                 (= (car (car rule)) (car msg)) 
