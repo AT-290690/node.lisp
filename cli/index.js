@@ -4,6 +4,7 @@ import { compileToJs } from '../src/compiler.js'
 import { run, stacktrace } from '../src/interpreter.js'
 import { parse } from '../src/parser.js'
 import fsExtension from '../lib/extensions/fs.js'
+import dateExtension from '../lib/extensions/date.js'
 // import wabt from 'wabt'
 import { logError, removeNoCode, treeShake } from '../src/utils.js'
 import STD from '../lib/baked/std.js'
@@ -69,6 +70,14 @@ export default async () => {
                 Helpers = { ...Helpers, ...fsExtension.Helpers }
                 Tops = [...Tops, ...fsExtension.Tops]
                 env = { ...env, ...fsExtension.env }
+              }
+              break
+            case 'date':
+              {
+                Extensions = { ...Extensions, ...dateExtension.Extensions }
+                Helpers = { ...Helpers, ...dateExtension.Helpers }
+                Tops = [...Tops, ...dateExtension.Tops]
+                env = { ...env, ...dateExtension.env }
               }
               break
           }

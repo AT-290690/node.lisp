@@ -5,7 +5,7 @@
   "reduce" "push" "select" "deep-flat" "for-each"
   "split-by-lines" "join" "split-by" "every?" "trim" "array-of-numbers" "map"
   "some?" "find" "slice" "concat" "for-n")
-(import math "euclidean-mod" "min" "power" "summation" "min" "count-number-of-ones-bit")
+(import math "odd?" "euclidean-mod" "min" "power" "summation" "min" "count-number-of-ones-bit")
 
 (defconstant *input* 
 (Array 
@@ -60,7 +60,7 @@ mem[26] = 1"))
               memory))
         (hash-table 10))
     (deep-flat)
-    (select (lambda . i . (= (mod i 2) 1)))
+    (select (lambda . i . (odd? i)))
     (summation-ints))))
 (deftype quantum-mask (Lambda (Or (Integer)) (Or (Integer)) (Or (Integer))))
 (defun quantum-mask mask-x x (do
@@ -114,7 +114,7 @@ mem[26] = 1"))
         memory)) memory))
         (hash-table 10))
     (deep-flat)
-    (select (lambda . i . (= (mod i 2) 1)))
+    (select (lambda . i . (odd? i)))
     (summation-ints))))
 
 (Array 

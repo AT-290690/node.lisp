@@ -19,6 +19,12 @@
   ; zero?
   (deftype zero? (Lambda (Or (Number)) (Or (Boolean))))
   (defun zero? num (= num 0))
+  ; divisible?
+  (deftype divisible? (Lambda (Or (Number)) (Or (Number))  (Or (Boolean))))
+  (defun divisible? a b (= (mod a b) 0))
+  ; nth-digit
+  (deftype nth-digit (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
+  (defun nth-digit digit n (| (mod (/ digit (power 10 (- n 1))) 10) 0.5))
   ; max
   (deftype max (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
   (defun max a b (if (> a b) a b))
@@ -440,6 +446,42 @@
           (iterate-i (+ i 1)))))
         (iterate-i 0)
         (get (get arr (length t)) (length s))))))
+    ; add-seconds
+    (deftype add-seconds (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
+    (defun add-seconds date-time seconds (+ date-time (* seconds 1000)))
+    ; add-minutes
+    (deftype add-minutes (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
+    (defun add-minutes date-time minutes (+ date-time (* minutes 1000 60)))
+    ; add-hours
+    (deftype add-hours (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
+    (defun add-hours date-time hours (+ date-time (* hours 1000 60 60)))
+    ; add-days
+    (deftype add-days (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
+    (defun add-days date-time days (+ date-time (* days 1000 60 60 24)))
+    ; add-months
+    (deftype add-months (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
+    (defun add-months date-time months (+ date-time (* months 1000 60 60 24 30)))
+    ; add-years
+    (deftype add-years (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
+    (defun add-years date-time years (+ date-time (* years 1000 60 60 24 365)))
+    ; sub-seconds
+    (deftype sub-seconds (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
+    (defun sub-seconds date-time seconds (- date-time (* seconds 1000)))
+    ; sub-minutes
+    (deftype sub-minutes (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
+    (defun sub-minutes date-time minutes (- date-time (* minutes 1000 60)))
+    ; sub-hours
+    (deftype sub-hours (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
+    (defun sub-hours date-time hours (- date-time (* hours 1000 60 60)))
+    ; sub-days
+    (deftype sub-days (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
+    (defun sub-days date-time days (- date-time (* days 1000 60 60 24)))
+    ; sub-months
+    (deftype sub-months (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
+    (defun sub-months date-time months (- date-time (* months 1000 60 60 24 30)))
+    ; sub-years
+    (deftype sub-years (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
+    (defun sub-years date-time years (- date-time (* years 1000 60 60 24 365)))
     (Array 
       (Array "max" max)
       (Array "min" min) 
@@ -512,6 +554,20 @@
       (Array "positive?" positive?)
       (Array "negative?" negative?)
       (Array "zero?" zero?)
+      (Array "divisible?" divisible?)
+      (Array "nth-digit" nth-digit)
+      (Array "add-seconds" add-seconds)
+      (Array "add-minutes" add-minutes)
+      (Array "add-hours" add-hours)
+      (Array "add-days" add-days)
+      (Array "add-months" add-months)
+      (Array "add-years" add-years)
+      (Array "sub-seconds" sub-seconds)
+      (Array "sub-minutes" sub-minutes)
+      (Array "sub-hours" sub-hours)
+      (Array "sub-days" sub-days)
+      (Array "sub-months" sub-months)
+      (Array "sub-years" sub-years)
    )
 ))
 ; (/ math lib)

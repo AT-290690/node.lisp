@@ -19,25 +19,28 @@ aaaabbb"
 (split-by-n-lines 2)))
 
 (destructuring-bind rules messages . *INPUT*)
-(deftype parse-rules (Lambda (Or (Array (String))) (Or (Array (Array)))))
-(defun parse-rules rules (go rules
-                        (scan (lambda x (do 
-                            (defconstant parts (split x ": "))
-                            (defconstant index (type (car parts) Number))
-                            (defconstant ored (split (car (cdr parts)) "|"))
-                            (Array index 
-                            (cond 
-                              (or (= (car ored) "\"a\"") (= (car ored) "\"b\"")) "MATCH"
-                              (> (length ored) 1) "OR" 
-                              (= (length ored) 1) "AND")
-                            (map ored (lambda x i a 
-                              (if (or (= x "\"a\"") (= x "\"b\""))
-                              (Array (car (cdr (split x (char 34)))))
-                              (array-of-numbers (split (trim x) " ")))))))))
-                        (fold (safety lambda a x (set a (car x) (cdr x))) 
-                        (Array (length rules) length))))
+(deftype parse-rules (Lambda (Or (Array (String))) (Or (Array (Function))) (Or (Array (Array)))))
+(safety defun parse-rules rules funcs (do 
+    (destructuring-bind map scan fold split trim array-of-numbers . funcs)
+    (go 
+      rules
+      (scan (lambda x (do 
+          (defconstant parts (split x ": "))
+          (defconstant index (type (car parts) Number))
+          (defconstant ored (split (car (cdr parts)) "|"))
+          (Array index 
+          (cond 
+            (or (= (car ored) "\"a\"") (= (car ored) "\"b\"")) "MATCH"
+            (> (length ored) 1) "OR" 
+            (= (length ored) 1) "AND")
+          (map ored (lambda x i a 
+            (if (or (= x "\"a\"") (= x "\"b\""))
+            (Array (car (cdr (split x (char 34)))))
+            (array-of-numbers (split (trim x) " ")))))))))
+      (fold (safety lambda a x (set a (car x) (cdr x))) 
+      (Array (length rules) length)))))
 
-(defconstant *RULES* (parse-rules rules))
+(defconstant *RULES* (parse-rules rules (' map scan fold split trim array-of-numbers)))
 (defconstant *MESSAGES* (go messages (scan (safety lambda x (type x Array)))))
 
 (deftype match? (Lambda (Or (Array (String))) (Or (Array (Number))) (Or (Number))))
@@ -66,3 +69,14 @@ aaaabbb"
   *MESSAGES*
   (scan (lambda msg (match? msg (' 0))))
   (summation)))
+
+
+; ; 8: 42 | 42 8
+; ; 11: 42 31 | 42 11 31
+; (set *RULES* 8 (' "OR" (' (' 42) (' 42 8))))
+; (set *RULES* 11 (' "OR" (' (' 42 31) (' 42 11 31))))
+
+; (log (go
+;   *MESSAGES*
+;   (map (lambda msg . . (match? msg (' 0))))
+;   (summation)))

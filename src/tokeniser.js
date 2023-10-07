@@ -1528,7 +1528,10 @@ const tokens = {
         )}).`
       )
     const [definition, ...functionArgs] = args
-    const fn = tokens[definition[VALUE]](functionArgs, { ...tokens })
+    const fn = tokens[definition[VALUE]](functionArgs, {
+      ...tokens,
+      [TYPES]: env[TYPES],
+    })
     env[functionArgs[0][VALUE]] = fn
     return fn
   },

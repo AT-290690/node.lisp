@@ -1,5 +1,5 @@
 (import std "split" "map" "push" "pop" "drop" "join" "reduce" "for-each" "push" "every?" "map" "select" "array-in-bounds?" "deep-flat" "concat" "split-by-lines")
-(import math "summation" "product")
+(import math "odd?" "summation" "product")
 
 (defconstant *INPUT* 
 "1 + 2 * 3 + 4 * 5 + 6
@@ -36,7 +36,7 @@
   (defconstant expression (get args index))
   (unless (Array? expression) (type expression Number) 
   (go expression (reduce (lambda a x i . 
-    (if (= (mod i 2) 1) 
+    (if (odd? i)
       (push a
         (cond
           (= x "+") (+ (drop a) (evaluate expression (+ i 1)))
@@ -48,7 +48,7 @@
   (defconstant expression (get args index))
   (unless (Array? expression) (type expression Number) 
   (go expression (reduce (lambda a x i . 
-    (if (= (mod i 2) 1) (do 
+    (if (odd? i) (do 
       (defconstant right (evaluate-adv expression (+ i 1)))
         (cond
           (= x "+") (push a (+ (drop a) right)) 

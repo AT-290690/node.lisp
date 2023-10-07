@@ -1,5 +1,5 @@
 (import std "slice-if-index" "select" "every?" "find" "split" "map" "every?" "select" "reduce" "for-each")
-(import math "min" "max" "round" "floor" "greatest-common-divisor" "product" "summation" "sqrt" "prime?" "adjacent-difference" "abs" "average" "square" )
+(import math "divisible?" "min" "max" "round" "floor" "greatest-common-divisor" "product" "summation" "sqrt" "prime?" "adjacent-difference" "abs" "average" "square" )
 (defconstant sample "939
 7,13,x,x,59,x,31,19")
 (defconstant input "1001171
@@ -44,7 +44,7 @@
             id (car item)
             index (car (cdr item)))
         (loop defun rem time
-          (unless (= (mod (+ time index) id) 0) 
+          (unless (divisible? (+ time index) id) 
             (rem (+ time step)) 
             time))
         (setf result (rem result))

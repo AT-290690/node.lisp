@@ -137,6 +137,15 @@ const programs = [
   (scan (lambda x (concatenate (type (* (car x) 10) String) "-" (car (cdr x)))))
   (fold (lambda a x (concatenate x a)) "")
   (Array))`,
+  `(import std "scan" "fold")
+  (deftype pure-fn (Lambda (Or (Array (Number))) (Or (Array (Function))) (Or (Number))))
+  (safety defun pure-fn arr std (do
+  (destructuring-bind scan fold . std)
+  (go 
+    arr
+    (scan (lambda x (* x 2)))
+    (fold (lambda a b (+ a b)) 0))))
+  (Array (pure-fn (' 1 2 3 4 5) (' scan fold)))`,
 ]
 
 describe('Libraries', () => {
@@ -221,6 +230,7 @@ describe('Libraries', () => {
         [0, [], 1],
         [9],
         ['100-E80-D60-C40-B20-A'],
+        [30],
       ]
     ))
   it('Should compile matching interpretation', () =>
