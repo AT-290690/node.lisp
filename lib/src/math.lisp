@@ -215,7 +215,7 @@
   ; floor
   (deftype floor (Lambda (Or (Number)) (Or (Number))))
   (defun floor n (| n 0))
-  ; round a number
+  ; round
   (deftype round (Lambda (Or (Number)) (Or (Number))))
   (defun round n (| (+ n 0.5) 0))
   ; euclidean-mod

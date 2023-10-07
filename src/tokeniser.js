@@ -560,7 +560,7 @@ const tokens = {
           TOKENS.INTEGER_TYPE
         }) (${index}) (${TOKENS.GET_ARRAY} ${stringifyArgs(args)}).`
       )
-    if (index > array.length - 1)
+    if (index > array.length - 1 || index * -1 > array.length)
       throw new RangeError(
         `Second argument of (${TOKENS.GET_ARRAY}) is outside of the (${
           TOKENS.ARRAY_TYPE
@@ -1517,6 +1517,20 @@ const tokens = {
     // TODO: Add validation for TCO recursion
     const [definition, ...functionArgs] = args
     return tokens[definition[VALUE]](functionArgs, env)
+  },
+  [TOKENS.IMMUTABLE_FUNCTION]: (args, env) => {
+    if (!args.length)
+      throw new RangeError(
+        `Invalid number of arguments to (${
+          TOKENS.IMMUTABLE_FUNCTION
+        }) (>= 2 required). (${TOKENS.IMMUTABLE_FUNCTION} ${stringifyArgs(
+          args
+        )}).`
+      )
+    const [definition, ...functionArgs] = args
+    const fn = tokens[definition[VALUE]](functionArgs, { ...tokens })
+    env[functionArgs[0][VALUE]] = fn
+    return fn
   },
   [TOKENS.REGEX_MATCH]: (args, env) => {
     if (args.length !== 2)

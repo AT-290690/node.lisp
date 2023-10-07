@@ -37,7 +37,7 @@ hgt:76in")
 (deftype without-invalid-fields (Lambda (Or (Array (Array (Array (String) (String))))) (Or (Array (Array (Array (String) (String)))))))
 (defun without-invalid-fields fields (go fields 
                                             (map (lambda x . . (go x 
-                                             (select (lambda y . . (and (not (= (car y) "cid")) (regex-match (car y) "byr|iyr|eyr|hgt|hcl|ecl|pid")))))))))
+                                             (select (safety lambda y . . (and (not (= (car y) "cid")) (regex-match (car y) "byr|iyr|eyr|hgt|hcl|ecl|pid")))))))))
 
 
 (Array 

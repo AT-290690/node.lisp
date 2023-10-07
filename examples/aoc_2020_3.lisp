@@ -18,7 +18,7 @@
 ; (defvar *input* (:open "./playground/src/aoc_2020/3/input.txt"))
 (deftype to_bit_array (Lambda (Or (Array (String))) (Or (Array (Array (Number))))))
 (defun to_bit_array array 
-  (map array (lambda line . . (go line (type Array) (map (lambda x . . (= x "#")))))))
+  (map array (lambda line . . (go line (type Array) (map (safety lambda x . . (= x "#")))))))
 
 (deftype *solve* (Lambda (Or (Array (Array (Number)))) (Or (Number)) (Or (Number)) (Or (Array (Number)))))
 (defun *solve* array slopeX slopeY (do 

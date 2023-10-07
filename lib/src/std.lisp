@@ -379,7 +379,7 @@
       (deftype empty (Lambda (Or (Array)) (Or (Array))))
       (defun empty array (do (loop defun iterate (if (length array) (do (set array -1) (iterate)) array)) (iterate)))
       ; empty?
-      (deftype empty? (Lambda (Or (Array)) (Or (Number))))
+      (deftype empty? (Lambda (Or (Array)) (Or (Boolean))))
       (defun empty? array (not (length array)))
       ; binary-search
       (deftype binary-search (Lambda (Or (Array)) (Or (Number) (Integer) (String)) (Or (Number) (Integer) (String) (Array))))
@@ -525,7 +525,7 @@
           (if (>= i n) 
             (set acc (length acc) (slice all (- i n) i)) acc)) (Array))))
       ; equal 
-      (deftype equal? (Lambda (Or (Array) (Number) (Integer) (String)) (Or (Array) (Number) (Integer) (String)) (Or (Number))))
+      (deftype equal? (Lambda (Or (Array) (Number) (Integer) (String)) (Or (Array) (Number) (Integer) (String)) (Or (Boolean))))
       (defun equal? a b 
       (or (and (atom? a) (atom? b) (= a b)) 
       (and (Array? a) 

@@ -34,11 +34,11 @@ aaaabbb"
                               (if (or (= x "\"a\"") (= x "\"b\""))
                               (Array (car (cdr (split x (char 34)))))
                               (array-of-numbers (split (trim x) " ")))))))))
-                        (fold (lambda a x (set a (car x) (cdr x))) 
+                        (fold (safety lambda a x (set a (car x) (cdr x))) 
                         (Array (length rules) length))))
 
 (defconstant *RULES* (parse-rules rules))
-(defconstant *MESSAGES* (go messages (scan (lambda x (type x Array)))))
+(defconstant *MESSAGES* (go messages (scan (safety lambda x (type x Array)))))
 
 (deftype match? (Lambda (Or (Array (String))) (Or (Array (Number))) (Or (Number))))
 (defun match? msg queue 

@@ -504,6 +504,15 @@ const compile = (tree, Variables, Functions) => {
           )
         }
         break
+      case TOKENS.IMMUTABLE_FUNCTION: {
+        const [first, ...rest] = Arguments
+        return compile(
+          [{ [TYPE]: APPLY, [VALUE]: first[VALUE] }, ...rest],
+          Variables,
+          Functions
+        )
+      }
+
       case TOKENS.IDENTITY:
       case TOKENS.DEBUG:
       case TOKENS.ABORT:

@@ -198,7 +198,7 @@
             (map (Array size length) (lambda . . . 0)))))))))))
 
 (deftype count-c (Lambda (Or (Array (Array (String)))) (Or (Number))))                                 
-(defun count-c c (reduce c (lambda a x . . (+ a (length x))) 0))
+(defun count-c c (reduce c (safety lambda a x . . (+ a (length x))) 0))
 (Array 
   (go (go sample (parse-input-3d)) (solve-1) (count-c))
   ; (go (go input (parse-input-3d)) (solve-1) (count-c))

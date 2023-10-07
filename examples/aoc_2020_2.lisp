@@ -13,7 +13,7 @@
 (defconstant *inputs* (regex-match *input* "(?<=:[ ])(.*)"))
 
 (deftype occ-to-numbers (Lambda (Or (String)) (Or (Number)) (Or (Array (String))) (Or (Array (Number)))))
-(defun occ-to-numbers x . . (go x (split-by "-") (map (lambda y . . (type y Number)))))
+(defun occ-to-numbers x . . (go x (split-by "-") (map (safety lambda y . . (type y Number)))))
 
 (deftype *solve* (Lambda (Or (String)) (Or (String)) (Or (Number))))
 (defun *solve1* string letter (do
@@ -56,7 +56,7 @@
             (push (and 
                     (>= (get x 4) (get x 0)) 
                     (<= (get x 4) (get x 1)))))))
-  (reduce (lambda a x . . (+ a (get x -1))) 0)
+  (reduce (safety lambda a x . . (+ a (get x -1))) 0)
   ; (map (lambda x i o (log x)))
 )
 (go *occ*
@@ -66,7 +66,7 @@
             (push (get *inputs* i)))))
    (map (lambda x . . 
           (push x (*solve2* (type (get x 3) Array) (get x 2) (get x 0) (get x 1)))))
-   (reduce (lambda a x . . (+ a (get x -1))) 0)
+   (reduce (safety lambda a x . . (+ a (get x -1))) 0)
   ; (map (lambda x i o (log x)))
 ))
 

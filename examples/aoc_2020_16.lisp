@@ -97,11 +97,11 @@ nearby tickets:
   (map (lambda x i r 
     (map r (lambda y j . 
       (Array i j (validate-ticket tickets i j))))))
-    (map (lambda x . a (select x (lambda y . . (get y -1)))))
+    (map (lambda x . a (select x (safety lambda y . . (get y -1)))))
     (sort-by-len  *range*)) ())
-    (select (lambda x . . (< (car (cdr x)) 6))) 
-    (reduce (lambda a x . . (set a (car (cdr x)) (car x))) 
-    (map (Array 20 length) (lambda x . . (or x -1)))) 
+    (select (safety lambda x . . (< (car (cdr x)) 6))) 
+    (reduce (safety lambda a x . . (set a (car (cdr x)) (car x))) 
+    (map (Array 20 length) (safety lambda x . . (or x -1)))) 
     (select (lambda x . . (not (= x -1))))) 
 (map (lambda x . . (get your-ticket x)))
 (product))))

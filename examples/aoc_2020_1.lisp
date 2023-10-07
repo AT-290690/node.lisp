@@ -33,7 +33,7 @@
   (split-by-lines)
   (array-of-numbers)
   (quick-sort)
-  (*solve1* (lambda x (- 2020 x)))
+  (*solve1* (safety lambda x (- 2020 x)))
   (product))
 
 ; 241861950 for sample
@@ -41,5 +41,5 @@
   (split-by-lines)
   (array-of-numbers)
   (quick-sort)
-  (*solve2* (lambda x y (- 2020 x y)))
+  (*solve2* (safety lambda x y (- 2020 x y)))
   (product)))
