@@ -13,6 +13,7 @@ import STD from './lib/baked/std.js'
 import MATH from './lib/baked/math.js'
 import DS from './lib/baked/ds.js'
 import { tokens } from './src/tokeniser.js'
+import { format } from './src/formatter.js'
 const libraries = {
   std: STD,
   math: MATH,
@@ -22,6 +23,7 @@ export default {
   interpred: runFromInterpreted,
   compile: runFromCompiled,
   js: compileToJs,
+  format,
   parse,
   tokens,
   evaluate,

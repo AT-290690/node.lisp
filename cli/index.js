@@ -3,6 +3,7 @@ import { start } from 'repl'
 import { compileToJs } from '../src/compiler.js'
 import { run, stacktrace } from '../src/interpreter.js'
 import { parse } from '../src/parser.js'
+import { format } from '../src/formatter.js'
 import fsExtension from '../lib/extensions/fs.js'
 import dateExtension from '../lib/extensions/date.js'
 // import wabt from 'wabt'
@@ -20,6 +21,7 @@ import { APPLY, TYPE, VALUE, WORD } from '../src/enums.js'
 export default async () => {
   const [, , ...argv] = process.argv
   let file = '',
+    path = '',
     Extensions = {},
     Helpers = {},
     Tops = [],
@@ -32,12 +34,13 @@ export default async () => {
     if (!flag) throw new Error('No flag provided')
     switch (flag) {
       case '-m':
-        console.log(removeNoCode(file))
+        writeFileSync(path, removeNoCode(file), 'utf-8')
         break
       case '-d':
         destination = value
         break
       case '-s':
+        path = value
         file = readFileSync(value, 'utf-8')
         break
       case '-c':
@@ -139,6 +142,12 @@ export default async () => {
                 .trimRight()}\x1b[0m)`
             )
           })
+        }
+        break
+      case '-format':
+        const tree = parse(file)
+        if (Array.isArray(tree)) {
+          writeFileSync(path, format(tree), 'utf-8')
         }
         break
       case '-import':

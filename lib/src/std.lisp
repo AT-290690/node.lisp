@@ -31,7 +31,8 @@
       (deftype join (Lambda (Or (Array)) (Or (String)) (Or (String))))
       (defun join array delim (reduce array (lambda a x i . (if (> i 0) (concatenate a delim (type x String)) (type x String))) ""))
       ; repeat
-      (defun repeat n x (map (Array n length) (lambda . . . x)))
+      (deftype repeat (Lambda (Or (Number)) (Or (Function)) (Or (Array))))
+      (defun repeat n fn (map (Array n length) (lambda . . . (fn))))
       ; split-by-lines
       (deftype split-by-lines (Lambda (Or (String)) (Or (Array (String)))))
       (defun split-by-lines string (regex-match string "[^\n]+"))
@@ -39,6 +40,7 @@
       (deftype split-by (Lambda (Or (String)) (Or (String)) (Or (Array (String)))))
       (defun split-by string delim (regex-match string (concatenate "[^" delim "]+")))
       ; trim
+      (deftype trim (Lambda (Or (String)) (Or (String))))
       (defun trim string (regex-replace string "^ +| +$" ""))
       ; array-of-numbers
       (deftype array-of-numbers (Lambda (Or (Array)) (Or (Array (Number)))))

@@ -134,7 +134,7 @@ const compile = (tree, Variables, Functions) => {
   const token = first[VALUE]
   if (first[TYPE] === APPLY) {
     switch (token) {
-      case 'do': {
+      case TOKENS.BLOCK: {
         if (Arguments.length > 1) {
           return `(${Arguments.map((x) =>
             (compile(x, Variables, Functions) ?? '').toString().trimStart()
