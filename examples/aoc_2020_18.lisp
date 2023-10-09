@@ -1,4 +1,4 @@
-(import std "split" "map" "push" "pop" "drop" "join" "reduce" "for-each" "push" "every?" "map" "select" "array-in-bounds?" "deep-flat" "concat" "split-by-lines")
+(import std "split" "map" "push!" "pop!" "drop!" "join" "reduce" "for-each" "every?" "map" "select" "array-in-bounds?" "deep-flat" "concat" "split-by-lines")
 (import math "odd?" "summation" "product")
 
 (defconstant *INPUT* 
@@ -20,13 +20,13 @@
   (reduce (lambda stack token . . (do
   (or (cond 
     (= token "(") (do
-      (push head ())
-      (push stack head)
+      (push! head ())
+      (push! stack head)
       (setf head (get head -1)))
     (= token ")") (do 
       (setf head (get stack -1))
-      (pop stack))) 
-    (push head token)) 
+      (pop! stack))) 
+    (push! head token)) 
   stack)) (Array ()))
   (select (lambda x . . (length x))))
   head))
@@ -37,10 +37,10 @@
   (unless (Array? expression) (type expression Number) 
   (go expression (reduce (lambda a x i . 
     (if (odd? i)
-      (push a
+      (push! a
         (cond
-          (= x "+") (+ (drop a) (evaluate expression (+ i 1)))
-          (= x "*") (* (drop a) (evaluate expression (+ i 1))))) a)) 
+          (= x "+") (+ (drop! a) (evaluate expression (+ i 1)))
+          (= x "*") (* (drop! a) (evaluate expression (+ i 1))))) a)) 
   (Array (evaluate expression 0))) (get -1)))))
 
 (deftype evaluate-adv (Lambda (Or (Array)) (Or (Number)) (Or (Number))))
@@ -51,8 +51,8 @@
     (if (odd? i) (do 
       (defconstant right (evaluate-adv expression (+ i 1)))
         (cond
-          (= x "+") (push a (+ (drop a) right)) 
-          (= x "*") (push a right))) a))
+          (= x "+") (push! a (+ (drop! a) right)) 
+          (= x "*") (push! a right))) a))
   (Array (evaluate-adv expression 0))) (product)))))
 
 (Array 

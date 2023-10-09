@@ -1,15 +1,15 @@
 ; (std lib)
 (defun std (do
   ; modules
-  ; push  
-  (deftype push (Lambda (Or (Array)) (Or (Array) (Number) (Integer) (String) (Function)) (Or (Array))))
-  (defun push array value (set array (length array) value))
-  ; pop
-  (deftype pop (Lambda (Or (Array)) (Or (Array))))
-  (defun pop array (set array -1))
-  ; drop
-  (deftype drop (Lambda (Or (Array)) (Or (Array) (Number) (Integer) (String) (Function))))
-  (defun drop array (when (length array) (do (defconstant last (get array -1)) (set array -1) last)))
+  ; push!  
+  (deftype push! (Lambda (Or (Array)) (Or (Array) (Number) (Integer) (String) (Function)) (Or (Array))))
+  (defun push! array value (set array (length array) value))
+  ; pop!
+  (deftype pop! (Lambda (Or (Array)) (Or (Array))))
+  (defun pop! array (set array -1))
+  ; drop!
+  (deftype drop! (Lambda (Or (Array)) (Or (Array) (Number) (Integer) (String) (Function))))
+  (defun drop! array (when (length array) (do (defconstant last (get array -1)) (set array -1) last)))
   ; array-in-bounds? 
   (deftype array-in-bounds? (Lambda (Or (Array)) (Or (Number)) (Or (Boolean))))
   (defun array-in-bounds? array index (and (< index (length array)) (>= index 0)))
@@ -375,9 +375,9 @@
           (set reversed (- offset i) (get array i))
           (if (< i bounds) (iterate (+ i 1) bounds) reversed)))
         (iterate 0 offset)) array)))
-      ; empty
-      (deftype empty (Lambda (Or (Array)) (Or (Array))))
-      (defun empty array (do (loop defun iterate (if (length array) (do (set array -1) (iterate)) array)) (iterate)))
+      ; empty!
+      (deftype empty! (Lambda (Or (Array)) (Or (Array))))
+      (defun empty! array (do (loop defun iterate (if (length array) (do (set array -1) (iterate)) array)) (iterate)))
       ; empty?
       (deftype empty? (Lambda (Or (Array)) (Or (Boolean))))
       (defun empty? array (not (length array)))
@@ -532,9 +532,9 @@
             (= (length a) (length b)) 
               (not (some? a (lambda . i . (not (equal? (get a i) (get b i)))))))))
     (Array 
-      (Array "push" push)
-      (Array "pop" pop)
-      (Array "drop" drop)
+      (Array "push!" push!)
+      (Array "pop!" pop!)
+      (Array "drop!" drop!)
       (Array "sort-by-length" sort-by-length)  
       (Array "order-array" order-array)  
       (Array "array-in-bounds?" array-in-bounds?)  
@@ -587,7 +587,7 @@
       (Array "cartesian-product" cartesian-product)
       (Array "repeated-apply" repeated-apply)
       (Array "iteration" iteration)
-      (Array "empty" empty)
+      (Array "empty!" empty!)
       (Array "clone" clone)
       (Array "empty?" empty?)
       (Array "take" take)

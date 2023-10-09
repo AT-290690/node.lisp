@@ -1,4 +1,4 @@
-(import std "fold" "map" "scan" "empty?" "drop" "concat" "clone" "slice" "split-by-n-lines" "some?" "reverse" "split" "join" "trim" "array-of-numbers" "reduce" "every?" )
+(import std "fold" "map" "scan" "empty?" "drop!" "concat" "clone" "slice" "split-by-n-lines" "some?" "reverse" "split" "join" "trim" "array-of-numbers" "reduce" "every?" )
 (import math "summation")
 ; (defconstant *INPUT* (go 
 ;  (:open "./playground/src/aoc_2020/19/input.txt")
@@ -52,7 +52,7 @@ aaaabbb"
       (and (not (empty? msg)) (empty? queue)) 
       (and (empty? msg) (not (empty? queue)))) 0
     (*) (do
-          (destructuring-bind kind rule . (get *RULES* (drop queue)))
+          (destructuring-bind kind rule . (get *RULES* (drop! queue)))
           (cond
             (= kind "AND") 
               (match? msg (concat queue (reverse (car rule))))

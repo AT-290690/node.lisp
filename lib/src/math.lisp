@@ -285,7 +285,7 @@
         (if (hash-table? memo n) (hash-table-get memo n)
         (do
           (defconstant cache (+ (fibonacci-memoized (- n 1) memo) (fibonacci-memoized (- n 2) memo)))
-          (hash-table-add memo n cache)
+          (hash-table-add! memo n cache)
           cache))))
     ; prime?
     (deftype prime? (Lambda (Or (Number)) (Or (Number))))

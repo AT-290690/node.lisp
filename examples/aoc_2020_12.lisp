@@ -1,4 +1,4 @@
-(import std "split-by" "reduce" "push" "map" "join" "reverse")
+(import std "split-by" "reduce" "push!" "map" "join" "reverse")
 (import math "abs" "radians" "floor")
 (defconstant sample "F10
 N3
@@ -10,10 +10,10 @@ F11")
 ; (deftype array-number-t (Array (Number)))
 ; (deftype stack-t (Array (Array (String) (Number))))
 ; (deftype lazy-cmd-t (Array (Array (String) (Number)) (Function)))
-(defun drop stack (when (length stack) (do (defconstant last (get stack -1)) (set stack -1) last)))
+(defun drop! stack (when (length stack) (do (defconstant last (get stack -1)) (set stack -1) last)))
 
 (deftype move (Lambda (Or (Array (Array (String) (Number)))) (Or (Function))))
-(defun move stack (defconstant f (lambda (Array (drop stack) f))))
+(defun move stack (defconstant f (lambda (Array (drop! stack) f))))
 ; 362
 (deftype solve1 (Lambda (Or (Number))))
 (defun solve1 (do 
@@ -21,7 +21,7 @@ F11")
   (defconstant *stack* (go 
     *input* 
     (split-by "\n")
-    (push "F0") ; TODO delete this later
+    (push! "F0") ; TODO delete this later
     (map (lambda x . .
       (do 
         (defvar str (type x Array))
@@ -52,9 +52,9 @@ F11")
         (= action "E") (setf x (+ x value))
         (= action "S") (setf y (+ y value))
         (= action "W") (setf x (- x value))
-        (= action "L") (push moves (Array (get compass (setf arrow (mod (- arrow (go value (normalize 0 90) (floor))) (length compass)))) 0))
-        (= action "R") (push moves (Array (get compass (setf arrow (mod (+ arrow (go value (normalize 0 90) (floor))) (length compass)))) 0))
-        (= action "F") (push moves (Array (get compass arrow) value)))
+        (= action "L") (push! moves (Array (get compass (setf arrow (mod (- arrow (go value (normalize 0 90) (floor))) (length compass)))) 0))
+        (= action "R") (push! moves (Array (get compass (setf arrow (mod (+ arrow (go value (normalize 0 90) (floor))) (length compass)))) 0))
+        (= action "F") (push! moves (Array (get compass arrow) value)))
       (setf cursor (apply (car (cdr cursor))))
       ))
     (defun next (if (length moves) (do (lazy) (next)) (do (lazy))))

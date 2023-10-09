@@ -23,14 +23,14 @@ A Lisp for Node
 
 ; to use memo (hashmap) you need to import ALL of these functions
 (import std "index-of" "find" "find-index" "map" "array-in-bounds?")
-(import ds "hash-index" "hash-table?" "hash-table-add" "hash-table-get" "hash-table")
+(import ds "hash-index" "hash-table?" "hash-table-add!" "hash-table-get" "hash-table")
 (import math "min" "euclidean-mod")
 
 (defun fibonacci-memoized n memo (if (< n 2) n
   (if (hash-table? memo n) (hash-table-get memo n)
   (do
     (defconstant cache (+ (fibonacci-memoized (- n 1) memo) (fibonacci-memoized (- n 2) memo)))
-    (hash-table-add memo n cache)
+    (hash-table-add! memo n cache)
     cache))))
 
 (fibonacci-memoized 10 (hash-table 10)) ; 55
@@ -66,7 +66,7 @@ A Lisp for Node
 ```
 
 ```lisp
-(import std "push""reduce")
+(import std "push!""reduce")
 (import math "range" "product")
 (defun factorial n
   (go

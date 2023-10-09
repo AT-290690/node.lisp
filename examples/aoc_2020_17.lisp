@@ -1,6 +1,6 @@
 (import ds "hash-index"
-  "hash-table-add" "hash-table?" "hash-table-get" "hash-table" "hash-table-make" "hash-index" "hash-table-get" "hash-table"
-  "hash-set-add" "hash-set-remove" "hash-set?" "hash-set-get" "hash-set" "hash-set-make")
+  "hash-table-add!" "hash-table?" "hash-table-get" "hash-table" "hash-table-make" "hash-index" "hash-table-get" "hash-table"
+  "hash-set-add!" "hash-set-remove!" "hash-set?" "hash-set-get" "hash-set" "hash-set-make")
 (import std  "array-in-bounds?" "find-index" "map" "split-by-lines" "for-n" "iteration" "join" "reduce" "array-in-bounds?" "find-index" "index-of"
             "count-of" "for-each"  "for-range" "concat" "left-pad" "right-pad" "every?"
              "deep-flat" "split")
@@ -38,7 +38,7 @@
   (for-each (lambda row x .
     (go row 
       (type Array) 
-      (for-each (lambda col y . (when (= col "#") (hash-set-add matrix (to-3d-key y x 0)))))))))
+      (for-each (lambda col y . (when (= col "#") (hash-set-add! matrix (to-3d-key y x 0)))))))))
       matrix))
 
 (defun parse-input-4d input (do 
@@ -49,7 +49,7 @@
   (for-each (lambda row x .
     (go row 
       (type Array) 
-      (for-each (lambda col y . (when (= col "#") (hash-set-add matrix (to-4d-key y x 0 0)))))))))
+      (for-each (lambda col y . (when (= col "#") (hash-set-add! matrix (to-4d-key y x 0 0)))))))))
       matrix))
 
 (deftype neighborhood-3d (Lambda (Or (Array (Array (String)))) (Or (Array (Array (Number) (Number) (Number))))  (Or (Number)) (Or (Number)) (Or (Number)) (Or (Number))))
@@ -129,7 +129,7 @@
         ; Otherwise, the cube becomes inactive.
         ; If a cube is inactive but exactly 3 of its neighbors are active, the cube becomes active. 
         ; Otherwise, the cube remains inactive.
-        (if (or (and (= current 1) (or (= sum 2) (= sum 3))) (and (= current 0) (= sum 3))) (hash-set-add next-matrix key)))))))))
+        (if (or (and (= current 1) (or (= sum 2) (= sum 3))) (and (= current 0) (= sum 3))) (hash-set-add! next-matrix key)))))))))
         next-matrix))
 
 (defun solve-2 matrix (do
@@ -168,7 +168,7 @@
         ; Otherwise, the cube becomes inactive.
         ; If a cube is inactive but exactly 3 of its neighbors are active, the cube becomes active. 
         ; Otherwise, the cube remains inactive.
-        (if (or (and (= current 1) (or (= sum 2) (= sum 3))) (and (= current 0) (= sum 3))) (hash-set-add next-matrix key)))))))))))
+        (if (or (and (= current 1) (or (= sum 2) (= sum 3))) (and (= current 0) (= sum 3))) (hash-set-add! next-matrix key)))))))))))
         next-matrix))
 
 

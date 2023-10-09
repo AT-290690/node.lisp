@@ -54,10 +54,10 @@ describe('Compilation', () => {
       `(defvar array (Array 5 length))
           (set array -5)
           (length array)`,
-      `(defun push array value (set array (length array) value))
+      `(defun push! array value (set array (length array) value))
           (defun concat array1 array2 (do
           (loop defun iterate i bounds (do
-          (when (< i (length array2)) (push array1 (get array2 i)))
+          (when (< i (length array2)) (push! array1 (get array2 i)))
           (if (< i bounds)
             (iterate (+ i 1) bounds)
           array1
@@ -72,13 +72,13 @@ describe('Compilation', () => {
           (loop defun iterate i bounds (do
               (defvar current (get arr i))
               (if (< current pivot)
-                  (push left-arr current)
-                  (push right-arr current))
+                  (push! left-arr current)
+                  (push! right-arr current))
               (when (< i bounds) (iterate (+ i 1) bounds))))
               (iterate 1 (- (length arr) 1))
           (go
             left-arr (sort)
-            (push pivot)
+            (push! pivot)
             (concat (sort right-arr)))
           ))))
 
@@ -103,7 +103,7 @@ describe('Compilation', () => {
               current)))
               (interate 0 (- (length array) 1)))))
         (find (Array 1 2 3 4 5 6) (lambda x i (= i 2)))`,
-      `(defvar push (lambda array value (set array (length array) value)))
+      `(defvar push! (lambda array value (set array (length array) value)))
         (defvar for-each (lambda array callback (do
           (loop defun interate i bounds (do
             (callback (get array i) i)
@@ -112,7 +112,7 @@ describe('Compilation', () => {
           (defvar deep-flat (lambda arr (do
             (defvar new-array ())
             (defvar flatten (lambda item (if (Array? item) (for-each item (lambda x . (flatten x)))
-            (push new-array item))))
+            (push! new-array item))))
             new-array
           )))
         (defvar arr (
@@ -128,10 +128,10 @@ describe('Compilation', () => {
         (interate (+ i 1)) i))
       (interate 0)
       `,
-      `(defvar push (lambda array value (set array (length array) value)))
+      `(defvar push! (lambda array value (set array (length array) value)))
           (defvar concat (lambda array1 array2 (do
             (defvar interate (lambda i bounds (do
-            (push array1 (get array2 i))
+            (push! array1 (get array2 i))
             (if (< i bounds)
               (interate (+ i 1) bounds)
             array1
@@ -139,7 +139,7 @@ describe('Compilation', () => {
           (interate 0 (- (length array2) 1)))))
           (go
             (Array 1 2 3)
-            (push -1)
+            (push! -1)
             (concat (type "abc" Array))
             (concat (Array 1 2 3 4))
             (concat (Array 5 6 7))
@@ -157,7 +157,7 @@ describe('Compilation', () => {
             675
             1456")
 
-            (defvar push (lambda array value (set array (length array) value)))
+            (defvar push! (lambda array value (set array (length array) value)))
 
             (defvar max (lambda a b (if (> a b) a b)))
             (defvar min (lambda a b (if (< a b) a b)))
@@ -180,9 +180,9 @@ describe('Compilation', () => {
             (defvar string_to_array (lambda string delim
             (reduce (type string Array) (lambda a x i (do
                 (if (= x delim)
-                  (push a ())
-                  (do (push (get a -1) x) a)
-                )))(push () ()))))
+                  (push! a ())
+                  (do (push! (get a -1) x) a)
+                )))(push! () ()))))
 
              (defvar split-by-lines (lambda string (map (string_to_array string "\n") (lambda x i (join x "")))))
 

@@ -1,8 +1,8 @@
 (import ds "hash-index" 
-  "hash-table-add" "hash-table?" "hash-table-get" "hash-table" "hash-table-make")
+  "hash-table-add!" "hash-table?" "hash-table-get" "hash-table" "hash-table-make")
 (import std 
 "array-in-bounds?" "find-index"
-  "reduce" "push" "select" "deep-flat" "for-each"
+  "reduce" "push!" "select" "deep-flat" "for-each"
   "split-by-lines" "join" "split-by" "every?" "trim" "array-of-numbers" "map"
   "some?" "find" "slice" "concat" "for-n")
 (import math "odd?" "euclidean-mod" "min" "power" "summation" "min" "count-number-of-ones-bit")
@@ -34,8 +34,8 @@ mem[26] = 1"))
       (reduce (lambda a b . . (do
         (if (= (car b) "mask") (do
           (defconstant mask (go (car (cdr b)) (type Array)))
-          (push a (Array (Array (to-mask-of mask "X") (to-mask-of mask "1")))))
-          (push (get a -1) 
+          (push! a (Array (Array (to-mask-of mask "X") (to-mask-of mask "1")))))
+          (push! (get a -1) 
                 (Array (go b
                   (car)
                   (regex-match "[0-9]")
@@ -48,7 +48,7 @@ mem[26] = 1"))
       (parse-input-1)
       (reduce (lambda memory fields . .
         (reduce (cdr fields) (lambda memory x . .
-            (hash-table-add memory
+            (hash-table-add! memory
               (car x)
               (go
                 x
@@ -95,8 +95,8 @@ mem[26] = 1"))
                 mask-x (to-mask-of mask "X")
                 mask-1 (to-mask-of mask "1"))
           (setf n (<< 2 (count-number-of-ones-bit (type mask-x Number))))
-          (push a (Array (Array mask-x mask-1))))
-          (push (get a -1) 
+          (push! a (Array (Array mask-x mask-1))))
+          (push! (get a -1) 
                 (Array (go b
                   (car)
                   (regex-match "[0-9]")
@@ -110,7 +110,7 @@ mem[26] = 1"))
               mask-x (go fields (car) (car) (Int))
               addr (& (| (Int (car x)) mask-1) (~ mask-x))
               value (go x (cdr) (car) (Int)))
-        (for-n n (lambda i (hash-table-add memory (type (| addr (quantum-mask mask-x (Int i))) Number) value))) 
+        (for-n n (lambda i (hash-table-add! memory (type (| addr (quantum-mask mask-x (Int i))) Number) value))) 
         memory)) memory))
         (hash-table 10))
     (deep-flat)

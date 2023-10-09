@@ -27,7 +27,7 @@ describe('Errors', () => {
     checks(`(defun x _ (+ _ 10))`, ReferenceError)
     checks(`(defconstant type 10)`, ReferenceError)
     checks(
-      `(defun std (do (defun push a x (set a (length a) x)) (Array (Array "push" push)))) (import std "java.Array")`,
+      `(defun std (do (defun push! a x (set a (length a) x)) (Array (Array "push!" push!)))) (import std "java.Array")`,
       ReferenceError
     )
   })

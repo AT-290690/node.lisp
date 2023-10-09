@@ -6,34 +6,34 @@ import DS from '../lib/baked/ds.js'
 const libraries = [STD, MATH, DS]
 const programs = [
   `(import math "PI" "circumference") (Array (PI) (circumference 1))`,
-  `(import ds "hash-set" "hash-index" "hash-set-add" "hash-set-get" "hash-set?" "hash-set-remove")
+  `(import ds "hash-set" "hash-index" "hash-set-add!" "hash-set-get" "hash-set?" "hash-set-remove!")
   (import math "euclidean-mod")
   (import std "map" "index-of" "find-index" "find" "array-in-bounds?")
   
   (defconstant hs (hash-set 10))
-  (hash-set-add hs "Anthony")
-  (hash-set-add hs 3)
-  (hash-set-add hs "Bob")
-  (hash-set-remove hs "Bob")
+  (hash-set-add! hs "Anthony")
+  (hash-set-add! hs 3)
+  (hash-set-add! hs "Bob")
+  (hash-set-remove! hs "Bob")
   (Array (hash-set? hs "Anthony"))`,
   `(import std "index-of" "find" "find-index" "map" "array-in-bounds?")
-  (import ds "hash-index" "hash-table?" "hash-table-add" "hash-table-get" "hash-table")
+  (import ds "hash-index" "hash-table?" "hash-table-add!" "hash-table-get" "hash-table")
   (import math "min" "euclidean-mod")
   
   (defun fibonacci-memoized n memo (if (< n 2) n
     (if (hash-table? memo n) (hash-table-get memo n)
     (do
       (defconstant cache (+ (fibonacci-memoized (- n 1) memo) (fibonacci-memoized (- n 2) memo)))
-      (hash-table-add memo n cache)
+      (hash-table-add! memo n cache)
       cache))))
   
   (Array (fibonacci-memoized 10 (hash-table 10)))`,
-  `(import ds "hash-table" "hash-index" "hash-table-add" "hash-table-get")
+  `(import ds "hash-table" "hash-index" "hash-table-add!" "hash-table-get")
   (import math "euclidean-mod")
   (import std "map" "find-index" "find" "array-in-bounds?")
   (defconstant ht (hash-table 10))
-  (hash-table-add ht "name" "Anthony")
-  (hash-table-add ht "age" 33)
+  (hash-table-add! ht "name" "Anthony")
+  (hash-table-add! ht "age" 33)
   (Array (hash-table-get ht "name"))`,
   `(import ds "binary-tree-node" "binary-tree-set-left" "binary-tree-get-value"  "binary-tree-get-left")
   (defconstant tree (binary-tree-node 10))
@@ -51,7 +51,7 @@ const programs = [
   (go
     (Array 2 3 5 7 11 10 2563 1 48 1729)
     (map (lambda x . . (prime? x))))`,
-  `(import std "push" "concat" "quick-sort")
+  `(import std "push!" "concat" "quick-sort")
   (go
     (Array 3 0 5 3 2 4 1)
     (quick-sort))`,
@@ -67,12 +67,12 @@ const programs = [
     (go inp (every? (lambda x . . (prime? x))))
     (go inp (adjacent-difference (lambda a b (greatest-common-divisor a b))) (cdr) (every? (lambda x . . (= x 1))))))
     (Array (is-array-of-coprime-pairs (Array 7 13 59 31 19)))`,
-  `(import std "cartesian-product" "reduce" "map" "merge" "push")
+  `(import std "cartesian-product" "reduce" "map" "merge" "push!")
     (cartesian-product (Array "x" "y") (Array 1 2))`,
   `(import math "greatest-common-divisor" "least-common-divisor")
   (Array (greatest-common-divisor 8 36) (least-common-divisor 12 7))`,
   `(import math "arithmetic-progression" "range")
-   (import std "push")
+   (import std "push!")
     (Array (arithmetic-progression 5 25) (range 1 10))`,
   `(import std "join" "reduce")
     (go (Array "Hello" "World") (join "-") (Array))`,
@@ -91,7 +91,7 @@ const programs = [
             (loop defun iterate i res (if (<= i k) (iterate (+ i 1) (* res (- n i -1) (/ i))) res))
             (round (iterate 2 n)))))
         (Array (binomial-coefficient 8 2))`,
-  `(import std "slice" "window" "push" "reduce")
+  `(import std "slice" "window" "push!" "reduce")
       (Array (window (Array 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16) 4))`,
   `(import math "max-bit" "min-bit" "clamp-bit")
       (Array (max-bit 1 2) (min-bit 1 2) (clamp-bit 100 2 50) (clamp-bit 10 0 20))`,
@@ -107,9 +107,9 @@ const programs = [
   `(import std "equal?" "some?") (Array (equal? 1 1) (equal? 1 2) (equal? (Array 1) (Array 1)) (equal? (Array (Array 1 2)) (Array (Array 1 2))) (equal? (Array (Array 1 2)) (Array (Array 0 2))))`,
 
   `(import std "trim") (Array (trim "a a "))`,
-  `(import std "empty")
+  `(import std "empty!")
  (defconstant array (Array 1 2 3 4))
- (empty array)
+ (empty! array)
  (Array array)`,
   `(import std "clone")
  (defconstant arr (' (' 1 2 3) 2 (' 3 4 5)))
@@ -118,11 +118,11 @@ const programs = [
  (Array arr c)
  `,
   `
-(import std "empty?" "empty")
+(import std "empty?" "empty!")
 (defvar arr (' 1 2 3 4))
 (Array
    (empty? arr)
-   (empty arr)
+   (empty! arr)
    (empty? arr)) 
 `,
   `(import math "summation" "reduce")

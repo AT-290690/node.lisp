@@ -1,4 +1,4 @@
-(import std "push" "map" "reduce" "split-by")
+(import std "push!" "map" "reduce" "split-by")
 
 (defconstant sample "1-3 a: abcde
 1-3 b: cdefg
@@ -50,10 +50,10 @@
 (go *occ*
    (map occ-to-numbers)
    (map (lambda x i . (go x 
-            (push (get *policy* i)) 
-            (push (get *inputs* i))
-            (push (*solve1* (get x 3) (get x 2)))
-            (push (and 
+            (push! (get *policy* i)) 
+            (push! (get *inputs* i))
+            (push! (*solve1* (get x 3) (get x 2)))
+            (push! (and 
                     (>= (get x 4) (get x 0)) 
                     (<= (get x 4) (get x 1)))))))
   (reduce (safety lambda a x . . (+ a (get x -1))) 0)
@@ -62,10 +62,10 @@
 (go *occ*
    (map occ-to-numbers)
    (map (lambda x i . (go x 
-            (push (get *policy* i)) 
-            (push (get *inputs* i)))))
+            (push! (get *policy* i)) 
+            (push! (get *inputs* i)))))
    (map (lambda x . . 
-          (push x (*solve2* (type (get x 3) Array) (get x 2) (get x 0) (get x 1)))))
+          (push! x (*solve2* (type (get x 3) Array) (get x 2) (get x 0) (get x 1)))))
    (reduce (safety lambda a x . . (+ a (get x -1))) 0)
   ; (map (lambda x i o (log x)))
 ))

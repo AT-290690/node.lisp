@@ -3,10 +3,10 @@ export const earMuffsToLodashes = (name) => name.replace(new RegExp(/\*/g), '_')
 export const dotNamesToEmpty = (name) => name.replace(new RegExp(/\./g), '')
 export const colonNamesTo$ = (name) => name.replace(new RegExp(/\:/g), '$')
 export const commaToLodash = (name) => name.replace(new RegExp(/\,/g), '_')
-
 export const questionMarkToLodash = (name) =>
   name.replace(new RegExp(/\?/g), 'Pre')
-
+export const exclamationMarkMarkToLodash = (name) =>
+  name.replace(new RegExp(/\!/g), 'Mut')
 export const toCamelCase = (name) => {
   let out = name[0]
   for (let i = 1; i < name.length; ++i) {
@@ -30,7 +30,9 @@ export const lispToJavaScriptVariableName = (name) =>
   toCamelCase(
     dotNamesToEmpty(
       colonNamesTo$(
-        questionMarkToLodash(commaToLodash(earMuffsToLodashes(name)))
+        exclamationMarkMarkToLodash(
+          questionMarkToLodash(commaToLodash(earMuffsToLodashes(name)))
+        )
       )
     )
   )

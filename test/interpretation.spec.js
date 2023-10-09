@@ -106,7 +106,7 @@ describe('Interpretation', () => {
     deepStrictEqual(
       runFromInterpreted(`
 (defun min a b (if (< a b) a b))
-(defun push array value (set array (length array) value))
+(defun push! array value (set array (length array) value))
 (defun euclidean-mod a b (mod (+ (mod a b) b) b))
 (defun find array callback (do
   (loop defun iterate i bounds (do
@@ -146,8 +146,8 @@ describe('Interpretation', () => {
             (setf total (euclidean-mod (+ (* total prime-num) value) (length table)))
             (if (< i bounds) (find-hash-index (+ i 1) bounds) total)))
           (find-hash-index 0 (min (- (length key-arr) 1) 100))))
-      ; hash-table-add
-    (defun hash-table-add 
+      ; hash-table-add!
+    (defun hash-table-add! 
       table key value 
         (do
           (defvar idx (hash-index table key))
@@ -157,7 +157,7 @@ describe('Interpretation', () => {
           (defvar index (if len (find-index current (lambda x i o (= (get x 0) key))) -1))
           (defvar entry (Array key value))
           (if (= index -1)
-            (push current entry)
+            (push! current entry)
             (set current index entry)
           )
           table))
@@ -184,7 +184,7 @@ describe('Interpretation', () => {
           (defvar table (hash-table (* len len)))
           (loop defun add i (do
             (defvar item (get items i))
-            (hash-table-add table (get item 0) (get item 1))
+            (hash-table-add! table (get item 0) (get item 1))
           (if (< i len) (add (+ i 1)) table)))
           (add 0)))
     
@@ -194,7 +194,7 @@ describe('Interpretation', () => {
       (Array "age" 32) 
       (Array "skills" 
         (Array "Animation" "Programming"))))
-  )) (hash-table-add tabl "age" 33)`),
+  )) (hash-table-add! tabl "age" 33)`),
       [
         [],
         [],
@@ -254,20 +254,20 @@ describe('Interpretation', () => {
     deepStrictEqual(
       runFromInterpreted(`
     (defun floor n (| n 0))
-(defun push array value (set array (length array) value))
+(defun push! array value (set array (length array) value))
 (defun array-of-numbers array (map array (lambda x i (type x Number))))
 (defun product array (reduce array (lambda a b i o (* a b)) 1))
 (defun split-by-lines string (regex-match string "[^\n]+"))
 (defun string_to_array string delim 
                       (reduce (type string Array) 
                         (lambda a x i o (do
-                                  (if (= x delim) (push a ()) (do 
-                                    (push (get a -1) x) a))))(push () ())))
+                                  (if (= x delim) (push! a ()) (do 
+                                    (push! (get a -1) x) a))))(push! () ())))
 (defun join array delim (reduce array (lambda a x i o (concatenate a delim x)) ""))
 
 (defun concat array1 array2 (do
   (loop defun iterate i bounds (do
-  (when (< i (length array2)) (push array1 (get array2 i)))
+  (when (< i (length array2)) (push! array1 (get array2 i)))
   (if (< i bounds) 
     (iterate (+ i 1) bounds)
   array1)))
@@ -296,13 +296,13 @@ describe('Interpretation', () => {
 (loop defun iterate i bounds (do
     (defvar current (get arr i))
     (if (< current pivot) 
-        (push left-arr current)
-        (push right-arr current))
+        (push! left-arr current)
+        (push! right-arr current))
     (when (< i bounds) (iterate (+ i 1) bounds))))
     (iterate 1 (- (length arr) 1))
 (go 
   left-arr (quick-sort) 
-  (push pivot) 
+  (push! pivot) 
   (concat (quick-sort right-arr)))))))
 
 (defun binary-search 
@@ -330,7 +330,7 @@ describe('Interpretation', () => {
 (defun solve1 array cb 
      (reduce array (lambda a x i array (do
         (defvar res (binary-search array (cb x)))
-        (if res (push a res) a))) 
+        (if res (push! a res) a))) 
      ()))
 
 (defun solve2 array cb 
@@ -339,7 +339,7 @@ describe('Interpretation', () => {
           (loop defun iterate j bounds (do 
               (defvar x (get array j))
               (defvar res (binary-search array (cb x y)))
-              (when res (push accumulator res))
+              (when res (push! accumulator res))
             (if (< j bounds) (iterate (+ j 1) bounds)
         accumulator)))
         (iterate i (- (length array) 1)))) 
@@ -373,10 +373,10 @@ describe('Interpretation', () => {
     )
     deepStrictEqual(
       runFromInterpreted(`
-    (defun push array value (set array (length array) value))
+    (defun push! array value (set array (length array) value))
     (defun concat array1 array2 (do
       (loop defun iterate i bounds (do
-      (when (< i (length array2)) (push array1 (get array2 i)))
+      (when (< i (length array2)) (push! array1 (get array2 i)))
       (if (< i bounds) 
         (iterate (+ i 1) bounds)
       array1
@@ -391,13 +391,13 @@ describe('Interpretation', () => {
     (loop defun iterate i bounds (do
         (defvar current (get arr i))
         (if (< current pivot) 
-            (push left-arr current)
-            (push right-arr current))
+            (push! left-arr current)
+            (push! right-arr current))
         (when (< i bounds) (iterate (+ i 1) bounds))))
         (iterate 1 (- (length arr) 1))
     (go 
       left-arr (quick-sort) 
-      (push pivot) 
+      (push! pivot) 
       (concat (quick-sort right-arr)))))))
     (defun reverse array (do
       (defvar len (length array))
@@ -429,7 +429,7 @@ describe('Interpretation', () => {
     )
     deepStrictEqual(
       runFromInterpreted(`
-    (defvar push (lambda array value (set array (length array) value)))
+    (defvar push! (lambda array value (set array (length array) value)))
     (defvar for-each (lambda array callback (do
       (loop defun iterate i bounds (do
         (callback (get array i) i)
@@ -438,7 +438,7 @@ describe('Interpretation', () => {
     (defvar deep-flat (lambda arr (do 
       (defvar new-array ()) 
       (loop defun flatten item (if (Array? item) (for-each item (lambda x . (flatten x))) 
-      (push new-array item)))
+      (push! new-array item)))
       (flatten arr) 
       new-array
     )))
@@ -461,10 +461,10 @@ describe('Interpretation', () => {
       100
     )
     deepStrictEqual(
-      runFromInterpreted(`(defvar push (lambda array value (set array (length array) value)))
+      runFromInterpreted(`(defvar push! (lambda array value (set array (length array) value)))
   (defvar concat (lambda array1 array2 (do
     (defvar iterate (lambda i bounds (do
-    (push array1 (get array2 i))
+    (push! array1 (get array2 i))
     (if (< i bounds) 
       (iterate (+ i 1) bounds)
     array1
@@ -473,7 +473,7 @@ describe('Interpretation', () => {
 
   (go
     (Array 1 2 3)
-    (push -1)
+    (push! -1)
     (concat (type "abc" Array))
     (concat (Array 1 2 3 4))
     (concat (Array 5 6 7))
@@ -555,7 +555,7 @@ describe('Interpretation', () => {
     675
     1456")
     
-    (defvar push (lambda array value (set array (length array) value)))
+    (defvar push! (lambda array value (set array (length array) value)))
     
     (defvar max (lambda a b (if (> a b) a b)))
     (defvar min (lambda a b (if (< a b) a b)))
@@ -578,9 +578,9 @@ describe('Interpretation', () => {
     (defvar string_to_array (lambda string delim 
     (reduce (type string Array) (lambda a x i (do
         (if (= x delim) 
-          (push a ()) 
-          (do (push (get a -1) x) a)
-        )))(push () ()))))
+          (push! a ()) 
+          (do (push! (get a -1) x) a)
+        )))(push! () ()))))
     
      (defvar split-by-lines (lambda string (map (string_to_array string "\n") (lambda x i (join x "")))))
      

@@ -1,4 +1,4 @@
-(import std "split-by-n-lines" "map" "except" "split" "array-of-numbers" "push" "every?" "reduce" "deep-flat" "select" "some?" "reverse"
+(import std "split-by-n-lines" "map" "except" "split" "array-of-numbers" "push!" "every?" "reduce" "deep-flat" "select" "some?" "reverse"
 "for-n" "find" "slice-if-index" "for-each")
 (import math "range" "product" "summation")
 
@@ -68,7 +68,7 @@ nearby tickets:
                                 (not (some? ticket-ranges (lambda z . .
                                   (or (is-in-bounds y (car z)) (is-in-bounds y (car (cdr z))))
                                   ))))))))))
-  (defconstant tickets (push (type remaining Array) (type your-ticket Array)))
+  (defconstant tickets (push! (type remaining Array) (type your-ticket Array)))
   (defconstant *range* (range 0 (- (length your-ticket) 1)))
   (defun validate-ticket tickets i j (go 
         (every? tickets (lambda x . . 
@@ -88,7 +88,7 @@ nearby tickets:
               (cdr) 
               (map (lambda ti . . (select ti (lambda x . . (not (= (car (cdr x)) swap))))))) 
             ()))
-  (push order (Array slot swap))
+  (push! order (Array slot swap))
   (seave next order)) order)))
 (go 
   (go 

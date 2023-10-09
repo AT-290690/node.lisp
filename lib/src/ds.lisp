@@ -28,9 +28,9 @@
     ;       (Array "Animation" "Programming"))))
     ;   (log)
     ; )
-      ; hash-table-add
-    (deftype hash-table-add (Lambda (Or (Array (Array (Array)))) (Or (Number) (Integer) (String)) (Or (Array) (Number) (String) (Integer) (Function)) (Or (Array (Array (Array))))))
-    (defun hash-table-add 
+      ; hash-table-add!
+    (deftype hash-table-add! (Lambda (Or (Array (Array (Array)))) (Or (Number) (Integer) (String)) (Or (Array) (Number) (String) (Integer) (Function)) (Or (Array (Array (Array))))))
+    (defun hash-table-add! 
       table key value 
         (do
           (defconstant idx (hash-index table key))
@@ -45,9 +45,9 @@
             (set current index entry)
           )
           table))
-    ; hash-table-remove
-    (deftype hash-table-remove (Lambda (Or (Array (Array (Array)))) (Or (Number) (Integer) (String)) (Or (Array (Array (Array))))))
-    (defun hash-table-remove 
+    ; hash-table-remove!
+    (deftype hash-table-remove! (Lambda (Or (Array (Array (Array)))) (Or (Number) (Integer) (String)) (Or (Array (Array (Array))))))
+    (defun hash-table-remove! 
       table key 
         (do
           (defconstant idx (hash-index table key))
@@ -89,12 +89,12 @@
             table (hash-table (* len len)))
           (loop defun add i (do
             (defconstant item (get items i))
-            (hash-table-add table (get item 0) (get item 1))
+            (hash-table-add! table (get item 0) (get item 1))
           (if (< i len) (add (+ i 1)) table)))
           (add 0)))
-      ; hash-set-add
-    (deftype hash-set-add (Lambda (Or (Array (Array))) (Or (Number) (Integer) (String)) (Or (Array (Array)))))
-    (defun hash-set-add 
+      ; hash-set-add!
+    (deftype hash-set-add! (Lambda (Or (Array (Array))) (Or (Number) (Integer) (String)) (Or (Array (Array)))))
+    (defun hash-set-add! 
       table key 
         (do
           (defconstant idx (hash-index table key))
@@ -109,9 +109,9 @@
             (set current index entry)
           )
           table))
-    ; hash-set-remove
-    (deftype hash-set-remove (Lambda (Or (Array (Array))) (Or (Number) (Integer) (String)) (Or (Array (Array)))))
-    (defun hash-set-remove 
+    ; hash-set-remove!
+    (deftype hash-set-remove! (Lambda (Or (Array (Array))) (Or (Number) (Integer) (String)) (Or (Array (Array)))))
+    (defun hash-set-remove! 
       table key 
         (do
           (defconstant idx (hash-index table key))
@@ -145,7 +145,7 @@
           table (hash-set (* len len)))
         (loop defun add i (do
           (defconstant item (get items i))
-          (hash-set-add table item)
+          (hash-set-add! table item)
         (if (< i len) (add (+ i 1)) table)))
         (add 0)))
   ; (/ Hash Set)
@@ -262,15 +262,15 @@
     ; (/ Binary Tree)
   (Array 
     (Array "hash-index" hash-index)
-    (Array "hash-table-add" hash-table-add)
-    (Array "hash-table-remove" hash-table-remove)
+    (Array "hash-table-add!" hash-table-add!)
+    (Array "hash-table-remove!" hash-table-remove!)
     (Array "hash-table?" hash-table?)
     (Array "hash-table-get" hash-table-get)
     (Array "hash-table" hash-table)
     (Array "hash-table-make" hash-table-make)
-    (Array "hash-set-add" hash-set-add)
+    (Array "hash-set-add!" hash-set-add!)
     (Array "hash-set?" hash-set?)
-    (Array "hash-set-remove" hash-set-remove)
+    (Array "hash-set-remove!" hash-set-remove!)
     (Array "hash-set-get" hash-set-get)
     (Array "hash-set" hash-set)
     (Array "hash-set-make" hash-set-make)
