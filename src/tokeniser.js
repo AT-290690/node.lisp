@@ -1505,18 +1505,25 @@ const tokens = {
       )
     throw new Error(string)
   },
-  [TOKENS.TAILC_CALLS_OPTIMISED_RECURSIVE_FUNCTION]: (args, env) => {
+  [TOKENS.TAIL_CALLS_OPTIMISED_RECURSIVE_FUNCTION]: (args, env) => {
     if (!args.length)
       throw new RangeError(
         `Invalid number of arguments to (${
-          TOKENS.TAILC_CALLS_OPTIMISED_RECURSIVE_FUNCTION
+          TOKENS.TAIL_CALLS_OPTIMISED_RECURSIVE_FUNCTION
         }) (>= 2 required). (${
-          TOKENS.TAILC_CALLS_OPTIMISED_RECURSIVE_FUNCTION
+          TOKENS.TAIL_CALLS_OPTIMISED_RECURSIVE_FUNCTION
         } ${stringifyArgs(args)}).`
       )
     // TODO: Add validation for TCO recursion
     const [definition, ...functionArgs] = args
-    return tokens[definition[VALUE]](functionArgs, env)
+    const token = definition[VALUE]
+    if (!(token in tokens))
+      throw new ReferenceError(
+        `There is no such keyword ${token} at (${
+          TOKENS.TAIL_CALLS_OPTIMISED_RECURSIVE_FUNCTION
+        } ${stringifyArgs(args)})`
+      )
+    return tokens[token](functionArgs, env)
   },
   [TOKENS.IMMUTABLE_FUNCTION]: (args, env) => {
     if (!args.length)
@@ -1528,7 +1535,14 @@ const tokens = {
         )}).`
       )
     const [definition, ...functionArgs] = args
-    const fn = tokens[definition[VALUE]](functionArgs, {
+    const token = definition[VALUE]
+    if (!(token in tokens))
+      throw new ReferenceError(
+        `There is no such keyword ${token} at (${
+          TOKENS.IMMUTABLE_FUNCTION
+        } ${stringifyArgs(args)})`
+      )
+    const fn = tokens[token](functionArgs, {
       ...tokens,
       [TYPES]: env[TYPES],
     })

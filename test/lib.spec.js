@@ -35,11 +35,11 @@ const programs = [
   (hash-table-add! ht "name" "Anthony")
   (hash-table-add! ht "age" 33)
   (Array (hash-table-get ht "name"))`,
-  `(import ds "binary-tree-node" "binary-tree-set-left" "binary-tree-get-value"  "binary-tree-get-left")
+  `(import ds "binary-tree-node" "binary-tree-set-left!" "binary-tree-get-value"  "binary-tree-get-left")
   (defconstant tree (binary-tree-node 10))
   (go 
     tree 
-    (binary-tree-set-left (binary-tree-node 8)) 
+    (binary-tree-set-left! (binary-tree-node 8)) 
     (binary-tree-get-left)
     (binary-tree-get-value)
     (Array))

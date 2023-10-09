@@ -315,7 +315,7 @@ const compile = (tree, Variables, Functions) => {
           Variables
         )})=>{${vars}return ${evaluatedBody.toString().trimStart()}});`
       }
-      case TOKENS.TAILC_CALLS_OPTIMISED_RECURSIVE_FUNCTION: {
+      case TOKENS.TAIL_CALLS_OPTIMISED_RECURSIVE_FUNCTION: {
         let name,
           newName,
           out = '(('

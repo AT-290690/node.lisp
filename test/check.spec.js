@@ -10,7 +10,7 @@ describe('Errors', () => {
     checks(`(mod 2 0)`, TypeError)
     checks(`(set 10 1)`, TypeError)
     checks(`(set 10 1)`, TypeError)
-    checks(`(loop 10 1)`, TypeError)
+    checks(`(loop 10 1)`, ReferenceError)
     checks(`(defconstant x (Array 1 2 3)) (set x "4")`, TypeError)
     checks(`(defconstant x 10) (setf x 23)`, TypeError)
     checks(`(defun fn x (* x 10)) (fn 10 20)`, RangeError)

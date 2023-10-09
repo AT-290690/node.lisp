@@ -57,7 +57,13 @@
             len (length current)
             index (if len (find-index current (lambda x . . (= (get x 0) key))) -1))
           (otherwise (= index -1) (and (set current index (get current -1)) (set current -1)))
-          table))        
+          table))  
+     ; hash-table-empty!
+    (deftype hash-table-empty! (Lambda (Or (Array (Array (Array)))) (Or (Array (Array (Array))))))
+    (defun hash-table-empty! 
+      table 
+        (do
+          (map table (lambda x . . (empty! x)))))       
     ; hash table_has 
     (deftype hash-table? (Lambda (Or (Array (Array (Array)))) (Or (Number) (Integer) (String)) (Or (Boolean))))
     (defun hash-table? table key 
@@ -123,6 +129,12 @@
             entry key)
           (otherwise (= index -1) (and (set current index (get current -1)) (set current -1)))
           table))
+    ; hash-set-empty!
+    (deftype hash-set-empty! (Lambda (Or (Array (Array))) (Or (Array (Array)))))
+    (defun hash-set-empty! 
+      table 
+        (do
+          (map table (lambda x . . (empty! x)))))    
     ; hash table_has 
     (deftype hash-set? (Lambda (Or (Array (Array))) (Or (Number) (Integer) (String)) (Or (Boolean))))
     (defun hash-set? table key 
@@ -153,13 +165,13 @@
     ; (Binary Tree)
     ; (go 
     ; (binary-tree-node 1)
-    ; (binary-tree-set-left (go 
+    ; (binary-tree-set-left! (go 
     ;                         (binary-tree-node 2) 
-    ;                         (binary-tree-set-left 
+    ;                         (binary-tree-set-left! 
     ;                           (go (binary-tree-node 4) 
-    ;                               (binary-tree-set-right 
+    ;                               (binary-tree-set-right! 
     ;                               (binary-tree-node 5))))))
-    ; (binary-tree-set-right (binary-tree-node 3))
+    ; (binary-tree-set-right! (binary-tree-node 3))
     ; (binary-tree-get-left)
     ; (binary-tree-get-left)
     ; (binary-tree-get-right))
@@ -207,8 +219,8 @@
        (Array (Array (String) (Function)))
        (Array (Array (String) (Array))))))
     (defun binary-tree-get-right node (get node 2))
-    ; binary-tree-set-left
-    (deftype binary-tree-set-left (Lambda 
+    ; binary-tree-set-left!
+    (deftype binary-tree-set-left! (Lambda 
       (And 
        (Array (Array (String) (Number))) 
        (Array (Array (String) (String)))
@@ -227,9 +239,9 @@
        (Array (Array (String) (Integer)))
        (Array (Array (String) (Function)))
        (Array (Array (String) (Array))))))
-    (defun binary-tree-set-left tree node (set tree 1 node))
-    ; binary-tree-set-right
-    (deftype binary-tree-set-right (Lambda 
+    (defun binary-tree-set-left! tree node (set tree 1 node))
+    ; binary-tree-set-right!
+    (deftype binary-tree-set-right! (Lambda 
       (And 
        (Array (Array (String) (Number))) 
        (Array (Array (String) (String)))
@@ -248,7 +260,7 @@
        (Array (Array (String) (Integer)))
        (Array (Array (String) (Function)))
        (Array (Array (String) (Array))))))
-    (defun binary-tree-set-right tree node (set tree 2 node)) 
+    (defun binary-tree-set-right! tree node (set tree 2 node)) 
     ; binary-tree-get-value
     (deftype binary-tree-get-right (Lambda 
       (And 
@@ -264,6 +276,7 @@
     (Array "hash-index" hash-index)
     (Array "hash-table-add!" hash-table-add!)
     (Array "hash-table-remove!" hash-table-remove!)
+    (Array "hash-table-empty!" hash-table-empty!)
     (Array "hash-table?" hash-table?)
     (Array "hash-table-get" hash-table-get)
     (Array "hash-table" hash-table)
@@ -271,14 +284,15 @@
     (Array "hash-set-add!" hash-set-add!)
     (Array "hash-set?" hash-set?)
     (Array "hash-set-remove!" hash-set-remove!)
+    (Array "hash-set-empty!" hash-set-empty!)
     (Array "hash-set-get" hash-set-get)
     (Array "hash-set" hash-set)
     (Array "hash-set-make" hash-set-make)
     (Array "binary-tree-node" binary-tree-node)
     (Array "binary-tree-get-left" binary-tree-get-left)
     (Array "binary-tree-get-right" binary-tree-get-right)
-    (Array "binary-tree-set-right" binary-tree-set-right)
-    (Array "binary-tree-set-left" binary-tree-set-left)
+    (Array "binary-tree-set-right!" binary-tree-set-right!)
+    (Array "binary-tree-set-left!" binary-tree-set-left!)
     (Array "binary-tree-get-value" binary-tree-get-value)
    )))
 ; (/ ds lib)

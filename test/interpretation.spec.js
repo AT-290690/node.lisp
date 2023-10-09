@@ -216,22 +216,22 @@ describe('Interpretation', () => {
                     node (get node 1))
     (defun binary-tree-get-right 
                     node (get node 2))
-    (defun binary-tree-set-left 
+    (defun binary-tree-set-left! 
                     tree node (set tree 1 node))
-    (defun binary-tree-set-right 
+    (defun binary-tree-set-right! 
                     tree node (set tree 2 node)) 
     (defun binary-tree-get-value
                     node (get node 0))
   (go 
     (binary-tree-node 1)
-    (binary-tree-set-left 
+    (binary-tree-set-left! 
           (go 
             (binary-tree-node 2) 
-            (binary-tree-set-left 
+            (binary-tree-set-left! 
               (go (binary-tree-node 4) 
-                  (binary-tree-set-right 
+                  (binary-tree-set-right! 
                   (binary-tree-node 5))))))
-    (binary-tree-set-right (binary-tree-node 3))
+    (binary-tree-set-right! (binary-tree-node 3))
     (binary-tree-get-left)
     (binary-tree-get-left)
     (binary-tree-get-right))
