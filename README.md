@@ -53,19 +53,6 @@ A Lisp for Node
 ```
 
 ```lisp
-(defconstant odd? (lambda x . . (= (mod x 2) 1)))
-(defconstant mult_2 (lambda x . . (* x 2)))
-(defconstant sum (lambda a x . . (+ a x)))
-; Pipe the first to a series of composed functions
-; (arg (arg .. ) (arg .. ) (ar . . . . ))
-(go
-  (Array 1 2 3 4 5 6 7 101)
-  (except odd?)
-  (map mult_2)
-  (reduce sum 0))
-```
-
-```lisp
 (import std "push!""reduce")
 (import math "range" "product")
 (defun factorial n
@@ -94,6 +81,13 @@ A Lisp for Node
   (iterate args 1))))
 
   (log (product 10 20 30))
+```
+
+```lisp
+(import std "fold" "concat")
+; Variadic function
+(defconstant foldcat (function args (fold args (lambda a b (concat a b)) ())))
+(foldcat (Array 1 2 3) (Array 4 5 6) (Array 7 8 9)) ; (1 2 3 4 5 6 7 8 9)
 ```
 
 ```lisp

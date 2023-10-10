@@ -28,8 +28,9 @@ export default {
   tokens,
   evaluate,
   balance: isBalancedParenthesis,
-  source: removeNoCode,
+  quotes: handleUnbalancedQuotes,
+  code: removeNoCode,
   run,
   libraries,
-  treeShake,
+  shake: treeShake,
 }

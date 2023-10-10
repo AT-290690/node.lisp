@@ -501,6 +501,7 @@
                 (iterate (+ i 1)))
               out))
               (iterate 0)))
+      ; clone
       (deftype clone (Lambda (Or (Array)) (Or (Array))))
       (defun clone array (do 
       (defconstant 
