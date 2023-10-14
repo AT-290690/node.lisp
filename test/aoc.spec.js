@@ -4,8 +4,9 @@ import { readFileSync } from 'fs'
 import STD from '../lib/baked/std.js'
 import MATH from '../lib/baked/math.js'
 import DS from '../lib/baked/ds.js'
+import STR from '../lib/baked/str.js'
 const day = (day) => readFileSync(`./examples/aoc_2020_${day}.lisp`, 'utf-8')
-const libraries = [STD, MATH, DS]
+const libraries = [STD, MATH, DS, STR]
 const problems = [
   day(1),
   day(2),

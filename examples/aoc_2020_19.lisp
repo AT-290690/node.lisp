@@ -1,4 +1,5 @@
-(import std "fold" "map" "scan" "empty?" "drop!" "concat" "clone" "slice" "split-by-n-lines" "some?" "reverse" "split" "join" "trim" "array-of-numbers" "reduce" "every?" )
+(import std "fold" "map" "scan" "empty?" "drop!" "concat" "clone" "slice" "some?" "reverse" "array-of-numbers" "reduce" "every?" )
+(import str "split-by-n-lines" "split" "join" "trim")
 (import math "summation")
 ; (defconstant *INPUT* (go 
 ;  (:open "./playground/src/aoc_2020/19/input.txt")

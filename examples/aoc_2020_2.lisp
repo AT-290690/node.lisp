@@ -1,4 +1,5 @@
-(import std "push!" "map" "reduce" "split-by")
+(import std "push!" "map" "reduce")
+(import str "split-by")
 
 (defconstant sample "1-3 a: abcde
 1-3 b: cdefg

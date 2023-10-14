@@ -1,4 +1,5 @@
-(import std "split-by" "window" "map" "array-of-numbers" "reduce" "some?" "find" "slice")
+(import std "window" "map" "array-of-numbers" "reduce" "some?" "find" "slice")
+(import str "split-by" )
 (import math "minimum" "maximum" "can-sum?" "range" "min" "max" "summation")
 ; The data is encrypted with the eXchange-Masking Addition System (XMAS).
 ; XMAS transmits a preamble of 25 *numbers* and each subsequent number should be the sum of any two of the 25 immediately previous *numbers*.

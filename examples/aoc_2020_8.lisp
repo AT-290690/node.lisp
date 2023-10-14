@@ -1,4 +1,5 @@
-(import std "split-by" "map" "find" "select" "reduce")
+(import std "map" "find" "select" "reduce")
+(import str "split-by")
 
 (defconstant sample "nop +0
 acc +1

@@ -1,4 +1,5 @@
-(import std "accumulate" "array-of-numbers" "split-by-n-lines" "character-occurances-in-string" "join" "reduce" "index-of" "map" "select")
+(import std "accumulate" "array-of-numbers" "reduce" "index-of" "map" "select")
+(import str "split-by-n-lines" "character-occurances-in-string" "join" )
 (import math "summation")
 (defconstant sample "abc
 

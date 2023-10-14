@@ -1,4 +1,5 @@
-(import std "quick-sort" "binary-search" "map" "reduce" "concat" "array-of-numbers" "split-by-lines")
+(import std "quick-sort" "binary-search" "map" "reduce" "concat" "array-of-numbers")
+(import str "split-by-lines")
 (import math "floor" "product")
 (defconstant sample "1721
 979

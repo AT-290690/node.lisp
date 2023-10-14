@@ -272,6 +272,8 @@
       (Or (Number) (String) (Integer) (Function) (Array))))
     (defun binary-tree-get-value node (car (cdr (get node 0))))
     ; (/ Binary Tree)
+    (deftype none (Lambda (Or (Number))))
+    (defun none 0)
     (deftype maybe (Lambda (Or (Boolean)) (Or (Number) (Array) (String) (Integer) (Function)) (Or (Array))))
     (defun maybe e x (Array e x))
     (deftype option (Lambda (Or (Number) (Array) (String) (Integer) (Function)) (Or (Array))))
@@ -285,7 +287,6 @@
       (Or (Number) (Array) (String) (Integer) (Function)) 
       (Or (Number) (Array) (String) (Integer) (Function))))
     (defun unwrap-or option default (if (car option) (car (cdr option)) default))
-
   (Array 
     (Array "hash-index" hash-index)
     (Array "hash-table-add!" hash-table-add!)
@@ -313,6 +314,6 @@
     (Array "unwrap" unwrap)
     (Array "unwrap-or" unwrap-or)
     (Array "maybe" maybe)
-
-   )))
+    (Array "none" none)
+)))
 ; (/ ds lib)

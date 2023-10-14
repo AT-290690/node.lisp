@@ -1,6 +1,6 @@
-(import std "split-by" "array-of-numbers" "reduce" "quick-sort" "map" "concat" "count-of" "join" "array-in-bounds?")
+(import std "array-of-numbers" "reduce" "quick-sort" "map" "concat" "count-of" "array-in-bounds?")
 (import math "adjacent-difference" "max")
-
+(import str "split-by" "join")
 (defconstant sample "16
 10
 15

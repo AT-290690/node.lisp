@@ -3,10 +3,10 @@
 (import std 
 "array-in-bounds?" "find-index"
   "reduce" "push!" "select" "deep-flat" "for-each"
-  "split-by-lines" "join" "split-by" "every?" "trim" "array-of-numbers" "map"
+  "every?" "array-of-numbers" "map"
   "some?" "find" "slice" "concat" "for-n")
 (import math "odd?" "euclidean-mod" "min" "power" "summation" "min" "count-number-of-ones-bit")
-
+(import str "split-by-lines" "join" "split-by" "trim" )
 (defconstant *input* 
 (Array 
 "mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X

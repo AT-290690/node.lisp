@@ -1,4 +1,5 @@
-(import std "split" "map" "push!" "pop!" "drop!" "join" "reduce" "for-each" "every?" "map" "select" "array-in-bounds?" "deep-flat" "concat" "split-by-lines")
+(import std "map" "push!" "pop!" "drop!" "reduce" "for-each" "every?" "map" "select" "array-in-bounds?" "deep-flat" "concat")
+(import str "split-by-lines" "split" "join")
 (import math "odd?" "summation" "product")
 
 (defconstant *INPUT* 

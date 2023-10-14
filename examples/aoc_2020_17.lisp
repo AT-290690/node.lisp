@@ -1,9 +1,10 @@
 (import ds "hash-index"
   "hash-table-add!" "hash-table?" "hash-table-get" "hash-table" "hash-table-make" "hash-index" "hash-table-get" "hash-table"
   "hash-set-add!" "hash-set-remove!" "hash-set?" "hash-set-get" "hash-set" "hash-set-make")
-(import std  "array-in-bounds?" "find-index" "map" "split-by-lines" "for-n" "iteration" "join" "reduce" "array-in-bounds?" "find-index" "index-of"
-            "count-of" "for-each"  "for-range" "concat" "left-pad" "right-pad" "every?"
-             "deep-flat" "split")
+(import std  "array-in-bounds?" "find-index" "map" "for-n" "iteration" "reduce" "array-in-bounds?" "find-index" "index-of"
+            "count-of" "for-each"  "for-range" "concat" "every?"
+             "deep-flat")
+(import str "split-by-lines" "join" "split" "split-by" "trim"  "left-pad" "right-pad" )
 (import math "summation" "floor" "euclidean-mod" "max" "min" "abs")
 
 (defconstant input 

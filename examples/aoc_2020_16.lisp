@@ -1,7 +1,7 @@
-(import std "split-by-n-lines" "map" "except" "split" "array-of-numbers" "push!" "every?" "reduce" "deep-flat" "select" "some?" "reverse"
+(import std "map" "except" "array-of-numbers" "push!" "every?" "reduce" "deep-flat" "select" "some?" "reverse"
 "for-n" "find" "slice-if-index" "for-each")
 (import math "range" "product" "summation")
-
+(import str "split" "split-by-n-lines")
 (defconstant sample1 "class: 1-3 or 5-7
 row: 6-11 or 33-44
 seat: 13-40 or 45-50

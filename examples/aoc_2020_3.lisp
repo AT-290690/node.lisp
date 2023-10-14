@@ -1,4 +1,5 @@
-(import std "map" "reduce" "split-by-lines")
+(import std "map" "reduce")
+(import str "split-by-lines")
 (import math "floor" "summation" "product")
 (defconstant sample 
 "..##.......

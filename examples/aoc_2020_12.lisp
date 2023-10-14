@@ -1,4 +1,5 @@
-(import std "split-by" "reduce" "push!" "map" "join" "reverse")
+(import std "reduce" "push!" "map" "reverse")
+(import str "split-by" "join")
 (import math "abs" "radians" "floor")
 (defconstant sample "F10
 N3

@@ -15,14 +15,21 @@ import {
   treeShake,
 } from '../src/utils.js'
 import STD from '../lib/baked/std.js'
+import STR from '../lib/baked/str.js'
 import MATH from '../lib/baked/math.js'
 import DS from '../lib/baked/ds.js'
 const libraries = {
   std: STD,
+  str: STR,
   math: MATH,
   ds: DS,
 }
-const libs = [...libraries['std'], ...libraries['math'], ...libraries['ds']]
+const libs = [
+  ...libraries['std'],
+  ...libraries['str'],
+  ...libraries['math'],
+  ...libraries['ds'],
+]
 import { APPLY, TYPE, VALUE, WORD } from '../src/enums.js'
 export default async () => {
   const [, , ...argv] = process.argv

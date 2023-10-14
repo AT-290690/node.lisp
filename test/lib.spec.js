@@ -1,9 +1,10 @@
 import { deepStrictEqual } from 'assert'
 import { runFromCompiled, runFromInterpreted } from '../src/utils.js'
 import STD from '../lib/baked/std.js'
+import STR from '../lib/baked/str.js'
 import MATH from '../lib/baked/math.js'
 import DS from '../lib/baked/ds.js'
-const libraries = [STD, MATH, DS]
+const libraries = [STD, MATH, DS, STR]
 const programs = [
   `(import math "PI" "circumference") (Array (PI) (circumference 1))`,
   `(import ds "hash-set" "hash-index" "hash-set-add!" "hash-set-get" "hash-set?" "hash-set-remove!")
@@ -44,7 +45,7 @@ const programs = [
     (binary-tree-get-value)
     (Array))
   `,
-  `(import std "to-upper-case" "to-lower-case") (Array (to-lower-case "Lisp is Cool AT-29") (to-upper-case "Lisp is Cool AT-29"))`,
+  `(import str "to-upper-case" "to-lower-case") (Array (to-lower-case "Lisp is Cool AT-29") (to-upper-case "Lisp is Cool AT-29"))`,
   `(import std "map") (go (Array 1 2 4) (map (lambda x . . (* x 2))))`,
   `(import std "map")
   (import math "prime?" "sqrt" "abs" "square" "average")
@@ -74,7 +75,7 @@ const programs = [
   `(import math "arithmetic-progression" "range")
    (import std "push!")
     (Array (arithmetic-progression 5 25) (range 1 10))`,
-  `(import std "join" "reduce")
+  `(import std "reduce") (import str "join")
     (go (Array "Hello" "World") (join "-") (Array))`,
   `(import math "power" "factorial" "sqrt" "abs" "square" "average" "round")
     (Array (round (sqrt (power 2 (factorial 4)))))`,
@@ -106,7 +107,7 @@ const programs = [
   `(import math "permutations") (Array (permutations (Array 1 2 3)))`,
   `(import std "equal?" "some?") (Array (equal? 1 1) (equal? 1 2) (equal? (Array 1) (Array 1)) (equal? (Array (Array 1 2)) (Array (Array 1 2))) (equal? (Array (Array 1 2)) (Array (Array 0 2))))`,
 
-  `(import std "trim") (Array (trim "a a "))`,
+  `(import str "trim") (Array (trim "a a "))`,
   `(import std "empty!")
  (defconstant array (Array 1 2 3 4))
  (empty! array)
