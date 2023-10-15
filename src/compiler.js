@@ -514,10 +514,10 @@ const compile = (tree, Variables, Functions) => {
           Functions
         )
       }
-
+      case TOKENS.ABORT:
+        return 'process.exit(0);'
       case TOKENS.IDENTITY:
       case TOKENS.DEBUG:
-      case TOKENS.ABORT:
       case TOKENS.NOT_COMPILED_BLOCK:
       case TOKENS.DEFINE_TYPE:
       case TOKENS.OR_TYPE:

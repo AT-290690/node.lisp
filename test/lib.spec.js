@@ -147,6 +147,52 @@ const programs = [
     (scan (lambda x (* x 2)))
     (fold (lambda a b (+ a b)) 0))))
   (Array (pure-fn (' 1 2 3 4 5) (' scan fold)))`,
+
+  `
+  ; Input: n = 4
+  ; Output: [[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]
+  ; Explanation: There exist two distinct solutions to the 4-queens puzzle as shown above
+  ; Example 2:
+  ; Input: n = 1
+  ; Output: [["Q"]]
+  (import std "for-n" "scan" "map" "reduce" "array-in-bounds?" "fill" "find" "find-index" "index-of")
+  (import math "euclidean-mod")
+  (import str "join")
+  (import ds "hash-set" "hash-set-add!" "hash-set-remove!" "hash-set?" "hash-index")
+  (deftype n-queen (Lambda (Or (Number)) (Or (Array (Array (String))))))
+  (defun n-queen n
+    (do 
+    (defconstant solutions ())
+    (defconstant cols (hash-set 10))
+    (defconstant pos-diag (hash-set 10))
+    (defconstant neg-diag (hash-set 10))
+    (defconstant board (scan (Array n length) (lambda . (fill (Array n length) "."))))
+    (defun backtrack row 
+      (if (= row n) (set solutions (length solutions) (scan board (lambda a (join a "")))) (do 
+        (for-n (- n 1) (lambda col 
+          (unless 
+            (or 
+              (hash-set? cols col) 
+              (hash-set? pos-diag (+ row col))
+              (hash-set? neg-diag (- row col)))
+            (do 
+              (hash-set-add! cols col)
+              (hash-set-add! pos-diag (+ row col))
+              (hash-set-add! neg-diag (- row col))
+              (set (get board row) col "Q")
+  
+              (backtrack (+ row 1)) 
+  
+              (hash-set-remove! cols col)
+              (hash-set-remove! pos-diag (+ row col))
+              (hash-set-remove! neg-diag (- row col))
+              (set (get board row) col "."))))))))
+    (backtrack 0)
+    solutions))
+  
+  (Array
+     (n-queen 1) 
+     (n-queen 4))`,
 ]
 
 describe('Libraries', () => {
@@ -232,6 +278,13 @@ describe('Libraries', () => {
         [9],
         ['100-E80-D60-C40-B20-A'],
         [30],
+        [
+          [['Q']],
+          [
+            ['.Q..', '...Q', 'Q...', '..Q.'],
+            ['..Q.', 'Q...', '...Q', '.Q..'],
+          ],
+        ],
       ]
     ))
   it('Should compile matching interpretation', () =>

@@ -1632,7 +1632,7 @@ const tokens = {
     }
     return [Object.entries(out), ['⏱️ ', total]]
   },
-  [TOKENS.ABORT]: () => process.exit(),
+  [TOKENS.ABORT]: () => process.exit(0),
 }
 tokens[TOKENS.NOT_COMPILED_BLOCK] = tokens[TOKENS.BLOCK]
 export { tokens }

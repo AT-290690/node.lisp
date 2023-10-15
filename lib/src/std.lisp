@@ -466,6 +466,47 @@
         (set result i (callback (get array (- i 1)) (get array i)))
         (iterate (+ i 1))) result))
         (iterate 1)) array)))
+    ; fill
+    (deftype fill (Lambda (Or (Array)) (Or (String) (Number) (Integer) (Boolean)) (Or (Array))))
+    (defun fill arr item (do 
+      (loop defun iterate arr output
+      (if (length arr) (iterate (cdr arr) (set output (length output) item)) output))
+      (iterate arr ())))
+; rotate-square-matrix
+(deftype rotate-square-matrix (Lambda (Or (Array (Array))) (Or (Array (Array)))))
+(defun rotate-square-matrix array (do 
+  (defconstant 
+              len (length array)
+              out (Array len length))
+  (loop defun outer row 
+    (when (< row len) (do 
+      (set out row ())
+     (loop defun inner col 
+      (when (< col len) (do 
+        (set (get out row) col (get (get array col) (- len 1 row)))
+        (inner (+ col 1)))))
+        (inner 0)
+    (outer (+ row 1)))))
+    (outer 0)
+    out))
+; flip-square-matrix
+(deftype flip-square-matrix (Lambda (Or (Array (Array))) (Or (Array (Array)))))
+(defun flip-square-matrix array (do 
+  (defconstant 
+              len (length array)
+              out (Array len length))
+  (loop defun outer row 
+    (when (< row len) (do 
+      (set out row ())
+     (loop defun inner col 
+      (when (< col len) (do 
+        (set (get out row) col (get (get array row) (- len 1 col)))
+        (inner (+ col 1)))))
+        (inner 0)
+    (outer (+ row 1)))))
+    (outer 0)
+    out))
+
     (Array 
       (Array "push!" push!)
       (Array "pop!" pop!)
@@ -526,5 +567,8 @@
       (Array "adjacent-difference" adjacent-difference)
       (Array "for-of-rev" for-of-rev)
       (Array "for-each-rev" for-each-rev)
+      (Array "fill" fill)
+      (Array "rotate-square-matrix" rotate-square-matrix)
+      (Array "flip-square-matrix" flip-square-matrix)
   )))
 ; (/ std lib)

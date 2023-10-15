@@ -29,6 +29,12 @@ const traverse = (tree, level = 0) => {
         return `\n(${token}${singleArg(Arguments)}${Arguments.map((x) =>
           traverse(x).toString()
         ).join(' ')})`
+      case TOKENS.SHORT_ARRAY:
+        return `(${token}${singleArg(Arguments)}${Arguments.map((x) =>
+          Array.isArray(x)
+            ? `\n${traverse(x).toString()}`
+            : traverse(x).toString()
+        ).join(' ')})`
       case TOKENS.NUMBER_TYPE:
       case TOKENS.INTEGER_TYPE:
       case TOKENS.BOOLEAN_TYPE:
@@ -49,7 +55,6 @@ const traverse = (tree, level = 0) => {
       case TOKENS.IS_INTEGER:
       case TOKENS.IS_FUNCTION:
       case TOKENS.IS_ARRAY:
-      case TOKENS.SHORT_ARRAY:
       case TOKENS.ARRAY_TYPE:
       case TOKENS.FUNCTION_TYPE:
         return `(${token}${singleArg(Arguments)}${Arguments.map((x) =>
