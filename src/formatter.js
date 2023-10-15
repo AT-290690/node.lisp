@@ -43,6 +43,7 @@ const traverse = (tree, level = 0) => {
       case TOKENS.AND_TYPE:
       case TOKENS.LAMBDA_TYPE:
       case TOKENS.ATOM:
+      case TOKENS.IS_ATOM:
       case TOKENS.SET_VARIABLE:
       case TOKENS.SET_BOOLEAN:
       case TOKENS.FROM_CHAR_CODE:

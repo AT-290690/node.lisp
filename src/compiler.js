@@ -36,7 +36,6 @@ export const lispToJavaScriptVariableName = (name) =>
       )
     )
   )
-
 const Extensions = {}
 const Helpers = {
   log: {
@@ -274,7 +273,7 @@ const compile = (tree, Variables, Functions) => {
         return '(()=>{});'
       case TOKENS.ARRAY_OR_STRING_LENGTH:
         return `(${compile(Arguments[0], Variables, Functions)}).length`
-      case TOKENS.ATOM:
+      case TOKENS.IS_ATOM:
         return handleBoolean(
           `_isAtom(${compile(Arguments[0], Variables, Functions)});`
         )
@@ -523,6 +522,9 @@ const compile = (tree, Variables, Functions) => {
       case TOKENS.OR_TYPE:
       case TOKENS.AND_TYPE:
       case TOKENS.LAMBDA_TYPE:
+      case TOKENS.ATOM:
+      case TOKENS.DOCUMENTATION:
+      case TOKENS.TEST_CASE:
         return ''
       default: {
         const camleCasedToken = lispToJavaScriptVariableName(token)

@@ -353,6 +353,13 @@
                   (iterate 0 (- (length array) 1))
                   (if has-found idx -1)))))
       ; quick-sort
+      (defun quick-sort-documentation (do
+      (documentation 
+        std
+        quick-sort
+        (Array (import std "concat"))
+        (case "sort (2 1 3)" (quick-sort (Array 2 1 3)) (Array 1 2 3))
+      "Sorts an array of strings or numbers.\n The order is ascending.\n This creates a copy of the array.")))
       (deftype quick-sort (Lambda (Or (Array (Number)) (Array (String)) (Array (Integer))) (Or (Array (Number)) (Array (String)) (Array (Integer)))))
       (defun quick-sort arr (do
         (if (<= (length arr) 1) arr
@@ -374,6 +381,14 @@
         (set (length left-sorted) pivot)
         (concat (quick-sort right-arr)))))))
       ; reverse 
+    (defun reverse-documentation (do
+      (documentation 
+        std
+        reverse
+        ()
+        (case "reverse 1 x (1 2 3)" (reverse (Array 1 2 3)) (Array 3 2 1))
+        (case "reverse 2 x (1 2 3)" (reverse (reverse (Array 1 2 3))) (Array 1 2 3))
+      "Reverse an array.\n This creates a copy of the array.")))
       (deftype reverse (Lambda (Or (Array)) (Or (Array))))
       (defun reverse array (do
         (defconstant len (length array))
@@ -570,5 +585,9 @@
       (Array "fill" fill)
       (Array "rotate-square-matrix" rotate-square-matrix)
       (Array "flip-square-matrix" flip-square-matrix)
+
+      ; documentation
+      (Array "reverse-documentation" reverse-documentation)
+      (Array "quick-sort-documentation" quick-sort-documentation)
   )))
 ; (/ std lib)

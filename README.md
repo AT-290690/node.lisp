@@ -36,6 +36,52 @@ A Lisp for Node
 (fibonacci-memoized 10 (hash-table 10)) ; 55
 ```
 
+The above function is included in math module
+In addition there is a type definition, a documentation, list of dependencies and tests
+
+```lisp
+    ; fibonacci-memoized
+    (defun fibonacci-memoized-documentation (do
+      (documentation
+        math
+        fibonacci-memoized
+        ; list of dependenies
+        (Array
+          (import ds "hash-table" "hash-table-get" "hash-table?" "hash-table-add!")
+          (import math "euclidean-mod")
+          (import std "map" "find-index" "array-in-bounds?" "index-of" "find")
+          )
+          ; tests
+          (case "1" (fibonacci-memoized 1 (hash-table 10)) 1)
+          (case "2" (fibonacci-memoized 2 (hash-table 10)) 1)
+          (case "5" (fibonacci-memoized 5 (hash-table 10)) 5)
+          (case "6" (fibonacci-memoized 6 (hash-table 10)) 8)
+          (case "10" (fibonacci-memoized 10 (hash-table 10)) 55)
+          (case "20" (fibonacci-memoized 20 (hash-table 10)) 6765)
+    ; documentation
+    "An optimal implementaiton of fibonacci sequance.")))
+    ; type definition
+    (deftype fibonacci-memoized (Lambda (Or (Number)) (Or (Array (Array))) (And (Or (Array (Array))) (Number))))
+    ; function
+    (defun fibonacci-memoized n memo (if (< n 2) n
+        (if (hash-table? memo n) (hash-table-get memo n)
+        (do
+          (defconstant cache (+ (fibonacci-memoized (- n 1) memo) (fibonacci-memoized (- n 2) memo)))
+          (hash-table-add! memo n cache)
+          cache))))
+```
+
+Calling the documentation function in interpretation mode shows the info and runs the tests
+to run the tests make sure you have the dependencies imported if they are needed
+
+```lisp
+(import ds "hash-table" "hash-table-get" "hash-table?" "hash-table-add!")
+(import math "euclidean-mod")
+(import std "map" "find-index" "array-in-bounds?" "index-of" "find")
+
+(documentation math fibonacci-memoized)
+```
+
 ```lisp
 ; Define reusable functions
 (defun binary-search

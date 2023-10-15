@@ -172,7 +172,13 @@ export default async () => {
             )
           )
           ;(value
-            ? mods.flat(1).filter(([, x]) => x[VALUE].includes(value))
+            ? mods
+                .flat(1)
+                .filter(
+                  ([, x]) =>
+                    x[VALUE].includes(value) &&
+                    !x[VALUE].includes('-documentation')
+                )
             : mods.flat(1)
           ).forEach(([, name, ...rest]) => {
             console.log(

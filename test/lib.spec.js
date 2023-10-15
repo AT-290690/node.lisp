@@ -79,7 +79,30 @@ const programs = [
     (go (Array "Hello" "World") (join "-") (Array))`,
   `(import math "power" "factorial" "sqrt" "abs" "square" "average" "round")
     (Array (round (sqrt (power 2 (factorial 4)))))`,
-  `(import math "levenshtein-distance" "minimum" "min")
+  `(import math "minimum" "min")
+  (defun levenshtein-distance a b (do 
+    (defconstant s (type a Array) t (type b Array))
+      (or (cond 
+        (not (length s)) (length t)
+        (not (length t)) (length a)
+      ) (do 
+        (defconstant arr (Array))
+        (loop defun iterate-i i (when (<= i (length s)) (do
+          (set arr i (Array i))
+          (loop defun iterate-j j (when (<= j (length t)) (do 
+            (when (< (length s) j) (set s (length s) ""))
+            (when (< (length t) i) (set t (length t) ""))
+            (set (get arr i) j 
+              (if (= i 0) j 
+                (minimum (Array 
+                  (+ (get (get arr (- i 1)) j) 1)
+                  (+ (get (get arr i) (- j 1)) 1)
+                  (+ (get (get arr (- i 1)) (- j 1)) (not (= (get s (- j 1)) (get t (- i 1)))))))))
+              (iterate-j (+ j 1)))))
+            (iterate-j 1)
+          (iterate-i (+ i 1)))))
+        (iterate-i 0)
+        (get (get arr (length t)) (length s))))))
     (import std "reduce")
   (Array (levenshtein-distance "duck" "dark"))`,
   ` (import math "round")

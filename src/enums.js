@@ -5,7 +5,8 @@ export const VALUE = 'v'
 export const TYPE = 't'
 export const ATOM = 'a'
 // tokeniser enums
-export const TYPES = ';'
+export const TYPES = ';T'
+export const DOCUMENTATION = ';D'
 export const PLACEHOLDER = '.'
 // tokens aliases
 export const TOKENS = {
@@ -50,8 +51,8 @@ export const TOKENS = {
   BITWISE_LEFT_SHIFT: '<<',
   BITWISE_RIGHT_SHIFT: '>>',
   BITWISE_UNSIGNED_RIGHT_SHIFT: '>>>',
-  ATOM: 'atom?',
-
+  ATOM: 'atom',
+  IS_ATOM: 'atom?',
   SHORT_ARRAY: "'",
   FIRST_ARRAY: 'car',
   REST_ARRAY: 'cdr',
@@ -98,4 +99,7 @@ export const TOKENS = {
 
   DEBUG: 'debug',
   ABORT: 'abort',
+
+  DOCUMENTATION: 'documentation',
+  TEST_CASE: 'case',
 }

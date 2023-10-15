@@ -23,6 +23,17 @@
   (deftype divisible? (Lambda (Or (Number)) (Or (Number))  (Or (Boolean))))
   (defun divisible? a b (= (mod a b) 0))
   ; nth-digit
+  (defun nth-digit-documentation (do
+    (documentation 
+      math
+      nth-digit
+      ()
+      (case "0 [n = 1]" (nth-digit 0 1) 0)
+      (case "1234 [n = 1]" (nth-digit 1234 1) 4)
+      (case "1234 [n = 2]" (nth-digit 1234 2) 3)
+      (case "1234 [n = 3]" (nth-digit 1234 3) 2)
+      (case "1234 [n = 4]" (nth-digit 1234 4) 1)
+    "Find the nth digit of a number starting from 1")))
   (deftype nth-digit (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
   (defun nth-digit digit n (| (mod (/ digit (power 10 (- n 1))) 10) 0.5))
   ; max
@@ -110,6 +121,14 @@
   (deftype average (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
   (defun average x y (* (+ x y) 0.5))
   ; sqrt
+  (defun sqrt-documentation (documentation 
+  math
+  sqrt
+  (Array (import math "abs" "average" "square"))
+  (case "root of 4" (sqrt 4) 2.05)
+  (case "root of 9" (sqrt 9) 3.023529411764706)
+  (case "root of 64" (sqrt 64) 8.005147977880979)
+  "Find the square root of a number using Newton (or Heron) method.\n This is an approximation so rounding is required"))
   (deftype sqrt (Lambda (Or (Number)) (Or (Number))))
   (defun sqrt x (do 
     (defconstant is-good-enough (lambda g x (< (abs (- (square g) x)) 0.01))
@@ -123,22 +142,21 @@
   (deftype hypotenuse (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
   (defun hypotenuse a b (sqrt (+ (* a a) (* b b))))
   ; can-sum?
+  (defun can-sum?-documentation (documentation 
+    math
+    can-sum?
+    (Array (import std "some?"))
+    (case "sum = 10, (2 3 5)" (can-sum? 10 (Array 2 3 5)) 1)
+    (case "sum = 9, (3 34 4 12 5 2)" (can-sum? 9 (Array 3 34 4 12 5 2)) 1)
+    (case "sum = 30, (3 34 4 12 5 2)" (can-sum? 30 (Array 3 34 4 12 5 2)) 1)
+    (case "sum = 1, (3 34 4 12 5 2)" (can-sum? 1 (Array 3 34 4 12 5 2)) 0)
+  "Given a value sum and a set of numbers, check if there is a subset of the given set\n whose sum is equal to the given sum."))
   (deftype can-sum? (Lambda (Or (Number)) (Or (Array (Number))) (Or (Boolean))))
   (defun can-sum? t values 
-    (if (< t 0) 0 
-      (if (= t 0) 1 
-        (some? values (lambda x . . (can-sum? (- t x) values))))))
-  ; how-can-sum
-  (deftype how-can-sum (Lambda (Or (Number)) (Or (Array (Number))) (Or (Number))))
-  (defun how-can-sum t values 
-    (if (< t 0) 0 
-      (if (= t 0) (Array) 
-        (do 
-          (defvar res 0)
-          (some? value (lambda x . . (do
-            (setf res (how-can-sum (- t x) values))
-            (if (and (Array? res) (= -1 (array-index-of res x))) (set (length res) res x))))) 
-          res))))
+    (cond 
+      (< t 0) 0 
+      (= t 0) 1
+      (*) (some? values (lambda x . . (can-sum? (- t x) values)))))
   ; abs
   (deftype abs (Lambda (Or (Number)) (Or (Number))))
   (defun abs n (- (^ n (>> n 31)) (>> n 31)))
@@ -236,6 +254,13 @@
                       (defconstant q (* a (/ b)))
                       (if (< (mod a b) 0) (if (> b 0) (- q 1) (+ q 1)) q)))
   ; euclidean-distance
+  (defun euclidean-distance-documentation (do
+        (documentation 
+          math
+          euclidean-distance
+          (Array (import math "sqrt"))
+          (case "x1=10 x2=20 y1=25 y2=15" (euclidean-distance 10 20 25 15) 15.82093011770601)
+        "Generate a sequance of number starting from and ending to. Stored in an array")))
   (deftype euclidean-distance (Lambda (Or (Number)) (Or (Number)) (Or (Number)) (Or (Number)) (Or (Number))))
   (defun euclidean-distance x1 y1 x2 y2 (do
     (defconstant 
@@ -246,6 +271,15 @@
   (deftype manhattan-distance (Lambda (Or (Number)) (Or (Number)) (Or (Number)) (Or (Number)) (Or (Number))))
   (defun manhattan-distance x1 y1 x2 y2 (+ (abs (- x2 x1)) (abs (- y2 y1))))
   ; power
+  (defun power-documentation (documentation 
+  math
+  power
+  ()
+  (case "1^1" (power 1 1) (* 1 1))
+  (case "2^2" (power 2 2) (* 2 2))
+  (case "2^3" (power 2 3) (* 2 2 2))
+  (case "4^5" (power 4 5) (* 4 4 4 4 4))
+  "Raise a number to a given power"))
   (deftype power (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
   (defun power base exp 
     (if (< exp 0) 
@@ -280,10 +314,36 @@
     (deftype factorial (Lambda (Or (Number)) (Or (Number))))
     (defun factorial n (if (<= n 0) 1 (* n (factorial (- n 1)))))
     ; fibonacci
+    (defun fibonacci-documentation (documentation 
+      math
+      fibonacci
+      ()
+      (case "1" (fibonacci 1) 1)
+      (case "2" (fibonacci 2) 1)
+      (case "5" (fibonacci 5) 5)
+      (case "6" (fibonacci 6) 8)
+      (case "10" (fibonacci 10) 55)
+      (case "20" (fibonacci 20) 6765)
+    "A naive implementation of fibonacci sequance."))
     (deftype fibonacci (Lambda (Or (Number)) (Or (Number))))
     (defun fibonacci n (if (< n 2) n (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))
     ; fibonacci-memoized
-    (deftype fibonacci-memoized (Lambda (Or (Number)) (Or (Array (Array (Number)) (Or (Number))))))
+    (defun fibonacci-memoized-documentation (do
+      (documentation 
+        math
+        fibonacci-memoized
+        (Array 
+          (import ds "hash-table" "hash-table-get" "hash-table?" "hash-table-add!")
+          (import math "euclidean-mod")
+          (import std "map" "find-index" "array-in-bounds?" "index-of" "find"))
+          (case "1" (fibonacci-memoized 1 (hash-table 10)) 1)
+          (case "2" (fibonacci-memoized 2 (hash-table 10)) 1)
+          (case "5" (fibonacci-memoized 5 (hash-table 10)) 5)
+          (case "6" (fibonacci-memoized 6 (hash-table 10)) 8)
+          (case "10" (fibonacci-memoized 10 (hash-table 10)) 55)
+          (case "20" (fibonacci-memoized 20 (hash-table 10)) 6765)
+    "An optimal implementaiton of fibonacci sequance.")))
+    (deftype fibonacci-memoized (Lambda (Or (Number)) (Or (Array (Array))) (And (Or (Array (Array))) (Number))))
     (defun fibonacci-memoized n memo (if (< n 2) n
         (if (hash-table? memo n) (hash-table-get memo n)
         (do
@@ -291,13 +351,26 @@
           (hash-table-add! memo n cache)
           cache))))
     ; prime?
+    (defun prime?-documentation (do
+    (documentation 
+      math
+      prime?
+      ()
+      (case "1" (prime? 1) 0)
+      (case "list of primes" (do 
+        (loop defun cdr-primes list out (if (length list) (cdr-primes (cdr list) (set out (length out) (prime? (car list)))) out))
+        (cdr-primes (' 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97) ())) 
+        (' 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1))
+    "An optimal implementaiton  of fibonacci sequance.")))
     (deftype prime? (Lambda (Or (Number)) (Or (Number))))
-    (defun prime? n (do 
+    (defun prime? n (cond 
+        (= n 1) 0
+        (< n 0) 0
+        (*) (do 
         (loop defun iter i end (do 
             (defconstant it-is (not (= (mod n i) 0)))
             (if (and (<= i end) it-is) (iter (+ i 1) end) it-is)))
-      (or (= n 2) (iter 2 (sqrt n)))))
-  
+      (or (= n 2) (iter 2 (sqrt n))))))
     ; chinese-remainder-theorem
     (deftype chinese-remainder-theorem (Lambda (Or (Array (Number))) (Or (Number))))
     (defun chinese-remainder-theorem items
@@ -343,7 +416,16 @@
               ; Make x1 positive
               (when (< x1 0) (setf x1 (+ x1 m0)))
               x1))))
-    ;  range
+      ;  range
+      (defun range-documentation (do
+        (documentation 
+          math
+          range
+          ()
+          (case "0..0" (range 0 0) (Array 0))
+          (case "1..10" (range 1 10) (Array 1 2 3 4 5 6 7 8 9 10))
+          (case "0..4" (range 0 4) (Array 0 1 2 3 4))
+        "Generate a sequance of number starting from and ending to. Stored in an array")))
       (deftype range (Lambda (Or (Number)) (Or (Number)) (Or (Array (Number)))))
       (defun range start end (do
         (defconstant array (Array))
@@ -384,9 +466,29 @@
       (if (< i bounds) (iterate (+ i 1) bounds) initial)))
     (iterate 0 (- (length array) 1))))
   ; summation
+  (defun summation-documentation (do
+    (documentation 
+      math
+      summation
+      ()
+      (case "1" (summation (Array 1)) 1)
+      (case "1 2 3 4" (summation (Array 1 2 3 4)) (+ 1 2 3 4))
+      (case "1 2" (summation (Array 1 2)) 3)
+      (case "1 -2" (summation (Array 1 -2)) -1)
+    "Sum all numbers in a list")))
   (deftype summation (Lambda (Or (Array (Number))) (Or (Number))))
   (defun summation array (reduce array (lambda a b . . (+ a b)) 0))
   ; product
+  (defun product-documentation (do
+    (documentation 
+      math
+      product
+      ()
+      (case "1" (product (Array 1)) 1)
+      (case "0 1" (product (Array 0 1)) 0)
+      (case "1 2" (product (Array 1 2)) 2)
+      (case "1 2 3 4 5" (product (Array 1 2 3 4 5)) (* 1 2 3 4 5))
+    "Multiply all numbers in an array")))
   (deftype product (Lambda (Or (Array (Number))) (Or (Number))))
   (defun product array (reduce array (lambda a b . . (* a b)) 1))
   ; adjacent-difference
@@ -400,6 +502,13 @@
       (iterate (+ i 1))) result))
       (iterate 1)) array)))
       ; permutations
+      (defun permutations-documentation (do
+        (documentation 
+          math
+          permutations
+          ()
+          (case "(Array 1 2 3)" (permutations (Array 1 2 3)) (Array (Array 1 2 3) (Array 2 1 3) (Array 3 1 2) (Array 2 1 3)))
+        "The term permutation refers to a mathematical calculation of the number of ways a particular set can be arranged.\n Put simply, a permutation is a word that describes the number of ways things can be ordered or arranged.\n With permutations, the order of the arrangement matters.")))
       (deftype permutations (Lambda (Or (Array (Number))) (Or (Array (Array (Number))))))
       (defun permutations permutation (do 
         (defconstant  
@@ -424,31 +533,6 @@
                   (while-true (+ i 1)))))
           (while-true 1)
           result))
-  ; levenshtein-distance
-  (deftype levenshtein-distance (Lambda (Or (String)) (Or (String)) (Or (Number))))
-  (defun levenshtein-distance a b (do 
-    (defconstant s (type a Array) 
-            t (type b Array)) 
-      
-      (or (cond 
-        (not (length s)) (length t)
-        (not (length t)) (length a)
-      ) (do 
-        (defconstant arr (Array))
-        (loop defun iterate-i i (when (<= i (length s)) (do
-          (set arr i (Array i))
-          (loop defun iterate-j j (when (<= j (length t)) (do 
-            (set (get arr i) j 
-              (if (= i 0) j 
-                (minimum (Array 
-                  (+ (get (get arr (- i 1)) j) 1)
-                  (+ (get (get arr i) (- j 1)) 1)
-                  (+ (get (get arr (- i 1)) (- j 1)) (not (= (get s (- j 1)) (get t (- i 1)))))))))
-              (iterate-j (+ j 1)))))
-            (iterate-j 1)
-          (iterate-i (+ i 1)))))
-        (iterate-i 0)
-        (get (get arr (length t)) (length s))))))
     ; add-seconds
     (deftype add-seconds (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
     (defun add-seconds date-time seconds (+ date-time (* seconds 1000)))
@@ -509,7 +593,6 @@
       (Array "fibonacci" fibonacci)
       (Array "fibonacci-memoized" fibonacci-memoized)
       (Array "can-sum?" can-sum?)
-      (Array "how-can-sum" how-can-sum)
       (Array "adjacent-difference" adjacent-difference)
       (Array "clamp" clamp)
       (Array "manhattan-distance" manhattan-distance)
@@ -530,7 +613,6 @@
       (Array "gauss-sum-sequance" gauss-sum-sequance)
       (Array "gauss-sum" gauss-sum)
       (Array "prime-factors" prime-factors)
-      (Array "levenshtein-distance" levenshtein-distance)
       (Array "binomial-coefficient" binomial-coefficient)
       (Array "max-bit" max-bit)
       (Array "min-bit" min-bit)
@@ -572,6 +654,21 @@
       (Array "sub-months" sub-months)
       (Array "sub-years" sub-years)
       (Array "hypotenuse" hypotenuse)
+
+
+      ; docs
+      (Array "fibonacci-documentation" fibonacci-documentation)
+      (Array "fibonacci-memoized-documentation" fibonacci-memoized-documentation)
+      (Array "nth-digit-documentation" nth-digit-documentation)
+      (Array "range-documentation" range-documentation)
+      (Array "summation-documentation" summation-documentation)
+      (Array "product-documentation" product-documentation)
+      (Array "power-documentation" power-documentation)
+      (Array "sqrt-documentation" sqrt-documentation)
+      (Array "can-sum?-documentation" can-sum?-documentation)
+      (Array "permutations-documentation" permutations-documentation)
+      (Array "prime?-documentation" prime?-documentation)
+      (Array "euclidean-distance-documentation" euclidean-distance-documentation)
    )
 ))
 ; (/ math lib)

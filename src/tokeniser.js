@@ -13,6 +13,38 @@ const stringifyType = (type) =>
   Array.isArray(type)
     ? `(array ${type.map((t) => stringifyType(t)).join(' ')})`
     : typeof type
+const stringifyOutput = (result) => {
+  if (typeof result === 'function') {
+    return `(λ)`
+  } else if (Array.isArray(result)) {
+    return JSON.stringify(result, (_, value) => {
+      switch (typeof value) {
+        case 'bigint':
+        case 'number':
+          return Number(value)
+        case 'function':
+          return 'λ'
+        case 'undefined':
+        case 'symbol':
+          return 0
+        case 'boolean':
+          return +value
+        default:
+          return value
+      }
+    })
+      .replace(new RegExp(/\[/g), '(')
+      .replace(new RegExp(/\]/g), ')')
+      .replace(new RegExp(/\,/g), ' ')
+      .replace(new RegExp(/"λ"/g), 'λ')
+  } else if (typeof result === 'string') {
+    return `"${result}"`
+  } else if (result == undefined) {
+    return '(void)'
+  } else {
+    return result
+  }
+}
 const stringifyArgs = (args) =>
   args
     .map((x) => {
@@ -41,7 +73,7 @@ const isForbiddenVariableName = (name) => {
       return false
   }
 }
-const atom = (arg, env) => {
+const isAtom = (arg, env) => {
   if (arg[TYPE] === ATOM) return 1
   else {
     const atom = evaluate(arg, env)
@@ -52,7 +84,15 @@ const atom = (arg, env) => {
     )
   }
 }
-const equal = (a, b) =>
+const isEqual = (a, b) =>
+  +(
+    (Array.isArray(a) &&
+      a.length === b.length &&
+      !a.some((_, i) => !isEqual(a.at(i), b.at(i)))) ||
+    a === b ||
+    0
+  )
+const isEqualTypes = (a, b) =>
   (typeof a !== 'object' && typeof b !== 'object' && typeof a === typeof b) ||
   (Array.isArray(a) &&
     Array.isArray(b) &&
@@ -60,7 +100,7 @@ const equal = (a, b) =>
       !b.length ||
       !(a.length > b.length ? a : b).some(
         (_, i, bigger) =>
-          !equal(
+          !isEqualTypes(
             bigger.at(i),
             (a.length > b.length ? b : a).at(
               i % (a.length > b.length ? b : a).length
@@ -68,7 +108,7 @@ const equal = (a, b) =>
           )
       ))) ||
   false
-const partial = (a, b) =>
+const isPartialTypes = (a, b) =>
   (typeof a !== 'object' && typeof b !== 'object' && typeof a === typeof b) ||
   (Array.isArray(a) &&
     Array.isArray(b) &&
@@ -76,7 +116,7 @@ const partial = (a, b) =>
       !b.length ||
       !(a.length < b.length ? a : b).some(
         (_, i, smaller) =>
-          !equal(
+          !isEqualTypes(
             smaller.at(i),
             (a.length < b.length ? b : a).at(
               i % (a.length < b.length ? b : a).length
@@ -473,14 +513,14 @@ const tokens = {
       )
     return args.map((x) => evaluate(x, env))
   },
-  [TOKENS.ATOM]: (args, env) => {
+  [TOKENS.IS_ATOM]: (args, env) => {
     if (args.length !== 1)
       throw new RangeError(
-        `Invalid number of arguments for (${TOKENS.ATOM}) (1 required) (${
-          TOKENS.ATOM
+        `Invalid number of arguments for (${TOKENS.IS_ATOM}) (1 required) (${
+          TOKENS.IS_ATOM
         } ${stringifyArgs(args)}).`
       )
-    return atom(args[0], env)
+    return isAtom(args[0], env)
   },
   [TOKENS.FIRST_ARRAY]: (args, env) => {
     if (args.length !== 1)
@@ -722,7 +762,7 @@ const tokens = {
           const Type = env[TYPES][name].slice(0, -1)
           if (
             Type[i]._type === TOKENS.OR_TYPE &&
-            !Type[i].some((T) => equal(value, T))
+            !Type[i].some((T) => isEqualTypes(value, T))
           )
             throw new TypeError(
               `Type doesn't match ${i} argument (${param}) of ${name}\n(${
@@ -734,7 +774,7 @@ const tokens = {
           else if (
             Type[i]._type === TOKENS.AND_TYPE &&
             Type[i].length &&
-            !Type[i].some((T) => partial(value, T))
+            !Type[i].some((T) => isPartialTypes(value, T))
           ) {
             throw new TypeError(
               `Type doesn't match ${i} argument (${param}) of ${name}\n(${
@@ -755,7 +795,7 @@ const tokens = {
         const Type = env[TYPES][name].at(-1)
         if (
           Type._type === TOKENS.OR_TYPE &&
-          !Type.some((T) => equal(result, T))
+          !Type.some((T) => isEqualTypes(result, T))
         )
           throw new TypeError(
             `Type doesn't match result of ${name}\n(${
@@ -767,7 +807,7 @@ const tokens = {
         else if (
           Type._type === TOKENS.AND_TYPE &&
           Type.length &&
-          !Type.some((T) => partial(result, T))
+          !Type.some((T) => isPartialTypes(result, T))
         ) {
           throw new TypeError(
             `Type doesn't match result of ${name}\n(${
@@ -1233,6 +1273,7 @@ const tokens = {
       )
     const [first, ...rest] = args
     const module = evaluate(first, env)
+
     if (typeof module !== 'function')
       throw new TypeError(
         `First argument of (${TOKENS.IMPORT}) must be an (function) but got (${
@@ -1633,6 +1674,146 @@ const tokens = {
     return [Object.entries(out), ['⏱️ ', total]]
   },
   [TOKENS.ABORT]: () => process.exit(0),
+  [TOKENS.DOCUMENTATION]: (args, env) => {
+    if (args.length !== 2 && args.length < 4)
+      throw new RangeError(
+        `Invalid number of arguments to (${
+          TOKENS.DOCUMENTATION
+        }) (or 2 4 required) (${TOKENS.DOCUMENTATION} ${stringifyArgs(args)})`
+      )
+    const module = evaluate(args[0], env)
+    if (typeof module !== 'function')
+      throw new TypeErorr(
+        `First argument of (${TOKENS.DOCUMENTATION}) has to be a module (${
+          TOKENS.DOCUMENTATION
+        } ${stringifyArgs(args)})`
+      )
+    if (args.length === 2) {
+      const fn = module().find(
+        ([key]) => key === `${args[1][VALUE]}-documentation`
+      )
+      if (!fn || !fn.at(1) || typeof fn.at(1) !== 'function') {
+        throw new ReferenceError(
+          `Second argument of (${TOKENS.DOCUMENTATION}) has to be a function (${
+            TOKENS.DOCUMENTATION
+          } ${stringifyArgs(args)})`
+        )
+      }
+      return fn.at(1)()
+    }
+    const [lib, fn, deps, ...rest] = args
+    const desc = rest.pop()
+    const describe = evaluate(desc, env)
+    if (typeof describe !== 'string')
+      throw new TypeErorr(
+        `Last argument of (${
+          TOKENS.DOCUMENTATION
+        }) has to be a string description (${
+          TOKENS.DOCUMENTATION
+        } ${stringifyArgs(args)})`
+      )
+    if (deps.length) {
+      console.log('\x1b[33m')
+      console.log(
+        deps
+          .slice(1)
+          .map(([_, lib, ...m]) =>
+            [
+              `(import ${lib[VALUE]}`,
+              m.map((x) => `"${x[VALUE]}"`).join(' ') + ')',
+            ].join(' ')
+          )
+          .join('\n'),
+        '\n',
+        '\x1b[0m'
+      )
+    }
+    let tests = []
+    try {
+      tests = rest.map((x) => evaluate(x, env))
+      tests.forEach(([state, describe, ...rest]) =>
+        !state
+          ? console.log(
+              '\x1b[31m',
+              `${describe} Failed:\n`,
+
+              `${rest[0]} => ${stringifyOutput(rest[1])} != ${stringifyOutput(
+                rest[2]
+              )}`,
+              '\n',
+              '\x1b[0m'
+            )
+          : console.log(
+              '\x1b[32m',
+              `${describe} Passed:\n`,
+              `${rest[0]} => ${stringifyOutput(rest[1])}`,
+              '\n',
+              '\x1b[0m'
+            )
+      )
+    } catch (err) {
+      const string = err.toString()
+      if (
+        string.includes('TypeError') &&
+        string.includes('is not a (function)')
+      )
+        console.log(
+          '\x1b[31m',
+          'Test are disabled - maybe you need to import above dependencies first?\n',
+          string
+        )
+      else console.log('\x1b[31m', 'Tests failed: \n', string)
+    }
+    console.log('\x1b[30m', lib[VALUE], '\x1b[0m')
+    console.log('\x1b[35m', fn[VALUE], '\x1b[0m')
+
+    if (env[TYPES]?.[fn[VALUE]]) {
+      const format = (v) =>
+        v._type
+          ? `(${v.length > 1 ? (v._type === 'Or' ? 'or' : 'and') + ' ' : ''}${v
+              .map(
+                (x) =>
+                  `${
+                    Array.isArray(x)
+                      ? `(array${
+                          x.length ? ' ' + x.map(format).join(' ') : ''
+                        })`
+                      : typeof x
+                  }`
+              )
+              .join(' ')})`
+          : Array.isArray(v)
+          ? `(array${v.length ? ' ' + v.map(format).join(' ') : ''})`
+          : typeof v
+      const args = env[TYPES][fn[VALUE]].map(format)
+      const returned = args.pop()
+      console.log(
+        '\x1b[34m',
+        `:: {${args.join(', ')}} -> {${returned}}`,
+        '\x1b[0m'
+      )
+    }
+    console.log('\x1b[33m', '\n', describe, '\x1b[0m')
+    tests.some(([t]) => !t)
+      ? console.log('\x1b[31m', 'Some tests failed!', '\n', '\x1b[0m')
+      : console.log('\x1b[32m', 'All tests passed!', '\n', '\x1b[0m')
+
+    return evaluate(fn, env)
+  },
+  [TOKENS.TEST_CASE]: (args, env) => {
+    if (args.length !== 3)
+      throw new RangeError(
+        `Invalid number of arguments to (${TOKENS.TEST_CASE}) (= 3 required) (${
+          TOKENS.TEST_CASE
+        } ${stringifyArgs(args)})`
+      )
+    const description = evaluate(args[0], env)
+    const a = evaluate(args[1], env)
+    const b = evaluate(args[2], env)
+    return !isEqualTypes(a, b) || !isEqual(a, b)
+      ? [0, description, stringifyArgs([args[1]]), b, a]
+      : [1, description, stringifyArgs([args[1]]), a]
+  },
 }
 tokens[TOKENS.NOT_COMPILED_BLOCK] = tokens[TOKENS.BLOCK]
 export { tokens }

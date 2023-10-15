@@ -87,3 +87,8 @@ export const runFromInterpreted = (source, topLevel = [], env = {}) => {
     )
   if (Array.isArray(tree)) return run(tree, env)
 }
+
+export const build = (lib) =>
+  `export default ${JSON.stringify(
+    parse(handleUnbalancedQuotes(handleUnbalancedParens(removeNoCode(lib))))
+  )}`

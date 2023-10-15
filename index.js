@@ -8,6 +8,7 @@ import {
   runFromCompiled,
   runFromInterpreted,
   treeShake,
+  build,
 } from './src/utils.js'
 import STD from './lib/baked/std.js'
 import STR from './lib/baked/str.js'
@@ -35,4 +36,5 @@ export default {
   run,
   libraries,
   shake: treeShake,
+  build,
 }
