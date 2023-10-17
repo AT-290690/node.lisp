@@ -122,9 +122,7 @@ Tile 3079:
   (split-by-n-lines 2)
   (scan (lambda tile (Array 
     (type (car (regex-match (car tile) "[0-9]+")) Number)
-    (go (cdr tile) (scan (lambda t (go t (type Array) 
-    ; (scan (lambda x (= x "#")))
-    )))))))))
+    (go (cdr tile) (scan (safety lambda t (go t (type Array))))))))))
 
 (defconstant foldcat (function args (fold args (lambda a b (concat a b)) ())))
 (defconstant *TILES* 
@@ -145,8 +143,8 @@ Tile 3079:
 
 (defun diff? a b (= (join a "") (join b "")))
 
-(defun left matrix (scan matrix (lambda x (get x 0))))
-(defun right matrix (scan matrix (lambda x (get x -1))))
+(defun left matrix (scan matrix (safety lambda x (get x 0))))
+(defun right matrix (scan matrix (safety lambda x (get x -1))))
 (defun top matrix (get matrix 0))
 (defun bottom matrix (get matrix -1))
 

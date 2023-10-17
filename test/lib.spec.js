@@ -50,7 +50,7 @@ const programs = [
   `(import std "map")
   (import math "prime?" "sqrt" "abs" "square" "average")
   (go
-    (Array 2 3 5 7 11 10 2563 1 48 1729)
+    (Array 2 3 5 7 11 10 2563 29 48 1729)
     (map (lambda x . . (prime? x))))`,
   `(import std "push!" "concat" "quick-sort")
   (go

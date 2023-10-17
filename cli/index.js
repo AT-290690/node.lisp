@@ -127,14 +127,14 @@ export default async () => {
             env
           )
         } catch (err) {
-          logError('Error')
-          logError(err.message)
           console.log(
             ` \x1b[30m${[...stacktrace]
               .reverse()
               .filter(Boolean)
               .join('\n ')}\x1b[0m`
           )
+          logError('Error')
+          logError(err.message)
         }
         break
       case '-trace':

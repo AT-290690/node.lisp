@@ -41,7 +41,7 @@ In addition there is a type definition, a documentation, list of dependencies an
 
 ```lisp
     ; fibonacci-memoized
-    (defun fibonacci-memoized-documentation (do
+    (defun fibonacci-memoized-documentation
       (documentation
         math
         fibonacci-memoized
@@ -59,7 +59,7 @@ In addition there is a type definition, a documentation, list of dependencies an
           (case "10" (fibonacci-memoized 10 (hash-table 10)) 55)
           (case "20" (fibonacci-memoized 20 (hash-table 10)) 6765)
     ; documentation
-    "An optimal implementaiton of fibonacci sequance.")))
+    "An optimal implementaiton of fibonacci sequance."))
     ; type definition
     (deftype fibonacci-memoized (Lambda (Or (Number)) (Or (Array (Array))) (And (Or (Array (Array))) (Number))))
     ; function

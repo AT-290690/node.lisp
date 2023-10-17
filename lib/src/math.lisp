@@ -23,7 +23,7 @@
   (deftype divisible? (Lambda (Or (Number)) (Or (Number))  (Or (Boolean))))
   (defun divisible? a b (= (mod a b) 0))
   ; nth-digit
-  (defun nth-digit-documentation (do
+  (defun nth-digit-documentation
     (documentation 
       math
       nth-digit
@@ -33,7 +33,7 @@
       (case "1234 [n = 2]" (nth-digit 1234 2) 3)
       (case "1234 [n = 3]" (nth-digit 1234 3) 2)
       (case "1234 [n = 4]" (nth-digit 1234 4) 1)
-    "Find the nth digit of a number starting from 1")))
+    "Find the nth digit of a number starting from 1"))
   (deftype nth-digit (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
   (defun nth-digit digit n (| (mod (/ digit (power 10 (- n 1))) 10) 0.5))
   ; max
@@ -254,13 +254,13 @@
                       (defconstant q (* a (/ b)))
                       (if (< (mod a b) 0) (if (> b 0) (- q 1) (+ q 1)) q)))
   ; euclidean-distance
-  (defun euclidean-distance-documentation (do
+  (defun euclidean-distance-documentation
         (documentation 
           math
           euclidean-distance
           (Array (import math "sqrt"))
           (case "x1=10 x2=20 y1=25 y2=15" (euclidean-distance 10 20 25 15) 15.82093011770601)
-        "Generate a sequance of number starting from and ending to. Stored in an array")))
+        "Generate a sequance of number starting from and ending to. Stored in an array"))
   (deftype euclidean-distance (Lambda (Or (Number)) (Or (Number)) (Or (Number)) (Or (Number)) (Or (Number))))
   (defun euclidean-distance x1 y1 x2 y2 (do
     (defconstant 
@@ -328,7 +328,7 @@
     (deftype fibonacci (Lambda (Or (Number)) (Or (Number))))
     (defun fibonacci n (if (< n 2) n (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))
     ; fibonacci-memoized
-    (defun fibonacci-memoized-documentation (do
+    (defun fibonacci-memoized-documentation
       (documentation 
         math
         fibonacci-memoized
@@ -342,7 +342,7 @@
           (case "6" (fibonacci-memoized 6 (hash-table 10)) 8)
           (case "10" (fibonacci-memoized 10 (hash-table 10)) 55)
           (case "20" (fibonacci-memoized 20 (hash-table 10)) 6765)
-    "An optimal implementaiton of fibonacci sequance.")))
+    "An optimal implementaiton of fibonacci sequance."))
     (deftype fibonacci-memoized (Lambda (Or (Number)) (Or (Array (Array))) (And (Or (Array (Array))) (Number))))
     (defun fibonacci-memoized n memo (if (< n 2) n
         (if (hash-table? memo n) (hash-table-get memo n)
@@ -351,7 +351,7 @@
           (hash-table-add! memo n cache)
           cache))))
     ; prime?
-    (defun prime?-documentation (do
+    (defun prime?-documentation
     (documentation 
       math
       prime?
@@ -361,7 +361,7 @@
         (loop defun cdr-primes list out (if (length list) (cdr-primes (cdr list) (set out (length out) (prime? (car list)))) out))
         (cdr-primes (' 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97) ())) 
         (' 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1))
-    "An optimal implementaiton  of fibonacci sequance.")))
+    "Returns 1 if given number is prime - 0 otherwise"))
     (deftype prime? (Lambda (Or (Number)) (Or (Number))))
     (defun prime? n (cond 
         (= n 1) 0
@@ -417,7 +417,7 @@
               (when (< x1 0) (setf x1 (+ x1 m0)))
               x1))))
       ;  range
-      (defun range-documentation (do
+      (defun range-documentation
         (documentation 
           math
           range
@@ -425,7 +425,7 @@
           (case "0..0" (range 0 0) (Array 0))
           (case "1..10" (range 1 10) (Array 1 2 3 4 5 6 7 8 9 10))
           (case "0..4" (range 0 4) (Array 0 1 2 3 4))
-        "Generate a sequance of number starting from and ending to. Stored in an array")))
+        "Generate a sequance of number starting from and ending to. Stored in an array"))
       (deftype range (Lambda (Or (Number)) (Or (Number)) (Or (Array (Number)))))
       (defun range start end (do
         (defconstant array (Array))
@@ -466,7 +466,7 @@
       (if (< i bounds) (iterate (+ i 1) bounds) initial)))
     (iterate 0 (- (length array) 1))))
   ; summation
-  (defun summation-documentation (do
+  (defun summation-documentation
     (documentation 
       math
       summation
@@ -475,11 +475,11 @@
       (case "1 2 3 4" (summation (Array 1 2 3 4)) (+ 1 2 3 4))
       (case "1 2" (summation (Array 1 2)) 3)
       (case "1 -2" (summation (Array 1 -2)) -1)
-    "Sum all numbers in a list")))
+    "Sum all numbers in a list"))
   (deftype summation (Lambda (Or (Array (Number))) (Or (Number))))
   (defun summation array (reduce array (lambda a b . . (+ a b)) 0))
   ; product
-  (defun product-documentation (do
+  (defun product-documentation
     (documentation 
       math
       product
@@ -488,7 +488,7 @@
       (case "0 1" (product (Array 0 1)) 0)
       (case "1 2" (product (Array 1 2)) 2)
       (case "1 2 3 4 5" (product (Array 1 2 3 4 5)) (* 1 2 3 4 5))
-    "Multiply all numbers in an array")))
+    "Multiply all numbers in an array"))
   (deftype product (Lambda (Or (Array (Number))) (Or (Number))))
   (defun product array (reduce array (lambda a b . . (* a b)) 1))
   ; adjacent-difference
@@ -502,13 +502,13 @@
       (iterate (+ i 1))) result))
       (iterate 1)) array)))
       ; permutations
-      (defun permutations-documentation (do
+      (defun permutations-documentation
         (documentation 
           math
           permutations
           ()
           (case "(Array 1 2 3)" (permutations (Array 1 2 3)) (Array (Array 1 2 3) (Array 2 1 3) (Array 3 1 2) (Array 2 1 3)))
-        "The term permutation refers to a mathematical calculation of the number of ways a particular set can be arranged.\n Put simply, a permutation is a word that describes the number of ways things can be ordered or arranged.\n With permutations, the order of the arrangement matters.")))
+        "The term permutation refers to a mathematical calculation of the number of ways a particular set can be arranged.\n Put simply, a permutation is a word that describes the number of ways things can be ordered or arranged.\n With permutations, the order of the arrangement matters."))
       (deftype permutations (Lambda (Or (Array (Number))) (Or (Array (Array (Number))))))
       (defun permutations permutation (do 
         (defconstant  

@@ -1683,7 +1683,7 @@ const tokens = {
       )
     const module = evaluate(args[0], env)
     if (typeof module !== 'function')
-      throw new TypeErorr(
+      throw new TypeError(
         `First argument of (${TOKENS.DOCUMENTATION}) has to be a module (${
           TOKENS.DOCUMENTATION
         } ${stringifyArgs(args)})`
@@ -1705,7 +1705,7 @@ const tokens = {
     const desc = rest.pop()
     const describe = evaluate(desc, env)
     if (typeof describe !== 'string')
-      throw new TypeErorr(
+      throw new TypeError(
         `Last argument of (${
           TOKENS.DOCUMENTATION
         }) has to be a string description (${
@@ -1770,7 +1770,7 @@ const tokens = {
     if (env[TYPES]?.[fn[VALUE]]) {
       const format = (v) =>
         v._type
-          ? `(${v.length > 1 ? (v._type === 'Or' ? 'or' : 'and') + ' ' : ''}${v
+          ? `${v.length > 1 ? (v._type === 'Or' ? '(or' : '(and') + ' ' : ''}${v
               .map(
                 (x) =>
                   `${
@@ -1781,17 +1781,13 @@ const tokens = {
                       : typeof x
                   }`
               )
-              .join(' ')})`
+              .join(' ')}${v.length > 1 ? ')' : ''}`
           : Array.isArray(v)
           ? `(array${v.length ? ' ' + v.map(format).join(' ') : ''})`
           : typeof v
       const args = env[TYPES][fn[VALUE]].map(format)
       const returned = args.pop()
-      console.log(
-        '\x1b[34m',
-        `:: {${args.join(', ')}} -> {${returned}}`,
-        '\x1b[0m'
-      )
+      console.log('\x1b[34m', `:: ${args.join(', ')} -> ${returned}`, '\x1b[0m')
     }
     console.log('\x1b[33m', '\n', describe, '\x1b[0m')
     tests.some(([t]) => !t)

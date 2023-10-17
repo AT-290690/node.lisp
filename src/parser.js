@@ -1,4 +1,22 @@
 import { APPLY, ATOM, TYPE, VALUE, WORD } from './enums.js'
+const escape = (char) => {
+  switch (char) {
+    case '\\':
+      return '\\'
+    case 'n':
+      return '\n'
+    case 'r':
+      return '\r'
+    case 't':
+      return '\t'
+    case 's':
+      return '\\s'
+    case '"':
+      return '"'
+    default:
+      return ''
+  }
+}
 export const parse = (source) => {
   const tree = []
   let head = tree,
@@ -10,27 +28,7 @@ export const parse = (source) => {
       acc += '"'
       ++i
       while (source[i] !== '"') {
-        if (source[i] === '\\')
-          switch (source[++i]) {
-            case '\\':
-              acc += '\\'
-              break
-            case 'n':
-              acc += '\n'
-              break
-            case 'r':
-              acc += '\r'
-              break
-            case 't':
-              acc += '\t'
-              break
-            case 's':
-              acc += '\\s'
-              break
-            case '"':
-              acc += '"'
-              break
-          }
+        if (source[i] === '\\') acc += escape(source[++i])
         else acc += source[i]
         ++i
       }
