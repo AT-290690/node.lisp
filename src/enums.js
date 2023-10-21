@@ -102,4 +102,5 @@ export const TOKENS = {
 
   DOCUMENTATION: 'documentation',
   TEST_CASE: 'case',
+  SERIALISE: 'serialise',
 }

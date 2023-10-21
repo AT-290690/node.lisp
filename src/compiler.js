@@ -77,6 +77,38 @@ const Helpers = {
       throw new Error(error)
   }`,
   },
+  serialise: {
+    source: `_serialise = (result) => {
+    return typeof result === 'function'
+      ? '(λ)'
+      : Array.isArray(result)
+      ? JSON.stringify(result, (_, value) => {
+          switch (typeof value) {
+            case 'bigint':
+            case 'number':
+              return Number(value)
+            case 'function':
+              return 'λ'
+            case 'undefined':
+            case 'symbol':
+              return 0
+            case 'boolean':
+              return +value
+            default:
+              return value
+          }
+        })
+          .replace(new RegExp(/\\[/g), "(' ")
+          .replace(new RegExp(/\\]/g), ')')
+          .replace(new RegExp(/\\,/g), ' ')
+          .replace(new RegExp(/"λ"/g), 'λ')
+      : typeof result === 'string'
+      ? '"' + result + '"'
+      : result == undefined
+      ? '(void)'
+      : result 
+  }`,
+  },
   cast: {
     source: `_cast = (type, value) => {
     switch (type) {
@@ -471,7 +503,6 @@ const compile = (tree, Variables, Functions) => {
           Variables,
           Functions
         )})`
-
       case TOKENS.PIPE: {
         let inp = Arguments[0]
         for (let i = 1; i < Arguments.length; ++i)
@@ -513,6 +544,8 @@ const compile = (tree, Variables, Functions) => {
           Functions
         )
       }
+      case TOKENS.SERIALISE:
+        return `_serialise(${compile(Arguments[0], Variables, Functions)});`
       case TOKENS.ABORT:
         return 'process.exit(0);'
       case TOKENS.IDENTITY:

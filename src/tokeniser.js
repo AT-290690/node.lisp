@@ -9,46 +9,43 @@ import {
   TOKENS,
 } from './enums.js'
 import { evaluate } from './interpreter.js'
-const stringifyType = (type) =>
+export const stringifyType = (type) =>
   Array.isArray(type)
     ? `(array ${type.map((t) => stringifyType(t)).join(' ')})`
     : typeof type
-const stringifyOutput = (result) => {
-  if (typeof result === 'function') {
-    return `(λ)`
-  } else if (Array.isArray(result)) {
-    return JSON.stringify(result, (_, value) => {
-      switch (typeof value) {
-        case 'bigint':
-        case 'number':
-          return Number(value)
-        case 'function':
-          return 'λ'
-        case 'undefined':
-        case 'symbol':
-          return 0
-        case 'boolean':
-          return +value
-        default:
-          return value
-      }
-    })
-      .replace(new RegExp(/\[/g), '(')
-      .replace(new RegExp(/\]/g), ')')
-      .replace(new RegExp(/\,/g), ' ')
-      .replace(new RegExp(/"λ"/g), 'λ')
-  } else if (typeof result === 'string') {
-    return `"${result}"`
-  } else if (result == undefined) {
-    return '(void)'
-  } else {
-    return result
-  }
-}
-const stringifyArgs = (args) =>
+export const stringifyOutput = (result) =>
+  typeof result === 'function'
+    ? `(λ)`
+    : Array.isArray(result)
+    ? JSON.stringify(result, (_, value) => {
+        switch (typeof value) {
+          case 'bigint':
+          case 'number':
+            return Number(value)
+          case 'function':
+            return 'λ'
+          case 'undefined':
+          case 'symbol':
+            return 0
+          case 'boolean':
+            return +value
+          default:
+            return value
+        }
+      })
+        .replace(new RegExp(/\[/g), `(' `)
+        .replace(new RegExp(/\]/g), ')')
+        .replace(new RegExp(/\,/g), ' ')
+        .replace(new RegExp(/"λ"/g), 'λ')
+    : typeof result === 'string'
+    ? `"${result}"`
+    : result == undefined
+    ? '(void)'
+    : result
+export const stringifyArgs = (args) =>
   args
-    .map((x) => {
-      return Array.isArray(x)
+    .map((x) =>
+      Array.isArray(x)
         ? `(${stringifyArgs(x)})`
         : x[TYPE] === APPLY || x[TYPE] === WORD
         ? x[VALUE]
@@ -57,9 +54,9 @@ const stringifyArgs = (args) =>
             .replace(new RegExp(/\]/g), ')')
             .replace(new RegExp(/\,/g), ' ')
             .replace(new RegExp(/"/g), '')
-    })
+    )
     .join(' ')
-const isForbiddenVariableName = (name) => {
+export const isForbiddenVariableName = (name) => {
   switch (name) {
     case '_':
     case TOKENS.CAST_TYPE:
@@ -73,7 +70,7 @@ const isForbiddenVariableName = (name) => {
       return false
   }
 }
-const isAtom = (arg, env) => {
+export const isAtom = (arg, env) => {
   if (arg[TYPE] === ATOM) return 1
   else {
     const atom = evaluate(arg, env)
@@ -84,7 +81,7 @@ const isAtom = (arg, env) => {
     )
   }
 }
-const isEqual = (a, b) =>
+export const isEqual = (a, b) =>
   +(
     (Array.isArray(a) &&
       a.length === b.length &&
@@ -92,7 +89,7 @@ const isEqual = (a, b) =>
     a === b ||
     0
   )
-const isEqualTypes = (a, b) =>
+export const isEqualTypes = (a, b) =>
   (typeof a !== 'object' && typeof b !== 'object' && typeof a === typeof b) ||
   (Array.isArray(a) &&
     Array.isArray(b) &&
@@ -108,7 +105,7 @@ const isEqualTypes = (a, b) =>
           )
       ))) ||
   false
-const isPartialTypes = (a, b) =>
+export const isPartialTypes = (a, b) =>
   (typeof a !== 'object' && typeof b !== 'object' && typeof a === typeof b) ||
   (Array.isArray(a) &&
     Array.isArray(b) &&
@@ -1809,6 +1806,14 @@ const tokens = {
     return !isEqualTypes(a, b) || !isEqual(a, b)
       ? [0, description, stringifyArgs([args[1]]), b, a]
       : [1, description, stringifyArgs([args[1]]), a]
+  },
+  [TOKENS.SERIALISE]: (args, env) => {
+    if (!args.length)
+      throw new RangeError(
+        `Invalid number of arguments for (${TOKENS.SERIALISE})`
+      )
+    const data = evaluate(args[0], env)
+    return stringifyOutput(data)
   },
 }
 tokens[TOKENS.NOT_COMPILED_BLOCK] = tokens[TOKENS.BLOCK]
