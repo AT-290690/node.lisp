@@ -20,9 +20,9 @@
                   (select (lambda x . . (> x 0)))))
       (Array time buses)))
     (defconstant 
-      *INP* (parse inp)
-      *time* (car *INP*)
-      *buses* (car (cdr *INP*)))
+      *inp* (parse inp)
+      *time* (car *inp*)
+      *buses* (car (cdr *inp*)))
     (go 
       *buses*
       (map (lambda x . . (Array x (- x (mod *time* x)))))

@@ -185,7 +185,7 @@ Tile 3079:
 (deftype slice-left-right (Lambda (Or (Array (Array (String)))) (Or (Array (Array (String))))))
 (defun slice-left-right tile (scan tile (lambda col (except col (lambda . row . (or (= row 0) (= row (- *tile-size* 1))))))))
 (deftype roughness (Lambda (Or (Array (Array (String)))) (Or (Number))))
-(defun roughness matrix (go matrix (scan (lambda x (number-of x (lambda y (= y "#"))))) (summation)))
+(defun roughness matrix (go matrix (scan (lambda x (number-of x (safety lambda y (= y "#"))))) (summation)))
 (defconstant *monster* 
     (Array 
       (type "                  # " Array)
@@ -196,30 +196,24 @@ Tile 3079:
     *monster*
     (reduce (lambda a x i . 
       (concat a (go x (map (lambda y j . (when (= y "#") (' i j)))) 
-            (take (lambda x (Array? x)))))) ())))
-(defconstant *not-sea-monster* 
-  (go 
-    *monster*
-    (reduce (lambda a x i . 
-      (concat a (go x (map (lambda y j . (when (not (= y "#")) (' i j)))) 
-            (take (lambda x (Array? x)))))) ())))
-    (defconstant *image* 
+                      (take (safety lambda x (Array? x)))))) ())))
+(defconstant *image* 
     (go *grid* 
         (fold (lambda image tiles (do
           (for-each tiles (lambda tile-with-id index . (do 
-          (defconstant tile (car (cdr tile-with-id)))
-          (defconstant current (go tile (slice-left-right) (slice-top-bottom)))
-          (defconstant reversed (reverse current))
+          (defconstant 
+              tile (car (cdr tile-with-id))
+              current (go tile (slice-left-right) (slice-top-bottom))
+              reversed (reverse current))
           (if (not index) 
             (set image (length image) (Array reversed)) 
             (set (get image -1) (length (get image -1)) reversed)
           ))))
           image)) ())))
-     (defconstant *full-image* ())
-    (defvar index 0)
-    (defvar index-tile 0)
+    (defconstant *full-image* ())
     (defconstant *trim-tile-size* (- *tile-size* 2))
     (defconstant *full-size* (* *trim-tile-size* *size*))
+    (defvar index 0)
     (for-n (- *size* 1) (lambda tiles
         (for-n (- *trim-tile-size* 1) (lambda row
             (do

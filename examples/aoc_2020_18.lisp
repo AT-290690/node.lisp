@@ -2,7 +2,7 @@
 (import str "split-by-lines" "split" "join")
 (import math "odd?" "summation" "product")
 
-(defconstant *INPUT* 
+(defconstant *input* 
 "1 + 2 * 3 + 4 * 5 + 6
 1 + (2 * 3) + (4 * (5 + 6))
 2 * 3 + (4 * 5)
@@ -57,11 +57,11 @@
   (Array (evaluate-adv expression 0))) (product)))))
 
 (Array 
-  (go *INPUT*
+  (go *input*
     (split-by-lines)
     (map (lambda x . . (go x (parse) (evaluate 0))))
     (summation))
-  (go *INPUT*
+  (go *input*
     (split-by-lines)
     (map (lambda x . . (go x (parse) (evaluate-adv 0))))
     (summation)))

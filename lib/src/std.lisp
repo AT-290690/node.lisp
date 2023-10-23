@@ -27,65 +27,101 @@
               dy (+ (car dir) y)
               dx (+ (car (cdr dir)) x))
           (+ sum (when (and (array-in-bounds? array dy) (array-in-bounds? (get array dy) dx)) (callback (get (get array dy) dx) dir))))) 0))
-      ; repeat
-      (deftype repeat (Lambda (Or (Number)) (Or (Function)) (Or (Array))))
-      (defun repeat n fn (map (Array n length) (lambda . . . (fn))))
-      ; array-of-numbers
-      (deftype array-of-numbers (Lambda (Or (Array)) (Or (Array (Number)))))
-      (defun array-of-numbers array (map array (lambda x . . (type x Number))))
-      ; concat
-      (deftype concat (Lambda (Or (Array)) (Or (Array)) (Or (Array))))
-      (defun concat array1 array2 (do
-        (loop defun iterate i bounds (do
-        (when (< i (length array2)) (set array1 (length array1) (get array2 i)))
-        (if (< i bounds) (iterate (+ i 1) bounds) array1)))
-      (iterate 0 (- (length array2) 1))))
-      ; merge
-      (deftype merge (Lambda (Or (Array)) (Or (Array)) (Or (Array))))
-      (defun merge array1 array2 (do
-        (loop defun iterate i bounds (do
-        (set array1 (length array1) (get array2 i))
-        (if (< i bounds) 
-          (iterate (+ i 1) bounds)
-        array1)))
-      (iterate 0 (- (length array2) 1))))
-      ; map
-      (deftype map (Lambda (Or (Array)) (Or (Function)) (Or (Array))))
-      (defun map array callback (do
-        (defconstant new-array (Array))
-        (defvar i 0)
-        (loop defun iterate i bounds (do
-          (set new-array i (callback (get array i) i array))
-          (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
-        (iterate 0 (- (length array) 1))))
-      ; for-each
-      (deftype for-each (Lambda (Or (Array)) (Or (Function)) (Or (Array) (Number) (Integer) (String) (Function))))
-      (defun for-each array callback (do
-        (loop defun iterate i bounds (do
-          (callback (get array i) i array)
-          (if (< i bounds) (iterate (+ i 1) bounds) array)))
-        (iterate 0 (- (length array) 1))))
-      ; for-each-rev
-      (deftype for-each-rev (Lambda (Or (Array)) (Or (Function)) (Or (Array) (Number) (Integer) (String) (Function))))
-      (defun for-each-rev array callback (do
-        (loop defun iterate i bounds (do
-          (callback (get array i) i array)
-          (if (> i bounds) (iterate (- i 1) bounds) array)))
-        (iterate (- (length array) 1) 0)))
-     ; for-of
-      (deftype for-of (Lambda (Or (Array)) (Or (Function)) (Or (Array) (Number) (Integer) (String) (Function))))
-      (defun for-of array callback (do
-        (loop defun iterate i bounds (do
-          (callback (get array i))
-          (if (< i bounds) (iterate (+ i 1) bounds) array)))
-        (iterate 0 (- (length array) 1))))
-       ; for-of-rev
-      (deftype for-of-rev (Lambda (Or (Array)) (Or (Function)) (Or (Array) (Number) (Integer) (String) (Function))))
-      (defun for-of-rev array callback (do
-        (loop defun iterate i bounds (do
-          (callback (get array i))
-          (if (> i bounds) (iterate (- i 1) bounds) array)))
-        (iterate (- (length array) 1) 0)))
+  ; repeat
+  (deftype repeat (Lambda (Or (Number)) (Or (Function)) (Or (Array))))
+  (defun repeat n fn (map (Array n length) (lambda . . . (fn))))
+  ; array-of-numbers
+  (deftype array-of-numbers (Lambda (Or (Array)) (Or (Array (Number)))))
+  (defun array-of-numbers array (map array (lambda x . . (type x Number))))
+  ; string->array
+  (deftype string->array (Lambda (Or (String)) (Or (Array))))
+  (defun string->array string (type string Array))
+  ; array->string
+  (deftype array->string (Lambda (Or (Array)) (Or (String))))
+  (defun array->string array (reduce array (lambda a x i . (if (> i 0) (concatenate a (type x String)) (type x String))) ""))
+  ; string->number
+  (deftype string->number (Lambda (Or (String)) (Or (Number))))
+  (defun string->number string (type string Number))
+  ; number->string
+  (deftype number->string (Lambda (Or (Number)) (Or (String))))
+  (defun number->string number (type number String))
+  ; string->integer
+  (deftype string->integer (Lambda (Or (String)) (Or (Integer))))
+  (defun string->integer string (type string Integer))
+  ; integer->string
+  (deftype integer->string (Lambda (Or (Integer)) (Or (String))))
+  (defun integer->string integer (type integer String))
+  ; number->integer
+  (deftype number->integer (Lambda (Or (Number)) (Or (Integer))))
+  (defun number->integer number (type number Integer))
+  ; integer->number
+  (deftype integer->number (Lambda (Or (Integer)) (Or (Number))))
+  (defun integer->number integer (type integer Number))
+  ; strings->integers
+  (deftype strings->integers (Lambda (Or (Array (String))) (Or (Array (Integer)))))
+  (defun strings->integers array (map array (lambda x . . (type x Integer))))
+  ; integers->strings
+  (deftype integers->strings (Lambda (Or (Array (Integer))) (Or (Array (String)))))
+  (defun integers->strings array (map array (lambda x . . (type x String))))
+  ; strings->numbers
+  (deftype strings->numbers (Lambda (Or (Array (String))) (Or (Array (Number)))))
+  (defun strings->numbers array (map array (lambda x . . (type x Number))))
+  ; numbers->strings
+  (deftype numbers->strings (Lambda (Or (Array (Number))) (Or (Array (String)))))
+  (defun numbers->strings array (map array (lambda x . . (type x String))))
+  ; concat
+  (deftype concat (Lambda (Or (Array)) (Or (Array)) (Or (Array))))
+  (defun concat array1 array2 (do
+    (loop defun iterate i bounds (do
+    (when (< i (length array2)) (set array1 (length array1) (get array2 i)))
+    (if (< i bounds) (iterate (+ i 1) bounds) array1)))
+  (iterate 0 (- (length array2) 1))))
+  ; merge
+  (deftype merge (Lambda (Or (Array)) (Or (Array)) (Or (Array))))
+  (defun merge array1 array2 (do
+    (loop defun iterate i bounds (do
+    (set array1 (length array1) (get array2 i))
+    (if (< i bounds) 
+      (iterate (+ i 1) bounds)
+    array1)))
+  (iterate 0 (- (length array2) 1))))
+  ; map
+  (deftype map (Lambda (Or (Array)) (Or (Function)) (Or (Array))))
+  (defun map array callback (do
+    (defconstant new-array (Array))
+    (defvar i 0)
+    (loop defun iterate i bounds (do
+      (set new-array i (callback (get array i) i array))
+      (if (< i bounds) (iterate (+ i 1) bounds) new-array)))
+    (iterate 0 (- (length array) 1))))
+  ; for-each
+  (deftype for-each (Lambda (Or (Array)) (Or (Function)) (Or (Array) (Number) (Integer) (String) (Function))))
+  (defun for-each array callback (do
+    (loop defun iterate i bounds (do
+      (callback (get array i) i array)
+      (if (< i bounds) (iterate (+ i 1) bounds) array)))
+    (iterate 0 (- (length array) 1))))
+  ; for-each-rev
+  (deftype for-each-rev (Lambda (Or (Array)) (Or (Function)) (Or (Array) (Number) (Integer) (String) (Function))))
+  (defun for-each-rev array callback (do
+    (loop defun iterate i bounds (do
+      (callback (get array i) i array)
+      (if (> i bounds) (iterate (- i 1) bounds) array)))
+    (iterate (- (length array) 1) 0)))
+  ; for-of
+  (deftype for-of (Lambda (Or (Array)) (Or (Function)) (Or (Array) (Number) (Integer) (String) (Function))))
+  (defun for-of array callback (do
+    (loop defun iterate i bounds (do
+      (callback (get array i))
+      (if (< i bounds) (iterate (+ i 1) bounds) array)))
+    (iterate 0 (- (length array) 1))))
+    ; for-of-rev
+  (deftype for-of-rev (Lambda (Or (Array)) (Or (Function)) (Or (Array) (Number) (Integer) (String) (Function))))
+  (defun for-of-rev array callback (do
+    (loop defun iterate i bounds (do
+      (callback (get array i))
+      (if (> i bounds) (iterate (- i 1) bounds) array)))
+    (iterate (- (length array) 1) 0)))
   ; for-n
   (deftype for-n (Lambda (Or (Number)) (Or (Function)) (Or (Array) (Number) (Integer) (String) (Function))))
   (defun for-n N callback (do
@@ -138,6 +174,20 @@
 (defun take array callback (do 
   (loop defun iterate arr output
     (if (length arr) (iterate (cdr arr) (if (callback (car arr)) (set output (length output) (car arr)) output)) output))
+  (iterate array ())))
+; take-until
+(defun take-until-documentation
+  (documentation 
+    std
+    take-until
+    ()
+    (case "take-until even numbers" (take-until (Array 2 4 6 3 1) (lambda x (= (mod x 2) 0))) (Array 2 4 6))
+    "Create a new array and fill it with items until the item for which the predicate first fails"))
+(deftype take-until (Lambda (Or (Array)) (Or (Function)) (Or (Array))))
+(defun take-until array callback (do 
+  (defvar is-taking 1)
+  (loop defun iterate arr output
+    (if (and is-taking (length arr)) (iterate (cdr arr) (if (callback (car arr)) (set output (length output) (car arr)) (do (boole is-taking 0) output))) output))
   (iterate array ())))
 ; scan
 (deftype scan (Lambda (Or (Array)) (Or (Function)) (Or (Array))))
@@ -456,7 +506,7 @@
       (deftype slice-if-index (Lambda (Or (Array)) (Or (Function)) (Or (Array))))
       (defun slice-if-index array callback (reduce array (lambda a b i . (if (callback i) (set a (length a) b) a)) (Array)))
       ; slice-if
-      (deftype slice-if (Lambda (Or (Array)) (Or (Function)) (Or Array)))
+      (deftype slice-if (Lambda (Or (Array)) (Or (Function)) (Or (Array))))
       (defun slice-if array callback (reduce array (lambda a b i . (if (callback b i) (set a (length a) b) a)) (Array)))
       ; window
       (deftype window (Lambda (Or (Array)) (Or (Number)) (Or (Array (Array)))))
@@ -603,11 +653,26 @@
       (Array "fill" fill)
       (Array "rotate-square-matrix" rotate-square-matrix)
       (Array "flip-square-matrix" flip-square-matrix)
+      (Array "take-until" take-until)
+      
+      (Array "strings->numbers" strings->numbers)
+      (Array "numbers->strings" numbers->strings)
+      (Array "strings->integers" strings->integers)
+      (Array "integers->strings" integers->strings)
+      (Array "array->string" array->string)
+      (Array "string->array" string->array)
+      (Array "string->number" string->number)
+      (Array "number->string" number->string)
+      (Array "string->integer" string->integer)
+      (Array "integer->string" integer->string)
+      (Array "number->integer" number->integer)
+      (Array "integer->number" integer->number)
 
       ; documentation
       (Array "reverse-documentation" reverse-documentation)
       (Array "quick-sort-documentation" quick-sort-documentation)
       (Array "rotate-square-matrix-documentation" rotate-square-matrix-documentation)
       (Array "flip-square-matrix-documentation" flip-square-matrix-documentation)
+      (Array "take-until-documentation" take-until-documentation)
   )))
 ; (/ std lib)

@@ -124,9 +124,9 @@ const programs = [
     (Array (map (Array 2 4 8 16 32 64 1 3 7 40 49) (lambda x . . (bit-power-of-two? x))) (count-number-of-ones-bit 23))`,
   `(import math "possible-subsets-bit")
     (Array (possible-subsets-bit (Array "a" "b" "c")))`,
-  `(import std "array-of-numbers" "map" "reduce")
+  `(import std "strings->numbers" "map" "reduce")
 (import math "maximum" "max")
-(go (Array "1" "2" "3") (array-of-numbers) (maximum) (Array))`,
+(go (Array "1" "2" "3") (strings->numbers) (maximum) (Array))`,
   `(import math "permutations") (Array (permutations (Array 1 2 3)))`,
   `(import std "equal?" "some?") (Array (equal? 1 1) (equal? 1 2) (equal? (Array 1) (Array 1)) (equal? (Array (Array 1 2)) (Array (Array 1 2))) (equal? (Array (Array 1 2)) (Array (Array 0 2))))`,
 
@@ -216,6 +216,27 @@ const programs = [
   (Array
      (n-queen 1) 
      (n-queen 4))`,
+  `(import std "reduce" "map" "integers->strings" "strings->integers" "numbers->strings" "strings->numbers" "string->number" "number->string" "string->integer" "integer->string"  "number->integer" "integer->number")
+    (Array 
+      (strings->numbers (Array "1" "2" "3"))
+      (numbers->strings (Array 1 2 3))
+      (strings->integers (Array "1" "2" "3"))
+      (integers->strings (Array (type 1 Integer) (type 2 Integer) (type 3 Integer)))
+      (string->number "1")
+      (number->string 1)
+      (string->integer "1")
+      (integer->string (type 1 Integer))
+    )
+  `,
+
+  `(import std "map" "reduce" "deep-flat" "partition" "array-in-bounds?" "find-index" "for-each")
+  (import ds "table->array" "array->table" "hash-table-make" "hash-table" "hash-table-add!" "hash-index")
+  (import math "euclidean-mod")
+  (go 
+    (' (' "name" "Anthony") (' "age" 33))
+    (array->table)
+    (table->array)
+  )`,
 ]
 
 describe('Libraries', () => {
@@ -307,6 +328,20 @@ describe('Libraries', () => {
             ['.Q..', '...Q', 'Q...', '..Q.'],
             ['..Q.', 'Q...', '...Q', '.Q..'],
           ],
+        ],
+        [
+          [1, 2, 3],
+          ['1', '2', '3'],
+          [1n, 2n, 3n],
+          ['1', '2', '3'],
+          1,
+          '1',
+          1n,
+          '1',
+        ],
+        [
+          ['name', 'Anthony'],
+          ['age', 33],
         ],
       ]
     ))

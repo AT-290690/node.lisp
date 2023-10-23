@@ -1,4 +1,4 @@
-(import std "map" "except" "array-of-numbers" "push!" "every?" "reduce" "deep-flat" "select" "some?" "reverse"
+(import std "map" "except" "strings->numbers" "push!" "every?" "reduce" "deep-flat" "select" "some?" "reverse"
 "for-n" "find" "slice-if-index" "for-each")
 (import math "range" "product" "summation")
 (import str "split" "split-by-n-lines")
@@ -45,9 +45,9 @@ nearby tickets:
                                 (lambda y . . 
                                   (go y 
                                     (split "-") 
-                                    (array-of-numbers))))))))
-(defconstant your-ticket (array-of-numbers (split (car (cdr (car (cdr lines)))) ",")))
-(defconstant nearby-tickets (map (cdr (car (cdr (cdr lines)))) (lambda x . . (go x (split ",") (array-of-numbers)))))
+                                    (strings->numbers))))))))
+(defconstant your-ticket (strings->numbers (split (car (cdr (car (cdr lines)))) ",")))
+(defconstant nearby-tickets (map (cdr (car (cdr (cdr lines)))) (lambda x . . (go x (split ",") (strings->numbers)))))
 (Array ticket-ranges your-ticket nearby-tickets)))
 (deftype is-in-bounds (Lambda (Or (Number)) (Or (Array (Number) (Number))) (Or (Number))))
 (defun is-in-bounds x rng (and (>= x (car rng)) (<= x (car (cdr rng)))))

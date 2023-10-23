@@ -1,4 +1,4 @@
-(import std "array-of-numbers" "reduce" "quick-sort" "map" "concat" "count-of" "array-in-bounds?")
+(import std "strings->numbers" "reduce" "quick-sort" "map" "concat" "count-of" "array-in-bounds?")
 (import math "adjacent-difference" "max")
 (import str "split-by" "join")
 (defconstant sample "16
@@ -49,7 +49,7 @@
 ; (defconstant *input* (:open "./playground/src/aoc_2020/10/input.txt"))
 
 ; part 1
-(defconstant *parsed-input* (go *input* (split-by "\n") (array-of-numbers)))
+(defconstant *parsed-input* (go *input* (split-by "\n") (strings->numbers)))
 
 (defconstant diffs (go *parsed-input* 
    (quick-sort) 

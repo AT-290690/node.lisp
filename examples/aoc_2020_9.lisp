@@ -1,4 +1,4 @@
-(import std "window" "map" "array-of-numbers" "reduce" "some?" "find" "slice")
+(import std "window" "map" "strings->numbers" "reduce" "some?" "find" "slice")
 (import str "split-by" )
 (import math "minimum" "maximum" "can-sum?" "range" "min" "max" "summation")
 ; The data is encrypted with the eXchange-Masking Addition System (XMAS).
@@ -33,7 +33,7 @@
 (defconstant *numbers* (go 
   *input* 
   (split-by "\n") 
-  (array-of-numbers)))
+  (strings->numbers)))
 
   (deftype find-preamble (Lambda (Or (Array (Number))) (Or (Number)) (Or (Number))))
   

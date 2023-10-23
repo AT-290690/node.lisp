@@ -3,6 +3,7 @@ export const earMuffsToLodashes = (name) => name.replace(new RegExp(/\*/g), '_')
 export const dotNamesToEmpty = (name) => name.replace(new RegExp(/\./g), '')
 export const colonNamesTo$ = (name) => name.replace(new RegExp(/\:/g), '$')
 export const commaToLodash = (name) => name.replace(new RegExp(/\,/g), '_')
+export const arrowToTo = (name) => name.replace(new RegExp(/->/g), '-to-')
 export const questionMarkToLodash = (name) =>
   name.replace(new RegExp(/\?/g), 'Pre')
 export const exclamationMarkMarkToLodash = (name) =>
@@ -13,9 +14,8 @@ export const toCamelCase = (name) => {
     const current = name[i],
       prev = name[i - 1]
     if (current === '-') continue
-    else if (prev === '-') {
-      out += current.toUpperCase()
-    } else out += current
+    else if (prev === '-') out += current.toUpperCase()
+    else out += current
   }
   return out
 }
@@ -28,10 +28,12 @@ export const deepRename = (name, newName, tree) => {
 }
 export const lispToJavaScriptVariableName = (name) =>
   toCamelCase(
-    dotNamesToEmpty(
-      colonNamesTo$(
-        exclamationMarkMarkToLodash(
-          questionMarkToLodash(commaToLodash(earMuffsToLodashes(name)))
+    arrowToTo(
+      dotNamesToEmpty(
+        colonNamesTo$(
+          exclamationMarkMarkToLodash(
+            questionMarkToLodash(commaToLodash(earMuffsToLodashes(name)))
+          )
         )
       )
     )

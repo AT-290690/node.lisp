@@ -1,6 +1,14 @@
 ; (ds lib)
 (defun ds (do
-; modules
+  ; modules
+  ; array->set
+  (defun array->set array (hash-set-make array))
+  ; set->array
+  (defun set->array set (deep-flat set))
+  ; array->table
+  (defun array->table array (hash-table-make array))
+  ; table->array
+  (defun table->array table (partition (deep-flat table) 2))
   ; hash-index
   (deftype hash-index (Lambda (Or (Array (Array))) (Or (Number) (Integer) (String)) (Or (Number))))
   (defun hash-index 
@@ -18,7 +26,6 @@
           (if (< i bounds) (find-hash-index (+ i 1) bounds) total)))
         (find-hash-index 0 
         (if (< (- (length key-arr) 1) 100) (- (length key-arr) 1) 100))))
-
     ; (Hash Table)
     ; (go 
     ;   (hash-table-make (Array 
@@ -92,7 +99,7 @@
         (do
           (defconstant 
             len (- (length items) 1)
-            table (hash-table (* len len)))
+            table (hash-table (or (* len len) 1)))
           (loop defun add i (do
             (defconstant item (get items i))
             (hash-table-add! table (get item 0) (get item 1))
@@ -154,7 +161,7 @@
     (defun hash-set-make items (do
         (defconstant 
           len (- (length items) 1)
-          table (hash-set (* len len)))
+          table (hash-set (or (* len len) 1)))
         (loop defun add i (do
           (defconstant item (get items i))
           (hash-set-add! table item)
@@ -315,5 +322,9 @@
     (Array "unwrap-or" unwrap-or)
     (Array "maybe" maybe)
     (Array "none" none)
+    (Array "set->array" set->array)
+    (Array "array->set" array->set)
+    (Array "array->table" array->table)
+    (Array "table->array" table->array)
 )))
 ; (/ ds lib)

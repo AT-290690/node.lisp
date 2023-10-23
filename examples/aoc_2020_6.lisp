@@ -1,4 +1,4 @@
-(import std "accumulate" "array-of-numbers" "reduce" "index-of" "map" "select")
+(import std "accumulate" "strings->numbers" "reduce" "index-of" "map" "select")
 (import str "split-by-n-lines" "character-occurances-in-string" "join" )
 (import math "summation")
 (defconstant sample "abc
@@ -35,5 +35,5 @@ b")
     (go line 
       (map (lambda ch . . (go *unique-char* (map (lambda *ch* . . (character-occurances-in-string ch *ch*))) (join "") (type Bit))))
       (accumulate (lambda a b . . (& a b)))))))
-      (map (lambda y . . (go y (Bit) (type Array) (array-of-numbers) (summation))))
+      (map (lambda y . . (go y (Bit) (type Array) (strings->numbers) (summation))))
       (summation)))

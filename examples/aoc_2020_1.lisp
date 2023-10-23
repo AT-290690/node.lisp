@@ -1,4 +1,4 @@
-(import std "quick-sort" "binary-search" "map" "reduce" "concat" "array-of-numbers")
+(import std "quick-sort" "binary-search" "map" "reduce" "concat" "strings->numbers")
 (import str "split-by-lines")
 (import math "floor" "product")
 (defconstant sample "1721
@@ -32,7 +32,7 @@
 ; 514579 for sample
 (go *input*
   (split-by-lines)
-  (array-of-numbers)
+  (strings->numbers)
   (quick-sort)
   (*solve1* (safety lambda x (- 2020 x)))
   (product))
@@ -40,7 +40,7 @@
 ; 241861950 for sample
 (go *input*
   (split-by-lines)
-  (array-of-numbers)
+  (strings->numbers)
   (quick-sort)
   (*solve2* (safety lambda x y (- 2020 x y)))
   (product)))

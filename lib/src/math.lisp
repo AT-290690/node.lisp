@@ -302,9 +302,22 @@
       (iterate)) a))
       (iterate)))
     ; greatest-common-divisor
+    (defun greatest-common-divisor-documentation (documentation 
+      math
+      greatest-common-divisor
+      ()
+      (case "(20 15)" (greatest-common-divisor 20 15) 5)
+    "The greatest common divisor (GCD), also called the greatest common factor,\n of two numbers is the largest number that divides them both.\n For instance, the greatest common factor of 20 and 15 is 5,\n since 5 divides both 20 and 15 and no larger number has this property."))
     (deftype greatest-common-divisor (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
     (defun greatest-common-divisor a b (do (loop defun gcd a b (if (= b 0) a (gcd b (mod a b)))) (gcd a b)))
     ; least-common-divisor
+     (defun least-common-divisor-documentation (documentation 
+      math
+      least-common-divisor
+      (Array (import math "greatest-common-divisor"))
+      (case "(2 3)" (least-common-divisor 2 3) 6)
+      (case "(6 10)" (least-common-divisor 6 10) 30)
+    "The Least Common Multiple (LCM) is also referred to as the Lowest Common Multiple (LCM) and Least Common Divisor (LCD).\n For two integers a and b, denoted LCM(a,b), the LCM is the smallest positive integer that is evenly divisible by both a and b.\n For example, (LCM 2 3) = 6 and (LCM 6 10) = 30"))
     (deftype least-common-divisor (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
     (defun least-common-divisor a b (* a b (/ (greatest-common-divisor a b))))
     ; remainder
@@ -655,7 +668,6 @@
       (Array "sub-years" sub-years)
       (Array "hypotenuse" hypotenuse)
 
-
       ; docs
       (Array "fibonacci-documentation" fibonacci-documentation)
       (Array "fibonacci-memoized-documentation" fibonacci-memoized-documentation)
@@ -669,6 +681,9 @@
       (Array "permutations-documentation" permutations-documentation)
       (Array "prime?-documentation" prime?-documentation)
       (Array "euclidean-distance-documentation" euclidean-distance-documentation)
+      (Array "greatest-common-divisor-documentation" greatest-common-divisor-documentation)
+      (Array "least-common-divisor-documentation" least-common-divisor-documentation)
+     
    )
 ))
 ; (/ math lib)

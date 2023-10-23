@@ -3,7 +3,7 @@
 (import std 
 "array-in-bounds?" "find-index"
   "reduce" "push!" "select" "deep-flat" "for-each"
-  "every?" "array-of-numbers" "map"
+  "every?" "map"
   "some?" "find" "slice" "concat" "for-n")
 (import math "odd?" "euclidean-mod" "min" "power" "summation" "min" "count-number-of-ones-bit")
 (import str "split-by-lines" "join" "split-by" "trim" )
@@ -17,14 +17,12 @@ mem[8] = 0"
 mem[42] = 100
 mask = 00000000000000000000000000000000X0XX
 mem[26] = 1"))
-(deftype Int (Lambda (Or (String) (Number) (Integer)) (Or (Integer))))
-(defun Int n (type n Integer))
 ; for debug use only
-(defun int-to-bit int (go int (type Number) (Bit)))
+(defun int->bit int (go int (type Number) (Bit)))
 (deftype summation-ints (Lambda (Or (Array (Integer))) (Or (Integer))))
-(defun summation-ints ints (reduce ints (lambda a b . . (+ a b)) (Int 0)))
+(defun summation-ints ints (reduce ints (safety lambda a b . . (+ a b)) (type 0 Integer)))
 (deftype to-mask-of (Lambda (Or (Array (String))) (Or (String)) (Or (Integer))))
-(defun to-mask-of arr t (go arr (reduce (lambda acc x . . (if (= x t) (go acc (<< (Int 1)) (| (Int 1))) (go acc (<< (Int 1))))) (Int 0))))
+(defun to-mask-of arr t (go arr (reduce (lambda acc x . . (if (= x t) (go acc (<< (type 1 Integer)) (| (type 1 Integer))) (go acc (<< (type 1 Integer))))) (type 0 Integer))))
 (deftype parse (Lambda (Or (String)) (Or (Array (Array (String) (String))))))
 (defun parse input (go input (split-by-lines) (map (lambda x . . (split-by x " = ")))))
 (deftype parse-input (Lambda (Or (String)) (Or (Array (Array (Array (Integer) (Integer)) (Array (Number) (String)) (Array (Number) (String)) (Array (Number) (String)))))))
@@ -54,9 +52,9 @@ mem[26] = 1"))
                 x
                 (cdr)
                 (car)
-                (Int)
-                (& (go fields (car) (car) (Int)))
-                (| (go fields (car) (cdr) (car) (Int))))))
+                (type Integer)
+                (& (go fields (car) (car) (type Integer)))
+                (| (go fields (car) (cdr) (car) (type Integer))))))
               memory))
         (hash-table 10))
     (deep-flat)
@@ -64,22 +62,22 @@ mem[26] = 1"))
     (summation-ints))))
 (deftype quantum-mask (Lambda (Or (Integer)) (Or (Integer)) (Or (Integer))))
 (defun quantum-mask mask-x x (do
-  (defvar rev-result (Int 0))
+  (defvar rev-result (type 0 Integer))
   (loop defun iter-and i (when (< i 36) 
     (do 
-      (setf rev-result (<< rev-result (Int 1)))
-      (when (= (& mask-x (Int 1)) (Int 1)) (do 
-        (setf rev-result (| rev-result (& x (Int 1))))
-        (setf x (>> x (Int 1)))))
-      (setf mask-x (>> mask-x (Int 1)))
+      (setf rev-result (<< rev-result (type 1 Integer)))
+      (when (= (& mask-x (type 1 Integer)) (type 1 Integer)) (do 
+        (setf rev-result (| rev-result (& x (type 1 Integer))))
+        (setf x (>> x (type 1 Integer)))))
+      (setf mask-x (>> mask-x (type 1 Integer)))
       (iter-and (+ i 1)))))
   (iter-and 0)
 
-  (defvar result (Int 0))
+  (defvar result (type 0 Integer))
    (loop defun iter-or i (if (< i 36) 
     (do 
-      (setf result (| (<< result (Int 1)) (& rev-result (Int 1))))
-      (setf rev-result (>> rev-result (Int 1)))
+      (setf result (| (<< result (type 1 Integer)) (& rev-result (type 1 Integer))))
+      (setf rev-result (>> rev-result (type 1 Integer)))
       (iter-or (+ i 1)))))
   (iter-or 0)
   result))
@@ -106,11 +104,11 @@ mem[26] = 1"))
       (reduce (lambda memory fields . .
         (reduce (cdr fields) (lambda memory x . . (do
         (defconstant 
-              mask-1 (go fields (car) (cdr) (car) (Int))
-              mask-x (go fields (car) (car) (Int))
-              addr (& (| (Int (car x)) mask-1) (~ mask-x))
-              value (go x (cdr) (car) (Int)))
-        (for-n n (lambda i (hash-table-add! memory (type (| addr (quantum-mask mask-x (Int i))) Number) value))) 
+              mask-1 (go fields (car) (cdr) (car) (type Integer))
+              mask-x (go fields (car) (car) (type Integer))
+              addr (& (| (type (car x) Integer) mask-1) (~ mask-x))
+              value (go x (cdr) (car) (type Integer)))
+        (for-n n (lambda i (hash-table-add! memory (type (| addr (quantum-mask mask-x (type i Integer))) Number) value))) 
         memory)) memory))
         (hash-table 10))
     (deep-flat)

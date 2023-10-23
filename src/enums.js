@@ -6,7 +6,6 @@ export const TYPE = 't'
 export const ATOM = 'a'
 // tokeniser enums
 export const TYPES = ';T'
-export const DOCUMENTATION = ';D'
 export const PLACEHOLDER = '.'
 // tokens aliases
 export const TOKENS = {
