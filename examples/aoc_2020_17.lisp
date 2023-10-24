@@ -23,9 +23,9 @@
 ###")
 
 (deftype to-3d-key (Lambda (Or (Number)) (Or (Number)) (Or (Number)) (Or (String))))
-(safety defun to-3d-key y x z (concatenate (type y String) " " (type x String) " " (type z String)))
+(defun to-3d-key y x z (concatenate (type y String) " " (type x String) " " (type z String)))
 (deftype to-4d-key (Lambda (Or (Number)) (Or (Number)) (Or (Number)) (Or (Number)) (Or (String))))
-(safety defun to-4d-key y x z w (concatenate (type y String) " " (type x String) " " (type z String) " " (type w String)))
+(defun to-4d-key y x z w (concatenate (type y String) " " (type x String) " " (type z String) " " (type w String)))
 (deftype from-3d-key (Lambda (Or (String)) (Or (Array (Number) (Number) (Number)))))
 (defun from-3d-key key (do (destructuring-bind y x z . (split key " ")) (Array (type y Number) (type x Number) (type z Number))))
 (deftype from-4d-key (Lambda (Or (String)) (Or (Array (Number) (Number) (Number) (Number)))))
@@ -186,20 +186,20 @@
 (defun to-3d-matrix matrix size (go matrix (deep-flat) (reduce (lambda a coords . . (do 
     (destructuring-bind y x z . (from-3d-key coords))
     (set (get (get a y) x) z 1) a))
-      (map (Array size length) (safety lambda . . .
-        (map (Array size length) (safety lambda . . .
-          (map (Array size length) (safety lambda . . . 0)))))))))
+      (map (Array size length) (lambda . . .
+        (map (Array size length) (lambda . . .
+          (map (Array size length) (lambda . . . 0)))))))))
 (deftype to-4d-matrix (Lambda (Or (Array (Array (String)))) (Or (Number)) (Or (Array (Array (Array (Number)))))))
 (defun to-4d-matrix matrix size (go matrix (deep-flat) (reduce (lambda a coords . . (do 
     (destructuring-bind y x z w . (from-4d-key coords))
     (set (get (get (get a y) x) z) w 1) a))
-      (map (Array size length) (safety lambda . . .
-        (map (Array size length) (safety lambda . . .
-          (map (Array size length) (safety lambda . . .
-            (map (Array size length) (safety lambda . . . 0)))))))))))
+      (map (Array size length) (lambda . . .
+        (map (Array size length) (lambda . . .
+          (map (Array size length) (lambda . . .
+            (map (Array size length) (lambda . . . 0)))))))))))
 
 (deftype count-c (Lambda (Or (Array (Array (String)))) (Or (Number))))                                 
-(defun count-c c (reduce c (safety lambda a x . . (+ a (length x))) 0))
+(defun count-c c (reduce c (lambda a x . . (+ a (length x))) 0))
 (Array 
   (go (go sample (parse-input-3d)) (solve-1) (count-c))
   ; (go (go input (parse-input-3d)) (solve-1) (count-c))

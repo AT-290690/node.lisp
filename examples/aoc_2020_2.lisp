@@ -57,7 +57,7 @@
             (push! (and 
                     (>= (get x 4) (get x 0)) 
                     (<= (get x 4) (get x 1)))))))
-  (reduce (safety lambda a x . . (+ a (get x -1))) 0)
+  (reduce (lambda a x . . (+ a (get x -1))) 0)
   ; (map (lambda x i o (log x)))
 )
 (go *occ*
@@ -67,7 +67,7 @@
             (push! (get *inputs* i)))))
    (map (lambda x . . 
           (push! x (*solve2* (string->array (get x 3)) (get x 2) (get x 0) (get x 1)))))
-   (reduce (safety lambda a x . . (+ a (get x -1))) 0)
+   (reduce (lambda a x . . (+ a (get x -1))) 0)
   ; (map (lambda x i o (log x)))
 ))
 

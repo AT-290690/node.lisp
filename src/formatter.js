@@ -108,7 +108,6 @@ const traverse = (tree, level = 0) => {
       case TOKENS.PIPE:
       case TOKENS.SLEEP:
       case TOKENS.THROW_ERROR:
-      case TOKENS.IMMUTABLE_FUNCTION:
       case TOKENS.IDENTITY:
       case TOKENS.DEBUG:
       case TOKENS.ABORT:

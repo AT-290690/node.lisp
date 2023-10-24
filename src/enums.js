@@ -90,7 +90,6 @@ export const TOKENS = {
   PIPE: 'go',
   THROW_ERROR: 'throw',
   TAIL_CALLS_OPTIMISED_RECURSIVE_FUNCTION: 'loop',
-  IMMUTABLE_FUNCTION: 'safety',
   NOT_COMPILED_BLOCK: 'void',
   REGEX_MATCH: 'regex-match',
   REGEX_REPLACE: 'regex-replace',

@@ -121,7 +121,7 @@ Tile 3079:
   (split-by-n-lines 2)
   (scan (lambda tile (Array 
     (type (car (regex-match (car tile) "[0-9]+")) Number)
-    (go (cdr tile) (scan (safety lambda t (go t (type Array))))))))))
+    (go (cdr tile) (scan (lambda t (go t (type Array))))))))))
 
 (defconstant foldcat (function args (fold args (lambda a b (concat a b)) ())))
 (defconstant *tiles* 
@@ -139,9 +139,9 @@ Tile 3079:
 (defun diff? a b (= (join a "") (join b "")))
 
 (deftype left (Lambda (Or (Array (Array (String)))) (Or (Array (String)))))
-(defun left matrix (scan matrix (safety lambda x (get x 0))))
+(defun left matrix (scan matrix (lambda x (get x 0))))
 (deftype right (Lambda (Or (Array (Array (String)))) (Or (Array (String)))))
-(defun right matrix (scan matrix (safety lambda x (get x -1))))
+(defun right matrix (scan matrix (lambda x (get x -1))))
 (deftype top (Lambda (Or (Array (Array (String)))) (Or (Array (String)))))
 (defun top matrix (get matrix 0))
 (deftype bottom (Lambda (Or (Array (Array (String)))) (Or (Array (String)))))
@@ -185,7 +185,7 @@ Tile 3079:
 (deftype slice-left-right (Lambda (Or (Array (Array (String)))) (Or (Array (Array (String))))))
 (defun slice-left-right tile (scan tile (lambda col (except col (lambda . row . (or (= row 0) (= row (- *tile-size* 1))))))))
 (deftype roughness (Lambda (Or (Array (Array (String)))) (Or (Number))))
-(defun roughness matrix (go matrix (scan (lambda x (number-of x (safety lambda y (= y "#"))))) (summation)))
+(defun roughness matrix (go matrix (scan (lambda x (number-of x (lambda y (= y "#"))))) (summation)))
 (defconstant *monster* 
     (Array 
       (type "                  # " Array)
@@ -196,7 +196,7 @@ Tile 3079:
     *monster*
     (reduce (lambda a x i . 
       (concat a (go x (map (lambda y j . (when (= y "#") (' i j)))) 
-                      (take (safety lambda x (Array? x)))))) ())))
+                      (take (lambda x (Array? x)))))) ())))
 (defconstant *image* 
     (go *grid* 
         (fold (lambda image tiles (do

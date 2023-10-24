@@ -415,7 +415,7 @@
         (if (<= (length arr) 1) arr
         (do
           (defconstant 
-            pivot (get arr 0) 
+            pivot (car arr) 
             left-arr (Array) 
             right-arr (Array))
         (loop defun iterate i bounds (do
@@ -425,7 +425,7 @@
               (set right-arr (length right-arr) current))
           (when (< i bounds) (iterate (+ i 1) bounds))))
           (iterate 1 (- (length arr) 1))
-      (defconstant left-sorted (go left-arr (quick-sort)))
+      (defconstant left-sorted (quick-sort left-arr))
       (go 
         left-sorted
         (set (length left-sorted) pivot)

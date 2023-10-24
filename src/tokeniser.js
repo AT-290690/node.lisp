@@ -1563,30 +1563,6 @@ const tokens = {
       )
     return tokens[token](functionArgs, env)
   },
-  [TOKENS.IMMUTABLE_FUNCTION]: (args, env) => {
-    if (!args.length)
-      throw new RangeError(
-        `Invalid number of arguments to (${
-          TOKENS.IMMUTABLE_FUNCTION
-        }) (>= 2 required). (${TOKENS.IMMUTABLE_FUNCTION} ${stringifyArgs(
-          args
-        )}).`
-      )
-    const [definition, ...functionArgs] = args
-    const token = definition[VALUE]
-    if (!(token in tokens))
-      throw new ReferenceError(
-        `There is no such keyword ${token} at (${
-          TOKENS.IMMUTABLE_FUNCTION
-        } ${stringifyArgs(args)})`
-      )
-    const fn = tokens[token](functionArgs, {
-      ...tokens,
-      [TYPES]: env[TYPES],
-    })
-    env[functionArgs[0][VALUE]] = fn
-    return fn
-  },
   [TOKENS.REGEX_MATCH]: (args, env) => {
     if (args.length !== 2)
       throw new RangeError(

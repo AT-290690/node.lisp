@@ -14,7 +14,7 @@
 (deftype rambunctious-recitation-2 (Lambda (Or (Number)) (Or (Array (Number))) (Or (Number))))
 (defun rambunctious-recitation-2 target stack (do 
   (defvar last (get stack -1))
-  (defconstant memo (reduce stack (safety lambda acc item i . (set acc item (Array (+ i 1)))) (Array (+ target (length stack)) length)))
+  (defconstant memo (reduce stack (lambda acc item i . (set acc item (Array (+ i 1)))) (Array (+ target (length stack)) length)))
   (loop defun iterate i (if (<= i target) (do 
     (setf last 
     (if (and (get memo last) (= (length (defconstant current (get memo last))) 2))

@@ -163,7 +163,7 @@ const programs = [
   (Array))`,
   `(import std "scan" "fold")
   (deftype pure-fn (Lambda (Or (Array (Number))) (Or (Array (Function))) (Or (Number))))
-  (safety defun pure-fn arr std (do
+  (defun pure-fn arr std (do
   (destructuring-bind scan fold . std)
   (go 
     arr

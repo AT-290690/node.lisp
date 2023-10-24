@@ -20,7 +20,7 @@ mem[26] = 1"))
 ; for debug use only
 (defun int->bit int (go int (type Number) (Bit)))
 (deftype summation-ints (Lambda (Or (Array (Integer))) (Or (Integer))))
-(defun summation-ints ints (reduce ints (safety lambda a b . . (+ a b)) (type 0 Integer)))
+(defun summation-ints ints (reduce ints (lambda a b . . (+ a b)) (type 0 Integer)))
 (deftype to-mask-of (Lambda (Or (Array (String))) (Or (String)) (Or (Integer))))
 (defun to-mask-of arr t (go arr (reduce (lambda acc x . . (if (= x t) (go acc (<< (type 1 Integer)) (| (type 1 Integer))) (go acc (<< (type 1 Integer))))) (type 0 Integer))))
 (deftype parse (Lambda (Or (String)) (Or (Array (Array (String) (String))))))

@@ -300,7 +300,7 @@ describe('Compilation', () => {
         (product (cdr arr))) initial))
     (product args))))
     (prod 10 20 30)`,
-      `(safety defun add a b (+ a b))
+      `(defun add a b (+ a b))
     (add 10 20)`,
     ].forEach((source) =>
       deepStrictEqual(runFromInterpreted(source), runFromCompiled(source))

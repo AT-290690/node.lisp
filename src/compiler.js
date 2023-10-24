@@ -538,14 +538,6 @@ const compile = (tree, Variables, Functions) => {
           )
         }
         break
-      case TOKENS.IMMUTABLE_FUNCTION: {
-        const [first, ...rest] = Arguments
-        return compile(
-          [{ [TYPE]: APPLY, [VALUE]: first[VALUE] }, ...rest],
-          Variables,
-          Functions
-        )
-      }
       case TOKENS.SERIALISE:
         return `_serialise(${compile(Arguments[0], Variables, Functions)});`
       case TOKENS.ABORT:

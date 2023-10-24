@@ -21,7 +21,7 @@ aaaabbb"
 
 (destructuring-bind rules messages . *input*)
 (deftype parse-rules (Lambda (Or (Array (String))) (Or (Array (Function))) (Or (Array (Array)))))
-(safety defun parse-rules rules funcs (do 
+(defun parse-rules rules funcs (do 
     (destructuring-bind map scan fold split trim strings->numbers . funcs)
     (go 
       rules
@@ -39,11 +39,11 @@ aaaabbb"
             (if (or (= x "\"a\"") (= x "\"b\""))
             (Array (car (cdr (split x (char 34)))))
             (strings->numbers (split (trim x) " ")))))))))
-      (fold (safety lambda a x (set a (car x) (cdr x))) 
+      (fold (lambda a x (set a (car x) (cdr x))) 
       (Array (length rules) length)))))
 
 (defconstant *rules* (parse-rules rules (' map scan fold split trim strings->numbers)))
-(defconstant *messages* (go messages (scan (safety lambda x (type x Array)))))
+(defconstant *messages* (go messages (scan (lambda x (type x Array)))))
 
 (deftype match? (Lambda (Or (Array (String))) (Or (Array (Number))) (Or (Number))))
 (defun match? msg queue 
