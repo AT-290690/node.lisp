@@ -4,7 +4,7 @@
 <img width="150" src="./logo.svg"/>
 </p>
 
-A Lisp for Node
+A Lisp for Node.js
 
 ```lisp
 (defvar hello "Hello World")
