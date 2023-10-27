@@ -430,6 +430,37 @@
         left-sorted
         (set (length left-sorted) pivot)
         (concat (quick-sort right-arr)))))))
+
+  ; sort
+  (defun sort-documentation
+  (documentation 
+    std
+    sort
+    (Array (import std "concat"))
+    (case "sort (2 1 3)" (sort (Array 2 1 3) (lambda a b (if (> a b) 1 -1))) (Array 1 2 3))
+  "Sorts an array of strings or numbers.\n The order is ascending.\n This creates a copy of the array."))
+  (deftype sort (Lambda (Or (Array (Number)) (Array (String)) (Array (Integer))) (Or (Function)) (Or (Array (Number)) (Array (String)) (Array (Integer)))))
+  (defun sort arr callback (do
+        (if (<= (length arr) 1) arr
+        (do
+          (defconstant 
+            pivot (car arr) 
+            left-arr (Array) 
+            right-arr (Array))
+        (loop defun iterate i bounds (do
+          (defconstant current (get arr i))
+          (defconstant predicate (callback current pivot))
+          (cond 
+            (= predicate -1) (set left-arr (length left-arr) current)
+            (= predicate 1)  (set right-arr (length right-arr) current)
+            (*) (throw "(sort) predicate has to return (or 1 -1)"))
+          (when (< i bounds) (iterate (+ i 1) bounds))))
+          (iterate 1 (- (length arr) 1))
+      (defconstant left-sorted (sort left-arr callback))
+      (go 
+        left-sorted
+        (set (length left-sorted) pivot)
+        (concat (sort right-arr callback)))))))
       ; reverse 
     (defun reverse-documentation
       (documentation 
@@ -473,7 +504,7 @@
         (search array target 0 (length array))))
       ; sort-by-length 
       (deftype sort-by-length (Lambda (Or (Array)) (Or (Array (Number))) (Or (Array))))
-      (defun sort-by-length array order (map order (lambda x . . (find array (lambda y . . (= (- (length y) 1) x))))))
+      (defun sort-by-length array order (go order (map (lambda x . . (find array (lambda y . . (= (- (length y) 1) x)))))))
       ; order-array
       (deftype order-array (Lambda (Or (Array)) (Or (Array (Number))) (Or (Array))))
       (defun order-array array order (map (Array (length array) length) (lambda . i . (get array (get order i)))))
@@ -613,6 +644,7 @@
       (Array "find" find)
       (Array "find-index" find-index)
       (Array "quick-sort" quick-sort)
+      (Array "sort" sort)
       (Array "reverse" reverse)
       (Array "binary-search" binary-search)
       (Array "every?" every?)
@@ -669,6 +701,7 @@
       (Array "integer->number" integer->number)
 
       ; documentation
+      (Array "sort-documentation" sort-documentation)
       (Array "reverse-documentation" reverse-documentation)
       (Array "quick-sort-documentation" quick-sort-documentation)
       (Array "rotate-square-matrix-documentation" rotate-square-matrix-documentation)
