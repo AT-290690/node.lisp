@@ -439,7 +439,7 @@
     (Array (import std "concat"))
     (case "sort (2 1 3)" (sort (Array 2 1 3) (lambda a b (if (> a b) 1 -1))) (Array 1 2 3))
   "Sorts an array of strings or numbers.\n The order is ascending.\n This creates a copy of the array."))
-  (deftype sort (Lambda (Or (Array (Number)) (Array (String)) (Array (Integer))) (Or (Function)) (Or (Array (Number)) (Array (String)) (Array (Integer)))))
+  ; (deftype sort (Lambda (Or (Array (Number)) (Array (String)) (Array (Integer))) (Or (Function)) (Or (Array (Number)) (Array (String)) (Array (Integer)))))
   (defun sort arr callback (do
         (if (<= (length arr) 1) arr
         (do

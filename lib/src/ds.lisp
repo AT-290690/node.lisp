@@ -167,6 +167,49 @@
           (hash-set-add! table item)
         (if (< i len) (add (+ i 1)) table)))
         (add 0)))
+  ; hash-set-intersection
+ (deftype hash-set-intersection (Lambda (Or (Array (Array))) (Or (Array (Array))) (Or (Number)) (Or (Array (Array)))))
+ (defun hash-set-intersection a b size (do 
+    (defconstant A a)
+    (defconstant B (deep-flat b))
+    (fold B (lambda out element 
+              (do 
+                (when (hash-set? A element) 
+                      (hash-set-add! out element)) 
+            out)) 
+            (hash-set size))))
+  ; hash-set-difference
+ (deftype hash-set-difference (Lambda (Or (Array (Array))) (Or (Array (Array))) (Or (Number)) (Or (Array (Array)))))
+  (defun hash-set-difference a b size (do 
+    (defconstant A (deep-flat a))
+    (defconstant B b)
+    (fold A (lambda out element 
+              (do 
+                (when (not (hash-set? B element))
+                      (hash-set-add! out element)) 
+            out)) 
+            (hash-set size))))
+ ; hash-set-xor
+ (deftype hash-set-xor (Lambda (Or (Array (Array))) (Or (Array (Array))) (Or (Number)) (Or (Array (Array)))))
+ (defun hash-set-xor a b size (do 
+  (defconstant A (deep-flat a))
+  (defconstant B (deep-flat b))
+  (defconstant out (hash-set size))
+  (for-of A (lambda element 
+    (when (not (hash-set? b element)) (hash-set-add! out element))))
+  (for-of B (lambda element 
+    (when (not (hash-set? a element)) (hash-set-add! out element))))
+  out))
+; hash-set-union
+ (deftype hash-set-union (Lambda (Or (Array (Array))) (Or (Array (Array))) (Or (Number)) (Or (Array (Array)))))
+ (defun hash-set-union a b size (do 
+    (defconstant A (deep-flat a))
+    (defconstant B (deep-flat b))
+    (defconstant out (hash-set size))
+    (for-of A (lambda element 
+      (hash-set-add! out element)))
+    (for-of B (lambda element 
+      (hash-set-add! out element)))))
   ; (/ Hash Set)
 
     ; (Binary Tree)
@@ -326,5 +369,8 @@
     (Array "array->set" array->set)
     (Array "array->table" array->table)
     (Array "table->array" table->array)
-)))
+    (Array "hash-set-intersection" hash-set-intersection)
+    (Array "hash-set-difference" hash-set-difference)
+    (Array "hash-set-xor" hash-set-xor)
+    (Array "hash-set-union" hash-set-union))))
 ; (/ ds lib)
