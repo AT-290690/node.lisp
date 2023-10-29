@@ -1,5 +1,5 @@
 import { compileToJs, lispToJavaScriptVariableName } from './compiler.js'
-import { APPLY, TYPE, VALUE, WORD } from './enums.js'
+import { APPLY, TOKENS, TYPE, VALUE, WORD } from './enums.js'
 import { run } from './interpreter.js'
 import { parse } from './parser.js'
 export const logError = (error) => console.log('\x1b[31m', error, '\x1b[0m')
@@ -12,7 +12,7 @@ export const removeNoCode = (source) =>
 export const isBalancedParenthesis = (sourceCode) => {
   let count = 0
   const stack = []
-  const str = sourceCode.match(/\(|\)/g) ?? []
+  const str = sourceCode.match(/[/\(|\)](?=[^"]*(?:"[^"]*"[^"]*)*$)/g) ?? []
   const pairs = { ')': '(' }
   for (let i = 0; i < str.length; ++i)
     if (str[i] === '(') stack.push(str[i])
@@ -43,7 +43,7 @@ export const treeShake = (deps, stds) => {
         parsed.filter(
           ([dec, name]) =>
             dec[TYPE] === APPLY &&
-            dec[VALUE] === 'defun' &&
+            dec[VALUE] === TOKENS.DEFINE_FUNCTION &&
             name[TYPE] === WORD &&
             depSet.has(lispToJavaScriptVariableName(name[VALUE]))
         )

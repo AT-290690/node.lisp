@@ -43,9 +43,6 @@ const Helpers = {
   log: {
     source: `var log = (msg) => { console.log(msg); return msg }`,
   },
-  _identity: {
-    source: `_identity = i => { return i }`,
-  },
   tco: {
     source: `tco = fn => (...args) => {
       let result = fn(...args)
@@ -543,6 +540,21 @@ const compile = (tree, Variables, Functions) => {
       case TOKENS.ABORT:
         return 'process.exit(0);'
       case TOKENS.IDENTITY:
+        if (Arguments[0][TYPE] === WORD) {
+          switch (Arguments[0][VALUE]) {
+            case TOKENS.ADDITION:
+              return '0'
+            case TOKENS.MULTIPLICATION:
+              return '1'
+            case TOKENS.SET_ARRAY:
+              return '[]'
+            case TOKENS.CONCATENATION:
+              return '""'
+            default:
+              return compile(Arguments[0], Variables)
+          }
+        }
+        return compile(Arguments[0], Variables)
       case TOKENS.DEBUG:
       case TOKENS.NOT_COMPILED_BLOCK:
       case TOKENS.DEFINE_TYPE:

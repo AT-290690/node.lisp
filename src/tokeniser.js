@@ -169,6 +169,20 @@ const tokens = {
           TOKENS.IDENTITY
         } ${stringifyArgs(args)})`
       )
+    if (args[0][TYPE] === WORD) {
+      switch (args[0][VALUE]) {
+        case TOKENS.ADDITION:
+          return 0
+        case TOKENS.MULTIPLICATION:
+          return 1
+        case TOKENS.SET_ARRAY:
+          return []
+        case TOKENS.CONCATENATION:
+          return ''
+        default:
+          return evaluate(args[0], env)
+      }
+    }
     return evaluate(args[0], env)
   },
   [TOKENS.STRING_CONCATENATION]: (args, env) => {
