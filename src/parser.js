@@ -10,7 +10,7 @@ const escape = (char) => {
     case 't':
       return '\t'
     case 's':
-      return '\\s'
+      return ' '
     case '"':
       return '"'
     default:

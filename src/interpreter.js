@@ -19,8 +19,14 @@ export const evaluate = (expression, env) => {
     }
     case APPLY:
       const apply = env[first[VALUE]]
+      if (apply == undefined)
+        throw new ReferenceError(
+          `Undefined ${TOKENS.ANONYMOUS_FUNCTION} ${first[VALUE]}.`
+        )
       if (typeof apply !== 'function')
-        throw new TypeError(`${first[VALUE]} is not a (function).`)
+        throw new TypeError(
+          `${first[VALUE]} is not a (${TOKENS.ANONYMOUS_FUNCTION}).`
+        )
       if (!apply._count) apply._count = 0
       apply._count++
       trace(stacktrace, first[VALUE])
