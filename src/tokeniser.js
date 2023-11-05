@@ -381,6 +381,7 @@ const tokens = {
     return String.fromCharCode(...indexes)
   },
   [TOKENS.ADDITION]: (args, env) => {
+    if (!args.length) return 0
     if (args.length < 2)
       throw new RangeError(
         `Invalid number of arguments for (${

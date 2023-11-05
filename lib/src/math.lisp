@@ -211,9 +211,9 @@
         (setf count (+ count 1))
         (iter)) count))
     (iter)))
-  ; check-n-is-one-bit
-  (deftype check-n-is-one-bit (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
-  (defun check-n-is-one-bit N nth (type (& N (<< 1 nth)) Boolean))
+  ; n-one-bit?
+  (deftype n-one-bit? (Lambda (Or (Number)) (Or (Number)) (Or (Number))))
+  (defun n-one-bit? N nth (type (& N (<< 1 nth)) Boolean))
   ; possible-subsets-bit
   (deftype possible-subsets-bit (Lambda (Or (Array)) (Or (Array))))
   (defun possible-subsets-bit A (do 
@@ -490,7 +490,7 @@
       (case "1 -2" (summation (Array 1 -2)) -1)
     "Sum all numbers in a list"))
   (deftype summation (Lambda (Or (Array (Number))) (Or (Number))))
-  (defun summation array (reduce array (lambda a b . . (+ a b)) 0))
+  (defun summation array (reduce array (lambda a b . . (+ a b)) (+)))
   ; product
   (defun product-documentation
     (documentation 
@@ -503,7 +503,7 @@
       (case "1 2 3 4 5" (product (Array 1 2 3 4 5)) (* 1 2 3 4 5))
     "Multiply all numbers in an array"))
   (deftype product (Lambda (Or (Array (Number))) (Or (Number))))
-  (defun product array (reduce array (lambda a b . . (* a b)) 1))
+  (defun product array (reduce array (lambda a b . . (* a b)) (*)))
   ; adjacent-difference
   (deftype adjacent-difference (Lambda (Or (Array (Number))) (Or (Function)) (Or (Array (Number)))))
   (defun adjacent-difference array callback (do 
@@ -640,7 +640,7 @@
       (Array "clear-bit" clear-bit)
       (Array "power-of-two-bit" power-of-two-bit)
       (Array "count-number-of-ones-bit" count-number-of-ones-bit)
-      (Array "check-n-is-one-bit" check-n-is-one-bit)
+      (Array "n-one-bit?" n-one-bit?)
       (Array "possible-subsets-bit" possible-subsets-bit)
       (Array "largest-power" largest-power)
       (Array "permutations" permutations)

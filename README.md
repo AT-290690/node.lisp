@@ -139,8 +139,9 @@ to run the tests make sure you have the dependencies imported if they are needed
 ```lisp
 ; Many faces of math symbols
 ; depending on the number of arguments
-(*) ; 1
-(/) ; 0
+(+) ; 0 - identity
+(*) ; 1 - indentity / wild card
+(/) ; 0 - empty set
 (* 2 3) ; 6
 (/ 10) ; 0.1
 (/ 10 2) ; 5
